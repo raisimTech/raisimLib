@@ -37,6 +37,8 @@ int main(int argc, char* argv[]) {
   /// launch raisim servear
   raisim::RaisimServer server(&world);
   server.launchServer();
+  auto box = server.addVisualBox("box", 0.5, 0.5, 0.5, 1, 0, 0, 1);
+  box->setPosition(1,1,1);
 
   while (1) {
     raisim::MSLEEP(2);
