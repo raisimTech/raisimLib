@@ -133,6 +133,8 @@ public:
                 ss << static_cast<char>(kValidChars[(c << 4) & 0x3f]); // remaining 2 bits from single byte
                 ss << "==";
             }
+
+            if (end - it < 4) break;
         }
         return ss.str() + padding;
     }
