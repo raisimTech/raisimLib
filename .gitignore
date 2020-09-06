@@ -1,0 +1,21 @@
+# Build and Release Folders
+build-debug/
+build-release/
+build/*
+cmake-build*/*
+.idea/*
+examples/.idea/*
+examples/build/*
+examples/cmake-build*/*
+# Other files and folders
+.settings/
+.vscode/*
+*/raisimGymTorch/build/*
+*/raisimGymTorch/dist/*
+*/raisimGymTorch/raisim_gym_torch.egg-info/*
+*/build/*
+*/build-debug/*
+*/*.m~
+*/data/*
+**/activation.raisim
+data/*

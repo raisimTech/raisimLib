@@ -1,0 +1,149 @@
+\hypertarget{classraisim_1_1RaisimServer}{}\section{raisim\+:\+:Raisim\+Server Class Reference}
+\label{classraisim_1_1RaisimServer}\index{raisim\+::\+Raisim\+Server@{raisim\+::\+Raisim\+Server}}
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classraisim_1_1RaisimServer_adcf5f6ccea237f0bffde24340f3a9b98}\label{classraisim_1_1RaisimServer_adcf5f6ccea237f0bffde24340f3a9b98}} 
+enum {\bfseries Client\+Message\+Type} \+: int \{ \newline
+{\bfseries R\+E\+Q\+U\+E\+S\+T\+\_\+\+O\+B\+J\+E\+C\+T\+\_\+\+P\+O\+S\+I\+T\+I\+ON} = 0, 
+{\bfseries R\+E\+Q\+U\+E\+S\+T\+\_\+\+I\+N\+I\+T\+I\+A\+L\+I\+Z\+A\+T\+I\+ON}, 
+{\bfseries R\+E\+Q\+U\+E\+S\+T\+\_\+\+R\+E\+S\+O\+U\+R\+CE}, 
+{\bfseries R\+E\+Q\+U\+E\+S\+T\+\_\+\+C\+H\+A\+N\+G\+E\+\_\+\+R\+E\+A\+L\+T\+I\+M\+E\+\_\+\+F\+A\+C\+T\+OR}, 
+\newline
+{\bfseries R\+E\+Q\+U\+E\+S\+T\+\_\+\+C\+O\+N\+T\+A\+C\+T\+\_\+\+S\+O\+L\+V\+E\+R\+\_\+\+D\+E\+T\+A\+I\+LS}, 
+{\bfseries R\+E\+Q\+U\+E\+S\+T\+\_\+\+P\+A\+U\+SE}, 
+{\bfseries R\+E\+Q\+U\+E\+S\+T\+\_\+\+R\+E\+S\+U\+ME}, 
+{\bfseries R\+E\+Q\+U\+E\+S\+T\+\_\+\+C\+O\+N\+T\+A\+C\+T\+\_\+\+I\+N\+F\+OS}, 
+\newline
+{\bfseries R\+E\+Q\+U\+E\+S\+T\+\_\+\+C\+O\+N\+F\+I\+G\+\_\+\+X\+ML}, 
+{\bfseries R\+E\+Q\+U\+E\+S\+T\+\_\+\+I\+N\+I\+T\+I\+A\+L\+I\+Z\+E\+\_\+\+V\+I\+S\+U\+A\+LS}, 
+{\bfseries R\+E\+Q\+U\+E\+S\+T\+\_\+\+V\+I\+S\+U\+A\+L\+\_\+\+P\+O\+S\+I\+T\+I\+ON}, 
+{\bfseries R\+E\+Q\+U\+E\+S\+T\+\_\+\+S\+E\+R\+V\+E\+R\+\_\+\+S\+T\+A\+T\+US}
+ \}
+\item 
+\mbox{\Hypertarget{classraisim_1_1RaisimServer_a30ae63e5f9a63c4fb4f6b8737abcd8d1}\label{classraisim_1_1RaisimServer_a30ae63e5f9a63c4fb4f6b8737abcd8d1}} 
+enum {\bfseries Server\+Message\+Type} \+: int \{ \newline
+{\bfseries I\+N\+I\+T\+I\+A\+L\+I\+Z\+A\+T\+I\+ON} = 0, 
+{\bfseries O\+B\+J\+E\+C\+T\+\_\+\+P\+O\+S\+I\+T\+I\+O\+N\+\_\+\+U\+P\+D\+A\+TE} = 1, 
+{\bfseries S\+T\+A\+T\+US} = 2, 
+{\bfseries N\+O\+\_\+\+M\+E\+S\+S\+A\+GE} = 3, 
+\newline
+{\bfseries C\+O\+N\+T\+A\+C\+T\+\_\+\+I\+N\+F\+O\+\_\+\+U\+P\+D\+A\+TE} = 4, 
+{\bfseries C\+O\+N\+F\+I\+G\+\_\+\+X\+ML} = 5, 
+{\bfseries V\+I\+S\+U\+A\+L\+\_\+\+I\+N\+I\+T\+I\+L\+I\+Z\+A\+T\+I\+ON} = 6, 
+{\bfseries V\+I\+S\+U\+A\+L\+\_\+\+P\+O\+S\+I\+T\+I\+O\+N\+\_\+\+U\+P\+D\+A\+TE} = 7
+ \}
+\item 
+\mbox{\Hypertarget{classraisim_1_1RaisimServer_a9ae174afb463d443bf234cff6047b831}\label{classraisim_1_1RaisimServer_a9ae174afb463d443bf234cff6047b831}} 
+enum {\bfseries Status} \+: int \{ {\bfseries S\+T\+A\+T\+U\+S\+\_\+\+R\+E\+N\+D\+E\+R\+I\+NG} = 0, 
+{\bfseries S\+T\+A\+T\+U\+S\+\_\+\+H\+I\+B\+E\+R\+N\+A\+T\+I\+NG} = 1, 
+{\bfseries S\+T\+A\+T\+U\+S\+\_\+\+T\+E\+R\+M\+I\+N\+A\+T\+I\+NG} = 2
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classraisim_1_1RaisimServer_a84ff77afc087b8aaefcc33d51a0f8b56}\label{classraisim_1_1RaisimServer_a84ff77afc087b8aaefcc33d51a0f8b56}} 
+{\bfseries Raisim\+Server} (\hyperlink{classraisim_1_1World}{World} $\ast$world)
+\item 
+\mbox{\Hypertarget{classraisim_1_1RaisimServer_a60a67d4307f008baafd5e88d921cd4fb}\label{classraisim_1_1RaisimServer_a60a67d4307f008baafd5e88d921cd4fb}} 
+void {\bfseries launch\+Server} (int port=8080)
+\item 
+\mbox{\Hypertarget{classraisim_1_1RaisimServer_ab5d84da8f8459fa51fcc83120b9c395a}\label{classraisim_1_1RaisimServer_ab5d84da8f8459fa51fcc83120b9c395a}} 
+void {\bfseries integrate\+World\+Thread\+Safe} ()
+\item 
+\mbox{\Hypertarget{classraisim_1_1RaisimServer_a39a4689489eb18a23a8f2d7564b08b24}\label{classraisim_1_1RaisimServer_a39a4689489eb18a23a8f2d7564b08b24}} 
+void {\bfseries hibernate} ()
+\item 
+\mbox{\Hypertarget{classraisim_1_1RaisimServer_a79e186c7c5ffb6386b4e346993ca8aa4}\label{classraisim_1_1RaisimServer_a79e186c7c5ffb6386b4e346993ca8aa4}} 
+void {\bfseries wakeup} ()
+\item 
+\mbox{\Hypertarget{classraisim_1_1RaisimServer_a6e3d52707b195d65ffc2c1d80af136f5}\label{classraisim_1_1RaisimServer_a6e3d52707b195d65ffc2c1d80af136f5}} 
+void {\bfseries kill\+Server} ()
+\item 
+\mbox{\Hypertarget{classraisim_1_1RaisimServer_a7fd97bda34947608c87721f53f8892ee}\label{classraisim_1_1RaisimServer_a7fd97bda34947608c87721f53f8892ee}} 
+void {\bfseries inform\+Client\+For\+Update} ()
+\item 
+\mbox{\Hypertarget{classraisim_1_1RaisimServer_aebf124390f7e67a772839b0ac34737db}\label{classraisim_1_1RaisimServer_aebf124390f7e67a772839b0ac34737db}} 
+void {\bfseries lock\+Visualization\+Server\+Mutex} ()
+\item 
+\mbox{\Hypertarget{classraisim_1_1RaisimServer_af8dacdb39088a6c1f99e0dd27cba8e7c}\label{classraisim_1_1RaisimServer_af8dacdb39088a6c1f99e0dd27cba8e7c}} 
+void {\bfseries unlock\+Visualization\+Server\+Mutex} ()
+\item 
+\mbox{\Hypertarget{classraisim_1_1RaisimServer_a6daa0a6af51f9fe32966ceb67e117c3b}\label{classraisim_1_1RaisimServer_a6daa0a6af51f9fe32966ceb67e117c3b}} 
+bool {\bfseries is\+Pause\+Requested} ()
+\item 
+\mbox{\Hypertarget{classraisim_1_1RaisimServer_a4a42ba06bec0437fa0072ddb949f9a56}\label{classraisim_1_1RaisimServer_a4a42ba06bec0437fa0072ddb949f9a56}} 
+bool {\bfseries is\+Resume\+Ruested} ()
+\item 
+\mbox{\Hypertarget{classraisim_1_1RaisimServer_a6781865462ef0ffd41cc2718449484a2}\label{classraisim_1_1RaisimServer_a6781865462ef0ffd41cc2718449484a2}} 
+bool {\bfseries is\+Terminate\+Requested} ()
+\item 
+\mbox{\Hypertarget{classraisim_1_1RaisimServer_a8827d78f85ed8764f2c1a2d1f3292ae5}\label{classraisim_1_1RaisimServer_a8827d78f85ed8764f2c1a2d1f3292ae5}} 
+\hyperlink{structraisim_1_1Visuals}{Visuals} \& {\bfseries add\+Visual\+Sphere} (const std\+::string name, double radius, double colorR=1, double colorG=1, double colorB=1, double colorA=1, const std\+::string \&material=\char`\"{}\char`\"{}, bool glow=true, bool shadow=false)
+\item 
+\mbox{\Hypertarget{classraisim_1_1RaisimServer_aa8174f08cfe8b6095daa232dad328e9b}\label{classraisim_1_1RaisimServer_aa8174f08cfe8b6095daa232dad328e9b}} 
+\hyperlink{structraisim_1_1Visuals}{Visuals} \& {\bfseries add\+Visual\+Box} (const std\+::string name, double x\+Length, double y\+Length, double z\+Length, double colorR=1, double colorG=1, double colorB=1, double colorA=1, const std\+::string \&material=\char`\"{}\char`\"{}, bool glow=true, bool shadow=false)
+\item 
+\mbox{\Hypertarget{classraisim_1_1RaisimServer_a1d4e079ecf9ea92c1e6ddf9bf52da5a9}\label{classraisim_1_1RaisimServer_a1d4e079ecf9ea92c1e6ddf9bf52da5a9}} 
+\hyperlink{structraisim_1_1Visuals}{Visuals} \& {\bfseries add\+Visual\+Cylinder} (const std\+::string name, double radius, double length, double colorR=1, double colorG=1, double colorB=1, double colorA=1, const std\+::string \&material=\char`\"{}\char`\"{}, bool glow=true, bool shadow=false)
+\item 
+\mbox{\Hypertarget{classraisim_1_1RaisimServer_a8a5d29b8c36bd422fd30acb474ea2bbc}\label{classraisim_1_1RaisimServer_a8a5d29b8c36bd422fd30acb474ea2bbc}} 
+\hyperlink{structraisim_1_1Visuals}{Visuals} \& {\bfseries add\+Visual\+Capsule} (const std\+::string name, double radius, double length, double colorR=1, double colorG=1, double colorB=1, double colorA=1, const std\+::string \&material=\char`\"{}\char`\"{}, bool glow=true, bool shadow=false)
+\item 
+\mbox{\Hypertarget{classraisim_1_1RaisimServer_a10ff761b4536607df44286b2e8d15180}\label{classraisim_1_1RaisimServer_a10ff761b4536607df44286b2e8d15180}} 
+\hyperlink{structraisim_1_1Visuals}{Visuals} \& {\bfseries get\+Visual\+Object} (std\+::string name)
+\item 
+\mbox{\Hypertarget{classraisim_1_1RaisimServer_a1ac814dd8c20d8b543861acdc58adf8c}\label{classraisim_1_1RaisimServer_a1ac814dd8c20d8b543861acdc58adf8c}} 
+void {\bfseries remove\+Visual\+Object} (std\+::string name)
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classraisim_1_1RaisimServer_a55d1f8192f1b9bde58569e2d3ed87542}\label{classraisim_1_1RaisimServer_a55d1f8192f1b9bde58569e2d3ed87542}} 
+{\footnotesize template$<$typename T $>$ }\\static char $\ast$ {\bfseries set} (char $\ast$data, T $\ast$val)
+\item 
+\mbox{\Hypertarget{classraisim_1_1RaisimServer_a48eba574f54645748331315ec2b6f4bf}\label{classraisim_1_1RaisimServer_a48eba574f54645748331315ec2b6f4bf}} 
+{\footnotesize template$<$typename T $>$ }\\static char $\ast$ {\bfseries setN} (char $\ast$data, T $\ast$val, int64\+\_\+t N)
+\item 
+\mbox{\Hypertarget{classraisim_1_1RaisimServer_a39c33b596f0d9c70f2083c61b4950029}\label{classraisim_1_1RaisimServer_a39c33b596f0d9c70f2083c61b4950029}} 
+{\footnotesize template$<$typename T $>$ }\\static char $\ast$ {\bfseries set} (char $\ast$data, T val)
+\item 
+\mbox{\Hypertarget{classraisim_1_1RaisimServer_a9ba61a401b7a4d080dfb9761f4d8c1ce}\label{classraisim_1_1RaisimServer_a9ba61a401b7a4d080dfb9761f4d8c1ce}} 
+{\footnotesize template$<$typename T $>$ }\\static char $\ast$ {\bfseries get} (char $\ast$data, T $\ast$val)
+\item 
+\mbox{\Hypertarget{classraisim_1_1RaisimServer_a1c92a5358e5230fb71d73846d0079357}\label{classraisim_1_1RaisimServer_a1c92a5358e5230fb71d73846d0079357}} 
+{\footnotesize template$<$typename T $>$ }\\static char $\ast$ {\bfseries getN} (char $\ast$data, T $\ast$val, uint64\+\_\+t N)
+\item 
+\mbox{\Hypertarget{classraisim_1_1RaisimServer_ab11d3b521795c55ef01a9ff27d81cc02}\label{classraisim_1_1RaisimServer_ab11d3b521795c55ef01a9ff27d81cc02}} 
+static char $\ast$ {\bfseries get\+String} (char $\ast$data, std\+::string \&str)
+\item 
+\mbox{\Hypertarget{classraisim_1_1RaisimServer_a45e949c8ffb5d79cd4d7a944bcb6fd71}\label{classraisim_1_1RaisimServer_a45e949c8ffb5d79cd4d7a944bcb6fd71}} 
+static char $\ast$ {\bfseries set\+String} (char $\ast$data, const std\+::string \&val)
+\item 
+\mbox{\Hypertarget{classraisim_1_1RaisimServer_ab39166cc49f701f2b397a059b391281d}\label{classraisim_1_1RaisimServer_ab39166cc49f701f2b397a059b391281d}} 
+{\footnotesize template$<$typename T $>$ }\\static char $\ast$ {\bfseries set\+Std\+Vector} (char $\ast$data, const std\+::vector$<$ T $>$ \&str)
+\item 
+\mbox{\Hypertarget{classraisim_1_1RaisimServer_aba03b88f4647024ec94fa6740ebdb942}\label{classraisim_1_1RaisimServer_aba03b88f4647024ec94fa6740ebdb942}} 
+{\footnotesize template$<$typename T $>$ }\\static char $\ast$ {\bfseries get\+Std\+Vector} (char $\ast$data, std\+::vector$<$ T $>$ \&str)
+\end{DoxyCompactItemize}
+\subsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classraisim_1_1RaisimServer_a8a09ce26868b942f3c985fbe5f7b9a37}\label{classraisim_1_1RaisimServer_a8a09ce26868b942f3c985fbe5f7b9a37}} 
+static constexpr int {\bfseries S\+E\+N\+D\+\_\+\+B\+U\+F\+F\+E\+R\+\_\+\+S\+I\+ZE} = 33554432
+\item 
+\mbox{\Hypertarget{classraisim_1_1RaisimServer_a41a73c63e381b1ec4dcd80250a4f121c}\label{classraisim_1_1RaisimServer_a41a73c63e381b1ec4dcd80250a4f121c}} 
+static constexpr int {\bfseries M\+A\+X\+I\+M\+U\+M\+\_\+\+P\+A\+C\+K\+E\+T\+\_\+\+S\+I\+ZE} = 1024
+\item 
+\mbox{\Hypertarget{classraisim_1_1RaisimServer_aeb67ca99e4c695fa574611266a649d35}\label{classraisim_1_1RaisimServer_aeb67ca99e4c695fa574611266a649d35}} 
+static constexpr int {\bfseries F\+O\+O\+T\+E\+R\+\_\+\+S\+I\+ZE} = sizeof(char)
+\item 
+\mbox{\Hypertarget{classraisim_1_1RaisimServer_a4cfac6be0756bc2777b1c2d6a13e41a4}\label{classraisim_1_1RaisimServer_a4cfac6be0756bc2777b1c2d6a13e41a4}} 
+static constexpr int {\bfseries R\+E\+C\+E\+I\+V\+E\+\_\+\+B\+U\+F\+F\+E\+R\+\_\+\+S\+I\+ZE} = 1024
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/jemin/workspace/raisimlib/raisim/linux/include/raisim/Raisim\+Server.\+hpp\end{DoxyCompactItemize}

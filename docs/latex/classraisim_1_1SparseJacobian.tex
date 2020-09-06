@@ -1,0 +1,71 @@
+\hypertarget{classraisim_1_1SparseJacobian}{}\section{raisim\+:\+:Sparse\+Jacobian Class Reference}
+\label{classraisim_1_1SparseJacobian}\index{raisim\+::\+Sparse\+Jacobian@{raisim\+::\+Sparse\+Jacobian}}
+
+
+Collaboration diagram for raisim\+:\+:Sparse\+Jacobian\+:
+% FIG 0
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classraisim_1_1SparseJacobian_aeb0cd87182ff84eed2dfc48aa8ba6da1}\label{classraisim_1_1SparseJacobian_aeb0cd87182ff84eed2dfc48aa8ba6da1}} 
+void {\bfseries resize} (size\+\_\+t cols)
+\item 
+\mbox{\Hypertarget{classraisim_1_1SparseJacobian_a6ed212af310cb04eaf3ae00e31238b6c}\label{classraisim_1_1SparseJacobian_a6ed212af310cb04eaf3ae00e31238b6c}} 
+double {\bfseries operator\mbox{[}$\,$\mbox{]}} (size\+\_\+t i) const
+\item 
+\mbox{\Hypertarget{classraisim_1_1SparseJacobian_a2d7a5466a454a272682e91663bba663e}\label{classraisim_1_1SparseJacobian_a2d7a5466a454a272682e91663bba663e}} 
+double \& {\bfseries operator\mbox{[}$\,$\mbox{]}} (size\+\_\+t i)
+\item 
+\mbox{\Hypertarget{classraisim_1_1SparseJacobian_a5e5f6521b53004b2d7bfedbfdc685e46}\label{classraisim_1_1SparseJacobian_a5e5f6521b53004b2d7bfedbfdc685e46}} 
+double {\bfseries operator()} (size\+\_\+t i, size\+\_\+t j) const
+\item 
+\mbox{\Hypertarget{classraisim_1_1SparseJacobian_a2766be541c1e974b60e8e631c81c06db}\label{classraisim_1_1SparseJacobian_a2766be541c1e974b60e8e631c81c06db}} 
+double \& {\bfseries operator()} (size\+\_\+t i, size\+\_\+t j)
+\item 
+\mbox{\Hypertarget{classraisim_1_1SparseJacobian_a554fe655b56076832fa1903833b60001}\label{classraisim_1_1SparseJacobian_a554fe655b56076832fa1903833b60001}} 
+void {\bfseries operator$\ast$=} (double val)
+\item 
+\mbox{\Hypertarget{classraisim_1_1SparseJacobian_afd5bbd9128b687274c38c5b68cd36cad}\label{classraisim_1_1SparseJacobian_afd5bbd9128b687274c38c5b68cd36cad}} 
+double $\ast$ {\bfseries ptr} ()
+\item 
+\mbox{\Hypertarget{classraisim_1_1SparseJacobian_a6949e5042aaf0b875603f29bc6f144c2}\label{classraisim_1_1SparseJacobian_a6949e5042aaf0b875603f29bc6f144c2}} 
+const double $\ast$ {\bfseries ptr} () const
+\item 
+\mbox{\Hypertarget{classraisim_1_1SparseJacobian_a22ee51aff38c077322393911d58b5e40}\label{classraisim_1_1SparseJacobian_a22ee51aff38c077322393911d58b5e40}} 
+double $\ast$ {\bfseries data} ()
+\item 
+\mbox{\Hypertarget{classraisim_1_1SparseJacobian_a489d210f4e8b51ae0e217b6add3ec6fd}\label{classraisim_1_1SparseJacobian_a489d210f4e8b51ae0e217b6add3ec6fd}} 
+const double $\ast$ {\bfseries data} () const
+\item 
+\mbox{\Hypertarget{classraisim_1_1SparseJacobian_ae3471df2474822182f1a992eed46ee53}\label{classraisim_1_1SparseJacobian_ae3471df2474822182f1a992eed46ee53}} 
+Eigen\+::\+Map$<$ Eigen\+::\+Matrix$<$ double, -\/1, -\/1 $>$ $>$ {\bfseries e} ()
+\item 
+\mbox{\Hypertarget{classraisim_1_1SparseJacobian_ad1fe844e177822ae5eebe46ca2842db7}\label{classraisim_1_1SparseJacobian_ad1fe844e177822ae5eebe46ca2842db7}} 
+const Eigen\+::\+Map$<$ const Eigen\+::\+Matrix$<$ double, -\/1, -\/1 $>$ $>$ {\bfseries e} () const
+\item 
+\mbox{\Hypertarget{classraisim_1_1SparseJacobian_a44314182291a84a7bd986ba5350ba362}\label{classraisim_1_1SparseJacobian_a44314182291a84a7bd986ba5350ba362}} 
+{\footnotesize template$<$size\+\_\+t j, size\+\_\+t k$>$ }\\void {\bfseries fill\+Sub} (size\+\_\+t start\+Row, size\+\_\+t start\+Column, const Mat$<$ j, k $>$ \&in)
+\item 
+\mbox{\Hypertarget{classraisim_1_1SparseJacobian_a8a51a91462e38b4d82508e386de6e5e9}\label{classraisim_1_1SparseJacobian_a8a51a91462e38b4d82508e386de6e5e9}} 
+\hyperlink{classraisim_1_1SparseJacobian}{Sparse\+Jacobian} \& {\bfseries operator=} (const \hyperlink{classraisim_1_1SparseJacobian}{Sparse\+Jacobian} \&rhs)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classraisim_1_1SparseJacobian_af5f3a66fbf8ff46ddc0326943dff9551}\label{classraisim_1_1SparseJacobian_af5f3a66fbf8ff46ddc0326943dff9551}} 
+size\+\_\+t {\bfseries size}
+\item 
+\mbox{\Hypertarget{classraisim_1_1SparseJacobian_a3315bbc715fa5f88571f20377ff0933b}\label{classraisim_1_1SparseJacobian_a3315bbc715fa5f88571f20377ff0933b}} 
+size\+\_\+t {\bfseries capacity} =0
+\item 
+\mbox{\Hypertarget{classraisim_1_1SparseJacobian_a15359d2e8d5ddba84a4f21f0eb86a57f}\label{classraisim_1_1SparseJacobian_a15359d2e8d5ddba84a4f21f0eb86a57f}} 
+\hyperlink{classraisim_1_1MatDyn}{Mat\+Dyn} {\bfseries v}
+\item 
+\mbox{\Hypertarget{classraisim_1_1SparseJacobian_a104f7691146db5e6b570a97bfce3c87e}\label{classraisim_1_1SparseJacobian_a104f7691146db5e6b570a97bfce3c87e}} 
+std\+::vector$<$ size\+\_\+t $>$ {\bfseries idx}
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/jemin/workspace/raisimlib/raisim/linux/include/raisim/math.\+hpp\end{DoxyCompactItemize}

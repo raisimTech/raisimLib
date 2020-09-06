@@ -1,0 +1,60 @@
+\hypertarget{structraisim_1_1Visuals}{}\section{raisim\+:\+:Visuals Struct Reference}
+\label{structraisim_1_1Visuals}\index{raisim\+::\+Visuals@{raisim\+::\+Visuals}}
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structraisim_1_1Visuals_ae640649156de9a1eca58386278a79d5c}\label{structraisim_1_1Visuals_ae640649156de9a1eca58386278a79d5c}} 
+enum {\bfseries Visual\+Type} \+: int \{ \newline
+{\bfseries Visual\+Sphere} = 0, 
+{\bfseries Visual\+Box}, 
+{\bfseries Visual\+Cylinder}, 
+{\bfseries Visual\+Capsule}, 
+\newline
+{\bfseries Visual\+Mesh}, 
+{\bfseries Visual\+Arrow}
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structraisim_1_1Visuals_ad780b8f5d396aab3d3b0b0926ddc23d9}\label{structraisim_1_1Visuals_ad780b8f5d396aab3d3b0b0926ddc23d9}} 
+void {\bfseries set\+Position} (double x, double y, double z)
+\item 
+\mbox{\Hypertarget{structraisim_1_1Visuals_a1fbbeeaea3047625f8b3ab426f1d1e41}\label{structraisim_1_1Visuals_a1fbbeeaea3047625f8b3ab426f1d1e41}} 
+void {\bfseries set\+Orientation} (double w, double x, double y, double z)
+\item 
+\mbox{\Hypertarget{structraisim_1_1Visuals_a0fb2b3835c91ecaad78929ade7446259}\label{structraisim_1_1Visuals_a0fb2b3835c91ecaad78929ade7446259}} 
+Vec$<$ 3 $>$ \& {\bfseries get\+Position} ()
+\item 
+\mbox{\Hypertarget{structraisim_1_1Visuals_ad752dc595a1408da5d37dae470f4b155}\label{structraisim_1_1Visuals_ad752dc595a1408da5d37dae470f4b155}} 
+Vec$<$ 4 $>$ \& {\bfseries get\+Orientation} ()
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structraisim_1_1Visuals_ae1d302c7b253803d32eb3fe03c0d9a1b}\label{structraisim_1_1Visuals_ae1d302c7b253803d32eb3fe03c0d9a1b}} 
+Visual\+Type {\bfseries type}
+\item 
+\mbox{\Hypertarget{structraisim_1_1Visuals_a3fa1fff84699ae84b9dbaf8cbbfc79f5}\label{structraisim_1_1Visuals_a3fa1fff84699ae84b9dbaf8cbbfc79f5}} 
+std\+::string {\bfseries name}
+\item 
+\mbox{\Hypertarget{structraisim_1_1Visuals_af7778efebfa2c9d096f0d4954ef603d0}\label{structraisim_1_1Visuals_af7778efebfa2c9d096f0d4954ef603d0}} 
+std\+::string {\bfseries material}
+\item 
+\mbox{\Hypertarget{structraisim_1_1Visuals_a3032fa40080f8c32cea2a0b55933d1c4}\label{structraisim_1_1Visuals_a3032fa40080f8c32cea2a0b55933d1c4}} 
+bool {\bfseries glow} = true
+\item 
+\mbox{\Hypertarget{structraisim_1_1Visuals_a66e5c8ed6ea2d95ffc013f32359e4aed}\label{structraisim_1_1Visuals_a66e5c8ed6ea2d95ffc013f32359e4aed}} 
+bool {\bfseries shadow} = false
+\item 
+\mbox{\Hypertarget{structraisim_1_1Visuals_a05d7d36d5a1895234622f9dc8e2e9165}\label{structraisim_1_1Visuals_a05d7d36d5a1895234622f9dc8e2e9165}} 
+Vec$<$ 4 $>$ {\bfseries color} = \{1, 1, 1, 1\}
+\item 
+\mbox{\Hypertarget{structraisim_1_1Visuals_a1218ea0b97a0ec5fdb263a73e1b1e976}\label{structraisim_1_1Visuals_a1218ea0b97a0ec5fdb263a73e1b1e976}} 
+Vec$<$ 3 $>$ {\bfseries size} = \{0, 0, 0\}
+\end{DoxyCompactItemize}
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/jemin/workspace/raisimlib/raisim/linux/include/raisim/Raisim\+Server.\+hpp\end{DoxyCompactItemize}

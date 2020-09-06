@@ -1,0 +1,12 @@
+seed: 1
+record_video: yes
+
+environment:
+  num_envs: 100
+  num_threads: 40
+  simulation_dt: 0.0025
+  control_dt: 0.01
+  max_time: 4.0
+
+  forwardVelRewardCoeff: 0.3
+  torqueRewardCoeff: -2e-5

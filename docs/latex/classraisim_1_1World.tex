@@ -1,0 +1,281 @@
+\hypertarget{classraisim_1_1World}{}\section{raisim\+:\+:World Class Reference}
+\label{classraisim_1_1World}\index{raisim\+::\+World@{raisim\+::\+World}}
+
+
+Collaboration diagram for raisim\+:\+:World\+:
+% FIG 0
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a3be1f157bf3624a49e673b8393d0850e}\label{classraisim_1_1World_a3be1f157bf3624a49e673b8393d0850e}} 
+typedef std\+::vector$<$ contact\+::\+Single3\+D\+Contact\+Problem, \hyperlink{classraisim_1_1AlignedAllocator}{Aligned\+Allocator}$<$ contact\+::\+Single3\+D\+Contact\+Problem, 32 $>$ $>$ {\bfseries Contact\+Problems}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a6b6216569720095f4474426c12245d82}\label{classraisim_1_1World_a6b6216569720095f4474426c12245d82}} 
+{\bfseries World} (const std\+::string \&config\+File)
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a546b7674bf2d1bf76107e61918aab676}\label{classraisim_1_1World_a546b7674bf2d1bf76107e61918aab676}} 
+void {\bfseries init} ()
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a1ef015209cd25dd3d8a11228bba0455e}\label{classraisim_1_1World_a1ef015209cd25dd3d8a11228bba0455e}} 
+void {\bfseries export\+To\+Xml} (const std\+::string \&dir, const std\+::string \&file\+Name)
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_ac612c63b40ea414e086781cc24541800}\label{classraisim_1_1World_ac612c63b40ea414e086781cc24541800}} 
+{\bfseries World} (const \hyperlink{classraisim_1_1World}{World} \&world)=delete
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a545cdb33c3209154f30d70a62f945b2d}\label{classraisim_1_1World_a545cdb33c3209154f30d70a62f945b2d}} 
+void {\bfseries set\+Time\+Step} (double dt)
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a360b07a5c8893d601988ad8e276bc379}\label{classraisim_1_1World_a360b07a5c8893d601988ad8e276bc379}} 
+double {\bfseries get\+Time\+Step} () const
+\item 
+Sphere $\ast$ \hyperlink{classraisim_1_1World_af28e5c8019ae5efb62c7eed1c6ea06c6}{add\+Sphere} (double radius, double mass, const std\+::string \&material=\char`\"{}default\char`\"{}, Collision\+Group collision\+Group=1, Collision\+Group collision\+Mask=Collision\+Group(-\/1))
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_abba032d54d2e093a5a7c973641b3d340}\label{classraisim_1_1World_abba032d54d2e093a5a7c973641b3d340}} 
+Box $\ast$ {\bfseries add\+Box} (double x\+Length, double y\+Length, double z\+Length, double mass, const std\+::string \&material=\char`\"{}default\char`\"{}, Collision\+Group collision\+Group=1, Collision\+Group collision\+Mask=Collision\+Group(-\/1))
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a8e465e1156d13c88a062db46ed0ead2a}\label{classraisim_1_1World_a8e465e1156d13c88a062db46ed0ead2a}} 
+Cylinder $\ast$ {\bfseries add\+Cylinder} (double radius, double height, double mass, const std\+::string \&material=\char`\"{}default\char`\"{}, Collision\+Group collision\+Group=1, Collision\+Group collision\+Mask=Collision\+Group(-\/1))
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a7edd17d38edfdd77ad78c5406cfb5f13}\label{classraisim_1_1World_a7edd17d38edfdd77ad78c5406cfb5f13}} 
+Cone $\ast$ {\bfseries add\+Cone} (double radius, double height, double mass, const std\+::string \&material=\char`\"{}default\char`\"{}, Collision\+Group collision\+Group=1, Collision\+Group collision\+Mask=Collision\+Group(-\/1))
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a50cad4dad5e846db57d5020c64054769}\label{classraisim_1_1World_a50cad4dad5e846db57d5020c64054769}} 
+Capsule $\ast$ {\bfseries add\+Capsule} (double radius, double height, double mass, const std\+::string \&material=\char`\"{}default\char`\"{}, Collision\+Group collision\+Group=1, Collision\+Group collision\+Mask=Collision\+Group(-\/1))
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a963f0652cf8c20e385e1ec801b8ff00d}\label{classraisim_1_1World_a963f0652cf8c20e385e1ec801b8ff00d}} 
+Ground $\ast$ {\bfseries add\+Ground} (double z\+Height=0.\+0, const std\+::string \&material=\char`\"{}default\char`\"{}, Collision\+Group collision\+Mask=Collision\+Group(-\/1))
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_abf034480fd9c7904e376f38e6c060cd4}\label{classraisim_1_1World_abf034480fd9c7904e376f38e6c060cd4}} 
+Height\+Map $\ast$ {\bfseries add\+Height\+Map} (size\+\_\+t x\+Samples, size\+\_\+t ysamples, double x\+Scale, double y\+Scale, double centerX, double centerY, const std\+::vector$<$ double $>$ \&height, const std\+::string \&material=\char`\"{}default\char`\"{}, Collision\+Group collision\+Group=1, Collision\+Group collision\+Mask=Collision\+Group(-\/1))
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a374c054217ac1b6f360ad1dcd30a9b7d}\label{classraisim_1_1World_a374c054217ac1b6f360ad1dcd30a9b7d}} 
+Height\+Map $\ast$ {\bfseries add\+Height\+Map} (const std\+::string \&raisim\+Height\+Map\+File\+Name, double centerX, double centerY, const std\+::string \&material=\char`\"{}default\char`\"{}, Collision\+Group collision\+Group=1, Collision\+Group collision\+Mask=Collision\+Group(-\/1))
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a66ea6cd91c4a87e0f4f0abee22441c4e}\label{classraisim_1_1World_a66ea6cd91c4a87e0f4f0abee22441c4e}} 
+Height\+Map $\ast$ {\bfseries add\+Height\+Map} (const std\+::string \&png\+File\+Name, double centerX, double centerY, double x\+Size, double y\+Size, double height\+Scale, double height\+Offset, const std\+::string \&material=\char`\"{}default\char`\"{}, Collision\+Group collision\+Group=1, Collision\+Group collision\+Mask=Collision\+Group(-\/1))
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_af56304fa322c9d96a1c1f76fa958ce41}\label{classraisim_1_1World_af56304fa322c9d96a1c1f76fa958ce41}} 
+Height\+Map $\ast$ {\bfseries add\+Height\+Map} (double centerX, double centerY, \hyperlink{structraisim_1_1TerrainProperties}{Terrain\+Properties} \&terrain\+Properties, const std\+::string \&material=\char`\"{}default\char`\"{}, Collision\+Group collision\+Group=1, Collision\+Group collision\+Mask=Collision\+Group(-\/1))
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_aad0185cdaa6fe2e107b2a589db5d654a}\label{classraisim_1_1World_aad0185cdaa6fe2e107b2a589db5d654a}} 
+Height\+Map $\ast$ {\bfseries add\+Height\+Map} (const Height\+Map $\ast$heightmap\+To\+Be\+Cloned, Collision\+Group collision\+Group=1, Collision\+Group collision\+Mask=Collision\+Group(-\/1))
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_aa3b8b8a955dd44d2b210e322a0f83d36}\label{classraisim_1_1World_aa3b8b8a955dd44d2b210e322a0f83d36}} 
+Articulated\+System $\ast$ {\bfseries add\+Articulated\+System} (const std\+::string \&file\+Path\+Or\+U\+R\+D\+F\+Script, const std\+::string \&res\+Path=\char`\"{}\char`\"{}, const std\+::vector$<$ std\+::string $>$ \&joint\+Order=\{\}, Collision\+Group collision\+Group=1, Collision\+Group collision\+Mask=Collision\+Group(-\/1), Articulated\+System\+Option options=Articulated\+System\+Option())
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a864be7f4ce49174ae9fc23af2a7a3a40}\label{classraisim_1_1World_a864be7f4ce49174ae9fc23af2a7a3a40}} 
+Articulated\+System $\ast$ {\bfseries add\+Articulated\+System} (const Child \&child, const std\+::string \&res\+Path=\char`\"{}\char`\"{}, Collision\+Group collision\+Group=1, Collision\+Group collision\+Mask=Collision\+Group(-\/1), Articulated\+System\+Option options=Articulated\+System\+Option())
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a7275dda52216469a4d2e172673a28761}\label{classraisim_1_1World_a7275dda52216469a4d2e172673a28761}} 
+Compound $\ast$ {\bfseries add\+Compound} (const std\+::vector$<$ Compound\+::\+Compound\+Object\+Child $>$ \&children, double mass, Vec$<$ 3 $>$ C\+OM, const Mat$<$ 3, 3 $>$ \&inertia, Collision\+Group collision\+Group=1, Collision\+Group collision\+Mask=Collision\+Group(-\/1))
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_ae67198fb2f946b9b2a1548a5e1cbfeda}\label{classraisim_1_1World_ae67198fb2f946b9b2a1548a5e1cbfeda}} 
+Stiff\+Wire $\ast$ {\bfseries add\+Stiff\+Wire} (Object $\ast$obj1, size\+\_\+t local\+Idx1, Vec$<$ 3 $>$ pos1\+\_\+b, Object $\ast$obj2, size\+\_\+t local\+Idx2, Vec$<$ 3 $>$ pos2\+\_\+b, double length)
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_ae23379d1376301b715840d851520ce47}\label{classraisim_1_1World_ae23379d1376301b715840d851520ce47}} 
+Compliant\+Wire $\ast$ {\bfseries add\+Compliant\+Wire} (Object $\ast$obj1, int local\+Idx1, Vec$<$ 3 $>$ pos1\+\_\+b, Object $\ast$obj2, int local\+Idx2, Vec$<$ 3 $>$ pos2\+\_\+b, double length, double stiffness)
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a85043efc8376be1b14dae89f0a60640f}\label{classraisim_1_1World_a85043efc8376be1b14dae89f0a60640f}} 
+Mesh $\ast$ {\bfseries add\+Mesh} (const std\+::string \&file\+Name, double mass, const Mat$<$ 3, 3 $>$ \&inertia, const Vec$<$ 3 $>$ \&C\+OM, double scale=1, const std\+::string \&material=\char`\"{}\char`\"{}, Collision\+Group collision\+Group=1, Collision\+Group collision\+Mask=Collision\+Group(-\/1))
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_ae57e4aae5001c43c5eb5c72bc575a8b3}\label{classraisim_1_1World_ae57e4aae5001c43c5eb5c72bc575a8b3}} 
+Mesh $\ast$ {\bfseries add\+Mesh} (const Mesh $\ast$mesh\+To\+Clone, const std\+::string \&material=\char`\"{}\char`\"{}, Collision\+Group collision\+Group=1, Collision\+Group collision\+Mask=Collision\+Group(-\/1))
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_ab6784aa7bcfc6211cefaeb5477420a66}\label{classraisim_1_1World_ab6784aa7bcfc6211cefaeb5477420a66}} 
+Object $\ast$ {\bfseries get\+Object} (const std\+::string \&name)
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_addb83f10662b1e62ee2053d5386ae9a5}\label{classraisim_1_1World_addb83f10662b1e62ee2053d5386ae9a5}} 
+raisim\+::\+Object $\ast$ {\bfseries get\+Object} (std\+::size\+\_\+t world\+Index)
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_afd2f58fb526d2a7d1261958da079495b}\label{classraisim_1_1World_afd2f58fb526d2a7d1261958da079495b}} 
+Constraints $\ast$ {\bfseries get\+Constraint} (const std\+::string \&name)
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a64e73ad98af23f099c2eedbf743d1454}\label{classraisim_1_1World_a64e73ad98af23f099c2eedbf743d1454}} 
+Wire $\ast$ {\bfseries get\+Wire} (const std\+::string \&name)
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a5368923000b8b9e5e049903ab57c11b4}\label{classraisim_1_1World_a5368923000b8b9e5e049903ab57c11b4}} 
+unsigned long {\bfseries get\+Configuration\+Number} ()
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a764cf9a1fedef67e19c735e684d52765}\label{classraisim_1_1World_a764cf9a1fedef67e19c735e684d52765}} 
+const \hyperlink{classraisim_1_1RayCollisionList}{Ray\+Collision\+List} \& {\bfseries ray\+Test} (const Eigen\+::\+Vector3d \&start, const Eigen\+::\+Vector3d \&direction, double length, bool closest\+Only=false, Collision\+Group collision\+Group=1, Collision\+Group collision\+Mask=Collision\+Group(-\/1))
+\item 
+void \hyperlink{classraisim_1_1World_ae04b2e261ee5703145ef4113b604c77f}{remove\+Object} (Object $\ast$obj)
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a1649d28c36b41a3aa5304ce007a4fbd6}\label{classraisim_1_1World_a1649d28c36b41a3aa5304ce007a4fbd6}} 
+void {\bfseries remove\+Object} (Stiff\+Wire $\ast$wire)
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a9e5977bf54f0235830881af16a39118c}\label{classraisim_1_1World_a9e5977bf54f0235830881af16a39118c}} 
+void {\bfseries remove\+Object} (Compliant\+Wire $\ast$wire)
+\item 
+void \hyperlink{classraisim_1_1World_a469054d6525c640a978abfaf3da71a33}{integrate} ()
+\item 
+void \hyperlink{classraisim_1_1World_ac24197f5e93fde3a9dad48766ef32084}{integrate1} ()
+\item 
+void \hyperlink{classraisim_1_1World_a959490c4b2355761ad0623e971522600}{integrate2} ()
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_ab23b99ad469c64391457452e1bc3c53d}\label{classraisim_1_1World_ab23b99ad469c64391457452e1bc3c53d}} 
+const Contact\+Problems $\ast$ {\bfseries get\+Contact\+Problem} () const
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a5f2c5f6ef946337229f4d9b157399e72}\label{classraisim_1_1World_a5f2c5f6ef946337229f4d9b157399e72}} 
+std\+::vector$<$ Object $\ast$ $>$ \& {\bfseries get\+Obj\+List} ()
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a1652fdb4ae465d7d593059208c848142}\label{classraisim_1_1World_a1652fdb4ae465d7d593059208c848142}} 
+void {\bfseries set\+Gravity} (const Vec$<$ 3 $>$ \&gravity)
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_af29193c10d50be6c7220ad34975633df}\label{classraisim_1_1World_af29193c10d50be6c7220ad34975633df}} 
+void {\bfseries update\+Material\+Prop} (const \hyperlink{classraisim_1_1MaterialManager}{Material\+Manager} \&prop)
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a460e211f19c960fcfdf9c81dbaa0538f}\label{classraisim_1_1World_a460e211f19c960fcfdf9c81dbaa0538f}} 
+void {\bfseries set\+Material\+Pair\+Prop} (const std\+::string \&mat1, const std\+::string \&mat2, double friction, double restitution, double res\+Threshold)
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_ac91b2303e43b842638ab4ae88e3a193d}\label{classraisim_1_1World_ac91b2303e43b842638ab4ae88e3a193d}} 
+void {\bfseries set\+Default\+Material} (double friction, double restitution, double res\+Threshold)
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a1767a3ae02534ac707381ab8138437e7}\label{classraisim_1_1World_a1767a3ae02534ac707381ab8138437e7}} 
+const Vec$<$ 3 $>$ \& {\bfseries get\+Gravity} () const
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a84c71acd5dac4ab5868efe52116a8ac2}\label{classraisim_1_1World_a84c71acd5dac4ab5868efe52116a8ac2}} 
+void {\bfseries set\+E\+RP} (double erp, double erp2=0)
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a04652565066b463dd2b8279ddff059da}\label{classraisim_1_1World_a04652565066b463dd2b8279ddff059da}} 
+void {\bfseries set\+Contact\+Solver\+Param} (double alpha\+\_\+init, double alpha\+\_\+min, double alpha\+\_\+decay, int max\+Iter, double threshold)
+\item 
+double \hyperlink{classraisim_1_1World_af6e0d20c1368ca22a19163dd4deb850c}{get\+World\+Time} () const
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a36197ccbee4dbeef14897270bcdba93c}\label{classraisim_1_1World_a36197ccbee4dbeef14897270bcdba93c}} 
+void {\bfseries set\+World\+Time} (double time)
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_acd5f454aba0991dbab3d961b2bdaa6e2}\label{classraisim_1_1World_acd5f454aba0991dbab3d961b2bdaa6e2}} 
+raisim\+::contact\+::\+Bisection\+Contact\+Solver \& {\bfseries get\+Contact\+Solver} ()
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_adfd7e4a0c42dbea55f096dc00f909315}\label{classraisim_1_1World_adfd7e4a0c42dbea55f096dc00f909315}} 
+const raisim\+::contact\+::\+Bisection\+Contact\+Solver \& {\bfseries get\+Contact\+Solver} () const
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a7e8185b70f52ac1d0d184c34a08d885d}\label{classraisim_1_1World_a7e8185b70f52ac1d0d184c34a08d885d}} 
+const std\+::string \& {\bfseries get\+Config\+File} ()
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a6460101a7897c53b3c54d5ace3e61867}\label{classraisim_1_1World_a6460101a7897c53b3c54d5ace3e61867}} 
+void {\bfseries contact\+Problem\+Update} (Object $\ast$objectA)
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a25967bbfe434c30d269292883a214b05}\label{classraisim_1_1World_a25967bbfe434c30d269292883a214b05}} 
+void {\bfseries add\+Collision\+Object} (d\+Geom\+ID col\+Obj, size\+\_\+t local\+Idx, const std\+::string \&material, Collision\+Group collision\+Group, Collision\+Group collision\+Mask)
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_afa7b83042cbcbc66d98ccacb9386664e}\label{classraisim_1_1World_afa7b83042cbcbc66d98ccacb9386664e}} 
+void {\bfseries update\+Obj\+Confiig} ()
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a43fbcc6430ac26aeceb0e307a7992b5b}\label{classraisim_1_1World_a43fbcc6430ac26aeceb0e307a7992b5b}} 
+void {\bfseries update\+Step\+Count} ()
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a34d0ceb8bd1d4d62910385e4e7f00bad}\label{classraisim_1_1World_a34d0ceb8bd1d4d62910385e4e7f00bad}} 
+d\+Space\+ID {\bfseries collision\+World\+\_\+}
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a67d00901bd1142e08b55a714122d2ca6}\label{classraisim_1_1World_a67d00901bd1142e08b55a714122d2ca6}} 
+std\+::pair$<$ std\+::vector$<$ d\+Contact\+Geom $>$, int $>$ {\bfseries contacts\+\_\+}
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a786f86f69d018bbce3592145b98d0ac5}\label{classraisim_1_1World_a786f86f69d018bbce3592145b98d0ac5}} 
+std\+::vector$<$ d\+Geom\+ID $>$ {\bfseries col\+Obj\+List\+\_\+}
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a2845e72e8194c159e65958f4e2e4e6f8}\label{classraisim_1_1World_a2845e72e8194c159e65958f4e2e4e6f8}} 
+Vec$<$ 3 $>$ {\bfseries gravity\+\_\+}
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a5af97cf9f99aed56f8e8dc84884f52c7}\label{classraisim_1_1World_a5af97cf9f99aed56f8e8dc84884f52c7}} 
+raisim\+::contact\+::\+Bisection\+Contact\+Solver {\bfseries solver\+\_\+}
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a2180d35285d3d7505b0dba24a0a3bf34}\label{classraisim_1_1World_a2180d35285d3d7505b0dba24a0a3bf34}} 
+std\+::vector$<$ Object $\ast$ $>$ {\bfseries object\+List\+\_\+}
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a4dd8dfa71510245e97d5c8fec5589d99}\label{classraisim_1_1World_a4dd8dfa71510245e97d5c8fec5589d99}} 
+Contact\+Problems {\bfseries contact\+Problems\+\_\+}
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_aa8ebad2abc444253489ce244171698d0}\label{classraisim_1_1World_aa8ebad2abc444253489ce244171698d0}} 
+std\+::vector$<$ size\+\_\+t $>$ {\bfseries col\+Idx\+To\+Obj\+Idx\+\_\+}
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_aa811304642c39b3e9e91672213b8fa93}\label{classraisim_1_1World_aa811304642c39b3e9e91672213b8fa93}} 
+std\+::vector$<$ size\+\_\+t $>$ {\bfseries col\+Idx\+To\+Local\+Obj\+Idx\+\_\+}
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a38af88230424fe5ae29f76e42b2a94ac}\label{classraisim_1_1World_a38af88230424fe5ae29f76e42b2a94ac}} 
+std\+::vector$<$ std\+::unique\+\_\+ptr$<$ Stiff\+Wire $>$ $>$ {\bfseries stiff\+Wire\+\_\+}
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a7995c51d527af7c1d96b79426628c672}\label{classraisim_1_1World_a7995c51d527af7c1d96b79426628c672}} 
+std\+::vector$<$ std\+::unique\+\_\+ptr$<$ Compliant\+Wire $>$ $>$ {\bfseries compliant\+Wire\+\_\+}
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a54fb6c3dc9c64afb29c58ba59299ddd6}\label{classraisim_1_1World_a54fb6c3dc9c64afb29c58ba59299ddd6}} 
+\hyperlink{classraisim_1_1MaterialManager}{Material\+Manager} {\bfseries mat\+\_\+}
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_adf42a6e32cff6cb9202474b68d28369c}\label{classraisim_1_1World_adf42a6e32cff6cb9202474b68d28369c}} 
+\hyperlink{structraisim_1_1MaterialPairProperties}{Material\+Pair\+Properties} {\bfseries default\+Material\+Property\+\_\+}
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_ab94955ee9501ce165202b81fbdd7563b}\label{classraisim_1_1World_ab94955ee9501ce165202b81fbdd7563b}} 
+double {\bfseries time\+Step\+\_\+} = 0.\+005
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a83a92a87cca546853b25b3dae26fd7d3}\label{classraisim_1_1World_a83a92a87cca546853b25b3dae26fd7d3}} 
+double {\bfseries world\+Time\+\_\+} = 0.
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a3e1319a1aa52a8e0775186f3f5e7857b}\label{classraisim_1_1World_a3e1319a1aa52a8e0775186f3f5e7857b}} 
+std\+::string {\bfseries config\+File\+\_\+}
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a1d70df6f6b1398076c6ed819b05d5fe1}\label{classraisim_1_1World_a1d70df6f6b1398076c6ed819b05d5fe1}} 
+unsigned long {\bfseries steps\+Taken\+\_\+} = 0
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a127cdf4ca2e06a54c53085212a779e3c}\label{classraisim_1_1World_a127cdf4ca2e06a54c53085212a779e3c}} 
+unsigned long {\bfseries object\+Configuration\+\_\+} = 0
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a20b9dd369e7b64fba158a75286998729}\label{classraisim_1_1World_a20b9dd369e7b64fba158a75286998729}} 
+std\+::unordered\+\_\+map$<$ std\+::string, Xml\+Object\+Class $>$ {\bfseries xml\+Object\+Classes}
+\item 
+\mbox{\Hypertarget{classraisim_1_1World_a27761dec7b706638dbf29b35e203978b}\label{classraisim_1_1World_a27761dec7b706638dbf29b35e203978b}} 
+\hyperlink{classraisim_1_1RayCollisionList}{Ray\+Collision\+List} {\bfseries ray\+Contact\+\_\+}
+\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classraisim_1_1World_af28e5c8019ae5efb62c7eed1c6ea06c6}\label{classraisim_1_1World_af28e5c8019ae5efb62c7eed1c6ea06c6}} 
+\index{raisim\+::\+World@{raisim\+::\+World}!add\+Sphere@{add\+Sphere}}
+\index{add\+Sphere@{add\+Sphere}!raisim\+::\+World@{raisim\+::\+World}}
+\subsubsection{\texorpdfstring{add\+Sphere()}{addSphere()}}
+{\footnotesize\ttfamily Sphere$\ast$ raisim\+::\+World\+::add\+Sphere (\begin{DoxyParamCaption}\item[{double}]{radius,  }\item[{double}]{mass,  }\item[{const std\+::string \&}]{material = {\ttfamily \char`\"{}default\char`\"{}},  }\item[{Collision\+Group}]{collision\+Group = {\ttfamily 1},  }\item[{Collision\+Group}]{collision\+Mask = {\ttfamily CollisionGroup(-\/1)} }\end{DoxyParamCaption})}
+
+to dynamically add objects \mbox{\Hypertarget{classraisim_1_1World_af6e0d20c1368ca22a19163dd4deb850c}\label{classraisim_1_1World_af6e0d20c1368ca22a19163dd4deb850c}} 
+\index{raisim\+::\+World@{raisim\+::\+World}!get\+World\+Time@{get\+World\+Time}}
+\index{get\+World\+Time@{get\+World\+Time}!raisim\+::\+World@{raisim\+::\+World}}
+\subsubsection{\texorpdfstring{get\+World\+Time()}{getWorldTime()}}
+{\footnotesize\ttfamily double raisim\+::\+World\+::get\+World\+Time (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+return the total integrated time (which is updated at every \hyperlink{classraisim_1_1World_a959490c4b2355761ad0623e971522600}{integrate2()} call) \mbox{\Hypertarget{classraisim_1_1World_a469054d6525c640a978abfaf3da71a33}\label{classraisim_1_1World_a469054d6525c640a978abfaf3da71a33}} 
+\index{raisim\+::\+World@{raisim\+::\+World}!integrate@{integrate}}
+\index{integrate@{integrate}!raisim\+::\+World@{raisim\+::\+World}}
+\subsubsection{\texorpdfstring{integrate()}{integrate()}}
+{\footnotesize\ttfamily void raisim\+::\+World\+::integrate (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+this function is simply calling both \char`\"{}integrate1()\char`\"{} and \char`\"{}integrate2()\char`\"{} one-\/by-\/one \mbox{\Hypertarget{classraisim_1_1World_ac24197f5e93fde3a9dad48766ef32084}\label{classraisim_1_1World_ac24197f5e93fde3a9dad48766ef32084}} 
+\index{raisim\+::\+World@{raisim\+::\+World}!integrate1@{integrate1}}
+\index{integrate1@{integrate1}!raisim\+::\+World@{raisim\+::\+World}}
+\subsubsection{\texorpdfstring{integrate1()}{integrate1()}}
+{\footnotesize\ttfamily void raisim\+::\+World\+::integrate1 (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+It performs 1) deletion contacts from previous time step 2) collision detection 3) register contacts to each body 4) calls \char`\"{}pre\+Contact\+Solver\+Update1()\char`\"{} of each object \mbox{\Hypertarget{classraisim_1_1World_a959490c4b2355761ad0623e971522600}\label{classraisim_1_1World_a959490c4b2355761ad0623e971522600}} 
+\index{raisim\+::\+World@{raisim\+::\+World}!integrate2@{integrate2}}
+\index{integrate2@{integrate2}!raisim\+::\+World@{raisim\+::\+World}}
+\subsubsection{\texorpdfstring{integrate2()}{integrate2()}}
+{\footnotesize\ttfamily void raisim\+::\+World\+::integrate2 (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+It performs 1) calls \char`\"{}pre\+Contact\+Solver\+Update2()\char`\"{} of each body 2) run collision solver 3) calls \char`\"{}integrate\char`\"{} method of each object \mbox{\Hypertarget{classraisim_1_1World_ae04b2e261ee5703145ef4113b604c77f}\label{classraisim_1_1World_ae04b2e261ee5703145ef4113b604c77f}} 
+\index{raisim\+::\+World@{raisim\+::\+World}!remove\+Object@{remove\+Object}}
+\index{remove\+Object@{remove\+Object}!raisim\+::\+World@{raisim\+::\+World}}
+\subsubsection{\texorpdfstring{remove\+Object()}{removeObject()}}
+{\footnotesize\ttfamily void raisim\+::\+World\+::remove\+Object (\begin{DoxyParamCaption}\item[{Object $\ast$}]{obj }\end{DoxyParamCaption})}
+
+to dynamically remove objects 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/jemin/workspace/raisimlib/raisim/linux/include/raisim/World.\+hpp\end{DoxyCompactItemize}

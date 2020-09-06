@@ -1,0 +1,50 @@
+<?xml version="1.0" ?>
+<raisim version="1.0">
+    <timeStep value="0.001"/>
+    <objects>
+        <ground name="ground"/>
+        <sphere name="sphere" mass="1">
+            <dim radius="0.5" />
+            <inertia xx="0.1" xy="0" xz="0" yy="0.1" yz="0" zz="0.1" />
+            <state pos="0 0 5" quat="1 0 0 0" linVel="0 0 0" angVel="0 0 0" />
+        </sphere>
+        <capsule name="capsule" mass="1">
+            <dim radius="0.5" height="1" />
+            <inertia xx="0.1" xy="0" xz="0" yy="0.1" yz="0" zz="0.1" />
+            <state pos="1 0 5" quat="1 0 0 0" linVel="0 0 0" angVel="0 0 0" />
+        </capsule>
+        <box name="box" mass="1">
+            <dim x="0.5" y="1" z="2"/>
+            <inertia xx="0.1" xy="0" xz="0" yy="0.1" yz="0" zz="0.1" />
+            <state pos="1 1 5" quat="1 0 0 0" linVel="0 0 0" angVel="0 0 0" />
+        </box>
+        <cylinder name="cylinder" mass="1">
+            <dim radius="0.5" height="1" />
+            <inertia xx="0.1" xy="0" xz="0" yy="0.1" yz="0" zz="0.1" />
+            <state pos="-1 0 5" quat="1 0 0 0" linVel="0 0 0" angVel="0 0 0" />
+        </cylinder>
+        <compound name="compound" mass="10" com="0 0 0">
+            <inertia xx="1" xy="0" xz="0" yy="1" yz="0" zz="1" />
+            <children>
+                <sphere name="sphere" mass="1">
+                    <dim radius="0.2" />
+                    <state pos="-0.5 0 -0.5" quat="1 0 0 0"/>
+                </sphere>
+                <capsule name="capsule" mass="1">
+                    <dim radius="0.2" height="0.5" />
+                    <state pos="0.5 0 -0.5" quat="1 0 0 0" />
+                </capsule>
+                <box name="box" mass="1">
+                    <dim x="0.2" y="0.5" z="0.7"/>
+                    <state pos="0 0 0.5" quat="1 0 0 0"/>
+                </box>
+                <cylinder name="cylinder" mass="1">
+                    <dim radius="0.2" height="0.5" />
+                    <state pos="0 0 0" quat="1 0 0 0"/>
+                </cylinder>
+            </children>
+            <state pos="0 0 10"/>
+        </compound>
+    </objects>
+    <camera follow="ground" x="5" y="5" z="5"/>
+</raisim>

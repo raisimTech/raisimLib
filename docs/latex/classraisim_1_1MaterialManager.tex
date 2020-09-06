@@ -1,0 +1,53 @@
+\hypertarget{classraisim_1_1MaterialManager}{}\section{raisim\+:\+:Material\+Manager Class Reference}
+\label{classraisim_1_1MaterialManager}\index{raisim\+::\+Material\+Manager@{raisim\+::\+Material\+Manager}}
+
+
+Collaboration diagram for raisim\+:\+:Material\+Manager\+:
+% FIG 0
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classraisim_1_1MaterialManager_a0c8aff71c80a556204872664d8b9e383}\label{classraisim_1_1MaterialManager_a0c8aff71c80a556204872664d8b9e383}} 
+\hyperlink{classraisim_1_1MaterialManager_a0c8aff71c80a556204872664d8b9e383}{Material\+Manager} (const std\+::string \&xml\+File)
+\begin{DoxyCompactList}\small\item\em upload material data from file \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classraisim_1_1MaterialManager_a7916288c839accd066217e743d99b11c}\label{classraisim_1_1MaterialManager_a7916288c839accd066217e743d99b11c}} 
+void {\bfseries set\+Material\+Pair\+Prop} (const std\+::string \&mat1, const std\+::string \&mat2, double friction, double restitution, double res\+Threshold)
+\item 
+\mbox{\Hypertarget{classraisim_1_1MaterialManager_af07f0d417791a06e0d426777f9af9fb3}\label{classraisim_1_1MaterialManager_af07f0d417791a06e0d426777f9af9fb3}} 
+const \hyperlink{structraisim_1_1MaterialPairProperties}{Material\+Pair\+Properties} \& {\bfseries get\+Material\+Pair\+Prop} (const std\+::string \&mat1, const std\+::string \&mat2)
+\item 
+\mbox{\Hypertarget{classraisim_1_1MaterialManager_a00fb6bab44580cf175098fe2d873c36d}\label{classraisim_1_1MaterialManager_a00fb6bab44580cf175098fe2d873c36d}} 
+void {\bfseries set\+Default\+Material\+Properties} (double friction, double restitution, double res\+Threshold)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classraisim_1_1MaterialManager_afaa2e7e1e8f6911fe0a9b0c5435fd019}\label{classraisim_1_1MaterialManager_afaa2e7e1e8f6911fe0a9b0c5435fd019}} 
+std\+::unordered\+\_\+map$<$ unsigned int, \hyperlink{structraisim_1_1MaterialPairProperties}{Material\+Pair\+Properties} $>$ {\bfseries materials\+\_\+}
+\item 
+\mbox{\Hypertarget{classraisim_1_1MaterialManager_a85f96bba8a7e60688b1d7afffa471742}\label{classraisim_1_1MaterialManager_a85f96bba8a7e60688b1d7afffa471742}} 
+std\+::unordered\+\_\+map$<$ std\+::string, unsigned int $>$ {\bfseries material\+Keys\+\_\+}
+\item 
+\mbox{\Hypertarget{classraisim_1_1MaterialManager_a35a2a8f464c79decfd6bd96b0c0dcb0a}\label{classraisim_1_1MaterialManager_a35a2a8f464c79decfd6bd96b0c0dcb0a}} 
+\hyperlink{structraisim_1_1MaterialPairProperties}{Material\+Pair\+Properties} {\bfseries default\+Material\+\_\+}
+\item 
+\mbox{\Hypertarget{classraisim_1_1MaterialManager_a002b84cb16184d3efcf618152192c497}\label{classraisim_1_1MaterialManager_a002b84cb16184d3efcf618152192c497}} 
+unsigned int {\bfseries next\+Material\+Idx\+\_\+} = 0
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classraisim_1_1MaterialManager_a1150dba5aa4263e5775504493416496d}\label{classraisim_1_1MaterialManager_a1150dba5aa4263e5775504493416496d}} 
+void {\bfseries init} (const \hyperlink{classraisim_1_1RaiSimTinyXmlWrapper}{Rai\+Sim\+Tiny\+Xml\+Wrapper} \&material\+Node)
+\end{DoxyCompactItemize}
+\subsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classraisim_1_1MaterialManager_a75377ff6a84c306b270e189091d3efed}\label{classraisim_1_1MaterialManager_a75377ff6a84c306b270e189091d3efed}} 
+class {\bfseries raisim\+::\+World}
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/jemin/workspace/raisimlib/raisim/linux/include/raisim/Materials.\+hpp\end{DoxyCompactItemize}

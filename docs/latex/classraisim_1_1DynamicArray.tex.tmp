@@ -1,0 +1,50 @@
+\hypertarget{classraisim_1_1DynamicArray}{}\section{raisim\+:\+:Dynamic\+Array Class Reference}
+\label{classraisim_1_1DynamicArray}\index{raisim\+::\+Dynamic\+Array@{raisim\+::\+Dynamic\+Array}}
+
+
+Inheritance diagram for raisim\+:\+:Dynamic\+Array\+:
+% FIG 0
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classraisim_1_1DynamicArray_ac887d66633d2021e7b314c44e95631c1}\label{classraisim_1_1DynamicArray_ac887d66633d2021e7b314c44e95631c1}} 
+double $\ast$ {\bfseries ptr} ()
+\item 
+\mbox{\Hypertarget{classraisim_1_1DynamicArray_a9465893352eeae2bf7e06fa59b1a9185}\label{classraisim_1_1DynamicArray_a9465893352eeae2bf7e06fa59b1a9185}} 
+const double $\ast$ {\bfseries ptr} () const
+\item 
+\mbox{\Hypertarget{classraisim_1_1DynamicArray_ad784d35960152e0edddbb6c252bf1f9e}\label{classraisim_1_1DynamicArray_ad784d35960152e0edddbb6c252bf1f9e}} 
+double $\ast$ {\bfseries data} ()
+\item 
+\mbox{\Hypertarget{classraisim_1_1DynamicArray_a01e42d9917764526d9281e759c39acef}\label{classraisim_1_1DynamicArray_a01e42d9917764526d9281e759c39acef}} 
+const double $\ast$ {\bfseries data} () const
+\item 
+\mbox{\Hypertarget{classraisim_1_1DynamicArray_a4536816c789a12983cd5b79b04f1ae7d}\label{classraisim_1_1DynamicArray_a4536816c789a12983cd5b79b04f1ae7d}} 
+double {\bfseries operator\mbox{[}$\,$\mbox{]}} (size\+\_\+t i) const
+\item 
+\mbox{\Hypertarget{classraisim_1_1DynamicArray_ab9d7963971cca6d429bf3a8a7f813f61}\label{classraisim_1_1DynamicArray_ab9d7963971cca6d429bf3a8a7f813f61}} 
+double \& {\bfseries operator\mbox{[}$\,$\mbox{]}} (size\+\_\+t i)
+\item 
+\mbox{\Hypertarget{classraisim_1_1DynamicArray_ae9e76785170334309df5b72c9f5e2c25}\label{classraisim_1_1DynamicArray_ae9e76785170334309df5b72c9f5e2c25}} 
+\hyperlink{classraisim_1_1ElementRef}{Element\+Ref}$<$ \hyperlink{classraisim_1_1DynamicArray}{Dynamic\+Array} $>$ \hyperlink{classraisim_1_1DynamicArray_ae9e76785170334309df5b72c9f5e2c25}{operator=} (double a)
+\begin{DoxyCompactList}\small\item\em comma initializer \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classraisim_1_1DynamicArray_ac6ea4c6b83a144f13a4bf630eb495ce2}\label{classraisim_1_1DynamicArray_ac6ea4c6b83a144f13a4bf630eb495ce2}} 
+double $\ast$ {\bfseries v} = nullptr
+\end{DoxyCompactItemize}
+\subsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classraisim_1_1DynamicArray_afa4e9a3379844bd636b2df1b784de7ce}\label{classraisim_1_1DynamicArray_afa4e9a3379844bd636b2df1b784de7ce}} 
+class {\bfseries raisim\+::\+Vec\+Dyn}
+\item 
+\mbox{\Hypertarget{classraisim_1_1DynamicArray_af90e8df3e748ef3abe0308ae32b54567}\label{classraisim_1_1DynamicArray_af90e8df3e748ef3abe0308ae32b54567}} 
+class {\bfseries raisim\+::\+Mat\+Dyn}
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/jemin/workspace/raisimlib/raisim/linux/include/raisim/math.\+hpp\end{DoxyCompactItemize}

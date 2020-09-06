@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+<raisim version="1.0">
+    <timeStep value="0.002" />
+    <objects>
+        <ground name="floor"/>
+        <articulatedSystem name="laikago0" resDir="[THIS_DIR]/laikago" urdfPath="[THIS_DIR]/laikago/laikago.urdf" collisionGroup="1" collisionMask="-1">
+            <state qpos="0, 0, 0.48, 1, 0, 0, 0, 0, 0.5, -1, 0, 0.5, -1, 0, 0.5, -1, 0, 0.5, -0.7"/>
+        </articulatedSystem>
+    </objects>
+    <camera follow="laikago0" x="1" y="1" z="1"/>
+</raisim>

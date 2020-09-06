@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package format="2">
+    <!--Package Header-->
+    <name>raisim_examples</name>
+    <version>0.0.0</version>
+    <description>The raisim_examples CMake package.</description>
+    <license>Proprietary</license>
+    <url type="website">http://bitbucket.org/jhwangbo/raiSim</url>
+    <maintainer email="jhwangbo@ethz.ch">Jemin Hwangbo</maintainer>
+    <author email="jhwangbo@ethz.ch">Jemin Hwangbo</author>
+    <!--Package Dependencies-->
+    <buildtool_depend>cmake</buildtool_depend>
+    <exec_depend>catkin</exec_depend>
+    <build_depend>eigen3</build_depend>
+    <build_depend>raisim</build_depend>
+    <!--Package Export-->
+    <export>
+        <build_type>cmake</build_type>
+    </export>
+</package>

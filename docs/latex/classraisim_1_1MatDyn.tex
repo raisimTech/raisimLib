@@ -1,0 +1,130 @@
+\hypertarget{classraisim_1_1MatDyn}{}\section{raisim\+:\+:Mat\+Dyn Class Reference}
+\label{classraisim_1_1MatDyn}\index{raisim\+::\+Mat\+Dyn@{raisim\+::\+Mat\+Dyn}}
+
+
+Inheritance diagram for raisim\+:\+:Mat\+Dyn\+:
+% FIG 0
+
+
+Collaboration diagram for raisim\+:\+:Mat\+Dyn\+:
+% FIG 1
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classraisim_1_1MatDyn_a59d66a66ca98b630965b32938df1c39f}\label{classraisim_1_1MatDyn_a59d66a66ca98b630965b32938df1c39f}} 
+{\bfseries Mat\+Dyn} (size\+\_\+t rows, size\+\_\+t cols)
+\item 
+\mbox{\Hypertarget{classraisim_1_1MatDyn_a836d330b91f774e7e232464cd850bddf}\label{classraisim_1_1MatDyn_a836d330b91f774e7e232464cd850bddf}} 
+{\bfseries Mat\+Dyn} (const \hyperlink{classraisim_1_1MatDyn}{Mat\+Dyn} \&mat)
+\item 
+\mbox{\Hypertarget{classraisim_1_1MatDyn_ad7aefee9a311f71d6e21423774238347}\label{classraisim_1_1MatDyn_ad7aefee9a311f71d6e21423774238347}} 
+size\+\_\+t {\bfseries size} () const
+\item 
+\mbox{\Hypertarget{classraisim_1_1MatDyn_a41d4ddd5c3706d4c14b31f0328bfb0e9}\label{classraisim_1_1MatDyn_a41d4ddd5c3706d4c14b31f0328bfb0e9}} 
+size\+\_\+t {\bfseries rows} () const
+\item 
+\mbox{\Hypertarget{classraisim_1_1MatDyn_a41622b68cef9337196ee02d23ce3409f}\label{classraisim_1_1MatDyn_a41622b68cef9337196ee02d23ce3409f}} 
+size\+\_\+t {\bfseries cols} () const
+\item 
+\mbox{\Hypertarget{classraisim_1_1MatDyn_af7c879b962bd2aebc910cbbd017570bb}\label{classraisim_1_1MatDyn_af7c879b962bd2aebc910cbbd017570bb}} 
+Eigen\+::\+Map$<$ Eigen\+::\+Matrix$<$ double, -\/1, -\/1 $>$ $>$ {\bfseries e} ()
+\item 
+\mbox{\Hypertarget{classraisim_1_1MatDyn_a6c7b03e84a78d9b25d7dda85b7bad17c}\label{classraisim_1_1MatDyn_a6c7b03e84a78d9b25d7dda85b7bad17c}} 
+const Eigen\+::\+Map$<$ const Eigen\+::\+Matrix$<$ double, -\/1, -\/1 $>$ $>$ {\bfseries e} () const
+\item 
+\mbox{\Hypertarget{classraisim_1_1MatDyn_aa5b69112ef29db2e1526e8f064abd14b}\label{classraisim_1_1MatDyn_aa5b69112ef29db2e1526e8f064abd14b}} 
+double {\bfseries operator()} (size\+\_\+t i, size\+\_\+t j) const
+\item 
+\mbox{\Hypertarget{classraisim_1_1MatDyn_ae12a1ea871070ec73acaabbf9ece5b26}\label{classraisim_1_1MatDyn_ae12a1ea871070ec73acaabbf9ece5b26}} 
+double \& {\bfseries operator()} (size\+\_\+t i, size\+\_\+t j)
+\item 
+\mbox{\Hypertarget{classraisim_1_1MatDyn_a98afb51ef339fde4cb0dfdc154cb69e8}\label{classraisim_1_1MatDyn_a98afb51ef339fde4cb0dfdc154cb69e8}} 
+void {\bfseries resize} (size\+\_\+t rows, size\+\_\+t cols)
+\item 
+{\footnotesize template$<$size\+\_\+t j, size\+\_\+t k$>$ }\\void \hyperlink{classraisim_1_1MatDyn_a1dc88bef6db9b8e02b9bda77a5403d80}{fill\+Sub} (size\+\_\+t start\+Row, size\+\_\+t start\+Column, const Mat$<$ j, k $>$ \&in)
+\item 
+\mbox{\Hypertarget{classraisim_1_1MatDyn_ab0f505b108d5762efe99b36c233dd352}\label{classraisim_1_1MatDyn_ab0f505b108d5762efe99b36c233dd352}} 
+void {\bfseries fill\+Sub\+Skew\+Sym} (size\+\_\+t start\+Row, size\+\_\+t start\+Column, const Vec$<$ 3 $>$ \&in)
+\item 
+\mbox{\Hypertarget{classraisim_1_1MatDyn_a86e59006acd807f20ac287a7bb03a572}\label{classraisim_1_1MatDyn_a86e59006acd807f20ac287a7bb03a572}} 
+void {\bfseries fill\+Sub\+Skew\+Sym\+Transposed} (size\+\_\+t start\+Row, size\+\_\+t start\+Column, Vec$<$ 3 $>$ \&in)
+\item 
+{\footnotesize template$<$size\+\_\+t j, size\+\_\+t k$>$ }\\void \hyperlink{classraisim_1_1MatDyn_a4bcc7fd38fa50cfb3dad05f91a5f4540}{fill\+Sub\+Transposed} (size\+\_\+t start\+Row, size\+\_\+t start\+Column, const Mat$<$ j, k $>$ \&in)
+\item 
+{\footnotesize template$<$size\+\_\+t j$>$ }\\void \hyperlink{classraisim_1_1MatDyn_a09fbfebf894fb204d71227e8662d0f9c}{fill\+Sub} (size\+\_\+t start\+Row, size\+\_\+t start\+Column, const Vec$<$ j $>$ \&in)
+\item 
+{\footnotesize template$<$size\+\_\+t j$>$ }\\void \hyperlink{classraisim_1_1MatDyn_af51f76085457af3e3a3671d95945b493}{fill\+Sub\+Transposed} (size\+\_\+t start\+Row, size\+\_\+t start\+Column, const Vec$<$ j $>$ \&in)
+\item 
+\mbox{\Hypertarget{classraisim_1_1MatDyn_ac08095d31bed4af1d6235187c3727f1c}\label{classraisim_1_1MatDyn_ac08095d31bed4af1d6235187c3727f1c}} 
+void {\bfseries set\+Identity} ()
+\item 
+\mbox{\Hypertarget{classraisim_1_1MatDyn_aca80aafdc1f1e85c0c02c63b9a8f0e3e}\label{classraisim_1_1MatDyn_aca80aafdc1f1e85c0c02c63b9a8f0e3e}} 
+void {\bfseries set\+Zero} ()
+\item 
+\mbox{\Hypertarget{classraisim_1_1MatDyn_adae64fe624b58ee6e20dafa639eb0618}\label{classraisim_1_1MatDyn_adae64fe624b58ee6e20dafa639eb0618}} 
+double {\bfseries sum} () const
+\item 
+\mbox{\Hypertarget{classraisim_1_1MatDyn_a7da4bf4ccbc60e1465768f2a97c4fb06}\label{classraisim_1_1MatDyn_a7da4bf4ccbc60e1465768f2a97c4fb06}} 
+void {\bfseries set\+Zero} (size\+\_\+t rows, size\+\_\+t cols)
+\item 
+\mbox{\Hypertarget{classraisim_1_1MatDyn_a398b8a0de5cd3446b9de4dc98d0487f0}\label{classraisim_1_1MatDyn_a398b8a0de5cd3446b9de4dc98d0487f0}} 
+{\footnotesize template$<$size\+\_\+t rows, size\+\_\+t cols$>$ }\\\hyperlink{classraisim_1_1MatDyn}{Mat\+Dyn} \& {\bfseries operator=} (const Mat$<$ rows, cols $>$ \&rhs)
+\item 
+\mbox{\Hypertarget{classraisim_1_1MatDyn_a1d7a0926398c8dad3421ae61de6b75fd}\label{classraisim_1_1MatDyn_a1d7a0926398c8dad3421ae61de6b75fd}} 
+{\footnotesize template$<$size\+\_\+t rows, size\+\_\+t cols$>$ }\\\hyperlink{classraisim_1_1MatDyn}{Mat\+Dyn} \& {\bfseries operator=} (const Eigen\+::\+Matrix$<$ double, rows, cols $>$ \&rhs)
+\item 
+\mbox{\Hypertarget{classraisim_1_1MatDyn_a58622aa9fc3f0781e77902a30020318d}\label{classraisim_1_1MatDyn_a58622aa9fc3f0781e77902a30020318d}} 
+\hyperlink{classraisim_1_1MatDyn}{Mat\+Dyn} \& {\bfseries operator=} (const \hyperlink{classraisim_1_1MatDyn}{Mat\+Dyn} \&rhs)
+\item 
+\mbox{\Hypertarget{classraisim_1_1MatDyn_a715fb7a58a9555aef1e67ecb66a38c7f}\label{classraisim_1_1MatDyn_a715fb7a58a9555aef1e67ecb66a38c7f}} 
+void {\bfseries operator$\ast$=} (double val)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classraisim_1_1MatDyn_af23fc918062e64a984c541aec57cbbd3}\label{classraisim_1_1MatDyn_af23fc918062e64a984c541aec57cbbd3}} 
+size\+\_\+t {\bfseries n}
+\item 
+\mbox{\Hypertarget{classraisim_1_1MatDyn_a5b282eb0980041156b8dc957e84dfad3}\label{classraisim_1_1MatDyn_a5b282eb0980041156b8dc957e84dfad3}} 
+size\+\_\+t {\bfseries m}
+\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classraisim_1_1MatDyn_a1dc88bef6db9b8e02b9bda77a5403d80}\label{classraisim_1_1MatDyn_a1dc88bef6db9b8e02b9bda77a5403d80}} 
+\index{raisim\+::\+Mat\+Dyn@{raisim\+::\+Mat\+Dyn}!fill\+Sub@{fill\+Sub}}
+\index{fill\+Sub@{fill\+Sub}!raisim\+::\+Mat\+Dyn@{raisim\+::\+Mat\+Dyn}}
+\subsubsection{\texorpdfstring{fill\+Sub()}{fillSub()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$size\+\_\+t j, size\+\_\+t k$>$ \\
+void raisim\+::\+Mat\+Dyn\+::fill\+Sub (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{start\+Row,  }\item[{size\+\_\+t}]{start\+Column,  }\item[{const Mat$<$ j, k $>$ \&}]{in }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+column index
+
+row index \mbox{\Hypertarget{classraisim_1_1MatDyn_a09fbfebf894fb204d71227e8662d0f9c}\label{classraisim_1_1MatDyn_a09fbfebf894fb204d71227e8662d0f9c}} 
+\index{raisim\+::\+Mat\+Dyn@{raisim\+::\+Mat\+Dyn}!fill\+Sub@{fill\+Sub}}
+\index{fill\+Sub@{fill\+Sub}!raisim\+::\+Mat\+Dyn@{raisim\+::\+Mat\+Dyn}}
+\subsubsection{\texorpdfstring{fill\+Sub()}{fillSub()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$size\+\_\+t j$>$ \\
+void raisim\+::\+Mat\+Dyn\+::fill\+Sub (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{start\+Row,  }\item[{size\+\_\+t}]{start\+Column,  }\item[{const Vec$<$ j $>$ \&}]{in }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+row index \mbox{\Hypertarget{classraisim_1_1MatDyn_a4bcc7fd38fa50cfb3dad05f91a5f4540}\label{classraisim_1_1MatDyn_a4bcc7fd38fa50cfb3dad05f91a5f4540}} 
+\index{raisim\+::\+Mat\+Dyn@{raisim\+::\+Mat\+Dyn}!fill\+Sub\+Transposed@{fill\+Sub\+Transposed}}
+\index{fill\+Sub\+Transposed@{fill\+Sub\+Transposed}!raisim\+::\+Mat\+Dyn@{raisim\+::\+Mat\+Dyn}}
+\subsubsection{\texorpdfstring{fill\+Sub\+Transposed()}{fillSubTransposed()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$size\+\_\+t j, size\+\_\+t k$>$ \\
+void raisim\+::\+Mat\+Dyn\+::fill\+Sub\+Transposed (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{start\+Row,  }\item[{size\+\_\+t}]{start\+Column,  }\item[{const Mat$<$ j, k $>$ \&}]{in }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+column index
+
+row index \mbox{\Hypertarget{classraisim_1_1MatDyn_af51f76085457af3e3a3671d95945b493}\label{classraisim_1_1MatDyn_af51f76085457af3e3a3671d95945b493}} 
+\index{raisim\+::\+Mat\+Dyn@{raisim\+::\+Mat\+Dyn}!fill\+Sub\+Transposed@{fill\+Sub\+Transposed}}
+\index{fill\+Sub\+Transposed@{fill\+Sub\+Transposed}!raisim\+::\+Mat\+Dyn@{raisim\+::\+Mat\+Dyn}}
+\subsubsection{\texorpdfstring{fill\+Sub\+Transposed()}{fillSubTransposed()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$size\+\_\+t j$>$ \\
+void raisim\+::\+Mat\+Dyn\+::fill\+Sub\+Transposed (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{start\+Row,  }\item[{size\+\_\+t}]{start\+Column,  }\item[{const Vec$<$ j $>$ \&}]{in }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+row index 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/jemin/workspace/raisimlib/raisim/linux/include/raisim/math.\+hpp\end{DoxyCompactItemize}

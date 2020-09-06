@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<raisim version="1.0">
+    <gravity value="0.000000, 0.000000, -9.810000" />
+    <erp erp="0.3" erp2="0.002" />
+    <timeStep value="0.002" />
+    <objects>
+        <ground name="floor" collisionGroup="-2147483648" collisionMask="-1" height="0"/>
+        <articulatedSystem name="laikago0" resDir="[THIS_DIR]/laikago" urdfPath="[THIS_DIR]/laikago/laikago.urdf" collisionGroup="1" collisionMask="-1">
+            <state qpos="0.000000, 0.000000, 0.480000, 1.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.500000, -1.000000, 0.000000, 0.500000, -1.000000, 0.000000, 0.500000, -1.000000, 0.000000, 0.500000, -0.700000"
+                   qvel="0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000" />
+        </articulatedSystem>
+    </objects>
+    <camera follow="laikago0" x="1" y="1" z="1"/>
+</raisim>

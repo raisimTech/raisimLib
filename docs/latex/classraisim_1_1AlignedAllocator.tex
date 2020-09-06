@@ -1,0 +1,75 @@
+\hypertarget{classraisim_1_1AlignedAllocator}{}\section{raisim\+:\+:Aligned\+Allocator$<$ T, Alignment $>$ Class Template Reference}
+\label{classraisim_1_1AlignedAllocator}\index{raisim\+::\+Aligned\+Allocator$<$ T, Alignment $>$@{raisim\+::\+Aligned\+Allocator$<$ T, Alignment $>$}}
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structraisim_1_1AlignedAllocator_1_1rebind}{rebind}
+\end{DoxyCompactItemize}
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classraisim_1_1AlignedAllocator_a6b76f320a074be5654aae7a62e159211}\label{classraisim_1_1AlignedAllocator_a6b76f320a074be5654aae7a62e159211}} 
+typedef T $\ast$ {\bfseries pointer}
+\item 
+\mbox{\Hypertarget{classraisim_1_1AlignedAllocator_a9cad8b06723186d7b4dd070cc6b80d3c}\label{classraisim_1_1AlignedAllocator_a9cad8b06723186d7b4dd070cc6b80d3c}} 
+typedef const T $\ast$ {\bfseries const\+\_\+pointer}
+\item 
+\mbox{\Hypertarget{classraisim_1_1AlignedAllocator_abb0b5bc4801ffbdd39f09ac00da18128}\label{classraisim_1_1AlignedAllocator_abb0b5bc4801ffbdd39f09ac00da18128}} 
+typedef T \& {\bfseries reference}
+\item 
+\mbox{\Hypertarget{classraisim_1_1AlignedAllocator_a875049113ca699d473561231dd89eaa7}\label{classraisim_1_1AlignedAllocator_a875049113ca699d473561231dd89eaa7}} 
+typedef const T \& {\bfseries const\+\_\+reference}
+\item 
+\mbox{\Hypertarget{classraisim_1_1AlignedAllocator_a55c8f86a15bca27431ec9d2928a9b6a8}\label{classraisim_1_1AlignedAllocator_a55c8f86a15bca27431ec9d2928a9b6a8}} 
+typedef T {\bfseries value\+\_\+type}
+\item 
+\mbox{\Hypertarget{classraisim_1_1AlignedAllocator_a36d36756457a445bb6f771ce2fcd0036}\label{classraisim_1_1AlignedAllocator_a36d36756457a445bb6f771ce2fcd0036}} 
+typedef std\+::size\+\_\+t {\bfseries size\+\_\+type}
+\item 
+\mbox{\Hypertarget{classraisim_1_1AlignedAllocator_a35984f9dae42e8441ef5b2b2f1cbbe8a}\label{classraisim_1_1AlignedAllocator_a35984f9dae42e8441ef5b2b2f1cbbe8a}} 
+typedef ptrdiff\+\_\+t {\bfseries difference\+\_\+type}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classraisim_1_1AlignedAllocator_ac8c5b796e1935a52e8fe6930a6d91a9c}\label{classraisim_1_1AlignedAllocator_ac8c5b796e1935a52e8fe6930a6d91a9c}} 
+T $\ast$ {\bfseries address} (T \&r) const
+\item 
+\mbox{\Hypertarget{classraisim_1_1AlignedAllocator_ab5c4744cfb8e40294fb79d389e4a1d16}\label{classraisim_1_1AlignedAllocator_ab5c4744cfb8e40294fb79d389e4a1d16}} 
+const T $\ast$ {\bfseries address} (const T \&s) const
+\item 
+\mbox{\Hypertarget{classraisim_1_1AlignedAllocator_ab6f778ea101cb0f1e78fcc0d7260a94b}\label{classraisim_1_1AlignedAllocator_ab6f778ea101cb0f1e78fcc0d7260a94b}} 
+std\+::size\+\_\+t {\bfseries max\+\_\+size} () const
+\item 
+\mbox{\Hypertarget{classraisim_1_1AlignedAllocator_a1cfee957ff511286cab4130d2140d177}\label{classraisim_1_1AlignedAllocator_a1cfee957ff511286cab4130d2140d177}} 
+bool {\bfseries operator!=} (const \hyperlink{classraisim_1_1AlignedAllocator}{Aligned\+Allocator} \&other) const
+\item 
+\mbox{\Hypertarget{classraisim_1_1AlignedAllocator_ab6c7c0f9f7b0d4445378764966b91373}\label{classraisim_1_1AlignedAllocator_ab6c7c0f9f7b0d4445378764966b91373}} 
+void {\bfseries construct} (T $\ast$const p, const T \&t) const
+\item 
+\mbox{\Hypertarget{classraisim_1_1AlignedAllocator_ac4648dbd92f8f57e34e231f3b596a09c}\label{classraisim_1_1AlignedAllocator_ac4648dbd92f8f57e34e231f3b596a09c}} 
+void {\bfseries destroy} (T $\ast$const p) const
+\item 
+\mbox{\Hypertarget{classraisim_1_1AlignedAllocator_a8e44a271bd1484ddab43667ccbe50e5d}\label{classraisim_1_1AlignedAllocator_a8e44a271bd1484ddab43667ccbe50e5d}} 
+bool {\bfseries operator==} (const \hyperlink{classraisim_1_1AlignedAllocator}{Aligned\+Allocator} \&other) const
+\item 
+\mbox{\Hypertarget{classraisim_1_1AlignedAllocator_a5b888593feb7936a8c79e9c520ced6bf}\label{classraisim_1_1AlignedAllocator_a5b888593feb7936a8c79e9c520ced6bf}} 
+{\bfseries Aligned\+Allocator} (const \hyperlink{classraisim_1_1AlignedAllocator}{Aligned\+Allocator} \&)
+\item 
+\mbox{\Hypertarget{classraisim_1_1AlignedAllocator_a78b44f02d40dface1646ce28589ce418}\label{classraisim_1_1AlignedAllocator_a78b44f02d40dface1646ce28589ce418}} 
+{\footnotesize template$<$typename U $>$ }\\{\bfseries Aligned\+Allocator} (const \hyperlink{classraisim_1_1AlignedAllocator}{Aligned\+Allocator}$<$ U, Alignment $>$ \&)
+\item 
+\mbox{\Hypertarget{classraisim_1_1AlignedAllocator_ac62ed74a7a9983b11f20efd6f8a210a3}\label{classraisim_1_1AlignedAllocator_ac62ed74a7a9983b11f20efd6f8a210a3}} 
+T $\ast$ {\bfseries allocate} (const std\+::size\+\_\+t n) const
+\item 
+\mbox{\Hypertarget{classraisim_1_1AlignedAllocator_a044a786dcf52e3acee42eecff22b5616}\label{classraisim_1_1AlignedAllocator_a044a786dcf52e3acee42eecff22b5616}} 
+void {\bfseries deallocate} (T $\ast$const p, const std\+::size\+\_\+t n) const
+\item 
+\mbox{\Hypertarget{classraisim_1_1AlignedAllocator_add2f0138c3991a5185648f3fb9ad6c42}\label{classraisim_1_1AlignedAllocator_add2f0138c3991a5185648f3fb9ad6c42}} 
+{\footnotesize template$<$typename U $>$ }\\T $\ast$ {\bfseries allocate} (const std\+::size\+\_\+t n, const U $\ast$) const
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/jemin/workspace/raisimlib/raisim/linux/include/raisim/helper.\+hpp\end{DoxyCompactItemize}

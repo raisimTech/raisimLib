@@ -1,0 +1,111 @@
+\hypertarget{classraisim_1_1VecDyn}{}\section{raisim\+:\+:Vec\+Dyn Class Reference}
+\label{classraisim_1_1VecDyn}\index{raisim\+::\+Vec\+Dyn@{raisim\+::\+Vec\+Dyn}}
+
+
+Inheritance diagram for raisim\+:\+:Vec\+Dyn\+:
+% FIG 0
+
+
+Collaboration diagram for raisim\+:\+:Vec\+Dyn\+:
+% FIG 1
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classraisim_1_1VecDyn_a577d6acb0f1f3518b6cf4423c8d1a961}\label{classraisim_1_1VecDyn_a577d6acb0f1f3518b6cf4423c8d1a961}} 
+typedef Eigen\+::\+Map$<$ Eigen\+::\+Matrix$<$ double, -\/1, 1 $>$ $>$ {\bfseries Eigen\+Vecn}
+\item 
+\mbox{\Hypertarget{classraisim_1_1VecDyn_a14f26ed1ad1f64db87d7b107b1200344}\label{classraisim_1_1VecDyn_a14f26ed1ad1f64db87d7b107b1200344}} 
+typedef Eigen\+::\+Map$<$ const Eigen\+::\+Matrix$<$ double, -\/1, 1 $>$ $>$ {\bfseries Const\+Eigen\+Vecn}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classraisim_1_1VecDyn_a2acf2a4e837f74ee280a915b69d597d0}\label{classraisim_1_1VecDyn_a2acf2a4e837f74ee280a915b69d597d0}} 
+{\bfseries Vec\+Dyn} (size\+\_\+t size)
+\item 
+\mbox{\Hypertarget{classraisim_1_1VecDyn_a3134befe67c7e7ba5869891c09fbaf4d}\label{classraisim_1_1VecDyn_a3134befe67c7e7ba5869891c09fbaf4d}} 
+double {\bfseries operator()} (size\+\_\+t i, size\+\_\+t j) const
+\item 
+\mbox{\Hypertarget{classraisim_1_1VecDyn_a9a93caef3128a524fb5b00c3277de3be}\label{classraisim_1_1VecDyn_a9a93caef3128a524fb5b00c3277de3be}} 
+double \& {\bfseries operator()} (size\+\_\+t i, size\+\_\+t j)
+\item 
+\mbox{\Hypertarget{classraisim_1_1VecDyn_a2fa2824b3702963cd73d1ec0e0267235}\label{classraisim_1_1VecDyn_a2fa2824b3702963cd73d1ec0e0267235}} 
+size\+\_\+t {\bfseries size} () const
+\item 
+\mbox{\Hypertarget{classraisim_1_1VecDyn_a8fb9cc2e4e56f76bd83545af6857922c}\label{classraisim_1_1VecDyn_a8fb9cc2e4e56f76bd83545af6857922c}} 
+size\+\_\+t {\bfseries rows} () const
+\item 
+\mbox{\Hypertarget{classraisim_1_1VecDyn_ad8fc8ab9f74baef86d5237644ed086e0}\label{classraisim_1_1VecDyn_ad8fc8ab9f74baef86d5237644ed086e0}} 
+size\+\_\+t {\bfseries cols} () const
+\item 
+\mbox{\Hypertarget{classraisim_1_1VecDyn_ab88fc886d59e026129bf27018acfc866}\label{classraisim_1_1VecDyn_ab88fc886d59e026129bf27018acfc866}} 
+{\bfseries Vec\+Dyn} (const \hyperlink{classraisim_1_1VecDyn}{Vec\+Dyn} \&vec)
+\item 
+\mbox{\Hypertarget{classraisim_1_1VecDyn_aa3c210b3bba1ae109e7293439f4e2e74}\label{classraisim_1_1VecDyn_aa3c210b3bba1ae109e7293439f4e2e74}} 
+double {\bfseries sum} () const
+\item 
+\mbox{\Hypertarget{classraisim_1_1VecDyn_aecc1bd0378537044daafcc13162db6a0}\label{classraisim_1_1VecDyn_aecc1bd0378537044daafcc13162db6a0}} 
+void {\bfseries resize} (size\+\_\+t size)
+\item 
+\mbox{\Hypertarget{classraisim_1_1VecDyn_a27ba5748810c71f73e1e6335d8310c2e}\label{classraisim_1_1VecDyn_a27ba5748810c71f73e1e6335d8310c2e}} 
+double {\bfseries squared\+Norm} () const
+\item 
+\mbox{\Hypertarget{classraisim_1_1VecDyn_aa871b492b64ff729be497347a98c2c90}\label{classraisim_1_1VecDyn_aa871b492b64ff729be497347a98c2c90}} 
+double {\bfseries norm} () const
+\item 
+\mbox{\Hypertarget{classraisim_1_1VecDyn_a96f808bf64e6319b9a32871e148c9b86}\label{classraisim_1_1VecDyn_a96f808bf64e6319b9a32871e148c9b86}} 
+Eigen\+Vecn {\bfseries e} ()
+\item 
+\mbox{\Hypertarget{classraisim_1_1VecDyn_a39e71ffed0530dd128025115807a1a4c}\label{classraisim_1_1VecDyn_a39e71ffed0530dd128025115807a1a4c}} 
+const Const\+Eigen\+Vecn {\bfseries e} () const
+\item 
+\mbox{\Hypertarget{classraisim_1_1VecDyn_a39ed5e2cf4f5e4fc22bbaf0c813a0f92}\label{classraisim_1_1VecDyn_a39ed5e2cf4f5e4fc22bbaf0c813a0f92}} 
+void {\bfseries operator/=} (double val)
+\item 
+\mbox{\Hypertarget{classraisim_1_1VecDyn_a3fdb3d078534fabe50a717b5f2dbaff2}\label{classraisim_1_1VecDyn_a3fdb3d078534fabe50a717b5f2dbaff2}} 
+void {\bfseries operator$\ast$=} (double val)
+\item 
+\mbox{\Hypertarget{classraisim_1_1VecDyn_a999b8de6971ea9510f1874a44f7eb7ff}\label{classraisim_1_1VecDyn_a999b8de6971ea9510f1874a44f7eb7ff}} 
+\hyperlink{classraisim_1_1VecDyn}{Vec\+Dyn} \& {\bfseries operator=} (const \hyperlink{classraisim_1_1VecDyn}{Vec\+Dyn} \&rhs)
+\item 
+\mbox{\Hypertarget{classraisim_1_1VecDyn_ac90d33f9170b418537db5a88493bf826}\label{classraisim_1_1VecDyn_ac90d33f9170b418537db5a88493bf826}} 
+\hyperlink{classraisim_1_1VecDyn}{Vec\+Dyn} \& {\bfseries operator-\/=} (const \hyperlink{classraisim_1_1VecDyn}{Vec\+Dyn} \&rhs)
+\item 
+\mbox{\Hypertarget{classraisim_1_1VecDyn_a7678446c3a14bbe3cff8698119ba46c3}\label{classraisim_1_1VecDyn_a7678446c3a14bbe3cff8698119ba46c3}} 
+\hyperlink{classraisim_1_1VecDyn}{Vec\+Dyn} \& {\bfseries operator+=} (const \hyperlink{classraisim_1_1VecDyn}{Vec\+Dyn} \&rhs)
+\item 
+\mbox{\Hypertarget{classraisim_1_1VecDyn_af876b6329d4eed35a167ce6e7599394f}\label{classraisim_1_1VecDyn_af876b6329d4eed35a167ce6e7599394f}} 
+{\footnotesize template$<$int rows, int cols$>$ }\\\hyperlink{classraisim_1_1VecDyn}{Vec\+Dyn} \& {\bfseries operator=} (const Eigen\+::\+Matrix$<$ double, rows, cols $>$ \&rhs)
+\item 
+\mbox{\Hypertarget{classraisim_1_1VecDyn_af62e1e375e1bc209b1cba0d1468a9ca6}\label{classraisim_1_1VecDyn_af62e1e375e1bc209b1cba0d1468a9ca6}} 
+\hyperlink{classraisim_1_1VecDyn}{Vec\+Dyn} \& {\bfseries operator=} (const Eigen\+::\+Matrix$<$ double, -\/1, 1 $>$ \&rhs)
+\item 
+\mbox{\Hypertarget{classraisim_1_1VecDyn_a6cde6c565ff2399626d3f08adb7c9f3d}\label{classraisim_1_1VecDyn_a6cde6c565ff2399626d3f08adb7c9f3d}} 
+{\footnotesize template$<$int size$>$ }\\\hyperlink{classraisim_1_1VecDyn}{Vec\+Dyn} \& {\bfseries operator=} (const Vec$<$ size $>$ \&rhs)
+\item 
+\mbox{\Hypertarget{classraisim_1_1VecDyn_a910043c63b9c8bf8a5f2178030e4f646}\label{classraisim_1_1VecDyn_a910043c63b9c8bf8a5f2178030e4f646}} 
+void {\bfseries fill\+Segment} (const \hyperlink{classraisim_1_1VecDyn}{Vec\+Dyn} \&rhs, size\+\_\+t starting\+Idx)
+\item 
+\mbox{\Hypertarget{classraisim_1_1VecDyn_af2e893881e6d1311c7184d61e3292d97}\label{classraisim_1_1VecDyn_af2e893881e6d1311c7184d61e3292d97}} 
+{\footnotesize template$<$size\+\_\+t size$>$ }\\void {\bfseries fill\+Segment} (const Vec$<$ size $>$ \&rhs, size\+\_\+t starting\+Idx)
+\item 
+\mbox{\Hypertarget{classraisim_1_1VecDyn_abad05ba455f747903ae24dc850c446fc}\label{classraisim_1_1VecDyn_abad05ba455f747903ae24dc850c446fc}} 
+void {\bfseries set\+Zero} ()
+\item 
+\mbox{\Hypertarget{classraisim_1_1VecDyn_a94e16280bc450b01d77964ab9dd89b99}\label{classraisim_1_1VecDyn_a94e16280bc450b01d77964ab9dd89b99}} 
+void {\bfseries set\+Zero} (size\+\_\+t cols)
+\item 
+\mbox{\Hypertarget{classraisim_1_1VecDyn_a33c39bb8f28ea62066f1f5cc3c5b4376}\label{classraisim_1_1VecDyn_a33c39bb8f28ea62066f1f5cc3c5b4376}} 
+void {\bfseries set\+Constant} (double c)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classraisim_1_1VecDyn_a41d1439610c693346f559ccf3feecd9a}\label{classraisim_1_1VecDyn_a41d1439610c693346f559ccf3feecd9a}} 
+size\+\_\+t {\bfseries n}
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/jemin/workspace/raisimlib/raisim/linux/include/raisim/math.\+hpp\end{DoxyCompactItemize}
