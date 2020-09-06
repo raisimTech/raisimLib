@@ -387,7 +387,7 @@ class RaisimServer final {
 
   inline bool isTerminateRequested() { return terminateRequested_; }
 
-  inline Visuals &addVisualSphere(const std::string name, double radius,
+  inline Visuals *addVisualSphere(const std::string name, double radius,
                                   double colorR = 1, double colorG = 1,
                                   double colorB = 1, double colorA = 1,
                                   const std::string &material = "",
@@ -395,17 +395,17 @@ class RaisimServer final {
     if (_visualObjects.find(name) != _visualObjects.end())
     RSFATAL("Duplicated visual object name: " + name)
     updateVisualConfig();
-    _visualObjects[name] = Visuals();
-    _visualObjects[name].type = Visuals::VisualType::VisualSphere;
-    _visualObjects[name].name = name;
-    _visualObjects[name].size[0] = radius;
-    _visualObjects[name].color = {colorR, colorG, colorB, colorA};
-    _visualObjects[name].glow = glow;
-    _visualObjects[name].shadow = shadow;
+    _visualObjects[name] = new Visuals();
+    _visualObjects[name]->type = Visuals::VisualType::VisualSphere;
+    _visualObjects[name]->name = name;
+    _visualObjects[name]->size[0] = radius;
+    _visualObjects[name]->color = {colorR, colorG, colorB, colorA};
+    _visualObjects[name]->glow = glow;
+    _visualObjects[name]->shadow = shadow;
     return _visualObjects[name];
   }
 
-  inline Visuals &addVisualBox(const std::string name, double xLength,
+  inline Visuals *addVisualBox(const std::string name, double xLength,
                                double yLength, double zLength,
                                double colorR = 1, double colorG = 1,
                                double colorB = 1, double colorA = 1,
@@ -414,19 +414,19 @@ class RaisimServer final {
     if (_visualObjects.find(name) != _visualObjects.end())
     RSFATAL("Duplicated visual object name: " + name)
     updateVisualConfig();
-    _visualObjects[name] = Visuals();
-    _visualObjects[name].type = Visuals::VisualType::VisualBox;
-    _visualObjects[name].name = name;
-    _visualObjects[name].size[0] = xLength;
-    _visualObjects[name].size[1] = yLength;
-    _visualObjects[name].size[2] = zLength;
-    _visualObjects[name].color = {colorR, colorG, colorB, colorA};
-    _visualObjects[name].glow = glow;
-    _visualObjects[name].shadow = shadow;
+    _visualObjects[name] = new Visuals();;
+    _visualObjects[name]->type = Visuals::VisualType::VisualBox;
+    _visualObjects[name]->name = name;
+    _visualObjects[name]->size[0] = xLength;
+    _visualObjects[name]->size[1] = yLength;
+    _visualObjects[name]->size[2] = zLength;
+    _visualObjects[name]->color = {colorR, colorG, colorB, colorA};
+    _visualObjects[name]->glow = glow;
+    _visualObjects[name]->shadow = shadow;
     return _visualObjects[name];
   }
 
-  inline Visuals &addVisualCylinder(const std::string name, double radius,
+  inline Visuals *addVisualCylinder(const std::string name, double radius,
                                     double length, double colorR = 1,
                                     double colorG = 1, double colorB = 1,
                                     double colorA = 1,
@@ -435,18 +435,18 @@ class RaisimServer final {
     if (_visualObjects.find(name) != _visualObjects.end())
     RSFATAL("Duplicated visual object name: " + name)
     updateVisualConfig();
-    _visualObjects[name] = Visuals();
-    _visualObjects[name].type = Visuals::VisualType::VisualCylinder;
-    _visualObjects[name].name = name;
-    _visualObjects[name].size[0] = radius;
-    _visualObjects[name].size[1] = length;
-    _visualObjects[name].color = {colorR, colorG, colorB, colorA};
-    _visualObjects[name].glow = glow;
-    _visualObjects[name].shadow = shadow;
+    _visualObjects[name] = new Visuals();;
+    _visualObjects[name]->type = Visuals::VisualType::VisualCylinder;
+    _visualObjects[name]->name = name;
+    _visualObjects[name]->size[0] = radius;
+    _visualObjects[name]->size[1] = length;
+    _visualObjects[name]->color = {colorR, colorG, colorB, colorA};
+    _visualObjects[name]->glow = glow;
+    _visualObjects[name]->shadow = shadow;
     return _visualObjects[name];
   }
 
-  inline Visuals &addVisualCapsule(const std::string name, double radius,
+  inline Visuals *addVisualCapsule(const std::string name, double radius,
                                    double length, double colorR = 1,
                                    double colorG = 1, double colorB = 1,
                                    double colorA = 1,
@@ -455,18 +455,18 @@ class RaisimServer final {
     if (_visualObjects.find(name) != _visualObjects.end())
     RSFATAL("Duplicated visual object name: " + name)
     updateVisualConfig();
-    _visualObjects[name] = Visuals();
-    _visualObjects[name].type = Visuals::VisualType::VisualCapsule;
-    _visualObjects[name].name = name;
-    _visualObjects[name].size[0] = radius;
-    _visualObjects[name].size[1] = length;
-    _visualObjects[name].color = {colorR, colorG, colorB, colorA};
-    _visualObjects[name].glow = glow;
-    _visualObjects[name].shadow = shadow;
+    _visualObjects[name] = new Visuals();;
+    _visualObjects[name]->type = Visuals::VisualType::VisualCapsule;
+    _visualObjects[name]->name = name;
+    _visualObjects[name]->size[0] = radius;
+    _visualObjects[name]->size[1] = length;
+    _visualObjects[name]->color = {colorR, colorG, colorB, colorA};
+    _visualObjects[name]->glow = glow;
+    _visualObjects[name]->shadow = shadow;
     return _visualObjects[name];
   }
 
-  inline Visuals &getVisualObject(std::string name) {
+  inline Visuals *getVisualObject(std::string name) {
     if (_visualObjects.find(name) == _visualObjects.end())
     RSFATAL("Visual object with name \"" + name + "\" doesn't exist.")
     return _visualObjects[name];
@@ -718,10 +718,10 @@ class RaisimServer final {
     for (auto &kAndVo : _visualObjects) {
       auto &vo = kAndVo.second;
 
-      Vec<3> pos = vo.getPosition();
-      Vec<4> quat = vo.getOrientation();
+      Vec<3> pos = vo->getPosition();
+      Vec<4> quat = vo->getOrientation();
 
-      data_ = setString(data_, vo.name);
+      data_ = setString(data_, vo->name);
       data_ = setN(data_, pos.ptr(), 3);
       data_ = setN(data_, quat.ptr(), 4);
     }
@@ -1024,7 +1024,7 @@ class RaisimServer final {
 
             if (!x || !y || !z)
               throw std::runtime_error("ERROR while reading pos");
-            _visualObjects[name].setPosition(std::stod(x), std::stod(y),
+            _visualObjects[name]->setPosition(std::stod(x), std::stod(y),
                                              std::stod(z));
           }
 
@@ -1038,7 +1038,7 @@ class RaisimServer final {
 
             if (!w || !x || !y || !z)
               throw std::runtime_error("ERROR while reading quat");
-            _visualObjects[name].setOrientation(std::stod(w), std::stod(x),
+            _visualObjects[name]->setOrientation(std::stod(w), std::stod(x),
                                                 std::stod(y), std::stod(z));
           }
         } catch (std::exception &e) {
@@ -1075,43 +1075,43 @@ class RaisimServer final {
       auto &vo = kAndVo.second;
 
       // object type
-      data_ = set(data_, vo.type);
+      data_ = set(data_, vo->type);
 
       // object name
-      data_ = setString(data_, vo.name);
+      data_ = setString(data_, vo->name);
 
       // object color
-      data_ = set(data_, (float)vo.color[0]);  // r
-      data_ = set(data_, (float)vo.color[1]);  // g
-      data_ = set(data_, (float)vo.color[2]);  // b
-      data_ = set(data_, (float)vo.color[3]);  // a
+      data_ = set(data_, (float)vo->color[0]);  // r
+      data_ = set(data_, (float)vo->color[1]);  // g
+      data_ = set(data_, (float)vo->color[2]);  // b
+      data_ = set(data_, (float)vo->color[3]);  // a
 
       // object material
-      data_ = setString(data_, vo.material);
+      data_ = setString(data_, vo->material);
 
       // object glow
-      data_ = set(data_, vo.glow);
+      data_ = set(data_, vo->glow);
 
       // object shadow
-      data_ = set(data_, vo.shadow);
+      data_ = set(data_, vo->shadow);
 
-      switch (vo.type) {
+      switch (vo->type) {
         case Visuals::VisualSphere:
-          data_ = set(data_, (float)vo.size[0]);
+          data_ = set(data_, (float)vo->size[0]);
           break;
 
         case Visuals::VisualBox:
-          for (int i = 0; i < 3; i++) data_ = set(data_, (float)vo.size[i]);
+          for (int i = 0; i < 3; i++) data_ = set(data_, (float)vo->size[i]);
           break;
 
         case Visuals::VisualCylinder:
-          data_ = set(data_, (float)vo.size[0]);
-          data_ = set(data_, (float)vo.size[1]);
+          data_ = set(data_, (float)vo->size[0]);
+          data_ = set(data_, (float)vo->size[1]);
           break;
 
         case Visuals::VisualCapsule:
-          data_ = set(data_, (float)vo.size[0]);
-          data_ = set(data_, (float)vo.size[1]);
+          data_ = set(data_, (float)vo->size[0]);
+          data_ = set(data_, (float)vo->size[1]);
           break;
 
           //        case VisualObject::VisualMesh:
@@ -1151,7 +1151,7 @@ class RaisimServer final {
 
   std::mutex serverMutex_;
 
-  std::unordered_map<std::string, Visuals> _visualObjects;
+  std::unordered_map<std::string, Visuals*> _visualObjects;
   uint64_t visualConfiguration_ = 0;
   void updateVisualConfig() { visualConfiguration_++; }
 
