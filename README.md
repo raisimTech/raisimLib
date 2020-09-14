@@ -9,6 +9,11 @@ We only offer free academic licenses for now. We are working on providing commer
 Post issues to this github repo for questions. 
 Send email to info.raisim@gmail.com for any special inquiry.
 
+## Supported OS
+
+Linux, Windows
+Support for MAC OS is coming soon.
+
 
 
 
