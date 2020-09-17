@@ -11,7 +11,8 @@ Send email to info.raisim@gmail.com for any special inquiry.
 
 ## Supported OS
 
-Linux, Windows
+Currently Linux, Windows.
+
 Support for MAC OS is coming soon.
 
 
