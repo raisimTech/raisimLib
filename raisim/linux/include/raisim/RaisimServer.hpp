@@ -138,27 +138,22 @@ class RaisimServer final {
     int addrlen = sizeof(address);
 
     // Creating socket file descriptor
-    RSFATAL_IF((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0,
-               "socket failed")
+    RSFATAL_IF((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0, "socket failed")
     RSFATAL_IF(setsockopt(server_fd, SOL_SOCKET, RAISIM_SERVER_SOCKET_OPTION,
-                          (char *)&opt, sizeof(opt)),
-               "setsockopt")
+                          (char *)&opt, sizeof(opt)), "setsockopt")
 
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(raisimPort_);
 
     // Forcefully attaching socket to the port 8080
-    RSFATAL_IF(
-        bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0,
-        "bind failed")
+    RSFATAL_IF(bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0, "bind failed")
     RSFATAL_IF(listen(server_fd, 3) < 0, "listen failed")
 
     while (!terminateRequested_) {
       if (waitForReadEvent(2.0)) {
         RSFATAL_IF((client_ = accept(server_fd, (struct sockaddr *)&address,
-                                     (socklen_t *)&addrlen)) < 0,
-                   "accept failed")
+                                     (socklen_t *)&addrlen)) < 0, "accept failed")
         connected_ = true;
       }
 
@@ -175,6 +170,7 @@ class RaisimServer final {
           lastChecked = std::chrono::steady_clock::now();
         } else {
           current = std::chrono::steady_clock::now();
+          std::cout<<"unconnected for "<<std::chrono::duration_cast<std::chrono::seconds>(current - lastChecked).count()<<std::endl;
 
           if (std::chrono::duration_cast<std::chrono::seconds>(current - lastChecked).count() > 1.0) {
             connected_ = false;
