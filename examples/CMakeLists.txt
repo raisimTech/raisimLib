@@ -47,6 +47,7 @@ create_executable(hibernate src/server/hibernate.cpp)
 create_executable(robots src/server/robots.cpp)
 create_executable(materials src/server/material.cpp)
 create_executable(heightMapUsingPng src/server/heightMapUsingPng.cpp)
+create_executable(wheeledRobot src/server/wheeledRobot.cpp)
 
 # xml reader
 create_executable(xmlRader src/xml/xmlReader.cpp)
