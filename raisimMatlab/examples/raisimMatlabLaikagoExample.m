@@ -8,8 +8,8 @@ else
     disp('Platform not supported')
 end
 
-raisim('license', '..\..\rsc\activation.raisim');
-raisim('init', strcat(pwd, '..\..\rsc\laikago.xml'), 8080);
+raisim('license', strcat(pwd, '/../../rsc/activation.raisim'));
+raisim('init', strcat(pwd, '/../../rsc/laikago.xml'), 7070);
 
 % the floating-base part of the gains are ignored
 raisim('setPGains', 'laikago0', ones(18,1)*50);

@@ -102,13 +102,13 @@ void quit() {
   const mwSize* dim = mxGetDimensions(prhs[POSITION]);          \
   if (!mxIsDouble(prhs[POSITION])) mexErrMsgTxt((std::to_string(POSITION) + "th argument is not double array").c_str()); \
   if (std::max(dim[0], dim[1])!=SIZE) mexErrMsgTxt((std::to_string(POSITION) + "th argument should be " + std::to_string(SIZE) + " long. "+std::to_string(std::max(dim[0], dim[1])) +" given.").c_str()); \
-  Eigen::Map<Eigen::Matrix<double, -1, 1>> vec(mxGetPr(prhs[1 + DEFAULT_ARGS_N]), std::max(dim[0], dim[1]), 1);    \
+  Eigen::Map<Eigen::Matrix<double, -1, 1>> vec(mxGetPr(prhs[POSITION]), std::max(dim[0], dim[1]), 1);    \
 
 #define GET_EIGEN_VEC(POSITION) \
   if (!(nrhs>POSITION)) mexErrMsgTxt((std::to_string(POSITION) + "th argument is missing").c_str()); \
   const mwSize* dim = mxGetDimensions(prhs[1 + DEFAULT_ARGS_N]);          \
   if (!mxIsDouble(prhs[POSITION])) mexErrMsgTxt((std::to_string(POSITION) + "th argument is not double array").c_str()); \
-  Eigen::Map<Eigen::Matrix<double, -1, 1>> vec(mxGetPr(prhs[1 + DEFAULT_ARGS_N]), std::max(dim[0], dim[1]), 1);    \
+  Eigen::Map<Eigen::Matrix<double, -1, 1>> vec(mxGetPr(prhs[POSITION]), std::max(dim[0], dim[1]), 1);    \
 
 #define SETTER(X)                                                              \
   else if (!strcmp(MAKE_STR(X), cmd)) {                                        \
