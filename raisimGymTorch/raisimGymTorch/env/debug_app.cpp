@@ -13,8 +13,23 @@ int main(int argc, char *argv[]) {
 
   std::string resourceDir(argv[1]), cfgFile(argv[2]);
   std::ifstream myfile (cfgFile);
-  std::string config_str((std::istreambuf_iterator<char>(myfile)), std::istreambuf_iterator<char>());
+  std::string config_str, line;
+  bool escape = false;
 
+  while (std::getline(myfile, line)) {
+    if(line == "environment:") {
+      escape = true;
+      while (std::getline(myfile, line)) {
+        if(line.substr(0, 2) == "  ")
+          config_str += line.substr(2) + "\n";
+        else
+          break;
+      }
+    }
+    if(escape)
+      break;
+  }
+  config_str.pop_back();
   VectorizedEnvironment<ENVIRONMENT> vecEnv(resourceDir, config_str);
   vecEnv.init();
 

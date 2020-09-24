@@ -34,7 +34,7 @@ class RaisimGymEnv {
     world_ = std::make_unique<raisim::World>();
   }
 
-  virtual ~RaisimGymEnv() = default;
+  virtual ~RaisimGymEnv() { close(); };
 
   /////// implement these methods /////////
   virtual void init() = 0;
