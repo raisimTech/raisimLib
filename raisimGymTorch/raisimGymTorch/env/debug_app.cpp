@@ -9,7 +9,7 @@
 using namespace raisim;
 
 int main(int argc, char *argv[]) {
-  RSFATAL_IF(argc != 4, "got "<<argc<<" arguments. "<<"This executable takes three arguments: 1. resource directory, 2. configuration file")
+  RSFATAL_IF(argc != 3, "got "<<argc<<" arguments. "<<"This executable takes three arguments: 1. resource directory, 2. configuration file")
 
   std::string resourceDir(argv[1]), cfgFile(argv[2]);
   std::ifstream myfile (cfgFile);
