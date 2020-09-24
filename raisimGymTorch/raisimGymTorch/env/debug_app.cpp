@@ -34,12 +34,12 @@ int main(int argc, char *argv[]) {
   vecEnv.init();
 
   Yaml::Node config;
-  Yaml::Parse(config, cfgFile);
+  Yaml::Parse(config, config_str);
 
-  EigenRowMajorMat observation(config["environment"]["num_envs"].As<int>(), vecEnv.getObDim());
-  EigenRowMajorMat action(config["environment"]["num_envs"].As<int>(), vecEnv.getActionDim());
-  EigenVec reward(config["environment"]["num_envs"].As<int>(), 1);
-  EigenBoolVec dones(config["environment"]["num_envs"].As<int>(), 1);
+  EigenRowMajorMat observation(config["num_envs"].template As<int>(), vecEnv.getObDim());
+  EigenRowMajorMat action(config["num_envs"].template As<int>(), vecEnv.getActionDim());
+  EigenVec reward(config["num_envs"].template As<int>(), 1);
+  EigenBoolVec dones(config["num_envs"].template As<int>(), 1);
   action.setZero();
 
   Eigen::Ref<EigenRowMajorMat> ob_ref(observation), action_ref(action);
