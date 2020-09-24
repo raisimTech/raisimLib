@@ -22,6 +22,8 @@ int main(int argc, char *argv[]) {
       while (std::getline(myfile, line)) {
         if(line.substr(0, 2) == "  ")
           config_str += line.substr(2) + "\n";
+        else if (line[0] == '#')
+          continue;
         else
           break;
       }
