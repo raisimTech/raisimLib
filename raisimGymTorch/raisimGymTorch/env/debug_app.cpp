@@ -9,29 +9,22 @@
 using namespace raisim;
 
 int main(int argc, char *argv[]) {
-  RSFATAL_IF(argc != 4, "got "<<argc<<" arguments. "<<"This executable takes three arguments: 1. resource directory, 2. configuration file, 3. render or no_render to control rendering")
+  RSFATAL_IF(argc != 4, "got "<<argc<<" arguments. "<<"This executable takes three arguments: 1. resource directory, 2. configuration file")
 
   std::string resourceDir(argv[1]), cfgFile(argv[2]);
-  Yaml::Node config = YAML::LoadFile(cfgFile);
-  std::stringstream config_str;
+  std::ifstream myfile (cfgFile);
+  std::string config_str((std::istreambuf_iterator<char>(myfile)), std::istreambuf_iterator<char>(myfile));
 
-  if(std::string(argv[3]) == "no_render") {
-    config["environment"]["render"] = false;
-    std::cout<<argv[3]<<std::endl;
-  } else {
-    std::cout<<argv[3]<<std::endl;
-    config["environment"]["render"] = true;
-  }
-
-  config_str << config["environment"];
-
-  VectorizedEnvironment<ENVIRONMENT> vecEnv(resourceDir, config_str.str());
+  VectorizedEnvironment<ENVIRONMENT> vecEnv(resourceDir, config_str);
   vecEnv.init();
 
-  EigenRowMajorMat observation(config["environment"]["num_envs"].as<int>(), vecEnv.getObDim());
-  EigenRowMajorMat action(config["environment"]["num_envs"].as<int>(), vecEnv.getActionDim());
-  EigenVec reward(config["environment"]["num_envs"].as<int>(), 1);
-  EigenBoolVec dones(config["environment"]["num_envs"].as<int>(), 1);
+  Yaml::Node config;
+  Yaml::Parse(config, cfgFile);
+
+  EigenRowMajorMat observation(config["environment"]["num_envs"].As<int>(), vecEnv.getObDim());
+  EigenRowMajorMat action(config["environment"]["num_envs"].As<int>(), vecEnv.getActionDim());
+  EigenVec reward(config["environment"]["num_envs"].As<int>(), 1);
+  EigenBoolVec dones(config["environment"]["num_envs"].As<int>(), 1);
   action.setZero();
 
   Eigen::Ref<EigenRowMajorMat> ob_ref(observation), action_ref(action);
