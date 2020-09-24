@@ -13,7 +13,7 @@ int main(int argc, char *argv[]) {
 
   std::string resourceDir(argv[1]), cfgFile(argv[2]);
   std::ifstream myfile (cfgFile);
-  std::string config_str((std::istreambuf_iterator<char>(myfile)), std::istreambuf_iterator<char>(myfile));
+  std::string config_str((std::istreambuf_iterator<char>(myfile)), std::istreambuf_iterator<char>());
 
   VectorizedEnvironment<ENVIRONMENT> vecEnv(resourceDir, config_str);
   vecEnv.init();
