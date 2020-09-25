@@ -367,7 +367,8 @@ class RaisimServer final {
 
   inline void killServer() {
     terminateRequested_ = true;
-    serverThread_.join();
+    if(serverThread_.joinable())
+      serverThread_.join();
     terminateRequested_ = false;
   }
 

@@ -12,7 +12,6 @@ option(RAISIM_MATLAB "Build a matlab wrapper." FALSE)
 option(RAISIM_PY "Build a python wrapper." FALSE)
 option(RAISIM_DOC "Build a python wrapper." FALSE)
 
-
 if (UNIX AND NOT APPLE AND NOT ANDROID AND NOT WEBGL AND NOT WIN32)
     set(RAISIM_OS linux)  
     list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_SOURCE_DIR}/raisim/${RAISIM_OS})
@@ -28,16 +27,23 @@ endif()
 #==
 # Package installation
 #==
+if(WIN32)
+    set(RAISIM_BIN_DIR ${RAISIM_OS}/mt_release)
+else()
+    set(RAISIM_BIN_DIR ${RAISIM_OS})
+endif()
+
+
 install(
         DIRECTORY
-        ${CMAKE_CURRENT_LIST_DIR}/raisim/${RAISIM_OS}/include
+        ${CMAKE_CURRENT_LIST_DIR}/raisim/${RAISIM_BIN_DIR}/include
         DESTINATION
         ${CMAKE_INSTALL_PREFIX}
 )
 
 install(
         DIRECTORY
-        "${CMAKE_CURRENT_LIST_DIR}/raisim/${RAISIM_OS}/lib"
+        "${CMAKE_CURRENT_LIST_DIR}/raisim/${RAISIM_BIN_DIR}/lib"
         DESTINATION
         ${CMAKE_INSTALL_PREFIX}
 )
