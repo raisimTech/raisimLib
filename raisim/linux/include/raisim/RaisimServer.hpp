@@ -130,6 +130,7 @@ class RaisimServer final {
   explicit RaisimServer(World *world) : world_(world) {
     receive_buffer.resize(RECEIVE_BUFFER_SIZE);
     send_buffer.resize(SEND_BUFFER_SIZE);
+    memset(tempBuffer, 0, MAXIMUM_PACKET_SIZE * sizeof(char));
   }
 
 #if __linux__

@@ -40,6 +40,8 @@ class VectorizedEnvironment {
       environments_.back()->setControlTimeStep(cfg_["control_dt"].template As<double>());
     }
 
+    setSeed(0);
+
     for (int i = 0; i < num_envs_; i++) {
       // only the first environment is visualized
       environments_[i]->init();

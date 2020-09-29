@@ -343,8 +343,9 @@ void mexFunction(
 
     for (auto& contact : obj->getContacts())
       if (contact.getlocalBodyIndex() == bodyIdx) {
-        raisim::matvecmul(contact.getContactFrame(), *contact.getImpulse(),
-                          impulse);
+        raisim::matvecmul(contact.getContactFrame(), *contact.getImpulse(), impulse);
+        if(!contact.isObjectA())
+          impulse *= -1.;
         impulse /= world_->getTimeStep();
         impulseLists.push_back(impulse);
         positionLists.push_back(contact.getPosition());
