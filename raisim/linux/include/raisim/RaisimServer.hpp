@@ -170,7 +170,7 @@ class RaisimServer final {
           lastChecked = std::chrono::steady_clock::now();
         } else {
           current = std::chrono::steady_clock::now();
-          std::cout<<"unconnected for "<<std::chrono::duration_cast<std::chrono::seconds>(current - lastChecked).count()<<std::endl;
+          std::cout<<"disconnected for "<<std::chrono::duration_cast<std::chrono::seconds>(current - lastChecked).count()<<std::endl;
 
           if (std::chrono::duration_cast<std::chrono::seconds>(current - lastChecked).count() > 1.0) {
             connected_ = false;
