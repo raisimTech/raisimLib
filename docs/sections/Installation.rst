@@ -39,12 +39,25 @@ Example install in Linux
     cmake .. -DCMAKE_INSTALL_PREFIX=$LOCAL_INSTALL -DRAISIM_EXAMPLE=ON -DRAISIM_PY=ON
     make install -j4
 
-To use RaiSimUnity in Linux, you need to install ``minizip``, ``ffmpeg`` and ``vulkan``.
+.. note::
+    To use RaiSimUnity in Linux, you need to install ``minizip``, ``ffmpeg`` and ``vulkan``.
+    To install vulkan, follow this link https://linuxconfig.org/install-and-test-vulkan-on-linux
 
-To install vulkan, follow this link https://linuxconfig.org/install-and-test-vulkan-on-linux
 
-To install ``minizip`` and ``ffmpeg``,
-.. code-block:: bash
+    To install ``minizip`` and ``ffmpeg``,
 
-    sudo apt install minizip ffmpeg
+    .. code-block:: bash
+
+        sudo apt install minizip ffmpeg
+
+    To conveniently use raisim and raisimPy, add the following lines to your ``~/.bashrc`` file
+
+    .. code-block:: bash
+
+        export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/<WHERE-YOU-HAVE-INSTALLED-RAISIM>/lib
+        export PYTHONPATH=$PYTHONPATH:~/<WHERE-YOU-HAVE-INSTALLED-RAISIM>/lib
+
+
+
+
 
