@@ -29,6 +29,12 @@ endif()
 #==
 if(WIN32)
     set(RAISIM_BIN_DIR ${RAISIM_OS}/mt_release)
+    install(
+        DIRECTORY
+        ${CMAKE_CURRENT_LIST_DIR}/raisim/${RAISIM_BIN_DIR}/bin
+        DESTINATION
+        ${CMAKE_INSTALL_PREFIX}
+    )
 else()
     set(RAISIM_BIN_DIR ${RAISIM_OS})
 endif()
