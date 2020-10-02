@@ -83,8 +83,11 @@ Included Software
 raisimUnity
 ---------------
 A visualizer for RaiSim.
-An executable is provided so no need to install anything.
+An executable is provided so you don't have to install anything.
+If you want to modify it, feel free to fork it at https://github.com/raisimTech/raisimUnity
+
 raisimOgre is not a recommended visualizer anymore because it is very tricky to make it work for both MATLAB and Python.
+However, if you prefer it, it still works and you can clone it at
 
 raisimPy
 ---------------

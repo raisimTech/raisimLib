@@ -52,7 +52,7 @@ class ENVIRONMENT : public RaisimGymEnv {
 
     /// action & observation scaling
     actionMean_ = gc_init_.tail(nJoints_);
-    actionStd_.setConstant(0.6);
+    actionStd_.setConstant(0.4);
 
     /// Reward coefficients
     READ_YAML(double, forwardVelRewardCoeff_, cfg["forwardVelRewardCoeff"])

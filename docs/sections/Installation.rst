@@ -8,7 +8,7 @@ Setup
 Please install/save everything locally to prevent any conflicts with other libraries. We will assume that you have a single workspace where you save all repos related to raisim. Here we introduce two variables
 
 * ``WORKSPACE``: workspace where you clone your git repos (e.g., ~/raisim_workspace)
-* ``LOCAL_INSTALL``: build directory where you install exported cmake libraries (e.g., ~/raisim_build)
+* ``LOCAL_INSTALL``: install directory where you install exported cmake libraries (e.g., ~/raisim_build)
 
 Dependencies
 ============
@@ -28,7 +28,6 @@ RaiSim is installed using cmake. The following options are available
 * ``RAISIM_EXAMPLE`` : Compile C++ RaiSim examples
 * ``RAISIM_MATLAB`` : Compile raisimMatlab (compiled binary is also provided). You need MATLAB for this option
 * ``RAISIM_PY`` : Compile raisimPy. The python version can be set as ``-DPYTHON_EXECUTABLE:FILEPATH=$LOCATION_OF_THE_PYTHON_EXECUTABLE``
-* ``RAISIM_DOC`` : This is for developers only. The documentation is available at raisim.com
 
 Example install in Linux
 
