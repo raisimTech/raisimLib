@@ -13,6 +13,26 @@ Why RaiSim?
 * Easiest C++ simulation library to learn/use
 * A minimum number of dependencies (only on STL and Eigen)
 
+Visualizer
+=====================
+There are two options available for visualization.
+
+- **raisimUnity**
+
+    * binaries included in the ``raisimUnity`` directory
+    * easy to use but less features
+    * runs as a seperate process
+    * works well in both windows and Linux (will be supported in Mac soon)
+    * source code available `here <https://github.com/raisimTech/raisimUnity>`_ under the MIT license. Written in C#
+
+- **raisimOgre**
+
+    * harder to use but rich in features
+    * works well in Linux. Should work in other two major OS's but not well tested
+    * easy to customize. Only C++ code
+    * source code available `here <https://github.com/raisimTech/raisimogre>`_ under the MIT license
+
+
 System Requirements
 =====================
 
@@ -26,7 +46,7 @@ System Requirements
 
 - **Mac**
 
-    * The binaries also contain AVX2 instructions.
+    * (WILL BE AVAILABLE SOON)The binaries also contain AVX2 instructions.
 
 Example code
 ===================

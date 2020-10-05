@@ -14,7 +14,7 @@ Example
 =============================
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    HeightMap_example_png
    HeightMap_example_raw_values
