@@ -23,7 +23,8 @@
 #define RSFATAL_IF(con, msg) if(con) RSMSG(msg, raisim::RSEVERITY_FATAL)
 #define RSASSERT(con, msg) if(!(con)) RSMSG(msg, raisim::RSEVERITY_FATAL)
 #define RSRETURN_IF(con, msg) if(con) {RSMSG(msg, raisim::RSEVERITY_INFO)return;}
-
+#define RSISNAN(val) RSFATAL_IF(isnan(val), #val<<" is nan");
+#define RSISNAN_MSG(val, msg) RSFATAL_IF(isnan(val), msg);
 
 #ifdef RSDEBUG
   #define DRSINFO(msg) RSINFO(msg)
