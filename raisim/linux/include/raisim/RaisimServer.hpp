@@ -470,17 +470,12 @@ class RaisimServer final {
     return _visualObjects[name];
   }
 
-  //  void addVisualMesh() {
-  //    _visualObjects.emplace(name, new VisualObject);
-  //  }
-
   inline void removeVisualObject(std::string name) {
     if (_visualObjects.find(name) == _visualObjects.end())
     RSFATAL("Visual object with name \"" + name + "\" doesn't exist.")
     updateVisualConfig();
     _visualObjects.erase(name);
   }
-
 
   inline void startRecordingVideo(const std::string& videoName) {
     serverRequest_.push_back(ServerRequestType::START_RECORD_VIDEO);
@@ -724,6 +719,18 @@ class RaisimServer final {
       data_ = setN(data_, quat.ptr(), 4);
     }
 
+    // wires
+    data_ = set(data_, (uint64_t)(world_->getStiffWire().size() + world_->getCompliantWire().size()));
+    for (auto& sw: world_->getStiffWire()) {
+      data_ = setN(data_, sw->getP1().ptr(), 3);
+      data_ = setN(data_, sw->getP2().ptr(), 3);
+    }
+
+    for (auto& cw: world_->getCompliantWire()) {
+      data_ = setN(data_, cw->getP1().ptr(), 3);
+      data_ = setN(data_, cw->getP2().ptr(), 3);
+    }
+
     updateReady_ = true;
   }
 
@@ -859,6 +866,9 @@ class RaisimServer final {
           break;
       }
     }
+
+    // constraints
+    data_ = set(data_, (uint64_t)(world_->getCompliantWire().size() + world_->getStiffWire().size()));
   }
 
   inline void serializeContacts() {

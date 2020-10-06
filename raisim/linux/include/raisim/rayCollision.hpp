@@ -16,11 +16,11 @@ class RayCollisionItem {
  public:
   friend class raisim::World;
 
-  Object* getObject() {
+  const Object* getObject() const {
     return obj;
   }
 
-  const Eigen::Vector3d& getPosition() {
+  const Eigen::Vector3d& getPosition() const {
     return pos;
   }
 
@@ -71,6 +71,10 @@ class RayCollisionList {
   }
 
   iterator end() {
+    return iterator(&list_[size_]);
+  }
+
+  iterator back() {
     return iterator(&list_[size_-1]);
   }
 

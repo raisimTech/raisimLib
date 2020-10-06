@@ -18,8 +18,8 @@
 #include "raisim/object/singleBodies/Capsule.hpp"
 #include "raisim/object/singleBodies/Cone.hpp"
 #include "raisim/object/singleBodies/Compound.hpp"
-#include "raisim/constraints/StiffWire.hpp"
-#include "raisim/constraints/CompliantWire.hpp"
+#include "raisim/constraints/StiffLengthBasedConstraint.hpp"
+#include "raisim/constraints/CompliantLengthBasedConstraint.hpp"
 #include "raisim/object/terrain/Ground.hpp"
 #include "raisim/object/terrain/HeightMap.hpp"
 #include "raisim/Terrain.hpp"
@@ -354,13 +354,13 @@ class World {
    * @param pos2_b location of the cable attachment on the second object
    * @param length length of the wire
    * @return pointer to the created wire  */
-  StiffWire *addStiffWire(Object *obj1,
-                          size_t localIdx1,
-                          Vec<3> pos1_b,
-                          Object *obj2,
-                          size_t localIdx2,
-                          Vec<3> pos2_b,
-                          double length);
+  StiffLengthBasedConstraint *addStiffWire(Object *obj1,
+                                           size_t localIdx1,
+                                           Vec<3> pos1_b,
+                                           Object *obj2,
+                                           size_t localIdx2,
+                                           Vec<3> pos2_b,
+                                           double length);
 
   /**
    * soft unilateral constraint. It cannot push. It can only pull.
@@ -373,14 +373,14 @@ class World {
    * @param length length of the wire
    * @param stiffness stiffness of the wire
    * @return pointer to the created wire  */
-  CompliantWire *addCompliantWire(Object *obj1,
-                                  int localIdx1,
-                                  Vec<3> pos1_b,
-                                  Object *obj2,
-                                  int localIdx2,
-                                  Vec<3> pos2_b,
-                                  double length,
-                                  double stiffness);
+  CompliantLengthBasedConstraint *addCompliantWire(Object *obj1,
+                                                   int localIdx1,
+                                                   Vec<3> pos1_b,
+                                                   Object *obj2,
+                                                   int localIdx2,
+                                                   Vec<3> pos2_b,
+                                                   double length,
+                                                   double stiffness);
 
   /**
    * @return object with the given name. returns nullptr if the object doesn't exist. The name can be set by Object::setName() */
@@ -400,7 +400,7 @@ class World {
 
   /**
    * @return a wire with the given name. returns nullptr if the object doesn't exist. The name can be set by Wire::setName() */
-  Wire *getWire(const std::string &name);
+  LengthBaseConstraint *getWire(const std::string &name);
 
   /**
    * @returns the configuration number. this number is updated every time an object is added or removed */
@@ -430,12 +430,12 @@ class World {
   /**
    * removes a stiff wire
    * @param wire the stiff wire to be removed */
-  void removeObject(StiffWire *wire);
+  void removeObject(StiffLengthBasedConstraint *wire);
 
   /**
  * removes a compliant wire
  * @param wire the compliant wire to be removed */
-  void removeObject(CompliantWire *wire);
+  void removeObject(CompliantLengthBasedConstraint *wire);
 
   /**
    * integrate the world
@@ -535,6 +535,18 @@ class World {
    * @return the path to the xml config file */
   const std::string &getConfigFile() { return configFile_; };
 
+  /**
+   * get a vector stiff wires in the world
+   * @return a vector of unique_ptrs of stiff wires
+   */
+  std::vector<std::unique_ptr<StiffLengthBasedConstraint>>& getStiffWire () { return stiffWire_; }
+
+  /**
+   * get a vector compliant wires in the world
+   * @return a vector of unique_ptrs of compliant wires
+   */
+  std::vector<std::unique_ptr<CompliantLengthBasedConstraint>>& getCompliantWire () { return compliantWire_; }
+
 protected:
   void init();
   void contactProblemUpdate(Object *objectA);
@@ -560,8 +572,8 @@ protected:
   std::vector<size_t> colIdxToLocalObjIdx_;
 
   // constraints
-  std::vector<std::unique_ptr<StiffWire>> stiffWire_;
-  std::vector<std::unique_ptr<CompliantWire>> compliantWire_;
+  std::vector<std::unique_ptr<StiffLengthBasedConstraint>> stiffWire_;
+  std::vector<std::unique_ptr<CompliantLengthBasedConstraint>> compliantWire_;
 
   MaterialManager mat_;
   MaterialPairProperties defaultMaterialProperty_;
