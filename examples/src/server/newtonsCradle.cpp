@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
   auto box = world.addBox(.1, .1, .1, 1);
   box->setPosition(0.9, 0.0, 4.0);
 
-  auto wire1 = world.addStiffWire(pin1, 0, {0,0,0}, ball1, 0, {0,0,0}, 2.0);
+  world.addStiffWire(pin1, 0, {0,0,0}, ball1, 0, {0,0,0}, 2.0);
   world.addStiffWire(pin2, 0, {0,0,0}, ball2, 0, {0,0,0}, 2.0);
   world.addStiffWire(pin3, 0, {0,0,0}, ball3, 0, {0,0,0}, 2.0);
   world.addStiffWire(pin4, 0, {0,0,0}, ball4, 0, {0,0,0}, 2.0);
@@ -63,7 +63,6 @@ int main(int argc, char **argv) {
   /// launch raisim servear
   raisim::RaisimServer server(&world);
   server.launchServer();
-  raisim::MSLEEP(1000);
 
   while (1) {
     raisim::MSLEEP(1);
