@@ -455,7 +455,7 @@ void init_world(py::module &m) {
 	    py::arg("obj"))
 
 
-	    .def("remove_object", py::overload_cast<raisim::StiffLengthBasedConstraint*>(&raisim::World::removeObject), R"mydelimiter(
+	    .def("remove_object", py::overload_cast<raisim::StiffLengthConstraint*>(&raisim::World::removeObject), R"mydelimiter(
 	    Remove dynamically a stiff wire from the world.
 
 	    Args:
@@ -464,7 +464,7 @@ void init_world(py::module &m) {
 	    py::arg("wire"))
 
 
-	    .def("remove_object", py::overload_cast<raisim::CompliantLengthBasedConstraint*>(&raisim::World::removeObject), R"mydelimiter(
+	    .def("remove_object", py::overload_cast<raisim::CompliantLengthConstraint*>(&raisim::World::removeObject), R"mydelimiter(
 	    Remove dynamically a compliant wire from the world.
 
 	    Args:
