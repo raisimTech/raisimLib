@@ -23,51 +23,73 @@ class LengthConstraint : public Constraints {
 
   LengthConstraint(Object *obj1, size_t localIdx1, Vec<3> pos1_b, Object *obj2, size_t localIdx2, Vec<3> pos2_b, double length);
 
-  /* update internal variables (called by integrate1())*/
+  /**
+   * update internal variables (called by integrate1()) */
   void update();
 
-  /* return the length of the wire */
+  /**
+   * @return the length of the wire */
   double getLength() const;
 
-  /* return the distance between the two mounting points */
+  /**
+   * @return the distance between the two mounting points */
   double getDistance() const;
 
-  /* return the first attachment point in the World frame */
+  /**
+   * @return the first attachment point in the World frame */
   const Vec<3>& getP1() const;
 
-  /* return the second attachment point in the World frame */
+  /**
+   * @return the second attachment point in the World frame */
   const Vec<3>& getP2() const;
 
-  /* return the first object to which the wire is attached */
+  /**
+   * @return the first object to which the wire is attached */
   Object *getBody1() const;
 
-  /* return the second object to which the wire is attached */
+  /**
+   * @return the second object to which the wire is attached */
   Object *getBody2() const;
 
-  /* return the direction of the normal (i.e., p2-p1 normalized) */
+  /**
+   * @return the direction of the normal (i.e., p2-p1 normalized) */
   const Vec<3>& getNorm() const;
 
-  /* return the local index of object1 */
+  /**
+   * @return the local index of object1 */
   size_t getLocalIdx1() const;
 
-  /* return the local index of object2 */
+  /**
+   * @return the local index of object2 */
   size_t getLocalIdx2() const;
 
-  /* return the stretch length (i.e., constraint violation) */
+  /**
+   * @return the stretch length (i.e., constraint violation) */
   double getStretch() const;
 
-  /* set name of the wire*/
+  /**
+   * set name of the wire
+   * @param name the constraint's name */
   void setName(const std::string& name) {
     name_ = name;
   }
 
-  /* get name of the wire*/
+  /**
+   * get name of the wire
+   * @return the wire name */
   const std::string& getName() const {
     return name_;
   }
 
+  /**
+   * set stretch type of the wire
+   * Check http://raisim.com/sections/StiffLengthConstraint.html
+   * @param the wire stretch type. Available types: STRETCH_RESISTANT_ONLY, COMPRESSION_RESISTANT_ONLY, BOTH */
   void setStretchType(StretchType type) { stretchType_ = type; }
 
+  /**
+   * get the constraint's stretch type
+   * @return the wire stretch type */
   StretchType getStretchType() const { return stretchType_; }
 
  protected:

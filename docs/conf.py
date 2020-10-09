@@ -2,7 +2,8 @@ import subprocess, os
 
 extensions = [
     "sphinx_rtd_theme",
-    "breathe"
+    "breathe",
+    'sphinx.ext.autosectionlabel'
 ]
 
 html_theme = "sphinx_rtd_theme"
@@ -18,3 +19,5 @@ htmlhelp_basename = 'raisim_doc'
 html_show_sourcelink = False
 # Breathe Configuration
 breathe_default_project = "raisim"
+autosectionlabel_prefix_document = True
+autosectionlabel_maxdepth = 4

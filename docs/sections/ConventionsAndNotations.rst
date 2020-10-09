@@ -6,7 +6,7 @@ Conventions and Notations
 Kinematics
 ===============
 
-1. A quaternion is defined as :math:`\mathbf{q} = [w, x, y, z]^Tq = [w,x,y,z]`
+1. A quaternion is defined as :math:`\mathbf{q} = [w, x, y, z]^T`. :math:`[x, y, z]^T` is the (scaled) axis of rotation and :math:`w` is cosine of half of the angle.
 2. Unless otherwise stated explicitly, every quantities in RaiSim is expressed in the world frame and relative to the world frame.
 3. The world frame has zero acceleration and zero velocity
 4. For articulated systems, the base angular velocity is defined in the world frame (many other simulators use the base frame). For details, read :ref:`articulated_systems`
