@@ -36,12 +36,12 @@ class ENVIRONMENT : public RaisimGymEnv {
     pTarget_.setZero(gcDim_); vTarget_.setZero(gvDim_); pTarget12_.setZero(nJoints_);
 
     /// this is nominal configuration of anymal
-    gc_init_ << 0, 0, 0.54, 1.0, 0.0, 0.0, 0.0, 0.03, 0.4, -0.8, -0.03, 0.4, -0.8, 0.03, -0.4, 0.8, -0.03, -0.4, 0.8;
+    gc_init_ << 0, 0, 0.50, 1.0, 0.0, 0.0, 0.0, 0.03, 0.4, -0.8, -0.03, 0.4, -0.8, 0.03, -0.4, 0.8, -0.03, -0.4, 0.8;
 
     /// set pd gains
     Eigen::VectorXd jointPgain(gvDim_), jointDgain(gvDim_);
-    jointPgain.setZero(); jointPgain.tail(nJoints_).setConstant(40.0);
-    jointDgain.setZero(); jointDgain.tail(nJoints_).setConstant(1.0);
+    jointPgain.setZero(); jointPgain.tail(nJoints_).setConstant(50.0);
+    jointDgain.setZero(); jointDgain.tail(nJoints_).setConstant(0.2);
     anymal_->setPdGains(jointPgain, jointDgain);
     anymal_->setGeneralizedForce(Eigen::VectorXd::Zero(gvDim_));
 
@@ -52,7 +52,7 @@ class ENVIRONMENT : public RaisimGymEnv {
 
     /// action & observation scaling
     actionMean_ = gc_init_.tail(nJoints_);
-    actionStd_.setConstant(0.4);
+    actionStd_.setConstant(0.3);
 
     /// Reward coefficients
     READ_YAML(double, forwardVelRewardCoeff_, cfg["forwardVelRewardCoeff"])

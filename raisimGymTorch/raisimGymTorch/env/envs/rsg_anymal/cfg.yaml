@@ -11,7 +11,7 @@ environment:
   control_dt: 0.01
   max_time: 4.0
   forwardVelRewardCoeff: 0.3
-  torqueRewardCoeff: -3e-5
+  torqueRewardCoeff: -4e-5
 
 architecture:
   policy_net: [128, 128]
