@@ -721,6 +721,7 @@ class RaisimServer final {
 
     // wires
     data_ = set(data_, (uint64_t)(world_->getStiffWire().size() + world_->getCompliantWire().size()));
+
     for (auto& sw: world_->getStiffWire()) {
       data_ = setN(data_, sw->getP1().ptr(), 3);
       data_ = setN(data_, sw->getP2().ptr(), 3);

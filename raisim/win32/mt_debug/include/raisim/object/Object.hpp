@@ -35,8 +35,7 @@ class Object {
   virtual ~Object() = default;
 
  public:
-  virtual void clearPerObjectContact();
-
+  void clearPerObjectContact();
   void addContactToPerObjectContact(contact::Contact &contact);
   void setIndexInWorld(size_t indexInWorld_);
 
