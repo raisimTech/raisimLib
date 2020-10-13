@@ -1173,6 +1173,18 @@ class ArticulatedSystem : public Object {
     dampedDiagonalTermUpdated_ = true;
   }
 
+  /**
+   * usage example:
+   * For 1d joints (e.g., revolute or prismatic), you can get the impulse due to the joint limit as
+   * robot.getJointLimitViolations()[0]->imp_i[0]
+   * For a ball joint, all three components of imp_i represent the torque in the 3d space
+   * The following joint returns the joint/body Id
+   * robot.getJointLimitViolations()[0]->jointId
+   * @return get contact problems associated with violated joint limits */
+  const std::vector<contact::Single3DContactProblem*>& getJointLimitViolations() {
+    return jointLimitViolation_;
+  }
+
  protected:
 
   void getPose(const VisObject& vob, Mat<3, 3>& rot, Vec<3>& pos);
@@ -1314,6 +1326,7 @@ class ArticulatedSystem : public Object {
   raisim::CollisionSet collisionBodies;
   std::vector<VisObject> visColObj, visObj;
   ArticulatedSystemOption options_;
+  std::vector<contact::Single3DContactProblem*> jointLimitViolation_;
 
  private:
   size_t nbody, dof = 0, gcDim = 0, baseDOFminusOne = 0;

@@ -41,7 +41,11 @@ class Single3DContactProblem {
   double mu, n2_mu, muinv, negMuSquared, coeffRes, bounceThres, bouceVel=0., Mapp_iInv11, impact_vel=0., depth=0., tempE=0.;
   Object *obA = nullptr, *obB = nullptr;
   int rank = 3;
-  size_t pointIdA, pointIdB;
+  union {
+    size_t pointIdA;
+    size_t jointId;
+  };
+  size_t pointIdB;
   bool atLeastOneWithoutDel = false;
 };
 
