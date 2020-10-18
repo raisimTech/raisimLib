@@ -1176,10 +1176,10 @@ class ArticulatedSystem : public Object {
   /**
    * usage example:
    * For 1d joints (e.g., revolute or prismatic), you can get the impulse due to the joint limit as
-   * robot.getJointLimitViolations()[0]->imp_i[0]
-   * For a ball joint, all three components of imp_i represent the torque in the 3d space
+   * ``robot.getJointLimitViolations()[0]->imp_i[0]``
+   * For a ball joint, all three components of imp_i represent the torque in the 3d space.
    * The following joint returns the joint/body Id
-   * robot.getJointLimitViolations()[0]->jointId
+   * ``robot.getJointLimitViolations()[0]->jointId``.
    * @return get contact problems associated with violated joint limits */
   const std::vector<contact::Single3DContactProblem*>& getJointLimitViolations() {
     return jointLimitViolation_;
