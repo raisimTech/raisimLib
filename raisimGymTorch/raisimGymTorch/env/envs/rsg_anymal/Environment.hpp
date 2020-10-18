@@ -109,6 +109,21 @@ class ENVIRONMENT : public RaisimGymEnv {
     raisim::quatToRotMat(quat, rot);
     bodyLinearVel_ = rot.e().transpose() * gv_.segment(0, 3);
     bodyAngularVel_ = rot.e().transpose() * gv_.segment(3, 3);
+/// Let's check all contact impulses acting on "LF_SHANK"
+    auto footIndex = anymal_->getBodyIdx("LF_SHANK");
+
+/// for all contacts on the robot, check ...
+    for(auto& contact: anymal_->getContacts()) {
+      if ( footIndex == contact.getlocalBodyIndex() ) {
+        std::cout<<"Contact impulse in the contact frame: "<<contact.getImpulse()->e()<<std::endl;
+        std::cout<<"Contact frame: \n"<<contact.getContactFrame().e()<<std::endl;
+        std::cout<<"Contact impulse in the world frame: "<<contact.getContactFrame().e() * contact.getImpulse()->e()<<std::endl;
+        std::cout<<"Contact Normal in the world frame: "<<contact.getNormal().e().transpose()<<std::endl;
+        std::cout<<"Contact position in the world frame: "<<contact.getPosition().e().transpose()<<std::endl;
+        std::cout<<"It collides with: "<<world_->getObject(contact.getPairObjectIndex())<<std::endl;
+        std::cout<<"please check Contact.hpp for the full list of the methods"<<std::endl;
+      }
+    }
 
     obDouble_ << gc_[2], /// body height
         rot.e().row(2).transpose(), /// body orientation

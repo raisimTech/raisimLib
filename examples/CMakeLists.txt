@@ -49,6 +49,7 @@ create_executable(materials src/server/material.cpp)
 create_executable(heightMapUsingPng src/server/heightMapUsingPng.cpp)
 create_executable(wheeledRobot src/server/wheeledRobot.cpp)
 create_executable(newtonsCradle src/server/newtonsCradle.cpp)
+create_executable(visualObjects src/server/visualObjects.cpp)
 
 # xml reader
 create_executable(xmlRader src/xml/xmlReader.cpp)
