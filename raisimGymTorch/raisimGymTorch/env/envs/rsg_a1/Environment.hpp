@@ -20,14 +20,14 @@ class ENVIRONMENT : public RaisimGymEnv {
       RaisimGymEnv(resourceDir, cfg), visualizable_(visualizable) {
 
     /// add objects
-    anymal_ = world_->addArticulatedSystem(resourceDir_+"/anymal/urdf/anymal.urdf");
-    anymal_->setName("anymal");
-    anymal_->setControlMode(raisim::ControlMode::PD_PLUS_FEEDFORWARD_TORQUE);
+    a1_ = world_->addArticulatedSystem(resourceDir_+"/a1/urdf/a1.urdf");
+    a1_->setName("a1");
+    a1_->setControlMode(raisim::ControlMode::PD_PLUS_FEEDFORWARD_TORQUE);
     world_->addGround();
 
     /// get robot data
-    gcDim_ = anymal_->getGeneralizedCoordinateDim();
-    gvDim_ = anymal_->getDOF();
+    gcDim_ = a1_->getGeneralizedCoordinateDim();
+    gvDim_ = a1_->getDOF();
     nJoints_ = gvDim_ - 6;
 
     /// initialize containers
@@ -42,8 +42,8 @@ class ENVIRONMENT : public RaisimGymEnv {
     Eigen::VectorXd jointPgain(gvDim_), jointDgain(gvDim_);
     jointPgain.setZero(); jointPgain.tail(nJoints_).setConstant(50.0);
     jointDgain.setZero(); jointDgain.tail(nJoints_).setConstant(0.2);
-    anymal_->setPdGains(jointPgain, jointDgain);
-    anymal_->setGeneralizedForce(Eigen::VectorXd::Zero(gvDim_));
+    a1_->setPdGains(jointPgain, jointDgain);
+    a1_->setGeneralizedForce(Eigen::VectorXd::Zero(gvDim_));
 
     /// MUST BE DONE FOR ALL ENVIRONMENTS
     obDim_ = 34; /// convention described on top
@@ -59,23 +59,23 @@ class ENVIRONMENT : public RaisimGymEnv {
     READ_YAML(double, torqueRewardCoeff_, cfg["torqueRewardCoeff"])
 
     /// indices of links that should not make contact with ground
-    footIndices_.insert(anymal_->getBodyIdx("LF_SHANK"));
-    footIndices_.insert(anymal_->getBodyIdx("RF_SHANK"));
-    footIndices_.insert(anymal_->getBodyIdx("LH_SHANK"));
-    footIndices_.insert(anymal_->getBodyIdx("RH_SHANK"));
+    footIndices_.insert(a1_->getBodyIdx("FR_calf"));
+    footIndices_.insert(a1_->getBodyIdx("FL_calf"));
+    footIndices_.insert(a1_->getBodyIdx("RR_calf"));
+    footIndices_.insert(a1_->getBodyIdx("RL_calf"));
 
     /// visualize if it is the first environment
     if (visualizable_) {
       server_ = std::make_unique<raisim::RaisimServer>(world_.get());
       server_->launchServer();
-      server_->focusOn(anymal_);
+      server_->focusOn(a1_);
     }
   }
 
   void init() final { }
 
   void reset() final {
-    anymal_->setState(gc_init_, gv_init_);
+    a1_->setState(gc_init_, gv_init_);
     updateObservation();
   }
 
@@ -86,7 +86,7 @@ class ENVIRONMENT : public RaisimGymEnv {
     pTarget12_ += actionMean_;
     pTarget_.tail(nJoints_) = pTarget12_;
 
-    anymal_->setPdTarget(pTarget_, vTarget_);
+    a1_->setPdTarget(pTarget_, vTarget_);
 
     for(int i=0; i< int(control_dt_ / simulation_dt_ + 1e-10); i++){
       if(server_) server_->lockVisualizationServerMutex();
@@ -96,24 +96,24 @@ class ENVIRONMENT : public RaisimGymEnv {
 
     updateObservation();
 
-    torqueReward_ = torqueRewardCoeff_ * anymal_->getGeneralizedForce().squaredNorm();
+    torqueReward_ = torqueRewardCoeff_ * a1_->getGeneralizedForce().squaredNorm();
     forwardVelReward_ = forwardVelRewardCoeff_ * std::min(4.0, bodyLinearVel_[0]);
     return torqueReward_ + forwardVelReward_;
   }
 
   void updateObservation() {
-    anymal_->getState(gc_, gv_);
+    a1_->getState(gc_, gv_);
     raisim::Vec<4> quat;
     raisim::Mat<3,3> rot;
     quat[0] = gc_[3]; quat[1] = gc_[4]; quat[2] = gc_[5]; quat[3] = gc_[6];
     raisim::quatToRotMat(quat, rot);
     bodyLinearVel_ = rot.e().transpose() * gv_.segment(0, 3);
     bodyAngularVel_ = rot.e().transpose() * gv_.segment(3, 3);
-/// Let's check all contact impulses acting on "LF_SHANK"
-    auto footIndex = anymal_->getBodyIdx("LF_SHANK");
 
-/// for all contacts on the robot, check ...
-    for(auto& contact: anymal_->getContacts()) {
+
+    /// TO BE DELETED SOON. JUST FOR EXAMPLE
+    auto footIndex = a1_->getBodyIdx("FR_calf");
+    for(auto& contact: a1_->getContacts()) {
       if ( footIndex == contact.getlocalBodyIndex() ) {
         std::cout<<"Contact impulse in the contact frame: "<<contact.getImpulse()->e()<<std::endl;
         std::cout<<"Contact frame: \n"<<contact.getContactFrame().e()<<std::endl;
@@ -141,7 +141,7 @@ class ENVIRONMENT : public RaisimGymEnv {
     terminalReward = float(terminalRewardCoeff_);
 
     /// if the contact body is not feet
-    for(auto& contact: anymal_->getContacts())
+    for(auto& contact: a1_->getContacts())
       if(footIndices_.find(contact.getlocalBodyIndex()) == footIndices_.end())
         return true;
 
@@ -152,7 +152,7 @@ class ENVIRONMENT : public RaisimGymEnv {
  private:
   int gcDim_, gvDim_, nJoints_;
   bool visualizable_ = false;
-  raisim::ArticulatedSystem* anymal_;
+  raisim::ArticulatedSystem* a1_;
   Eigen::VectorXd gc_init_, gv_init_, gc_, gv_, pTarget_, pTarget12_, vTarget_;
   double terminalRewardCoeff_ = -10.;
   double forwardVelRewardCoeff_ = 0., forwardVelReward_ = 0.;
