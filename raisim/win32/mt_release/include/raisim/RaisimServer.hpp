@@ -70,6 +70,11 @@ struct Visuals {
    */
   Vec<3> size = {0, 0, 0};
 
+  void setSphereSize(double radius) { size[0] = radius; }
+  void setBoxSize(double x, double y, double z) { size = {x,y,z}; }
+  void setCylinderSize(double radius, double height) { size = {radius, height, 1.}; }
+  void setCapsuleSize(double radius, double height) { size = {radius, height, 1.}; }
+
   void setPosition(double x, double y, double z) { position = {x, y, z}; }
   void setOrientation(double w, double x, double y, double z) { quaternion = {w, x, y, z}; }
   Vec<3> &getPosition() { return position; }
@@ -717,6 +722,9 @@ class RaisimServer final {
       data_ = setString(data_, vo->name);
       data_ = setN(data_, pos.ptr(), 3);
       data_ = setN(data_, quat.ptr(), 4);
+      data_ = set(data_, vo->type);
+      data_ = setN(data_, vo->color.ptr(), 4);
+      data_ = setN(data_, vo->size.ptr(), 3);
     }
 
     // wires
