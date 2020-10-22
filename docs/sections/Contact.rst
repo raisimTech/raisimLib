@@ -51,8 +51,11 @@ Here is an extensive example
 
   /// for all contacts on the robot, check ...
   for(auto& contact: anymal->getContacts()) {
+    if (contact.skip()) continue; /// if the contact is internal, one contact point is set to 'skip'
     if ( footIndex == contact.getlocalBodyIndex() ) {
       std::cout<<"Contact impulse in the contact frame: "<<contact.getImpulse()->e()<<std::endl;
+      /// the impulse is acting from objectB to objectA. You can check if this object is objectA or B by
+      std::cout<<"is ObjectA: "<<contact.isObjectA()<<std::endl;
       std::cout<<"Contact frame: \n"<<contact.getContactFrame().e()<<std::endl;
       std::cout<<"Contact impulse in the world frame: "<<contact.getContactFrame().e() * contact.getImpulse()->e()<<std::endl;
       std::cout<<"Contact Normal in the world frame: "<<contact.getNormal().e().transpose()<<std::endl;

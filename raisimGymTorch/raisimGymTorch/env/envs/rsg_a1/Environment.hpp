@@ -116,6 +116,7 @@ class ENVIRONMENT : public RaisimGymEnv {
     for(auto& contact: a1_->getContacts()) {
       if ( footIndex == contact.getlocalBodyIndex() ) {
         std::cout<<"Contact impulse in the contact frame: "<<contact.getImpulse()->e()<<std::endl;
+        std::cout<<"is ObjectA: "<<contact.isObjectA()<<std::endl;
         std::cout<<"Contact frame: \n"<<contact.getContactFrame().e()<<std::endl;
         std::cout<<"Contact impulse in the world frame: "<<contact.getContactFrame().e() * contact.getImpulse()->e()<<std::endl;
         std::cout<<"Contact Normal in the world frame: "<<contact.getNormal().e().transpose()<<std::endl;
