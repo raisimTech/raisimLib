@@ -1321,7 +1321,6 @@ class ArticulatedSystem : public Object {
 
   std::vector<SparseJacobian> contactJaco_;
   std::vector<SparseJacobian> externalForceAndTorqueJaco_;
-  std::vector<raisim::Vec<3>> externalForcesAndTorque_;
 
   raisim::CollisionSet collisionBodies;
   std::vector<VisObject> visColObj, visObj;

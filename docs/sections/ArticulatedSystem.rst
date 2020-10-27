@@ -148,9 +148,21 @@ The modifications are as follows:
 
 * Capsule geom is available for both collision objects and visual objects (with the keyword "capsule"). The geom is defined by "height" and "radius" keyword. The height represents the distance between the two center points of the spheres.
 
-* A <joint>/<dynamics> tag can have three more attributes: *rotor inertia*, *spring_mount* and *stiffness*. 
+* A <joint>/<dynamics> tag can have three more attributes: *rotor_inertia*, *spring_mount* and *stiffness*.
 
-**Rotor inertia** in Raisim approximately simulates the rotor inertia of the motor (but missing the resulting gyroscopic effect, which is often neglegible). 
+Here is an example joint with the raisim tags
+
+.. code-block:: xml
+
+    <joint name="link1Tolink2" type="spherical">
+        <parent link="link1"/>
+        <child link="link2"/>
+        <origin xyz="0 0 -0.24"/>
+        <axis xyz="0 1 0"/>
+        <dynamics rotor_inertia="0.0001" spring_mount="0.70710678118 0 0.70710678118 0" stiffness="500.0" damping="3."/>
+    </joint>
+
+**Rotor_inertia** in Raisim approximately simulates the rotor inertia of the motor (but missing the resulting gyroscopic effect, which is often neglegible).
 It is added to the diagonal elements of the mass matrix.
 It is common way to include the inertial effect of the rotor.
 You can also override it in C++ using :code:`setRotorInertia()`.

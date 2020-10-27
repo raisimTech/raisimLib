@@ -28,6 +28,12 @@ int main(int argc, char* argv[]) {
   visCylinder->setPosition(0,2,0);
   visCapsule->setPosition(2,2,0);
 
+  auto lines = server.addVisualPolyLine("lines");
+  lines->color = {0,0,1,1};
+
+  for( int i = 0; i < 100; i++)
+    lines->points.push_back({sin(i*0.1), cos(i*0.1), i*0.01});
+
   size_t counter = 0;
   while (1) {
     counter++;
@@ -35,6 +41,9 @@ int main(int argc, char* argv[]) {
     visBox->setBoxSize(double((counter)%255+1)/256.+0.01, 1, 1);
     visSphere->color[1] = double((counter)%255+1)/256.;
     raisim::MSLEEP(2);
+
+    lines->color[2] = double((counter)%255+1)/256.;
+    lines->color[0] = 1. - lines->color[2];
 //    server.integrateWorldThreadSafe();
   }
 

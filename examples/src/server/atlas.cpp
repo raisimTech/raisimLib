@@ -40,8 +40,12 @@ int main(int argc, char* argv[]) {
   auto box = server.addVisualBox("box", 0.5, 0.5, 0.5, 1, 0, 0, 1);
   box->setPosition(1,1,1);
 
+
+
   while (1) {
     raisim::MSLEEP(2);
+    atlas[0]->setExternalForce(5, {30,0,0});
+    atlas[0]->setExternalTorque(1, {0,40,0});
     server.integrateWorldThreadSafe();
   }
 
