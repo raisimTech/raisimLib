@@ -61,7 +61,7 @@ struct Visuals {
   VisualType type;
   std::string name;
   std::string material;
-  bool glow = false;
+  bool glow = true;
   bool shadow = false;
 
   // {r, g, b, a}
@@ -400,7 +400,7 @@ class RaisimServer final {
                                   double colorR = 1, double colorG = 1,
                                   double colorB = 1, double colorA = 1,
                                   const std::string &material = "",
-                                  bool glow = false, bool shadow = false) {
+                                  bool glow = true, bool shadow = false) {
     if (_visualObjects.find(name) != _visualObjects.end())
     RSFATAL("Duplicated visual object name: " + name)
     updateVisualConfig();
@@ -419,7 +419,7 @@ class RaisimServer final {
                                double colorR = 1, double colorG = 1,
                                double colorB = 1, double colorA = 1,
                                const std::string &material = "",
-                               bool glow = false, bool shadow = false) {
+                               bool glow = true, bool shadow = false) {
     if (_visualObjects.find(name) != _visualObjects.end())
     RSFATAL("Duplicated visual object name: " + name)
     updateVisualConfig();
@@ -440,7 +440,7 @@ class RaisimServer final {
                                     double colorG = 1, double colorB = 1,
                                     double colorA = 1,
                                     const std::string &material = "",
-                                    bool glow = false, bool shadow = false) {
+                                    bool glow = true, bool shadow = false) {
     if (_visualObjects.find(name) != _visualObjects.end())
     RSFATAL("Duplicated visual object name: " + name)
     updateVisualConfig();
@@ -460,7 +460,7 @@ class RaisimServer final {
                                    double colorG = 1, double colorB = 1,
                                    double colorA = 1,
                                    const std::string &material = "",
-                                   bool glow = false, bool shadow = false) {
+                                   bool glow = true, bool shadow = false) {
     if (_visualObjects.find(name) != _visualObjects.end())
     RSFATAL("Duplicated visual object name: " + name)
     updateVisualConfig();
