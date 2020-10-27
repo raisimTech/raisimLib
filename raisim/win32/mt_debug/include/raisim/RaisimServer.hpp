@@ -42,6 +42,12 @@
 
 namespace raisim {
 
+struct PolyLine {
+  std::string name;
+  Vec<4> color = {1, 1, 1, 1};
+  std::vector<Vec<3>> points;
+};
+
 struct Visuals {
   enum VisualType : int {
     VisualSphere = 0,
@@ -449,7 +455,7 @@ class RaisimServer final {
     return _visualObjects[name];
   }
 
-  inline Visuals *addVisualCapsule(const std::string name, double radius,
+  inline Visuals* addVisualCapsule(const std::string name, double radius,
                                    double length, double colorR = 1,
                                    double colorG = 1, double colorB = 1,
                                    double colorA = 1,
@@ -458,7 +464,7 @@ class RaisimServer final {
     if (_visualObjects.find(name) != _visualObjects.end())
     RSFATAL("Duplicated visual object name: " + name)
     updateVisualConfig();
-    _visualObjects[name] = new Visuals();;
+    _visualObjects[name] = new Visuals();
     _visualObjects[name]->type = Visuals::VisualType::VisualCapsule;
     _visualObjects[name]->name = name;
     _visualObjects[name]->size[0] = radius;
@@ -469,16 +475,37 @@ class RaisimServer final {
     return _visualObjects[name];
   }
 
-  inline Visuals *getVisualObject(std::string name) {
+  inline PolyLine* addVisualPolyLine(const std::string& name) {
+    RSFATAL_IF(_polyLines.find(name) != _polyLines.end(), "Duplicated polyline object name: " + name)
+    _polyLines[name] = new PolyLine();
+    _polyLines[name]->name = name;
+    return _polyLines[name];
+  }
+
+  inline PolyLine* getVisualPolyLine(const std::string& name) {
+    RSFATAL_IF(_polyLines.find(name) == _polyLines.end(), name + " doesn't exist")
+    return _polyLines[name];
+  }
+
+  inline void removeVisualPolyLine(const std::string& name) {
+    if (_polyLines.find(name) == _polyLines.end())
+    RSFATAL("Visual polyline with name \"" + name + "\" doesn't exist.")
+    updateVisualConfig();
+    delete _polyLines[name];
+    _polyLines.erase(name);
+  }
+
+  inline Visuals *getVisualObject(const std::string& name) {
     if (_visualObjects.find(name) == _visualObjects.end())
     RSFATAL("Visual object with name \"" + name + "\" doesn't exist.")
     return _visualObjects[name];
   }
 
-  inline void removeVisualObject(std::string name) {
+  inline void removeVisualObject(const std::string& name) {
     if (_visualObjects.find(name) == _visualObjects.end())
     RSFATAL("Visual object with name \"" + name + "\" doesn't exist.")
     updateVisualConfig();
+    delete _visualObjects[name];
     _visualObjects.erase(name);
   }
 
@@ -714,7 +741,7 @@ class RaisimServer final {
     data_ = set(data_, (uint64_t)(_visualObjects.size()));
 
     for (auto &kAndVo : _visualObjects) {
-      auto &vo = kAndVo.second;
+      auto* vo = kAndVo.second;
 
       Vec<3> pos = vo->getPosition();
       Vec<4> quat = vo->getOrientation();
@@ -725,6 +752,17 @@ class RaisimServer final {
       data_ = set(data_, vo->type);
       data_ = setN(data_, vo->color.ptr(), 4);
       data_ = setN(data_, vo->size.ptr(), 3);
+    }
+
+    // polylines
+    data_ = set(data_, (uint64_t)(_polyLines.size()));
+    for (auto &pl : _polyLines) {
+      auto* ptr = pl.second;
+      data_ = setString(data_, ptr->name);
+      data_ = setN(data_, ptr->color.ptr(), 4);
+      data_ = set(data_, (uint64_t)(ptr->points.size()));
+      for (size_t i=0; i < ptr->points.size(); i++)
+        data_ = setN(data_, ptr->points[i].ptr(), 3);
     }
 
     // wires
@@ -738,6 +776,31 @@ class RaisimServer final {
     for (auto& cw: world_->getCompliantWire()) {
       data_ = setN(data_, cw->getP1().ptr(), 3);
       data_ = setN(data_, cw->getP2().ptr(), 3);
+    }
+
+    // External forces
+    size_t numExtForce = 0;
+    size_t numExtTorque = 0;
+
+    for (auto* ob: world_->getObjList()) {
+      numExtForce += ob->getExternalForce().size();
+      numExtTorque += ob->getExternalTorque().size();
+    }
+
+    data_ = set(data_, (uint64_t)numExtForce);
+    for (auto* ob: world_->getObjList()) {
+      for (size_t extNum = 0; extNum < ob->getExternalForce().size(); extNum++) {
+        data_ = setN(data_, ob->getExternalForcePosition()[extNum].ptr(), 3);
+        data_ = setN(data_, ob->getExternalForce()[extNum].ptr(), 3);
+      }
+    }
+
+    data_ = set(data_, (uint64_t)numExtTorque);
+    for (auto* ob: world_->getObjList()) {
+      for (size_t extNum = 0; extNum < ob->getExternalTorque().size(); extNum++) {
+        data_ = setN(data_, ob->getExternalTorquePosition()[extNum].ptr(), 3);
+        data_ = setN(data_, ob->getExternalTorque()[extNum].ptr(), 3);
+      }
     }
 
     updateReady_ = true;
@@ -1169,6 +1232,7 @@ class RaisimServer final {
   std::mutex serverMutex_;
 
   std::unordered_map<std::string, Visuals*> _visualObjects;
+  std::unordered_map<std::string, PolyLine*> _polyLines;
   uint64_t visualConfiguration_ = 0;
   void updateVisualConfig() { visualConfiguration_++; }
 

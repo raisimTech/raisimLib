@@ -67,6 +67,12 @@ class Object {
   void setName(const std::string& name) { name_ = name; }
   const std::string& getName() const { return name_; }
 
+  // external force visualization
+  const std::vector<raisim::Vec<3>>& getExternalForce() const { return externalForceViz_; }
+  const std::vector<raisim::Vec<3>>& getExternalForcePosition() const { return externalForceVizPos_; }
+  const std::vector<raisim::Vec<3>>& getExternalTorque() const { return externalTorqueViz_; }
+  const std::vector<raisim::Vec<3>>& getExternalTorquePosition() const { return externalTorqueVizPos_; }
+
  protected:
   std::vector<std::pair<std::vector <raisim::Mat<3, 3>>, raisim::Vec<3>>> &getDelassusAndTauStar();
   double &getImpactVel(size_t idx);
@@ -89,6 +95,15 @@ class Object {
   bool visualizeFramesAndCom_ = true;
   std::string name_;
   std::vector<std::string> localNames_;
+
+  // external force/torque visualization
+  std::vector<bool> isExternalForces_;
+  std::vector<raisim::Vec<3>> externalForceAndTorque_;
+  std::vector<raisim::Vec<3>> externalForceAndTorquePos_;
+  std::vector<raisim::Vec<3>> externalForceViz_;
+  std::vector<raisim::Vec<3>> externalForceVizPos_;
+  std::vector<raisim::Vec<3>> externalTorqueViz_;
+  std::vector<raisim::Vec<3>> externalTorqueVizPos_;
 };
 
 } // raisim
