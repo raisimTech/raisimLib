@@ -19,3 +19,4 @@ examples/cmake-build*/*
 */data/*
 **/activation.raisim
 data/*
+**/.DS_Store

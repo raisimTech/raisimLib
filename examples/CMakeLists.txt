@@ -25,6 +25,7 @@ endif()
 
 function(create_executable app_name file_name)
     add_executable(${app_name} ${file_name})
+    set_target_properties(${app_name} PROPERTIES MACOSX_RPATH "${CMAKE_CURRENT_SOURCE_DIR}/../raisim/mac/lib")
     if(WIN32)
         target_link_libraries(${app_name} PUBLIC raisim::raisim Ws2_32)
     else()
