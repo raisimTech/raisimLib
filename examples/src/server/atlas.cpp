@@ -6,6 +6,9 @@
 
 int main(int argc, char* argv[]) {
   auto binaryPath = raisim::Path::setFromArgv(argv[0]);
+  std::cout << "fiell : "
+            << binaryPath.getDirectory().getString() << "\\rsc\\activation.raisim"
+            << std::endl;
   raisim::World::setActivationKey(binaryPath.getDirectory() + "\\rsc\\activation.raisim");
 
   /// create raisim world
