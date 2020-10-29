@@ -7,7 +7,7 @@
 #define RAISIM_RAISIMSERVER_HPP
 #include <chrono>
 
-#ifdef __linux__
+#if defined __linux__ || __APPLE__
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <netinet/in.h>
@@ -17,7 +17,7 @@
 #include <sys/socket.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#define RAISIM_SERVER_SOCKET_OPTION SO_REUSEADDR | SO_REUSEPORT
+#include <errno.h>
 #elif WIN32
 #undef UNICODE
 #define WIN32_LEAN_AND_MEAN
@@ -26,6 +26,13 @@
 #include <ws2tcpip.h>
 #define RAISIM_SERVER_SOCKET_OPTION SO_REUSEADDR | SO_BROADCAST
 #endif
+
+#if __linux__
+#define RAISIM_SERVER_SOCKET_OPTION SO_REUSEADDR | SO_REUSEPORT
+#elif __APPLE__
+#define RAISIM_SERVER_SOCKET_OPTION SO_REUSEPORT
+#endif
+
 
 #include <tinyxml_rai/tinyxml_rai.h>
 
@@ -148,23 +155,24 @@ class RaisimServer final {
     memset(tempBuffer, 0, MAXIMUM_PACKET_SIZE * sizeof(char));
   }
 
-#if __linux__
+#if __linux__ || __APPLE__
   inline void loop() {
     int opt = 1;
     int addrlen = sizeof(address);
 
     // Creating socket file descriptor
-    RSFATAL_IF((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0, "socket failed")
+    RSFATAL_IF((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0, "socket error: "<<strerror(errno))
     RSFATAL_IF(setsockopt(server_fd, SOL_SOCKET, RAISIM_SERVER_SOCKET_OPTION,
-                          (char *)&opt, sizeof(opt)), "setsockopt")
+                          (char *)&opt, sizeof(opt)), "setsockopt error: "
+                          <<strerror(errno))
 
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(raisimPort_);
 
     // Forcefully attaching socket to the port 8080
-    RSFATAL_IF(bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0, "bind failed")
-    RSFATAL_IF(listen(server_fd, 3) < 0, "listen failed")
+    RSFATAL_IF(bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0, "bind error: "<<strerror(errno))
+    RSFATAL_IF(listen(server_fd, 3) < 0, "listen error: "<<strerror(errno))
 
     while (!terminateRequested_) {
       if (waitForReadEvent(2.0)) {
