@@ -7,7 +7,6 @@ project(raisim_examples LANGUAGES CXX)
 
 find_package(raisim CONFIG REQUIRED)
 find_package(Eigen3 REQUIRED HINTS ${Eigen3_HINT})
-include_directories ( ${EIGEN3_INCLUDE_DIRS} )
 
 if(WIN32)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_CURRENT_SOURCE_DIR}/../raisim/win32/mt_release/bin")
@@ -17,6 +16,9 @@ if(WIN32)
 else()
     file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/../rsc" DESTINATION ${CMAKE_BINARY_DIR}/examples)
 endif()
+
+include_directories ( ${EIGEN3_INCLUDE_DIRS} )
+message("${EIGEN3_INCLUDE_DIRS}")
 
 
 #==
