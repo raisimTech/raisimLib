@@ -62,7 +62,7 @@ class RayCollisionList {
   RayCollisionItem & operator [](size_t i) {return list_[i];}
   const RayCollisionItem & operator [](size_t i) const {return list_[i];}
 
-  size_t size() {
+  size_t size() const {
     return size_;
   }
 

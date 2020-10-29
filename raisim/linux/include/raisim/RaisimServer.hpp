@@ -46,6 +46,7 @@ struct PolyLine {
   std::string name;
   Vec<4> color = {1, 1, 1, 1};
   std::vector<Vec<3>> points;
+  double width = 0.01;
 };
 
 struct Visuals {
@@ -83,6 +84,9 @@ struct Visuals {
 
   void setPosition(double x, double y, double z) { position = {x, y, z}; }
   void setOrientation(double w, double x, double y, double z) { quaternion = {w, x, y, z}; }
+  void setPosition(const Vec<3>& pos) { position = pos; }
+  void setOrientation(const Vec<4>& ori) {quaternion = ori; }
+
   Vec<3> &getPosition() { return position; }
   Vec<4> &getOrientation() { return quaternion; }
 
@@ -444,7 +448,7 @@ class RaisimServer final {
     if (_visualObjects.find(name) != _visualObjects.end())
     RSFATAL("Duplicated visual object name: " + name)
     updateVisualConfig();
-    _visualObjects[name] = new Visuals();;
+    _visualObjects[name] = new Visuals();
     _visualObjects[name]->type = Visuals::VisualType::VisualCylinder;
     _visualObjects[name]->name = name;
     _visualObjects[name]->size[0] = radius;
@@ -760,6 +764,7 @@ class RaisimServer final {
       auto* ptr = pl.second;
       data_ = setString(data_, ptr->name);
       data_ = setN(data_, ptr->color.ptr(), 4);
+      data_ = set(data_, ptr->width);
       data_ = set(data_, (uint64_t)(ptr->points.size()));
       for (size_t i=0; i < ptr->points.size(); i++)
         data_ = setN(data_, ptr->points[i].ptr(), 3);
