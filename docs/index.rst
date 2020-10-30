@@ -25,4 +25,5 @@ The following chapters present C++ API.
    sections/MaterialSystem
    sections/HeightMap
    sections/Constraints
+   sections/RayTest
    sections/RelatedSoftware
