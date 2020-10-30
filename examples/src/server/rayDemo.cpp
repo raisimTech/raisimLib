@@ -12,7 +12,6 @@ int main(int argc, char* argv[]) {
   world.setTimeStep(0.002);
 
   /// create objects
-  /// create objects
   raisim::TerrainProperties terrainProperties;
   terrainProperties.frequency = 0.2;
   terrainProperties.zScale = 3.0;

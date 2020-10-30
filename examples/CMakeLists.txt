@@ -53,6 +53,7 @@ create_executable(wheeledRobot src/server/wheeledRobot.cpp)
 create_executable(newtonsCradle src/server/newtonsCradle.cpp)
 create_executable(visualObjects src/server/visualObjects.cpp)
 create_executable(rayDemo src/server/rayDemo.cpp)
+create_executable(anymals src/server/anymals.cpp)
 
 # xml reader
 create_executable(xmlRader src/xml/xmlReader.cpp)

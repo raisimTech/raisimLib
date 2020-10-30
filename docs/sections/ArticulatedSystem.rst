@@ -2,6 +2,12 @@
 Articulated Systems
 #############################
 
+.. image:: ../image/anymals.png
+    :width: 543
+    :height: 423
+
+ANYmal robots (B and C versions) simulated in RaiSim.
+
 TL;DR
 =============================
 
