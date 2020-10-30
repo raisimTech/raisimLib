@@ -29,7 +29,7 @@ RaiSim is installed using cmake. The following options are available
 * ``RAISIM_MATLAB`` : Compile raisimMatlab (compiled binary is also provided). You need MATLAB for this option
 * ``RAISIM_PY`` : Compile raisimPy. The python version can be set as ``-DPYTHON_EXECUTABLE:FILEPATH=$LOCATION_OF_THE_PYTHON_EXECUTABLE``
 
-Example install in Linux
+Example install in Linux/Mac
 
 .. code-block:: bash
 
@@ -39,25 +39,34 @@ Example install in Linux
     cmake .. -DCMAKE_INSTALL_PREFIX=$LOCAL_INSTALL -DRAISIM_EXAMPLE=ON -DRAISIM_PY=ON
     make install -j4
 
-.. note::
-    To use RaiSimUnity in Linux, you need to install ``minizip``, ``ffmpeg`` and ``vulkan``.
-    To install vulkan, follow this link https://linuxconfig.org/install-and-test-vulkan-on-linux
+Then, to use RaiSim more conveniently, you have to let your linker know where you installed RaiSim
 
+In **Linux**, you can do that by adding the following line to your ``~/.bashrc`` file
+
+    .. code-block:: bash
+
+        export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/<WHERE-YOU-HAVE-INSTALLED-RAISIM>/lib
+        export PYTHONPATH=$PYTHONPATH:~/<WHERE-YOU-HAVE-INSTALLED-RAISIM-PY>/lib
+
+In **Mac**, you can do that by adding the following line to your `.zshrc` file
+
+    .. code-block:: bash
+
+        export DYLD_LIBRARY_PATH=DYLD_LIBRARY_PATH:~/<WHERE-YOU-HAVE-INSTALLED-RAISIM>/lib
+        export PYTHONPATH=$PYTHONPATH:~/<WHERE-YOU-HAVE-INSTALLED-RAISIM-PY>/lib
+
+In **Windows**, you can do that by adding the installation directory to your `PATH` environment variable.
+
+.. note::
+    ** For Linux users **
+    To use (vulkan version) RaiSimUnity in Linux, you need to install ``minizip``, ``ffmpeg`` and ``vulkan``.
+    To install vulkan, follow this link https://linuxconfig.org/install-and-test-vulkan-on-linux
 
     To install ``minizip`` and ``ffmpeg``,
 
     .. code-block:: bash
 
         sudo apt install minizip ffmpeg
-
-    To conveniently use raisim and raisimPy, add the following lines to your ``~/.bashrc`` file
-
-    .. code-block:: bash
-
-        export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/<WHERE-YOU-HAVE-INSTALLED-RAISIM>/lib
-        export PYTHONPATH=$PYTHONPATH:~/<WHERE-YOU-HAVE-INSTALLED-RAISIM>/lib
-
-
 
 
 
