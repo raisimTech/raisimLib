@@ -1247,6 +1247,8 @@ class ArticulatedSystem : public Object {
 
   void rkIntegrate(const Vec<3>& gravity, double dt);
 
+  void clearExternalForces();
+
   /// for computation
   /// Frames:: W: world, B: body, P: parent
 
