@@ -86,7 +86,7 @@ add_library(raisim::raisim SHARED IMPORTED)
 set_target_properties(raisim::raisim PROPERTIES
   INTERFACE_COMPILE_FEATURES "cxx_std_14"
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
-  INTERFACE_LINK_LIBRARIES "raisim::raisimPng;raisim::raisimODE;raisim::raisimMine;Eigen3::Eigen"
+  INTERFACE_LINK_LIBRARIES "raisim::raisimPng;raisim::raisimODE;raisim::raisimMine"
 )
 
 if(CMAKE_VERSION VERSION_LESS 2.8.12)
