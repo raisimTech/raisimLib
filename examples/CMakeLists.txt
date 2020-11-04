@@ -18,8 +18,6 @@ else()
 endif()
 
 include_directories ( ${EIGEN3_INCLUDE_DIRS} )
-message("${EIGEN3_INCLUDE_DIRS}")
-
 
 #==
 # Build Targets
