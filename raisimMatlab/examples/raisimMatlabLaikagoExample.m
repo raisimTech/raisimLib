@@ -9,7 +9,7 @@ else
 end
 
 raisim('license', strcat(pwd, '/../../rsc/activation.raisim'));
-raisim('init', strcat(pwd, '/../../rsc/laikago.xml'), 7070);
+raisim('init', strcat(pwd, '/../../rsc/laikago.xml'), 8080);
 
 % the floating-base part of the gains are ignored
 raisim('setPGains', 'laikago0', ones(18,1)*50);
