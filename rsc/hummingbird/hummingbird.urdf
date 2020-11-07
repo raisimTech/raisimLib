@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<robot name="hummingbird"
+  xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <link name="base">
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.6 0.41 0.22"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="mesh.dae" scale="1 1 1"/>
+      </geometry>
+      <material name="green"/>
+    </visual>
+  </link>
+</robot>

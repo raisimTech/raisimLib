@@ -52,6 +52,7 @@ create_executable(newtonsCradle src/server/newtonsCradle.cpp)
 create_executable(visualObjects src/server/visualObjects.cpp)
 create_executable(rayDemo src/server/rayDemo.cpp)
 create_executable(anymals src/server/anymals.cpp)
+create_executable(hummingbird src/server/hummingbird.cpp)
 
 # xml reader
 create_executable(xmlRader src/xml/xmlReader.cpp)

@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
   server.launchServer();
   server.focusOn(anymalC);
 
-  for (int i=0; i<20000; i++) {
+  for (int i=0; i<200000000; i++) {
     std::this_thread::sleep_for(std::chrono::microseconds(1000));
     server.integrateWorldThreadSafe();
   }
