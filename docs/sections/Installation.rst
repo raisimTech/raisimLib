@@ -10,6 +10,8 @@ Please install/save everything locally to prevent any conflicts with other libra
 * ``WORKSPACE``: workspace where you clone your git repos (e.g., ~/raisim_workspace)
 * ``LOCAL_INSTALL``: install directory where you install exported cmake libraries (e.g., ~/raisim_build)
 
+You can add them to your environment variables or simply replace them by the path you want in the below instructions.
+
 Dependencies
 ============
 
@@ -39,7 +41,16 @@ Example install in Linux/Mac
     cmake .. -DCMAKE_INSTALL_PREFIX=$LOCAL_INSTALL -DRAISIM_EXAMPLE=ON -DRAISIM_PY=ON
     make install -j4
 
-Then, to use RaiSim more conveniently, you have to let your linker know where you installed RaiSim
+In Windows, you can use CMake gui or just use powershell.
+Instead of `make install -j4` command, you should use the following command in Windows
+
+.. code-block:: bash
+
+    cmake --build . --target install --config Release
+
+Because the build is done by Visual Studio, not by make.
+
+To use RaiSim more conveniently, you have to let your linker know where you installed RaiSim
 
 In **Linux**, you can do that by adding the following line to your ``~/.bashrc`` file
 
@@ -55,7 +66,7 @@ In **Mac**, you can do that by adding the following line to your `.zshrc` file
         export DYLD_LIBRARY_PATH=DYLD_LIBRARY_PATH:~/<WHERE-YOU-HAVE-INSTALLED-RAISIM>/lib
         export PYTHONPATH=$PYTHONPATH:~/<WHERE-YOU-HAVE-INSTALLED-RAISIM-PY>/lib
 
-In **Windows**, you can do that by adding the installation directory to your `PATH` environment variable.
+In **Windows**, you can do that by adding the installation directory to your `Path` environment variable.
 
 .. note::
     ** For Linux users **
