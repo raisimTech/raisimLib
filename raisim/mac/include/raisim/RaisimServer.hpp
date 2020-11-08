@@ -604,6 +604,8 @@ class RaisimServer final {
 
         case REQUEST_INITIALIZATION:
           serializeObjects();
+          serializeVisuals();
+          serializeWorld();
           break;
 
         case REQUEST_CHANGE_REALTIME_FACTOR:
@@ -619,7 +621,6 @@ class RaisimServer final {
           break;
 
         case REQUEST_INITIALIZE_VISUALS:
-          serializeVisuals();
           break;
 
         case REQUEST_VISUAL_POSITION:
@@ -1154,12 +1155,6 @@ class RaisimServer final {
 
   inline void serializeVisuals() {
     // std::lock_guard<std::mutex> guard(serverMutex_);
-
-    // set message type
-    data_ = set(data_, ServerMessageType::VISUAL_INITILIZATION);
-
-    // set configuration number
-    data_ = set(data_, visualConfiguration_);
 
     // Data begins
     data_ = set(data_, (uint64_t)(_visualObjects.size()));

@@ -810,7 +810,7 @@ class ArticulatedSystem : public Object {
 
   /**
    * @param[in] bodyIdx the body index. it can be retrieved by getBodyIdx()
-   * @param[in] torque_in_world_frame the applied torque expressed in the body frame */
+   * @param[in] torque_in_world_frame the applied torque expressed in the world frame */
   void setExternalTorque(size_t bodyIdx, const Vec<3> &torque_in_world_frame) final;
 
   /**
