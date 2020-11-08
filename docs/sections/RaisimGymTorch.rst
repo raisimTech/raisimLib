@@ -15,6 +15,11 @@ A simple pytorch-based RL framework is provided as well but it should work well 
 Instead of using raisimPy, pybind11 wraps a vectorized environment in C++ so that the parallelization happens in C++.
 This improves the speed tremendously.
 
+Dependencies
+============
+
+* raisim dependencies
+* (optional) virtualenv or anaconda
 
 Why raisimGymTorch?
 ============================

@@ -9,7 +9,7 @@ However, it is a generic rigid-body simulator and can simulate any rigid body ve
 Why RaiSim?
 
 * The speed is benchmarked against other popular physics engine. (`[1] <https://github.com/leggedrobotics/SimBenchmark>`_)
-* The accuracy of RaiSim has been demonstrated in a number of papers (`[2] <https://robotics.sciencemag.org/content/4/26/eaau5872/tab-article-info>`_, `[3] <https://arxiv.org/pdf/1901.07517.pdf>`_)
+* The accuracy of RaiSim has been demonstrated in a number of papers (`[2] <https://robotics.sciencemag.org/content/4/26/eaau5872/tab-article-info>`_, `[3] <https://arxiv.org/pdf/1901.07517.pdf>`_, `[4] <https://robotics.sciencemag.org/content/5/47/eabc5986>`_)
 * Easiest C++ simulation library to learn/use
 * A minimum number of dependencies (only on STL and Eigen)
 
@@ -22,13 +22,13 @@ There are two options available for visualization.
     * binaries included in the ``raisimUnity`` directory
     * easy to use but less features
     * runs as a seperate process
-    * works well in both windows and Linux (will be supported in Mac soon)
+    * works well in Linux, Mac, Windows
     * source code available `here <https://github.com/raisimTech/raisimUnity>`_ under the MIT license. Written in C#
 
 - **raisimOgre**
 
     * harder to use but rich in features
-    * works well in Linux. Should work in other two major OS's but not well tested
+    * works well in Linux. Should work in other two major OS's but not tested
     * easy to customize. Only C++ code
     * source code available `here <https://github.com/raisimTech/raisimogre>`_ under the MIT license
 
@@ -46,7 +46,7 @@ System Requirements
 
 - **Mac**
 
-    * (WILL BE AVAILABLE SOON)The binaries also contain AVX2 instructions.
+    * The support is experimental now. 
 
 Example code
 ===================
@@ -58,7 +58,7 @@ Here is an example of an RaiSim application code.
   #include "raisim/RaisimServer.hpp"
 
   int main() {
-    raisim::World::setActivationKey(PATH_TO_THE_ACTIVATION_KEY);
+    raisim::World::setActivationKey("PATH_TO_THE_ACTIVATION_KEY");
     raisim::World world;
     auto anymal = world.addArticulatedSystem(PATH_TO_URDF);
     auto ball = world.addSphere(1, 1);

@@ -19,6 +19,7 @@ RaiSim depends on the following open-source libraries
 
 * *Eigen3* (:code:`sudo apt-get install libeigen3-dev`)
 * cmake > 3.10 (Technically it is not a dependency but it makes the installation easier)
+* For windows users, visual studio 2019 (we only support 2019 but it will probably work with 2015 or above)
 
 RaiSim includes many open-source libraries. See the COPYING file for the full list.
 
@@ -42,6 +43,7 @@ Example install in Linux/Mac
     make install -j4
 
 In Windows, you can use CMake gui or just use powershell.
+CMake gui will open Visual Studio
 Instead of `make install -j4` command, you should use the following command in Windows
 
 .. code-block:: bash
@@ -69,7 +71,7 @@ In **Mac**, you can do that by adding the following line to your `.zshrc` file
 In **Windows**, you can do that by adding the installation directory to your `Path` environment variable.
 
 .. note::
-    ** For Linux users **
+    **For Linux users**
     To use (vulkan version) RaiSimUnity in Linux, you need to install ``minizip``, ``ffmpeg`` and ``vulkan``.
     To install vulkan, follow this link https://linuxconfig.org/install-and-test-vulkan-on-linux
 
@@ -78,6 +80,10 @@ In **Windows**, you can do that by adding the installation directory to your `Pa
     .. code-block:: bash
 
         sudo apt install minizip ffmpeg
+
+    If you still cannot raisimUnity, this probably means that your driver does not support vulkan so well.
+    In that case, you should use raisimUnityOpengl.
+    It only supports minimalistic graphics.
 
 
 
