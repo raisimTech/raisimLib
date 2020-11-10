@@ -7,9 +7,9 @@ Body types
 
 There are three available body types.
 
-1. DYNAMIC: can have a velocity, has a finite mass
-2. KINEMATIC: can have a velocity, has an infinite mass (e.g., conveyor belt)
-3. STATIC: cannot have a velocity, has an infinite mass (e.g., wall)
+1. ``DYNAMIC``: can have a velocity, has a finite mass
+2. ``KINEMATIC``: can have a velocity, has an infinite mass (e.g., conveyor belt)
+3. ``STATIC``: cannot have a velocity, has an infinite mass (e.g., wall)
 
 SingleBodyObjects can be of any type.
 ArticulatedSystems can only be DYNAMIC except the fixed base which can be STATIC.
