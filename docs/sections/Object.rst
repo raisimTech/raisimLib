@@ -16,8 +16,10 @@ ArticulatedSystems can only be DYNAMIC except the fixed base which can be STATIC
 
 You can get/set the body type using
 
-* `setBodyType(BodyType type)`
-* `getBodyType(BodyType type)`
+* ``setBodyType(BodyType type)``
+* ``getBodyType()`` or ``getBodyType(body_index)``
+
+``getBodyType()`` for ArticulatedSystems always returns DYNAMIC.
 
 Name
 ===============
@@ -28,10 +30,17 @@ These names are used by visualizers.
 Here is an example.
 
 .. code:: c
+
     auto sphere = world.addSphere(1,1);
     sphere->setName("sphere");
     std::string name = sphere->getName();
     auto same_sphere = world.getObject("sphere");
+
+Types
+===============
+
+All objects can be specified as either a SingleBodyObject or an ArticulatedSystem.
+
 
 .. toctree::
    :maxdepth: 2
