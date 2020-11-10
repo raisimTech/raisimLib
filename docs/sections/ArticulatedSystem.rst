@@ -25,7 +25,7 @@ Kinematic trees do not contain a loop (a body always has only one parent joint).
 Consequently, the number of joints is equal to the number of bodies (for floating systems, we assign a floating joint on the root body).
 RaiSim can only simulate **kinematic trees**.
 
-**Since all bodies have one joints, a body index is always the same as its parent joint's index**. 
+**Since all bodies have one joint, a body index is always the same as its parent joint's index**.
 A *body* refers to a rigid body which is composed of one or more *links*. All links within a body are connected to each other by a fixed joint.
 
 Creating an instance

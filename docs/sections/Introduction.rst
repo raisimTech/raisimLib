@@ -46,7 +46,7 @@ System Requirements
 
 - **Mac**
 
-    * The support is experimental now. 
+    * Latest version. (But probably work on most versions if the cpu supports AVX2)
 
 Example code
 ===================

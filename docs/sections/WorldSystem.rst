@@ -12,6 +12,8 @@ You can also mix the two ways, by loading an XML file and dynamically adding obj
 RaiSim World Configuration File Convention
 =============================================
 
+Most feature documentations include a world config file.
+
 Adding New Objects
 ============================
 To add a new object of a shape X, a method named :code:`addX` is used.
