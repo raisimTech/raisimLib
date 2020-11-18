@@ -21,7 +21,8 @@ raisim('setDTarget', 'laikago0', ones(18,1));
 for i=1:2000
     pause(1./500)
     raisim('integrate');
-    [force, position] = raisim('getContactForceAndPositions', 'laikago0', 'FR_calf');
+    [force, position, objects] = raisim('getContactForcePositionsObject', 'laikago0', 'FR_calf');
+    objects
 end
 
 % articulated system properties
@@ -69,7 +70,7 @@ for i=1:5000
     raisim('setGeneralizedForce', 'anymal0', zeros(18,1));
     raisim('integrate1');
     raisim('integrate2');
-    [force, position] = raisim('getContactForceAndPositions', 'sphere');
+    [force, position, objects] = raisim('getContactForcePositionsObject', 'sphere');
 end
 
 box_position = raisim('getPosition', 'box');

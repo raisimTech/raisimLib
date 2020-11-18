@@ -317,10 +317,10 @@ void mexFunction(
   GETTERJACO(getDenseFrameJacobian)
   GETTERJACO(getDenseFrameRotationalJacobian)
 
-  else if (!strcmp("getContactForceAndPositions", cmd)) {
+  else if (!strcmp("getContactForcePositionsObject", cmd)) {
     GETOBJ
     size_t bodyIdx;
-    CHECK_OUTPUT_SIZE(2)
+    CHECK_OUTPUT_SIZE(3)
 
     if(obj->getObjectType() == raisim::ARTICULATED_SYSTEM) {
       CHECK_INPUT_SIZE(3)
@@ -338,8 +338,11 @@ void mexFunction(
     raisim::Vec<3> position;
     std::vector<raisim::Vec<3>> impulseLists;
     std::vector<raisim::Vec<3>> positionLists;
+    std::vector<std::string> nameLists;
 
+    // "vector<string>" convert to  matlab "cell" type
     impulse.setZero();
+    int i = 0;
 
     for (auto& contact : obj->getContacts())
       if (contact.getlocalBodyIndex() == bodyIdx) {
@@ -349,16 +352,21 @@ void mexFunction(
         impulse /= world_->getTimeStep();
         impulseLists.push_back(impulse);
         positionLists.push_back(contact.getPosition());
+        nameLists.push_back(world_->getObjList()[contact.getPairObjectIndex()]->getName());        
       }
 
     plhs[0] = mxCreateDoubleMatrix(3, impulseLists.size(), mxREAL);
     plhs[1] = mxCreateDoubleMatrix(3, impulseLists.size(), mxREAL);
+    plhs[2] = mxCreateCellMatrix(impulseLists.size(), 1);
 
     for (size_t k = 0; k < impulseLists.size(); k++) {
       memcpy(mxGetPr(plhs[0]) + k * 3, impulseLists[k].ptr(),
              sizeof(double) * 3);
       memcpy(mxGetPr(plhs[1]) + k * 3, positionLists[k].ptr(),
              sizeof(double) * 3);
+      mxArray* str = mxCreateString(nameLists[k].c_str());
+      mxSetCell(plhs[2], i, mxDuplicateArray(str));
+      mxDestroyArray(str);
     }
   }
 
