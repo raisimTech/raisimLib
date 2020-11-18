@@ -199,4 +199,19 @@
     <origin rpy="3.14159 1.57079632679 0" xyz="0.312 0 -0.07"/>
   </joint>
 
+  <link name="lidar">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.05" length="0.2"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+  </link>
+  <joint name="lidar" type="fixed">
+    <parent link="base"/>
+    <child link="lidar"/>
+    <origin rpy="0 0 0" xyz="0 0 0.2"/>
+  </joint>
+
 </robot>
