@@ -419,7 +419,7 @@ class World {
   const RayCollisionList& rayTest(const Eigen::Vector3d& start,
                                   const Eigen::Vector3d& direction,
                                   double length,
-                                  bool closestOnly = false,
+                                  bool closestOnly = true,
                                   CollisionGroup collisionMask = CollisionGroup(-1));
 
   /**
@@ -591,6 +591,7 @@ protected:
   std::unordered_map<std::string, XmlObjectClass> xmlObjectClasses;
 
   // ray test
+  dGeomID ray_;
   RayCollisionList rayContact_;
 
   // the location of the license file
