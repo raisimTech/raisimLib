@@ -145,7 +145,7 @@ class Path {
     return raisim::Path(basePath);
 #else
     char cwd[PATH_MAX];
-    getcwd(cwd, sizeof(cwd));
+    RSFATAL_IF(getcwd(cwd, sizeof(cwd))==0, "Could not read directory path.");
     std::string basePath(argv0);
     std::string cwdStr(cwd);
 
