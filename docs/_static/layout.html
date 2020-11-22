@@ -1,0 +1,5 @@
+{% extends '!layout.html' %}
+
+{% block footer %}
+{%- if show_copyright %} {%- if hasdoc('copyrightt') %} {% set path = pathto('copyright') %} {% set copyright = copyright|e %} © {% trans %}Copyright{% endtrans %} {{ copyright }} {%- else %} {% set copyright = copyright|e %} © {% trans %}Copyright{% endtrans %} {{ copyright }} {%- endif %} {%- endif %} {%- if build_id and build_url %} {# Translators: Build is a noun, not a verb #} {% trans %}Build{% endtrans %} {{ build_id }}. {%- elif commit %} {# Translators: the phrase "revision" comes from Git, referring to a commit #} {% trans %}Revision{% endtrans %} {{ commit }}. {%- elif last_updated %} {% trans last_updated=last_updated|e %}Last updated on {{ last_updated }}.{% endtrans %} {%- endif %}
+{% endblock %}
