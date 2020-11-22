@@ -53,12 +53,10 @@ std::unique_ptr<raisim::World> world_;
 std::unique_ptr<raisim::RaisimServer> server_;
 
 void quit() {
-  if (initialized) {
-    server_->killServer();
-    world_.reset(nullptr);
-    server_.reset(nullptr);
-    initialized = false;
-  };
+  if (server_) server_->killServer();
+  world_.reset(nullptr);
+  server_.reset(nullptr);
+  initialized = false;
 }
 
 #define CHECK_INPUT_SIZE(X) if(nrhs != X) mexErrMsgTxt("Expecting X inputs");
@@ -196,37 +194,34 @@ void mexFunction(
     if (nrhs < 1 || nrhs > 3) mexErrMsgTxt("init: requires 1. (optional) xml file path 2. (optional) tcp/ip port number");
     if (nlhs > 0) mexErrMsgTxt("init does not output anything");
 
-    if (!initialized) {
-      raisim::RaiSimMsg::setFatalCallback([]() { mexErrMsgTxt(""); });
+    quit();
+    raisim::RaiSimMsg::setFatalCallback([]() { mexErrMsgTxt(""); });
 
-      int portPosition;
+    int portPosition;
 
-      if (mxIsChar(prhs[1])) {
-        GET_STRING(1, fileName)
-        world_.reset(new raisim::World(fileName));
-        portPosition = 2;
-      } else {
-        world_.reset(new raisim::World());
-        portPosition = 1;
-      }
-      server_.reset(new raisim::RaisimServer(world_.get()));
-
-      if (nrhs == portPosition + 1 && mxIsDouble(prhs[portPosition])) {
-        std::cout << "port number: " << (int)mxGetScalar(prhs[portPosition]) << std::endl;
-        server_->launchServer((int)mxGetScalar(prhs[portPosition]));        
-      } else {
-        server_->launchServer(8080);
-        std::cout << "port number: " << 8080 << std::endl;
-      }
-      
-      // ensures that, when fatal error occurs, matlab doesn't crash
-      // finish initialization
-      mexAtExit(quit);
-      mexLock();
-      initialized = true;
+    if (mxIsChar(prhs[1])) {
+      GET_STRING(1, fileName)
+      world_.reset(new raisim::World(fileName));
+      portPosition = 2;
     } else {
-      mexWarnMsgTxt("init: the world is already initialized");
+      world_.reset(new raisim::World());
+      portPosition = 1;
     }
+    server_.reset(new raisim::RaisimServer(world_.get()));
+
+    if (nrhs == portPosition + 1 && mxIsDouble(prhs[portPosition])) {
+      std::cout << "port number: " << (int)mxGetScalar(prhs[portPosition]) << std::endl;
+      server_->launchServer((int)mxGetScalar(prhs[portPosition]));
+    } else {
+      server_->launchServer(8080);
+      std::cout << "port number: " << 8080 << std::endl;
+    }
+
+    // ensures that, when fatal error occurs, matlab doesn't crash
+    // finish initialization
+    mexAtExit(quit);
+    mexLock();
+    initialized = true;
     return;
   }
 
