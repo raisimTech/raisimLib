@@ -22,7 +22,6 @@ for i=1:2000
     pause(1./500)
     raisim('integrate');
     [force, position, objects] = raisim('getContactForcePositionsObject', 'laikago0', 'FR_calf');
-    objects
 end
 
 % articulated system properties
