@@ -10,10 +10,8 @@ It fully supports Linux, Mac Os, and Windows.
 
 RaiSim is closed-source and is distributed under a few different types of license. Please check License section for details.
 
-The following chapters present C++ API.
-
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    sections/License
    sections/Introduction
