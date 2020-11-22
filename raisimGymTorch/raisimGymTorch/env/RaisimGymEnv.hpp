@@ -13,6 +13,7 @@
 #include "raisim/World.hpp"
 #include "raisim/RaisimServer.hpp"
 #include "Yaml.hpp"
+#include "Reward.hpp"
 
 #define __RSG_MAKE_STR(x) #x
 #define _RSG_MAKE_STR(x) __RSG_MAKE_STR(x)

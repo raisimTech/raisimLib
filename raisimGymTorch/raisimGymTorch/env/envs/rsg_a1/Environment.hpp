@@ -55,8 +55,7 @@ class ENVIRONMENT : public RaisimGymEnv {
     actionStd_.setConstant(0.3);
 
     /// Reward coefficients
-    READ_YAML(double, forwardVelRewardCoeff_, cfg["forwardVelRewardCoeff"])
-    READ_YAML(double, torqueRewardCoeff_, cfg["torqueRewardCoeff"])
+    rewards_.initializeFromConfigurationFile (cfg["reward"]);
 
     /// indices of links that should not make contact with ground
     footIndices_.insert(a1_->getBodyIdx("FR_calf"));
@@ -96,9 +95,10 @@ class ENVIRONMENT : public RaisimGymEnv {
 
     updateObservation();
 
-    torqueReward_ = torqueRewardCoeff_ * a1_->getGeneralizedForce().squaredNorm();
-    forwardVelReward_ = forwardVelRewardCoeff_ * std::min(4.0, bodyLinearVel_[0]);
-    return torqueReward_ + forwardVelReward_;
+    rewards_.record("torque", a1_->getGeneralizedForce().squaredNorm());
+    rewards_.record("forwardVel", std::min(4.0, bodyLinearVel_[0]));
+
+    return rewards_.sum();
   }
 
   void updateObservation() {
@@ -109,22 +109,6 @@ class ENVIRONMENT : public RaisimGymEnv {
     raisim::quatToRotMat(quat, rot);
     bodyLinearVel_ = rot.e().transpose() * gv_.segment(0, 3);
     bodyAngularVel_ = rot.e().transpose() * gv_.segment(3, 3);
-
-
-    /// TO BE DELETED SOON. JUST FOR EXAMPLE
-    auto footIndex = a1_->getBodyIdx("FR_calf");
-    for(auto& contact: a1_->getContacts()) {
-      if ( footIndex == contact.getlocalBodyIndex() ) {
-        std::cout<<"Contact impulse in the contact frame: "<<contact.getImpulse()->e()<<std::endl;
-        std::cout<<"is ObjectA: "<<contact.isObjectA()<<std::endl;
-        std::cout<<"Contact frame: \n"<<contact.getContactFrame().e()<<std::endl;
-        std::cout<<"Contact impulse in the world frame: "<<contact.getContactFrame().e() * contact.getImpulse()->e()<<std::endl;
-        std::cout<<"Contact Normal in the world frame: "<<contact.getNormal().e().transpose()<<std::endl;
-        std::cout<<"Contact position in the world frame: "<<contact.getPosition().e().transpose()<<std::endl;
-        std::cout<<"It collides with: "<<world_->getObject(contact.getPairObjectIndex())<<std::endl;
-        std::cout<<"please check Contact.hpp for the full list of the methods"<<std::endl;
-      }
-    }
 
     obDouble_ << gc_[2], /// body height
         rot.e().row(2).transpose(), /// body orientation
@@ -161,6 +145,7 @@ class ENVIRONMENT : public RaisimGymEnv {
   Eigen::VectorXd actionMean_, actionStd_, obDouble_;
   Eigen::Vector3d bodyLinearVel_, bodyAngularVel_;
   std::set<size_t> footIndices_;
+  raisim::Reward rewards_;
 };
 }
 
