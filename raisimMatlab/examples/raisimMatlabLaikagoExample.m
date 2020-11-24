@@ -22,7 +22,7 @@ for i=1:2000
     pause(1./500)
     raisim('integrate');
     raisim('setPosition', 'treadmill', 0, 0, 0);
-    [force, position, objects] = raisim('getContactForcePositionsObject', 'laikago0', 'FR_calf');
+    [force, position, objects] = raisim('getContactForcePositionsObject', 'laikago0', 'trunk');
 end
 
 % articulated system properties
@@ -69,6 +69,7 @@ for i=1:5000
     pause(1./500)
     raisim('setGeneralizedForce', 'anymal0', zeros(18,1));
     raisim('integrate1');
+    
     raisim('integrate2');
     raisim('setPosition', 'treadmill', 0, 0, 0);
     [force, position, objects] = raisim('getContactForcePositionsObject', 'sphere');
