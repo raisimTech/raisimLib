@@ -59,14 +59,14 @@ In **Linux**, you can do that by adding the following line to your ``~/.bashrc``
     .. code-block:: bash
 
         export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/<WHERE-YOU-HAVE-INSTALLED-RAISIM>/lib
-        export PYTHONPATH=$PYTHONPATH:~/<WHERE-YOU-HAVE-INSTALLED-RAISIM-PY>/lib
+        export PYTHONPATH=$PYTHONPATH:~/<WHERE-YOU-HAVE-INSTALLED-RAISIM>/lib
 
 In **Mac**, you can do that by adding the following line to your `.zshrc` file
 
     .. code-block:: bash
 
         export DYLD_LIBRARY_PATH=DYLD_LIBRARY_PATH:~/<WHERE-YOU-HAVE-INSTALLED-RAISIM>/lib
-        export PYTHONPATH=$PYTHONPATH:~/<WHERE-YOU-HAVE-INSTALLED-RAISIM-PY>/lib
+        export PYTHONPATH=$PYTHONPATH:~/<WHERE-YOU-HAVE-INSTALLED-RAISIM>/lib
 
 In **Windows**, you can do that by adding the installation directory to your `Path` environment variable.
 

@@ -22,6 +22,8 @@ This code simulates the following dynamics
 API
 ====
 
+LengthConstraint
+********************
 
 .. doxygenclass:: raisim::LengthConstraint
    :members:
