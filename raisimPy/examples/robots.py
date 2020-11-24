@@ -69,9 +69,6 @@ mass_matrix = anymal.get_mass_matrix()
 # non-linear term (gravity+coriolis)
 non_linearities = anymal.get_non_linearities()
 
-# non-linear term (gravity+coriolis)
-non_linearities = anymal.get_non_linearities()
-
 for i in range(50000):
     world.integrate()
 
