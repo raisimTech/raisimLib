@@ -3342,7 +3342,7 @@ big, small {
 }
 
 .rst-content .wy-alert-neutral.admonition-todo a, .rst-content .wy-alert-neutral.admonition a, .rst-content .wy-alert-neutral.attention a, .rst-content .wy-alert-neutral.caution a, .rst-content .wy-alert-neutral.danger a, .rst-content .wy-alert-neutral.error a, .rst-content .wy-alert-neutral.hint a, .rst-content .wy-alert-neutral.important a, .rst-content .wy-alert-neutral.note a, .rst-content .wy-alert-neutral.seealso a, .rst-content .wy-alert-neutral.tip a, .rst-content .wy-alert-neutral.warning a, .wy-alert.wy-alert-neutral a {
-    color: #2980b9
+    color: #810505
 }
 
 .rst-content .admonition-todo p:last-child, .rst-content .admonition p:last-child, .rst-content .attention p:last-child, .rst-content .caution p:last-child, .rst-content .danger p:last-child, .rst-content .error p:last-child, .rst-content .hint p:last-child, .rst-content .important p:last-child, .rst-content .note p:last-child, .rst-content .seealso p:last-child, .rst-content .tip p:last-child, .rst-content .warning p:last-child, .wy-alert p:last-child {
@@ -3379,7 +3379,7 @@ big, small {
 }
 
 .wy-tray-container li.wy-tray-item-info {
-    background: #2980b9
+    background: #810505
 }
 
 .wy-tray-container li.wy-tray-item-warning {
@@ -3500,7 +3500,7 @@ button[disabled] {
 }
 
 .btn-info {
-    background-color: #2980b9 !important
+    background-color: #810505 !important
 }
 
 .btn-info:hover {
@@ -3555,7 +3555,7 @@ button[disabled] {
 
 .btn-link {
     background-color: transparent !important;
-    color: #2980b9;
+    color: #810505;
     box-shadow: none;
     border-color: transparent !important
 }
@@ -3622,7 +3622,7 @@ button[disabled] {
 }
 
 .wy-dropdown-menu > dd > a:hover {
-    background: #2980b9;
+    background: #810505;
     color: #fff
 }
 
@@ -3671,7 +3671,7 @@ button[disabled] {
 }
 
 .wy-dropdown.wy-dropdown-bubble .wy-dropdown-menu a:hover {
-    background: #2980b9;
+    background: #810505;
     color: #fff
 }
 
@@ -4126,7 +4126,7 @@ input[type=checkbox][disabled], input[type=radio][disabled] {
 }
 
 .wy-inline-validate.wy-inline-validate-info .wy-input-context {
-    color: #2980b9
+    color: #810505
 }
 
 .rotate-90 {
@@ -4363,7 +4363,7 @@ input[type=checkbox][disabled], input[type=radio][disabled] {
 }
 
 a {
-    color: #2980b9;
+    color: #810505;
     text-decoration: none;
     cursor: pointer
 }
@@ -4429,7 +4429,7 @@ a.wy-text-warning:hover {
 }
 
 .wy-text-info {
-    color: #2980b9 !important
+    color: #810505 !important
 }
 
 a.wy-text-info:hover {
@@ -4680,7 +4680,7 @@ html {
 }
 
 .wy-menu-vertical header, .wy-menu-vertical p.caption {
-    color: #55a5d9;
+    color: #dbe000;
     height: 32px;
     line-height: 32px;
     padding: 0 1.618em;
@@ -4878,24 +4878,13 @@ html {
 }
 
 .wy-menu-vertical a:active {
-    background-color: #2980b9;
+    background-color: #810505;
     cursor: pointer;
     color: #fff
 }
 
 .wy-menu-vertical a:active span.toctree-expand {
     color: #fff
-}
-
-.wy-side-nav-search {
-    display: block;
-    width: 300px;
-    padding: .109em;
-    margin-bottom: .109em;
-    z-index: 200;
-    background-color: #2980b9;
-    text-align: center;
-    color: #fcfcfc
 }
 
 .wy-side-nav-search input[type=text] {
@@ -4910,7 +4899,7 @@ html {
     margin: auto auto .809em;
     height: 45px;
     width: 45px;
-    background-color: #2980b9;
+    background-color: #810505;
     padding: 5px;
     border-radius: 100%
 }
@@ -4930,11 +4919,11 @@ html {
 
 .wy-side-nav-search .wy-dropdown > a img.logo, .wy-side-nav-search > a img.logo {
     display: block;
-    margin: 0 auto;
+    margin: auto;
     height: auto;
     width: auto;
     border-radius: 0;
-    max-width: 100%;
+    max-width: 50%;
     background: transparent
 }
 
@@ -4943,7 +4932,7 @@ html {
 }
 
 .wy-side-nav-search > div .wy-menu-vertical header {
-    color: #2980b9
+    color: #810505
 }
 
 .wy-nav .wy-menu-vertical a {
@@ -4951,7 +4940,7 @@ html {
 }
 
 .wy-nav .wy-menu-vertical a:hover {
-    background-color: #2980b9;
+    background-color: #810505;
     color: #fff
 }
 
@@ -5018,7 +5007,7 @@ html {
 
 .wy-nav-top {
     display: none;
-    background: #2980b9;
+    background: #810505;
     color: #fff;
     padding: .4045em .809em;
     position: relative;
@@ -5046,7 +5035,7 @@ html {
     margin-right: 12px;
     height: 45px;
     width: 45px;
-    background-color: #2980b9;
+    background-color: #810505;
     padding: 5px;
     border-radius: 100%
 }
@@ -5228,7 +5217,7 @@ footer p {
 }
 
 .rst-versions a {
-    color: #2980b9;
+    color: #810505;
     text-decoration: none
 }
 
@@ -5793,7 +5782,7 @@ html.writer-html5 .rst-content table.docutils td > p, html.writer-html5 .rst-con
 }
 
 .rst-content a code, .rst-content a tt {
-    color: #2980b9
+    color: #810505
 }
 
 .rst-content dl {
@@ -5824,7 +5813,7 @@ html.writer-html4 .rst-content dl:not(.docutils) > dt, html.writer-html5 .rst-co
     font-size: 90%;
     line-height: normal;
     background: #e7f2fa;
-    color: #2980b9;
+    color: #810505;
     border-top: 3px solid #6ab0de;
     padding: 6px;
     position: relative
