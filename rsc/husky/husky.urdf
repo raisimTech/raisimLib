@@ -102,7 +102,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
     </visual>
   </link>
   <joint name="imu_joint" type="fixed">
-    <origin rpy="0 0 3.14159" xyz="-0.22 0 0.309"/>
+    <origin rpy="0 0 3.14159" xyz="-0.25 0 0.309"/>
     <parent link="base_link"/>
     <child link="imu_link"/>
   </joint>
