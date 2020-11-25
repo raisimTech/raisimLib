@@ -337,7 +337,6 @@ void mexFunction(
 
     // "vector<string>" convert to  matlab "cell" type
     impulse.setZero();
-    int i = 0;
 
     for (auto& contact : obj->getContacts())
       if (contact.getlocalBodyIndex() == bodyIdx) {
@@ -360,7 +359,7 @@ void mexFunction(
       memcpy(mxGetPr(plhs[1]) + k * 3, positionLists[k].ptr(),
              sizeof(double) * 3);
       mxArray* str = mxCreateString(nameLists[k].c_str());
-      mxSetCell(plhs[2], i, mxDuplicateArray(str));
+      mxSetCell(plhs[2], k, mxDuplicateArray(str));
       mxDestroyArray(str);
     }
   }
