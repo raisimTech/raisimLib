@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
   terrainProperties.fractalGain = 0.25;
 
   auto hm = world.addHeightMap(0.0, 0.0, terrainProperties);
-  auto robot = world.addArticulatedSystem(binaryPath.getDirectory() + "/rsc/megabot/smb.urdf");
+  auto robot = world.addArticulatedSystem(binaryPath.getDirectory() + "/rsc/husky/husky.urdf");
   robot->setName("smb");
   Eigen::VectorXd gc(robot->getGeneralizedCoordinateDim()), gv(robot->getDOF()), damping(robot->getDOF());
   gc.setZero(); gv.setZero();
@@ -40,8 +40,8 @@ int main(int argc, char* argv[]) {
   server.launchServer();
   std::vector<raisim::Visuals *> scans;
   server.focusOn(robot);
-  int scanSize1 = 10;
-  int scanSize2 = 30;
+  int scanSize1 = 8;
+  int scanSize2 = 25;
 
   for(int i=0; i<scanSize1; i++)
     for(int j=0; j<scanSize2; j++)
@@ -53,8 +53,8 @@ int main(int argc, char* argv[]) {
     raisim::MSLEEP(1.0);
     server.integrateWorldThreadSafe();
     raisim::Vec<3> lidarPos; raisim::Mat<3,3> lidarOri;
-    robot->getFramePosition("lidar", lidarPos);
-    robot->getFrameOrientation("lidar", lidarOri);
+    robot->getFramePosition("imu_joint", lidarPos);
+    robot->getFrameOrientation("imu_joint", lidarOri);
 
     for(int i=0; i<scanSize1; i++) {
       for (int j = 0; j < scanSize2; j++) {

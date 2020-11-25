@@ -20,6 +20,11 @@ Examples
 **Biomechanical simulation**, created by Young-Jun Koo, PhD and Seungbum Koo, PhD at Musculoskeletal BioDynamics Lab, KAIST.
 The geometric model is created using the Full-body musculoskeletal model in Rajagopal et al. (2016).
 
+.. image:: image/huskyScan.gif
+  :alt: husky
+  :width: 600
+**Ray Test example with Husky and Velodyne**
+
 .. image:: image/anymals.png
   :alt: anymals
   :width: 600

@@ -291,14 +291,10 @@ class RaisimServer final {
           current = std::chrono::steady_clock::now();
 
           if (std::chrono::duration_cast<std::chrono::seconds>(current - lastChecked).count() > 3.0) {
-            std::cout<<"The client has been disconnected for "<<std::chrono::duration_cast<std::chrono::seconds>(current - lastChecked).count()<<". Waiting for a new connection..."<<std::endl;
+            std::cout<<"The client has been disconnected for "<<std::chrono::duration_cast<std::chrono::seconds>(current - lastChecked).count()<<" seconds. Waiting for a new connection..."<<std::endl;
             connected_ = false;
           }
         }
-
-        if(state_ == STATUS_HIBERNATING)
-          usleep(100000);
-      }
 
         if (state_ == STATUS_HIBERNATING)
           std::this_thread::sleep_for(std::chrono::microseconds(100000));

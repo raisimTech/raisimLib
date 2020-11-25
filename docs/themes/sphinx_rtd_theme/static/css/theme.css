@@ -136,7 +136,8 @@ svg:not(:root) {
 }
 
 figure, form {
-    margin: 0
+    margin-bottom: 10px;
+    margin-right: 5px
 }
 
 label {
