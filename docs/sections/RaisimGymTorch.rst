@@ -49,10 +49,6 @@ In the raisimGymTorch directory,
     python raisimGymTorch/env/envs/rsg_anymal/runner.py
 
 To visualize the policy, run raisimUnity as well.
-Make sure you experiment with different number of threads in ``cfg.yaml`` file.
-The performance is optimal if the number of environments is multiples of the number of threads.
-Play with the numbers to find the sweat spot.
-
 It will show/record the performance of the policy every 200 iterations.
 All recorded videos can be found in ``raisimlib/raisimUnity/<OS>/screenshots``
 

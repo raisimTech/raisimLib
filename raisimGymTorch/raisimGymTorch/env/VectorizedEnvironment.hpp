@@ -32,16 +32,9 @@ class VectorizedEnvironment {
 
   void init() {
     omp_set_num_threads(cfg_["num_threads"].template As<int>());
-    nThread_ = cfg_["num_threads"].template As<int>();
-    nEnv_ = cfg_["num_envs"].template As<int>();
-    envPerThreadLow_ = nEnv_/nThread_;
+    num_envs_ = cfg_["num_envs"].template As<int>();
 
-    for (int i=0; i < nThread_; i++)
-      startingIdx_.push_back((i*nEnv_)/nThread_);
-
-    startingIdx_.push_back(nEnv_);
-
-    for (int i = 0; i < nEnv_; i++) {
+    for (int i = 0; i < num_envs_; i++) {
       environments_.push_back(new ChildEnvironment(resourceDir_, cfg_, render_ && i == 0));
       environments_.back()->setSimulationTimeStep(cfg_["simulation_dt"].template As<double>());
       environments_.back()->setControlTimeStep(cfg_["control_dt"].template As<double>());
@@ -49,7 +42,7 @@ class VectorizedEnvironment {
 
     setSeed(0);
 
-    for (int i = 0; i < nEnv_; i++) {
+    for (int i = 0; i < num_envs_; i++) {
       // only the first environment is visualized
       environments_[i]->init();
       environments_[i]->reset();
@@ -67,19 +60,16 @@ class VectorizedEnvironment {
   }
 
   void observe(Eigen::Ref<EigenRowMajorMat> &ob) {
-#pragma omp parallel for
-    for (int i = 0; i < nThread_; i++)
-      for(int j=startingIdx_[i]; j<startingIdx_[i+1]; j++)
-        environments_[j]->observe(ob.row(j));
+    for (int i = 0; i < num_envs_; i++)
+      environments_[i]->observe(ob.row(i));
   }
 
   void step(Eigen::Ref<EigenRowMajorMat> &action,
             Eigen::Ref<EigenVec> &reward,
             Eigen::Ref<EigenBoolVec> &done) {
-#pragma omp parallel for
-    for (int i = 0; i < nThread_; i++)
-      for(int j=startingIdx_[i]; j<startingIdx_[i+1]; j++)
-        perAgentStep(j, action, reward, done);
+#pragma omp parallel for schedule(dynamic)
+    for (int i = 0; i < num_envs_; i++)
+      perAgentStep(i, action, reward, done);
   }
 
   void turnOnVisualization() { if(render_) environments_[0]->turnOnVisualization(); }
@@ -99,7 +89,7 @@ class VectorizedEnvironment {
   }
 
   void isTerminalState(Eigen::Ref<EigenBoolVec>& terminalState) {
-    for (int i = 0; i < nEnv_; i++) {
+    for (int i = 0; i < num_envs_; i++) {
       float terminalReward;
       terminalState[i] = environments_[i]->isTerminalState(terminalReward);
     }
@@ -117,13 +107,15 @@ class VectorizedEnvironment {
 
   int getObDim() { return obDim_; }
   int getActionDim() { return actionDim_; }
-  int getNumOfEnvs() { return nEnv_; }
+  int getNumOfEnvs() { return num_envs_; }
 
   ////// optional methods //////
   void curriculumUpdate() {
     for (auto *env: environments_)
       env->curriculumUpdate();
   };
+
+ private:
 
   inline void perAgentStep(int agentId,
                            Eigen::Ref<EigenRowMajorMat> &action,
@@ -141,13 +133,12 @@ class VectorizedEnvironment {
   }
 
   std::vector<ChildEnvironment *> environments_;
-  int nEnv_ = 1, nThread_=1, envPerThreadLow_=1, nEnvHigh_=1;
-  std::vector<int> startingIdx_, endingIdx_;
+
+  int num_envs_ = 1;
   int obDim_ = 0, actionDim_ = 0;
   bool recordVideo_=false, render_=false;
   std::string resourceDir_;
   Yaml::Node cfg_;
-
 };
 
 }

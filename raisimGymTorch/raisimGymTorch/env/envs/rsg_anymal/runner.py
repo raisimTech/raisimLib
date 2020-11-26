@@ -19,6 +19,7 @@ home_path = task_path + "/../../../../.."
 
 # config
 cfg = YAML().load(open(task_path + "/cfg.yaml", 'r'))
+cfg['environment']['num_threads'] = 2.0 * multiprocessing.cpu_count()
 
 # create environment from the configuration file
 env = VecEnv(rsg_anymal.RaisimGymEnv(home_path + "/rsc", dump(cfg['environment'], Dumper=RoundTripDumper)), cfg['environment'])
