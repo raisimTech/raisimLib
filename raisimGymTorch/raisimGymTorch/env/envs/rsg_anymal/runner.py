@@ -11,7 +11,6 @@ import torch.nn as nn
 import numpy as np
 import torch
 import datetime
-import multiprocessing
 
 # directories
 task_path = os.path.dirname(os.path.realpath(__file__))
@@ -19,7 +18,6 @@ home_path = task_path + "/../../../../.."
 
 # config
 cfg = YAML().load(open(task_path + "/cfg.yaml", 'r'))
-cfg['environment']['num_threads'] = 2.0 * multiprocessing.cpu_count()
 
 # create environment from the configuration file
 env = VecEnv(rsg_anymal.RaisimGymEnv(home_path + "/rsc", dump(cfg['environment'], Dumper=RoundTripDumper)), cfg['environment'])
