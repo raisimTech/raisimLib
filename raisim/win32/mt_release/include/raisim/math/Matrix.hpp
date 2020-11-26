@@ -116,7 +116,7 @@ class Mat : public MatExpr<Mat<n, m>> {
     return zero;
   }
 
-  auto transpose() { return Transpose<Mat<n,m>>(*this); }
+  Transpose<Mat<n,m>> transpose() { return Transpose<Mat<n,m>>(*this); }
 
   inline RowRef<Mat<n, m>, m> row(size_t r) { return RowRef<Mat<n,m>, m>(*this, r); }
   inline const RowRef<Mat<n, m>, m> row(size_t r) const { return RowRef<Mat<n,m>, m>(*this, r); }
