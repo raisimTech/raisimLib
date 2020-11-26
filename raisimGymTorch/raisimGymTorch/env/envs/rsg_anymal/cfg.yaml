@@ -2,7 +2,7 @@ seed: 1
 record_video: yes
 
 environment:
-  render: False
+  render: True
 # just testing commenting
   num_envs: 100
   eval_every_n: 200
