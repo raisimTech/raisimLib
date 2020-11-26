@@ -85,5 +85,13 @@ In **Windows**, you can do that by adding the installation directory to your `Pa
     In that case, you should use raisimUnityOpengl.
     It only supports minimalistic graphics.
 
+Examples
+===============
 
+To run examples, copy-paste the activation that you received by email to ``rsc`` directory.
+When you run CMake, it will copy the ``rsc`` directory to a build directory.
 
+In **Windows**, also copy your activation key to ``raisim\win32\mt_release\bin\rsc`` directory.
+Then, you can run prebuilt examples in ``raisim\win32\mt_release\bin``.
+
+Make sure that you run raisimUnity executable in ``raisimUnity/<OS>/RaiSimUnity`` before you run the examples.
