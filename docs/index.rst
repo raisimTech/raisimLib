@@ -32,7 +32,7 @@ The geometric model is created using the Full-body musculoskeletal model in Raja
 
 .. toctree::
    :maxdepth: 1
-   :caption: General
+   :caption: Before using RaiSim
 
    sections/License
    sections/Acknowledgement
