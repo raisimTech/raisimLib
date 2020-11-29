@@ -657,11 +657,6 @@ class RaisimServer final {
   }
 
   inline void serializeWorld() {
-    if (!updateReady_) {
-      data_ = set(data_, ServerMessageType::NO_MESSAGE);
-      return;
-    }
-
     // std::lock_guard<std::mutex> guard(serverMutex_);
     auto &objList = world_->getObjList();
 

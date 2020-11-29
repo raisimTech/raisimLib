@@ -29,6 +29,7 @@ class Single3DContactProblem;
 class Object {
   friend class raisim::World;
   friend class raisim::contact::BisectionContactSolver;
+  friend class raisim::contact::Single3DContactProblem;
 
  public:
   explicit Object();
@@ -54,6 +55,9 @@ class Object {
   virtual void setExternalTorque(size_t localIdx, const Vec<3>& torque) = 0;
   /// apply force (expressed in the world frame) at specific location of the body (expressed in the body frame)
   virtual void setExternalForce(size_t localIdx, const Vec<3>& pos, const Vec<3>& force) = 0;
+  /// apply spring force (expressed in the world frame) at specific location of the body (expressed in the body frame)
+  // spring force is not visualized
+  virtual void setConstraintForce(size_t localIdx, const Vec<3>& pos, const Vec<3>& force) = 0;
 
   virtual double getMass(size_t localIdx) const = 0;
   virtual ObjectType getObjectType() const = 0;
@@ -104,6 +108,8 @@ class Object {
   std::vector<raisim::Vec<3>> externalForceVizPos_;
   std::vector<raisim::Vec<3>> externalTorqueViz_;
   std::vector<raisim::Vec<3>> externalTorqueVizPos_;
+  std::vector<SparseJacobian> constraintJaco_;
+  std::vector<Vec<3>> constraintForce_;
 };
 
 } // raisim
