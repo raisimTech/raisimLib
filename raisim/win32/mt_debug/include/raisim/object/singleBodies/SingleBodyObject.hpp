@@ -177,6 +177,7 @@ class SingleBodyObject : public Object {
   void setExternalForce(size_t localIdx, const Vec<3>& force) final;
   void setExternalTorque(size_t localIdx, const Vec<3>& torque) final;
   void setExternalForce(size_t localIdx, const Vec<3>& pos, const Vec<3>& force) final;
+  void setConstraintForce(size_t localIdx, const Vec<3>& pos, const Vec<3>& force) final;
   void setGyroscopicMode(GyroscopicMode gyroscopicMode);
   void getPosition(size_t localIdx, const Vec<3>& pos_b, Vec<3>& pos_w) const final;
   void getPosition(Vec<3>& pos_w) { pos_w = bodyPosition_; };
@@ -261,6 +262,9 @@ class SingleBodyObject : public Object {
 
   std::vector <raisim::Mat<6,3>> MinvJT_;
   std::vector <raisim::Mat<3,6>> J_;
+
+  /// constrained systems use different integration shceme
+  bool constrained_ = false;
 };
 
 } // rai_simulator

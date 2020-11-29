@@ -23,6 +23,15 @@ class Object;
 
 namespace contact {
 
+namespace rank {
+constexpr int RANK1_CONTACT = 1;
+constexpr int RANK2_CONTACT = 2;
+constexpr int RANK3_CONTACT = 3;
+constexpr int STIFF_LENGTH_CONSTRAINT = 4;
+constexpr int JOINT_LIMITS = 5;
+constexpr int COMPLIANT_LENGTH_CONSTRAINT = 6;
+}
+
 class Single3DContactProblem {
  public:
   Single3DContactProblem(const MaterialPairProperties &mat, double x, double y, double z, double depth_in);

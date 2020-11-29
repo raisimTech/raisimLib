@@ -803,10 +803,10 @@ class ArticulatedSystem : public Object {
   /** set external force (expressed in the world frame) acting on the point specified by the frame
    * @param[in] frame the name of the frame where you want to applied the force. The force is applied to the origin of the frame, on the body where the frame is attached to.
    * @param[in] force the applied force in the world frame*/
-    void setExternalForce(const std::string& frame_name, const Vec<3>& force) {
-      auto& frame = getFrameByName(frame_name);
-      setExternalForce(frame.parentId, Frame::WORLD_FRAME, force, Frame::BODY_FRAME, frame.position);
-    }
+  void setExternalForce(const std::string& frame_name, const Vec<3>& force) {
+    auto& frame = getFrameByName(frame_name);
+    setExternalForce(frame.parentId, Frame::WORLD_FRAME, force, Frame::BODY_FRAME, frame.position);
+  }
 
   /**
    * @param[in] bodyIdx the body index. it can be retrieved by getBodyIdx()
@@ -1228,6 +1228,8 @@ class ArticulatedSystem : public Object {
   const std::vector<SpringElement>& getSprings() const { return springs_; }
 
   inline void jacoSub(const raisim::SparseJacobian &jaco1, raisim::SparseJacobian &jaco, bool isFloatingBase);
+
+  void setConstraintForce(size_t bodyIdx, const Vec<3>& pos, const Vec<3>& force) final;
 
  private:
 
