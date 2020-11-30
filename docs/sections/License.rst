@@ -2,16 +2,16 @@
 License
 #############################
 
-RaiSim Commercial License
+How does it work?
 ========================================
 
-RaiSim Commercial license (`License agreement <https://drive.google.com/file/d/1IAHbS8mXTCyVAnMikp3WyT0cCqFCxTZw/view?usp=sharing>`_) is available at 1000 USD / year / person.
-You can submit a purchase order at  `link <https://docs.google.com/forms/d/e/1FAIpQLSc1FjnRj4BV9xSTgrrRH-GMDsio_Um4DmD0Yt12MLNAFKm12Q/viewform?usp=sf_link>`_.
-Send an email to info.raisim@gmail.com for any inquiries. 
+You need an activation key to use RaiSim.
+After you submit **RaiSim License Request Form** `here <https://docs.google.com/forms/d/e/1FAIpQLSc1FjnRj4BV9xSTgrrRH-GMDsio_Um4DmD0Yt12MLNAFKm12Q/viewform?usp=sf_link>`_, we will review your request and send you an activation key.
+Please check examples to see how to use the activation key.
+Send an email to info.raisim@gmail.com for any inquiries.
 
-RaiSim Academic License
-========================================
+Following license types are available
 
-Go to this `link <https://docs.google.com/forms/d/e/1FAIpQLSc1FjnRj4BV9xSTgrrRH-GMDsio_Um4DmD0Yt12MLNAFKm12Q/viewform?usp=sf_link>`_ to request for an academic license.
-You can download the binaries at `link <https://github.com/raisimTech/raisimlib>`_.
-
+* Commercial license (`SLA <https://drive.google.com/file/d/10W_9H8Ur37B6GllR0Qb3JQyj7Fh-AVlx/view?usp=sharing>`_): 1000 USD per person per year
+* Academic license (`SLA <https://drive.google.com/file/d/10W_9H8Ur37B6GllR0Qb3JQyj7Fh-AVlx/view?usp=sharing>`_): free
+* Trial license (`SLA <https://drive.google.com/file/d/1-fUZx2_h9UO3KcePWRjRz-itiypHORp2/view?usp=sharing>`_): free but only for one month
