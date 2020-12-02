@@ -1191,8 +1191,6 @@ class ArticulatedSystem : public Object {
 
   void getSparseJacobian_internal(size_t bodyIdx, const Vec<3> &point_W, SparseJacobian &jaco);
 
-  CollisionSet &getCollisionObj() { return collisionBodies; }
-
   void updateCollision() final;
 
   void computeMassMatrix(MatDyn &M);
