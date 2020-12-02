@@ -557,7 +557,6 @@ protected:
                           CollisionGroup collisionMask);
   dSpaceID collisionWorld_;
   std::pair<std::vector<dContactGeom>, int> contacts_;
-  std::vector<dGeomID> colObjList_;
 
   // simulation properties
   Vec<3> gravity_;

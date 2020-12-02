@@ -10,8 +10,6 @@ int main(int argc, char* argv[]) {
 
   /// create raisim world
   raisim::World world;
-  world.setTimeStep(0.003);
-  world.setERP(world.getTimeStep(), world.getTimeStep());
 
   /// create objects
   raisim::TerrainProperties terrainProperties;
@@ -24,7 +22,7 @@ int main(int argc, char* argv[]) {
   terrainProperties.fractalOctaves = 3;
   terrainProperties.fractalLacunarity = 2.0;
   terrainProperties.fractalGain = 0.25;
-  auto hm = world.addHeightMap(0.0, 0.0, terrainProperties);
+  raisim::HeightMap* hm = world.addHeightMap(0.0, 0.0, terrainProperties);
 
   std::vector<raisim::ArticulatedSystem*> anymals;
 
@@ -38,7 +36,7 @@ int main(int argc, char* argv[]) {
   jointPgain.tail(12).setConstant(200.0);
   jointDgain.tail(12).setConstant(10.0);
 
-  const size_t N = 1;
+  const size_t N = 4;
 
   for (size_t i = 0; i < N; i++) {
     for (size_t j = 0; j < N; j++) {
@@ -55,11 +53,6 @@ int main(int argc, char* argv[]) {
       anymals.back()->setName("anymal" + std::to_string(j + i * N));
     }
   }
-
-  std::default_random_engine generator;
-  std::normal_distribution<double> distribution(0.0, 0.2);
-  std::srand(std::time(nullptr));
-  anymals.back()->printOutBodyNamesInOrder();
 
   /// launch raisim servear
   raisim::RaisimServer server(&world);
