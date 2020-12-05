@@ -27,6 +27,7 @@ raisimUnity
   :alt: raisimUnity
   :width: 600
 
+* **If this doesn't work on your linux machine, try raisimUnityOpengl, which is a stripped-down version**
 * binaries included in the ``raisimUnity`` directory
 * easy to use but less features
 * runs as a separate process
