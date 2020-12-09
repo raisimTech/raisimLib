@@ -1346,7 +1346,7 @@ class ArticulatedSystem : public Object {
   std::vector<SpringElement> springs_;
 
   // stable PD controller
-  VecDyn kp_, kd_, uref_, qref_, diag_w, posErr_, uErr_;
+  VecDyn kp_, kd_, uref_, qref_, diag_w, diag_w_dt_, posErr_, uErr_;
   VecDyn rotorInertia_;
   VecDyn generalizedMomentum_;
   VecDyn temp, temp2;
