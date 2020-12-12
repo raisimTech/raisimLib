@@ -8,8 +8,11 @@
 #define RAISIM_CONTACT_HPP
 
 #include <raisim/configure.hpp>
+#include "raisim/helper.hpp"
 
 namespace raisim {
+
+typedef std::vector<std::pair<std::vector <raisim::Mat<3, 3>, AlignedAllocator<raisim::Mat<3, 3>, 32>>, raisim::Vec<3>>, AlignedAllocator<std::pair<std::vector <raisim::Mat<3, 3>, AlignedAllocator<raisim::Mat<3, 3>, 32>>, raisim::Vec<3>>, 32>> DelassusType;
 
 class World;
 

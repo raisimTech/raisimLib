@@ -49,6 +49,13 @@ find_package_handle_standard_args(raisim
     raisim_LIBRARIES
 )
 
+# compiling options
+if (CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "DEBUG")
+    add_definitions(-DRSDEBUG)
+else()
+    remove_definitions(-DRSDEBUG)
+endif ()
+
 if(raisim_FOUND)
   message(STATUS "raisim:")
   message(STATUS "  Version: ${raisim_VERSION}")
