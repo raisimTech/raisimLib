@@ -7,8 +7,9 @@
 #ifndef RAISIM_PEROBJECTCONTACT_HPP
 #define RAISIM_PEROBJECTCONTACT_HPP
 
+#include "raisim/helper.hpp"
 #include "raisim/math.hpp"
-#include "Contact.hpp"
+#include "raisim/contact/Contact.hpp"
 
 namespace raisim {
 namespace contact {
@@ -25,7 +26,7 @@ class PerObjectContactList {
     contacts_.push_back(contact);
   }
 
-  void setDelassusAndTauStar(const std::vector<std::pair<std::vector<Mat<3, 3>>, Vec<3>>> &delassusAndTauStar) {
+  void setDelassusAndTauStar(const DelassusType &delassusAndTauStar) {
     delassusAndTauStar_ = delassusAndTauStar;
   }
 
@@ -49,7 +50,7 @@ class PerObjectContactList {
     return contacts_;
   }
 
-  std::vector<std::pair<std::vector<Mat<3, 3>>, Vec<3>>> &getDelassusAndTauStar() {
+  DelassusType &getDelassusAndTauStar() {
     return delassusAndTauStar_;
   }
 
@@ -59,7 +60,7 @@ class PerObjectContactList {
 
 
  private:
-  std::vector<std::pair<std::vector <raisim::Mat<3, 3>>, raisim::Vec<3>>> delassusAndTauStar_;
+  DelassusType delassusAndTauStar_;
   std::vector<Contact> contacts_;
   std::vector<Vec<3>> impulsesSaved_;
   std::vector<int> localIdxSaved_;

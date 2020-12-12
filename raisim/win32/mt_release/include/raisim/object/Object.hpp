@@ -78,7 +78,7 @@ class Object {
   const std::vector<raisim::Vec<3>>& getExternalTorquePosition() const { return externalTorqueVizPos_; }
 
  protected:
-  std::vector<std::pair<std::vector <raisim::Mat<3, 3>>, raisim::Vec<3>>> &getDelassusAndTauStar();
+  DelassusType &getDelassusAndTauStar();
   double &getImpactVel(size_t idx);
   contact::PerObjectContactList &getPerObjectContact();
   virtual void destroyCollisionBodies(dSpaceID id) = 0;
