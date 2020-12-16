@@ -11,6 +11,15 @@ import torch.nn as nn
 import numpy as np
 import torch
 import datetime
+import argparse
+
+# configuration
+parser = argparse.ArgumentParser()
+parser.add_argument('-m', '--mode', help='set mode either train or test', type=str, default='train')
+parser.add_argument('-w', '--weight', help='pre-trained weight path', type=str, default='')
+args = parser.parse_args()
+mode = args.mode
+weight_path = args.weight
 
 # check if gpu is available
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -29,9 +38,23 @@ env = VecEnv(rsg_anymal.RaisimGymEnv(home_path + "/rsc", dump(cfg['environment']
 ob_dim = env.num_obs
 act_dim = env.num_acts
 
-# save the configuration and other files
-saver = ConfigurationSaver(log_dir=home_path + "/raisimGymTorch/data/roughTerrain",
-                           save_items=[task_path + "/cfg.yaml", task_path + "/Environment.hpp"])
+if mode == 'retrain':
+    # save the configuration and related files to pre-trained model
+    if weight_path == "":
+        raise Exception("\nCan't find the pre-trained weight, please provide a pre-trained weight with --weight switch\n")
+    print("\nRetraining from the policy:", weight_path+".pt\n")
+
+    full_checkpoint_path = weight_path.rsplit('/', 1)[0] + '/' + 'full_' + weight_path.rsplit('/', 1)[1].split('_', 1)[1] + '.pt'
+    mean_csv_path = weight_path.rsplit('/', 1)[0] + '/' + 'mean' + weight_path.rsplit('/', 1)[1].split('_', 1)[1] + '.csv'
+    var_csv_path = weight_path.rsplit('/', 1)[0] + '/' + 'var' + weight_path.rsplit('/', 1)[1].split('_', 1)[1] + '.csv'
+    saver = ConfigurationSaver(log_dir=home_path + "/raisimGymTorch/data/roughTerrain",
+                               save_items=[task_path + "/cfg.yaml", task_path + "/Environment.hpp"],
+                               pretrained_items=[weight_path.rsplit('/', 1)[0].rsplit('/', 1)[1], [weight_path+'.pt', weight_path+'.txt', full_checkpoint_path, mean_csv_path, var_csv_path]])
+
+else:
+    # save the configuration and other files
+    saver = ConfigurationSaver(log_dir=home_path + "/raisimGymTorch/data/roughTerrain",
+                               save_items=[task_path + "/cfg.yaml", task_path + "/Environment.hpp"])
 
 # Training
 n_steps = math.floor(cfg['environment']['max_time'] / cfg['environment']['control_dt'])
@@ -52,6 +75,16 @@ critic = ppo_module.Critic(ppo_module.MLP(cfg['architecture']['value_net'],
                                           1),
                            device)
 
+if mode == 'retrain':
+    ## load observation scaling from files of pre-trained model
+    env.load_scaling(weight_path.rsplit('/', 1)[0], int(weight_path.rsplit('/', 1)[1].split('_', 1)[1]))
+    print("Load observation scaling in", weight_path.rsplit('/', 1)[0]+":", "mean"+str(int(weight_path.rsplit('/', 1)[1].split('_', 1)[1])) + ".csv", "and", "var"+str(int(weight_path.rsplit('/', 1)[1].split('_', 1)[1])) + ".csv")
+    ## load actor and critic parameters from full checkpoint
+    checkpoint = torch.load(full_checkpoint_path)
+    actor.architecture.load_state_dict(checkpoint['actor_architecture_state_dict'])
+    actor.distribution.load_state_dict(checkpoint['actor_distribution_state_dict'])
+    critic.architecture.load_state_dict(checkpoint['critic_architecture_state_dict'])
+
 ppo = PPO.PPO(actor=actor,
               critic=critic,
               num_envs=cfg['environment']['num_envs'],
@@ -65,6 +98,9 @@ ppo = PPO.PPO(actor=actor,
               mini_batch_sampling='in_order',
               )
 
+if mode == 'retrain':
+    ## load optimizer parameters from full checkpoint
+    ppo.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
 
 for update in range(1000000):
     start = time.time()
