@@ -52,6 +52,32 @@ To visualize the policy, run raisimUnity as well.
 It will show/record the performance of the policy every 200 iterations.
 All recorded videos can be found in ``raisimlib/raisimUnity/<OS>/screenshots``
 
+How to debug
+=============================
+
+A pybind11 package (e.g., your environment) might be difficult to debug because you have to write it in C++ but you cannot run it as a normal executable.
+So we provide a debug app that wraps your environment and creates an executable.
+To build the debug app, build your environment with
+
+.. code-block:: bash
+
+    python setup.py develop --Debug
+
+Then, the debug executable is created next to your pybind11 package (``raisimGymTorch/raisimGymTorch/env/bin``).
+If you use CLion (which is recommended), open raisimGymTorch directory in CLion.
+It will automatically add the debug app executable.
+It provides a convenient gui for debugging.
+
+You can run the debug app as
+
+.. code-block:: bash
+
+    ./debug_app_<environment name> <full path to rsc directory> <full path to the cfg file>
+
+or add the arguments to CLion executable configuration then run.
+
+**In Windows**, make sure that you are linking against the debug-build raisim.
+Visual Studio compiled executables will not work if it links against a library built with different compile flags.
 
 How does it work?
 =============================

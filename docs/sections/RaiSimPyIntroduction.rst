@@ -7,4 +7,8 @@ It was initiated by Brian Delhaisse and now RaiSim Tech Inc. is continuing the d
 
 RaisimPy is distributed under the MIT license.
 
+The install instructions are given `here <https://raisim.com/sections/Installation.html>`_.
+
+
+
 **doc will be added soon**

@@ -39,7 +39,6 @@ atlas_nominal_joint_config[2] = 1.5
 atlas_nominal_joint_config[3] = 1
 atlas.set_generalized_coordinates(atlas_nominal_joint_config)
 
-
 server.launch_server(8080)
 
 for i in range(5):
@@ -65,9 +64,14 @@ world.integrate1()
 ### get dynamic properties
 # mass matrix
 mass_matrix = anymal.get_mass_matrix()
-
 # non-linear term (gravity+coriolis)
 non_linearities = anymal.get_non_linearities()
+# Jacobians
+jaco_foot_lh_linear = anymal.get_dense_frame_linear_jacobian("LF_ADAPTER_TO_FOOT")
+jaco_foot_lh_angular = anymal.get_dense_frame_rotational_jacobian("LF_ADAPTER_TO_FOOT")
+
+lf_foot_idx = anymal.get_frame_idx_by_name("LF_ADAPTER_TO_FOOT")
+
 
 for i in range(50000):
     world.integrate()

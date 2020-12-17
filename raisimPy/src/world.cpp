@@ -27,9 +27,9 @@ void init_world(py::module &m) {
 
     py::class_<raisim::RaisimServer>(m, "RaisimServer")
         .def(py::init<raisim::World*>())
-        .def("launch_server", &raisim::RaisimServer::launchServer)
-        .def("kill_server", &raisim::RaisimServer::killServer)
-        .def("integrate_world_thread_safe", &raisim::RaisimServer::integrateWorldThreadSafe);
+        .def("launchServer", &raisim::RaisimServer::launchServer)
+        .def("killServer", &raisim::RaisimServer::killServer)
+        .def("integrateWorldThreadSafe", &raisim::RaisimServer::integrateWorldThreadSafe);
 
     /*********/
 	/* World */
@@ -38,7 +38,7 @@ void init_world(py::module &m) {
 	    .def(py::init<>(), "Initialize the World.")
 	    .def(py::init<const std::string &>(), "Initialize the World from the given config file.", py::arg("configFile"))
 
-	    .def_static("set_license_file", &raisim::World::setActivationKey, R"mydelimiter(
+	    .def_static("setLicenseFile", &raisim::World::setActivationKey, R"mydelimiter(
         Set the license file path.
 
         Args:
@@ -46,7 +46,7 @@ void init_world(py::module &m) {
         )mydelimiter", py::arg("licenseFile"))
 
 
-	    .def("set_time_step", &raisim::World::setTimeStep, R"mydelimiter(
+	    .def("setTimeStep", &raisim::World::setTimeStep, R"mydelimiter(
 	    Set the given time step `dt` in the simulator.
 
 	    Args:
@@ -55,7 +55,7 @@ void init_world(py::module &m) {
 	    py::arg("dt"))
 
 
-	    .def("get_time_step", &raisim::World::getTimeStep, R"mydelimiter(
+	    .def("getTimeStep", &raisim::World::getTimeStep, R"mydelimiter(
 	    Get the current time step that has been set in the simulator.
 
 	    Returns:
@@ -63,7 +63,7 @@ void init_world(py::module &m) {
 	    )mydelimiter")
 
 
-	    .def("add_sphere", &raisim::World::addSphere, R"mydelimiter(
+	    .def("addSphere", &raisim::World::addSphere, R"mydelimiter(
 	    Add dynamically a sphere into the world.
 
 	    Args:
@@ -81,7 +81,7 @@ void init_world(py::module &m) {
 	    py::return_value_policy::reference_internal)
 
 
-	    .def("add_box", &raisim::World::addBox, R"mydelimiter(
+	    .def("addBox", &raisim::World::addBox, R"mydelimiter(
 	    Add dynamically a box into the world.
 
 	    Args:
@@ -101,7 +101,7 @@ void init_world(py::module &m) {
 	    py::return_value_policy::reference_internal)
 
 
-        .def("add_cylinder", &raisim::World::addCylinder, R"mydelimiter(
+        .def("addCylinder", &raisim::World::addCylinder, R"mydelimiter(
 	    Add dynamically a cylinder into the world.
 
 	    Args:
@@ -119,7 +119,7 @@ void init_world(py::module &m) {
 	    py::arg("collision_group") = 1, py::arg("collision_mask") = CollisionGroup(-1),
 	    py::return_value_policy::reference_internal)
 
-	    .def("add_capsule", &raisim::World::addCapsule, R"mydelimiter(
+	    .def("addCapsule", &raisim::World::addCapsule, R"mydelimiter(
 	    Add dynamically a capsule into the world.
 
 	    Args:
@@ -138,7 +138,7 @@ void init_world(py::module &m) {
 	    py::return_value_policy::reference_internal)
 
 
-	    .def("add_ground", &raisim::World::addGround, R"mydelimiter(
+	    .def("addGround", &raisim::World::addGround, R"mydelimiter(
 	    Add dynamically a ground into the world.
 
 	    Args:
@@ -153,7 +153,7 @@ void init_world(py::module &m) {
 	    py::return_value_policy::reference_internal)
 
 
-        .def("add_heightmap", py::overload_cast<size_t, size_t, double, double, double, double, const std::vector<double> &,
+        .def("addHeightMap", py::overload_cast<size_t, size_t, double, double, double, double, const std::vector<double> &,
             const std::string &, CollisionGroup, CollisionGroup>(&raisim::World::addHeightMap), R"mydelimiter(
 	    Add a heightmap into the world.
 
@@ -178,7 +178,7 @@ void init_world(py::module &m) {
 	    py::return_value_policy::reference_internal)
 
 
-        .def("add_heightmap", py::overload_cast<const std::string &, double, double, const std::string &,
+        .def("addHeightMap", py::overload_cast<const std::string &, double, double, const std::string &,
             CollisionGroup, CollisionGroup>(&raisim::World::addHeightMap), R"mydelimiter(
 	    Add a heightmap into the world.
 
@@ -198,7 +198,7 @@ void init_world(py::module &m) {
 	    py::return_value_policy::reference_internal)
 
 
-        .def("add_heightmap", py::overload_cast<const std::string &, double, double, double, double, double, double,
+        .def("addHeightMap", py::overload_cast<const std::string &, double, double, double, double, double, double,
             const std::string &, CollisionGroup, CollisionGroup>(&raisim::World::addHeightMap), R"mydelimiter(
 	    Add a heightmap into the world.
 
@@ -223,7 +223,7 @@ void init_world(py::module &m) {
 	    py::return_value_policy::reference_internal)
 
 
-        .def("add_heightmap", py::overload_cast<double, double, raisim::TerrainProperties&, const std::string &,
+        .def("addHeightMap", py::overload_cast<double, double, raisim::TerrainProperties&, const std::string &,
             CollisionGroup, CollisionGroup>(&raisim::World::addHeightMap), R"mydelimiter(
 	    Add a heightmap into the world.
 
@@ -243,7 +243,7 @@ void init_world(py::module &m) {
 	    py::return_value_policy::reference_internal)
 
 
-        .def("add_articulated_system", py::overload_cast<const std::string &, const std::string &,
+        .def("addArticulatedSystem", py::overload_cast<const std::string &, const std::string &,
             const std::vector<std::string> &, CollisionGroup, CollisionGroup,
             ArticulatedSystemOption>(&raisim::World::addArticulatedSystem), R"mydelimiter(
 	    Add an articulated system in the world.
@@ -264,7 +264,7 @@ void init_world(py::module &m) {
 	    py::return_value_policy::reference_internal)
 
 
-        .def("add_compound", [](raisim::World &self, const std::vector<raisim::Compound::CompoundObjectChild> &children,
+        .def("addCompound", [](raisim::World &self, const std::vector<raisim::Compound::CompoundObjectChild> &children,
                         double mass, py::array_t<double> center_of_mass, py::array_t<double> inertia, CollisionGroup group=1,
                         CollisionGroup mask = CollisionGroup(-1)) {
             // convert np.array to Mat<3,3>
@@ -292,7 +292,7 @@ void init_world(py::module &m) {
 	    py::return_value_policy::reference_internal)
 
 
-        .def("add_mesh", [](raisim::World &self, const std::string & file_name,
+        .def("addMesh", [](raisim::World &self, const std::string & file_name,
                                 double mass, py::array_t<double> inertia, py::array_t<double> com,
                                 double scale=1., const std::string & material = "default", CollisionGroup group=1,
                                 CollisionGroup mask = CollisionGroup(-1)) {
@@ -324,7 +324,7 @@ void init_world(py::module &m) {
              py::return_value_policy::reference_internal)
 
 
-        .def("add_stiff_wire", [](raisim::World &self, raisim::Object &object1, size_t local_idx1,
+        .def("addStiffWire", [](raisim::World &self, raisim::Object &object1, size_t local_idx1,
                 py::array_t<double> pos_body1, raisim::Object &object2, size_t local_idx2,
                 py::array_t<double> pos_body2, double length) {
 
@@ -354,7 +354,7 @@ void init_world(py::module &m) {
             py::return_value_policy::reference_internal)
 
 
-        .def("add_compliant_wire", [](raisim::World &self, raisim::Object &object1, size_t local_idx1,
+        .def("addCompliantWire", [](raisim::World &self, raisim::Object &object1, size_t local_idx1,
                 py::array_t<double> pos_body1, raisim::Object &object2, size_t local_idx2,
                 py::array_t<double> pos_body2, double length, double stiffness) {
 
@@ -385,7 +385,7 @@ void init_world(py::module &m) {
             py::return_value_policy::reference_internal)
 
 
-        .def("get_object",py::overload_cast<const std::string &>(&raisim::World::getObject), R"mydelimiter(
+        .def("getObject",py::overload_cast<const std::string &>(&raisim::World::getObject), R"mydelimiter(
 	    Get the specified object instance from its unique name.
 
 	    Args:
@@ -398,7 +398,7 @@ void init_world(py::module &m) {
 	    py::return_value_policy::reference_internal)
 
 
-        .def("get_object",py::overload_cast<std::size_t>(&raisim::World::getObject), R"mydelimiter(
+        .def("getObject",py::overload_cast<std::size_t>(&raisim::World::getObject), R"mydelimiter(
 	    Get the specified object instance from its unique name.
 
 	    Args:
@@ -411,7 +411,7 @@ void init_world(py::module &m) {
         py::return_value_policy::reference_internal)
 
 
-	    .def("get_constraint", &raisim::World::getConstraint, R"mydelimiter(
+	    .def("getConstraint", &raisim::World::getConstraint, R"mydelimiter(
 	    Get the specified constraint instance from its unique name.
 
 	    Args:
@@ -424,7 +424,7 @@ void init_world(py::module &m) {
 	    py::return_value_policy::reference_internal)
 
 
-	    .def("get_wire", &raisim::World::getWire, R"mydelimiter(
+	    .def("getWire", &raisim::World::getWire, R"mydelimiter(
 	    Get the specified wire instance from its unique name.
 
 	    Args:
@@ -437,7 +437,7 @@ void init_world(py::module &m) {
 	    py::return_value_policy::reference_internal)
 
 
-        .def("get_configuration_number", &raisim::World::getConfigurationNumber, R"mydelimiter(
+        .def("getConfigurationNumber", &raisim::World::getConfigurationNumber, R"mydelimiter(
 	    Get the number of elements that are in the world. The returned number is updated everytime that we add or
 	    remove an object from the world.
 
@@ -446,7 +446,7 @@ void init_world(py::module &m) {
 	    )mydelimiter")
 
 
-	    .def("remove_object", py::overload_cast<raisim::Object*>(&raisim::World::removeObject), R"mydelimiter(
+	    .def("removeObject", py::overload_cast<raisim::Object*>(&raisim::World::removeObject), R"mydelimiter(
 	    Remove dynamically an object from the world.
 
 	    Args:
@@ -455,7 +455,7 @@ void init_world(py::module &m) {
 	    py::arg("obj"))
 
 
-	    .def("remove_object", py::overload_cast<raisim::StiffLengthConstraint*>(&raisim::World::removeObject), R"mydelimiter(
+	    .def("removeObject", py::overload_cast<raisim::StiffLengthConstraint*>(&raisim::World::removeObject), R"mydelimiter(
 	    Remove dynamically a stiff wire from the world.
 
 	    Args:
@@ -464,7 +464,7 @@ void init_world(py::module &m) {
 	    py::arg("wire"))
 
 
-	    .def("remove_object", py::overload_cast<raisim::CompliantLengthConstraint*>(&raisim::World::removeObject), R"mydelimiter(
+	    .def("removeObject", py::overload_cast<raisim::CompliantLengthConstraint*>(&raisim::World::removeObject), R"mydelimiter(
 	    Remove dynamically a compliant wire from the world.
 
 	    Args:
@@ -494,12 +494,12 @@ void init_world(py::module &m) {
 
 
         // TODO: improve the doc for the below method
-        .def("get_contact_problems", &raisim::World::getContactProblem, R"mydelimiter(
+        .def("getContactProblem", &raisim::World::getContactProblem, R"mydelimiter(
         Return the list of contacts.
         )mydelimiter")
 
 
-        .def("get_object_list", &raisim::World::getObjList, R"mydelimiter(
+        .def("getObjList", &raisim::World::getObjList, R"mydelimiter(
         Return the list of object instances that are in the world.
 
         Returns:
@@ -507,7 +507,7 @@ void init_world(py::module &m) {
         )mydelimiter")
 
 
-        .def("update_material_property", &raisim::World::updateMaterialProp, R"mydelimiter(
+        .def("updateMaterialProp", &raisim::World::updateMaterialProp, R"mydelimiter(
         Update material property.
 
         Args:
@@ -516,7 +516,7 @@ void init_world(py::module &m) {
         py::arg("prop"))
 
 
-        .def("set_material_pair_properties", &raisim::World::setMaterialPairProp, R"mydelimiter(
+        .def("setMaterialPairProp", &raisim::World::setMaterialPairProp, R"mydelimiter(
         Set material pair properties.
 
         Args:
@@ -529,7 +529,7 @@ void init_world(py::module &m) {
         py::arg("material1"), py::arg("material2"), py::arg("friction"), py::arg("restitution"), py::arg("threshold"))
 
 
-        .def("set_default_material", &raisim::World::setDefaultMaterial, R"mydelimiter(
+        .def("setDefaultMaterial", &raisim::World::setDefaultMaterial, R"mydelimiter(
         Set the default material.
 
         Args:
@@ -540,7 +540,7 @@ void init_world(py::module &m) {
         py::arg("friction"), py::arg("restitution"), py::arg("threshold"))
 
 
-        .def("get_gravity", [](raisim::World &world) {
+        .def("getGravity", [](raisim::World &world) {
             Vec<3> gravity = world.getGravity();
             return convert_vec_to_np(gravity);
         }, R"mydelimiter(
@@ -551,7 +551,7 @@ void init_world(py::module &m) {
         )mydelimiter")
 
 
-        .def("set_gravity", [](raisim::World &world, py::array_t<double> array) {
+        .def("setGravity", [](raisim::World &world, py::array_t<double> array) {
             raisim::Vec<3> gravity = convert_np_to_vec<3>(array);
             world.setGravity(gravity);
         }, R"mydelimiter(
@@ -562,7 +562,7 @@ void init_world(py::module &m) {
         )mydelimiter", py::arg("gravity"))
 
 
-        .def("set_erp", &raisim::World::setERP, "Set the error reduction parameter (ERP).", py::arg("erp"), py::arg("erp2")=0)
+        .def("setERP", &raisim::World::setERP, "Set the error reduction parameter (ERP).", py::arg("erp"), py::arg("erp2")=0)
 
 
         .def("set_contact_solver_parameters", &raisim::World::setContactSolverParam, R"mydelimiter(
@@ -578,7 +578,7 @@ void init_world(py::module &m) {
         py::arg("alpha_init"), py::arg("alpha_min"), py::arg("alpha_decay"), py::arg("max_iters"), py::arg("threshold"))
 
 
-        .def("get_world_time", &raisim::World::getWorldTime, R"mydelimiter(
+        .def("getWorldTime", &raisim::World::getWorldTime, R"mydelimiter(
         Return the total integrated time (which is updated at every `integrate2()`` call).
 
         Returns:
@@ -586,7 +586,7 @@ void init_world(py::module &m) {
         )mydelimiter")
 
 
-        .def("set_world_time", &raisim::World::setWorldTime, R"mydelimiter(
+        .def("setWorldTime", &raisim::World::setWorldTime, R"mydelimiter(
         Set the world time.
 
         Args:
@@ -594,7 +594,7 @@ void init_world(py::module &m) {
         )mydelimiter", py::arg("time"))
 
 
-        .def("get_contact_solver", py::overload_cast<>(&raisim::World::getContactSolver), R"mydelimiter(
+        .def("getContactSolver", py::overload_cast<>(&raisim::World::getContactSolver), R"mydelimiter(
         Return the bisection contact solver used.
 
         Returns:

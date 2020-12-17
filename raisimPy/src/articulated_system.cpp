@@ -90,21 +90,21 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         )mydelimiter",
         py::arg("rot_offset"), py::arg("pos_offset"), py::arg("local_idx"), py::arg("collision_object"), py::arg("name"))
 
-        .def_property("rot_offset",
+        .def_property("rotOffset",
             [](raisim::CollisionDefinition &self) {  // getter
                 return convert_mat_to_np(self.rotOffset);
             }, [](raisim::CollisionDefinition &self, py::array_t<double> array) {  // setter
                 Mat<3,3> rot = convert_np_to_mat<3,3>(array);
                 self.rotOffset = rot;
             })
-        .def_property("pos_offset",
+        .def_property("posOffset",
             [](raisim::CollisionDefinition &self) {  // getter
                 return convert_vec_to_np(self.posOffset);
             }, [](raisim::CollisionDefinition &self, py::array_t<double> array) {  // setter
                 Vec<3> pos = convert_np_to_vec<3>(array);
                 self.posOffset = pos;
             })
-        .def_readwrite("local_idx", &raisim::CollisionDefinition::localIdx)
+        .def_readwrite("localIdx", &raisim::CollisionDefinition::localIdx)
         .def_readwrite("name", &raisim::CollisionDefinition::name);
 
 
@@ -118,7 +118,6 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         .value("Mesh", raisim::Shape::Type::Mesh)
         .value("Capsule", raisim::Shape::Type::Capsule)
         .value("Cone", raisim::Shape::Type::Cone);
-
 
     /*******************/
     /* CoordinateFrame */
@@ -138,10 +137,10 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
                 Mat<3,3> rot = convert_np_to_mat<3,3>(array);
                 self.orientation = rot;
             })
-        .def_readwrite("parent_id", &raisim::CoordinateFrame::parentId)
-        .def_readwrite("parent_name", &raisim::CoordinateFrame::parentName)
+        .def_readwrite("parentId", &raisim::CoordinateFrame::parentId)
+        .def_readwrite("parentName", &raisim::CoordinateFrame::parentName)
         .def_readwrite("name", &raisim::CoordinateFrame::name)
-        .def_readwrite("is_child", &raisim::CoordinateFrame::isChild);  // child is the first body after movable joint. All fixed bodies attached to a child is not a child
+        .def_readwrite("isChild", &raisim::CoordinateFrame::isChild);  // child is the first body after movable joint. All fixed bodies attached to a child is not a child
 
 
     /***************************/
@@ -182,7 +181,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         py::arg("filename"), py::arg("resource_directory"), py::arg("joint_order"), py::arg("options"))
 
 
-        .def("get_generalized_coordinates", [](raisim::ArticulatedSystem &self) {
+        .def("getGeneralizedCoordinate", [](raisim::ArticulatedSystem &self) {
             return convert_vecdyn_to_np(self.getGeneralizedCoordinate());
         }, R"mydelimiter(
         Get the generalized coordinates of the system.
@@ -196,7 +195,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         )mydelimiter")
 
 
-        .def("get_base_quaternion", [](raisim::ArticulatedSystem &self) {
+        .def("getBaseOrientation", [](raisim::ArticulatedSystem &self) {
             Vec<4> quaternion;
             self.getBaseOrientation(quaternion);
             return convert_vec_to_np(quaternion);
@@ -207,7 +206,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
             np.array[float[4]]: base orientation (expressed as a quaternion [w,x,y,z])
         )mydelimiter")
 
-        .def("get_base_rotation_matrix", [](raisim::ArticulatedSystem &self) {
+        .def("getBaseOrientation", [](raisim::ArticulatedSystem &self) {
             Mat<3,3> rot;
             self.getBaseOrientation(rot);
             return convert_mat_to_np(rot);
@@ -218,7 +217,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
             np.array[float[3,3]]: rotation matrix
         )mydelimiter")
 
-        .def("get_generalized_velocities", [](raisim::ArticulatedSystem &self) {
+        .def("getGeneralizedVelocity", [](raisim::ArticulatedSystem &self) {
             return convert_vecdyn_to_np(self.getGeneralizedVelocity());
         }, R"mydelimiter(
         Get the generalized velocities of the system.
@@ -231,21 +230,21 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
             np.array[float[n]]: generalized velocities.
         )mydelimiter")
 
-        .def("update_kinematics", &raisim::ArticulatedSystem::updateKinematics,  R"mydelimiter(
+        .def("updateKinematics", &raisim::ArticulatedSystem::updateKinematics,  R"mydelimiter(
         Update the kinematics.
 
         It is unnecessary to call this function if you are simulating your system. `integrate1` calls this function.
         Call this function if you want to get kinematic properties but you don't want to integrate.
         )mydelimiter")
 
-        .def("set_generalized_coordinates", py::overload_cast<std::initializer_list<double>>(&raisim::ArticulatedSystem::setGeneralizedCoordinate), R"mydelimiter(
+        .def("setGeneralizedCoordinate", py::overload_cast<std::initializer_list<double>>(&raisim::ArticulatedSystem::setGeneralizedCoordinate), R"mydelimiter(
         Set the generalized coordinates.
 
         Args:
             coordinates (list[float]): generalized coordinates to set.
         )mydelimiter",
         py::arg("coordinates"))
-        .def("set_generalized_coordinates", py::overload_cast<const Eigen::VectorXd &>(&raisim::ArticulatedSystem::setGeneralizedCoordinate), R"mydelimiter(
+        .def("setGeneralizedCoordinate", py::overload_cast<const Eigen::VectorXd &>(&raisim::ArticulatedSystem::setGeneralizedCoordinate), R"mydelimiter(
         Set the generalized coordinates.
 
         Args:
@@ -254,14 +253,14 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         py::arg("coordinates"))
 
 
-        .def("set_generalized_velocities", py::overload_cast<std::initializer_list<double>>(&raisim::ArticulatedSystem::setGeneralizedVelocity), R"mydelimiter(
+        .def("setGeneralizedVelocity", py::overload_cast<std::initializer_list<double>>(&raisim::ArticulatedSystem::setGeneralizedVelocity), R"mydelimiter(
         Set the generalized velocities.
 
         Args:
             velocities (list[float]): generalized velocities to set.
         )mydelimiter",
         py::arg("velocities"))
-        .def("set_generalized_velocities", py::overload_cast<const Eigen::VectorXd &>(&raisim::ArticulatedSystem::setGeneralizedVelocity), R"mydelimiter(
+        .def("setGeneralizedVelocity", py::overload_cast<const Eigen::VectorXd &>(&raisim::ArticulatedSystem::setGeneralizedVelocity), R"mydelimiter(
         Set the generalized velocities.
 
         Args:
@@ -270,7 +269,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         py::arg("velocities"))
 
 
-        .def("set_generalized_forces", py::overload_cast<std::initializer_list<double>>(&raisim::ArticulatedSystem::setGeneralizedForce), R"mydelimiter(
+        .def("setGeneralizedForce", py::overload_cast<std::initializer_list<double>>(&raisim::ArticulatedSystem::setGeneralizedForce), R"mydelimiter(
         Set the generalized forces.
 
         These are the feedforward generalized forces. In the PD control mode, this differs from the actual
@@ -280,7 +279,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
             forces (list[float]): generalized forces to set.
         )mydelimiter",
         py::arg("forces"))
-        .def("set_generalized_forces", py::overload_cast<const Eigen::VectorXd &>(&raisim::ArticulatedSystem::setGeneralizedForce), R"mydelimiter(
+        .def("setGeneralizedForce", py::overload_cast<const Eigen::VectorXd &>(&raisim::ArticulatedSystem::setGeneralizedForce), R"mydelimiter(
         Set the generalized forces.
 
         These are the feedforward generalized forces. In the PD control mode, this differs from the actual
@@ -291,7 +290,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         )mydelimiter",
         py::arg("forces"))
 
-        .def("get_states", [](raisim::ArticulatedSystem &self) {
+        .def("getState", [](raisim::ArticulatedSystem &self) {
             Eigen::VectorXd gc;
             Eigen::VectorXd gv;
 
@@ -307,7 +306,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         )mydelimiter")
 
 
-        .def("set_states", &raisim::ArticulatedSystem::setState, R"mydelimiter(
+        .def("setState", &raisim::ArticulatedSystem::setState, R"mydelimiter(
         Set the joint states.
 
         Args:
@@ -319,7 +318,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
 
         /* get dynamics properties. Make sure that after integration you call "integrate1()" of the world object
         before using this method. Generalized force is the actual force */
-        .def("get_generalized_forces", [](raisim::ArticulatedSystem &self) {
+        .def("getGeneralizedForce", [](raisim::ArticulatedSystem &self) {
             VecDyn vec = self.getGeneralizedForce();
             return convert_vecdyn_to_np(vec);
         }, R"mydelimiter(
@@ -330,7 +329,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         )mydelimiter")
 
 
-        .def("get_feedforward_generalized_forces", [](raisim::ArticulatedSystem &self) {
+        .def("getFeedForwardGeneralizedForce", [](raisim::ArticulatedSystem &self) {
             VecDyn vec = self.getFeedForwardGeneralizedForce();
             return convert_vecdyn_to_np(vec);
         }, R"mydelimiter(
@@ -341,7 +340,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         )mydelimiter")
 
 
-        .def("get_mass_matrix", [](raisim::ArticulatedSystem &self) {
+        .def("getMassMatrix", [](raisim::ArticulatedSystem &self) {
             MatDyn mat = self.getMassMatrix();
             return convert_matdyn_to_np(mat);
         }, R"mydelimiter(
@@ -357,7 +356,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         )mydelimiter")
 
 
-        .def("get_non_linearities", [](raisim::ArticulatedSystem &self) {
+        .def("getNonlinearities", [](raisim::ArticulatedSystem &self) {
             VecDyn vec = self.getNonlinearities();
             return convert_vecdyn_to_np(vec);
         }, R"mydelimiter(
@@ -373,7 +372,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         )mydelimiter")
 
 
-        .def("get_inverse_mass_matrix", [](raisim::ArticulatedSystem &self) {
+        .def("getInverseMassMatrix", [](raisim::ArticulatedSystem &self) {
             MatDyn mat = self.getInverseMassMatrix();
             return convert_matdyn_to_np(mat);
         }, R"mydelimiter(
@@ -388,7 +387,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
             np.array[float[n,n]]: inverse of the mass inertia matrix.
         )mydelimiter")
 
-        .def("get_composite_com", [](raisim::ArticulatedSystem &self) {
+        .def("getCompositeCOM", [](raisim::ArticulatedSystem &self) {
             Vec<3> vec = self.getCompositeCOM();
             return convert_vec_to_np(vec);
         }, R"mydelimiter(
@@ -398,7 +397,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
             np.array[float[3]]: center of mass position.
         )mydelimiter")
 
-        .def("get_composite_inertia", [](raisim::ArticulatedSystem &self) {
+        .def("getCompositeInertia", [](raisim::ArticulatedSystem &self) {
             Mat<3, 3> vec = self.getCompositeInertia();
             return convert_mat_to_np(vec);
         }, R"mydelimiter(
@@ -408,7 +407,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
             np.array[float[3, 3]]: moment inertia of the whole system.
         )mydelimiter")
 
-        .def("get_linear_momentum", [](raisim::ArticulatedSystem &self) {
+        .def("getLinearMomentum", [](raisim::ArticulatedSystem &self) {
             Vec<3> vec = self.getLinearMomentum();
             return convert_vec_to_np(vec);
         }, R"mydelimiter(
@@ -418,7 +417,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
             np.array[float[3]]: total linear momentum.
         )mydelimiter")
 
-        .def("get_generalized_momentum", [](raisim::ArticulatedSystem &self) {
+        .def("getGeneralizedMomentum", [](raisim::ArticulatedSystem &self) {
             VecDyn vec = self.getGeneralizedMomentum();
             return convert_vecdyn_to_np(vec);
         }, R"mydelimiter(
@@ -434,7 +433,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
 
         .def("get_kinetic_energy", &raisim::ArticulatedSystem::getKineticEnergy, "Return the total kinetic energy of the whole system.")
 
-        .def("get_potential_energy", [](raisim::ArticulatedSystem &self, py::array_t<double> gravity) {
+        .def("getPotentialEnergy", [](raisim::ArticulatedSystem &self, py::array_t<double> gravity) {
             Vec<3> g = convert_np_to_vec<3>(gravity);
             return self.getPotentialEnergy(g);
         }, R"mydelimiter(
@@ -448,7 +447,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         )mydelimiter",
         py::arg("gravity"))
 
-        .def("get_energy", [](raisim::ArticulatedSystem &self, py::array_t<double> gravity) {
+        .def("getEnergy", [](raisim::ArticulatedSystem &self, py::array_t<double> gravity) {
             Vec<3> g = convert_np_to_vec<3>(gravity);
             return self.getEnergy(g);
         }, R"mydelimiter(
@@ -462,13 +461,13 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         )mydelimiter",
         py::arg("gravity"))
 
-        .def("print_body_names_in_order", &raisim::ArticulatedSystem::printOutBodyNamesInOrder,
+        .def("printOutBodyNamesInOrder", &raisim::ArticulatedSystem::printOutBodyNamesInOrder,
             "Print the moving bodies in the order. Fixed bodies are optimized out.")
 
-        .def("print_frame_names_in_order", &raisim::ArticulatedSystem::printOutFrameNamesInOrder,
+        .def("printOutFrameNamesInOrder", &raisim::ArticulatedSystem::printOutFrameNamesInOrder,
             "Print the frames (that are attached to every joint coordinate) in the order.")
 
-        .def("get_world_position", [](raisim::ArticulatedSystem &self, size_t body_idx, py::array_t<double> body_point) {
+        .def("getPosition", [](raisim::ArticulatedSystem &self, size_t body_idx, py::array_t<double> body_point) {
             Vec<3> pos;
             Vec<3> body_pos = convert_np_to_vec<3>(body_point);
             self.getPosition(body_idx, body_pos, pos);
@@ -490,7 +489,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
          you have to use this with "void getPosition_W(size_t bodyIdx, const Vec<3> &point_B, Vec<3> &point_W)".
          If you want the orientation expressed in the world frame,
          you have to get the parent body orientation and pre-multiply it by the relative orientation*/
-        .def("get_frame_by_name", &raisim::ArticulatedSystem::getFrameByName, R"mydelimiter(
+        .def("getFrameByName", &raisim::ArticulatedSystem::getFrameByName, R"mydelimiter(
         Get the coordinate frame from its name.
 
         Args:
@@ -502,7 +501,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         py::arg("name"))
 
 
-        .def("get_frame_by_idx", &raisim::ArticulatedSystem::getFrameByIdx, R"mydelimiter(
+        .def("getFrameByIdx", &raisim::ArticulatedSystem::getFrameByIdx, R"mydelimiter(
         Get the coordinate frame from its index.
 
         Args:
@@ -513,7 +512,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         )mydelimiter",
         py::arg("idx"))
 
-        .def("get_frame_idx_by_name", &raisim::ArticulatedSystem::getFrameIdxByName, R"mydelimiter(
+        .def("getFrameIdxByName", &raisim::ArticulatedSystem::getFrameIdxByName, R"mydelimiter(
         Get the coordinate frame index from its name.
 
         Args:
@@ -524,7 +523,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         )mydelimiter",
         py::arg("name"))
 
-        .def("get_frames", &raisim::ArticulatedSystem::getFrames, R"mydelimiter(
+        .def("getFrames", &raisim::ArticulatedSystem::getFrames, R"mydelimiter(
         Get all the coordinate frames.
 
         Returns:
@@ -533,7 +532,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
 
         /* returns position and orientation in the world frame of a frame defined in the robot description
           Frames are attached to the joint position */
-        .def("get_frame_world_position", [](raisim::ArticulatedSystem &self, size_t frame_id) {
+        .def("getFramePosition", [](raisim::ArticulatedSystem &self, size_t frame_id) {
             Vec<3> vec;
             self.getFramePosition(frame_id, vec);
             return convert_vec_to_np(vec);
@@ -548,7 +547,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         )mydelimiter",
         py::arg("frame_id"))
 
-        .def("get_frame_world_rotation_matrix", [](raisim::ArticulatedSystem &self, size_t frame_id) {
+        .def("getFrameOrientation", [](raisim::ArticulatedSystem &self, size_t frame_id) {
             Mat<3, 3> mat;
             self.getFrameOrientation(frame_id, mat);
             return convert_mat_to_np(mat);
@@ -563,7 +562,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         )mydelimiter",
         py::arg("frame_id"))
 
-        .def("get_frame_world_quaternion", [](raisim::ArticulatedSystem &self, size_t frame_id) {
+        .def("getFrameOrientation", [](raisim::ArticulatedSystem &self, size_t frame_id) {
             Mat<3, 3> mat;
             self.getFrameOrientation(frame_id, mat);
             Vec<4> quat;
@@ -580,7 +579,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         )mydelimiter",
         py::arg("frame_id"))
 
-        .def("get_frame_linear_velocity", [](raisim::ArticulatedSystem &self, size_t frame_id) {
+        .def("getFrameVelocity", [](raisim::ArticulatedSystem &self, size_t frame_id) {
             Vec<3> vec;
             self.getFrameVelocity(frame_id, vec);
             return convert_vec_to_np(vec);
@@ -595,7 +594,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         )mydelimiter",
         py::arg("frame_id"))
 
-        .def("get_frame_angular_velocity", [](raisim::ArticulatedSystem &self, size_t frame_id) {
+        .def("getFrameAngularVelocity", [](raisim::ArticulatedSystem &self, size_t frame_id) {
             Vec<3> vec;
             self.getFrameAngularVelocity(frame_id, vec);
             return convert_vec_to_np(vec);
@@ -611,7 +610,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         py::arg("frame_id"))
 
 
-        .def("get_world_position", [](raisim::ArticulatedSystem &self, size_t frame_id) {
+        .def("getPosition", [](raisim::ArticulatedSystem &self, size_t frame_id) {
             Vec<3> pos;
             self.getPosition(frame_id, pos);
             return convert_vec_to_np(pos);
@@ -627,7 +626,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         py::arg("frame_id"))
 
 
-        .def("get_world_rotation_matrix", [](raisim::ArticulatedSystem &self, size_t frame_id) {
+        .def("getFrameOrientation", [](raisim::ArticulatedSystem &self, size_t frame_id) {
             Mat<3, 3> rot;
             self.getFrameOrientation(frame_id, rot);
             return convert_mat_to_np(rot);
@@ -643,7 +642,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         py::arg("frame_id"))
 
 
-        .def("get_world_quaternion", [](raisim::ArticulatedSystem &self, size_t frame_id) {
+        .def("getFrameOrientation", [](raisim::ArticulatedSystem &self, size_t frame_id) {
             Mat<3, 3> rot;
             self.getFrameOrientation(frame_id, rot);
             Vec<4> quat;
@@ -661,7 +660,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         py::arg("frame_id"))
 
 
-        .def("get_world_linear_velocity", [](raisim::ArticulatedSystem &self, size_t frame_id) {
+        .def("getVelocity", [](raisim::ArticulatedSystem &self, size_t frame_id) {
             Vec<3> vel;
             self.getVelocity(frame_id, vel);
             return convert_vec_to_np(vel);
@@ -677,7 +676,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         py::arg("frame_id"))
 
 
-        .def("get_world_linear_velocity", [](raisim::ArticulatedSystem &self, py::array_t<double> jacobian) {
+        .def("getVelocity", [](raisim::ArticulatedSystem &self, py::array_t<double> jacobian) {
             SparseJacobian jac;
             MatDyn mat = convert_np_to_matdyn(jacobian);
             jac.v = mat;
@@ -696,7 +695,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         py::arg("sparse_linear_jacobian"))
 
 
-        .def("get_world_linear_velocity", [](raisim::ArticulatedSystem &self, size_t body_id,
+        .def("getVelocity", [](raisim::ArticulatedSystem &self, size_t body_id,
                 py::array_t<double> body_pos) {
             Vec<3> pos = convert_np_to_vec<3>(body_pos);
             Vec<3> vel;
@@ -715,7 +714,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         py::arg("body_id"), py::arg("body_pos"))
 
 
-        .def("get_world_angular_velocity", [](raisim::ArticulatedSystem &self, size_t body_id) {
+        .def("getAngularVelocity", [](raisim::ArticulatedSystem &self, size_t body_id) {
             Vec<3> vel;
             self.getAngularVelocity(body_id, vel);
             return convert_vec_to_np(vel);
@@ -731,7 +730,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         py::arg("body_id"))
 
 
-        .def("get_dense_frame_linear_jacobian", [](raisim::ArticulatedSystem &self, std::string frameName) {
+        .def("getDenseFrameJacobian", [](raisim::ArticulatedSystem &self, std::string frameName) {
             size_t n = self.getDOF();
             Eigen::MatrixXd jac = Eigen::MatrixXd::Zero(3, n);
             self.getDenseFrameJacobian(frameName, jac);
@@ -750,7 +749,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         py::arg("frame_name"))
 
 
-        .def("get_dense_frame_rotational_jacobian", [](raisim::ArticulatedSystem &self, std::string frameName) {
+        .def("getDenseFrameRotationalJacobian", [](raisim::ArticulatedSystem &self, std::string frameName) {
             size_t n = self.getDOF();
             Eigen::MatrixXd jac = Eigen::MatrixXd::Zero(3, n);
             self.getDenseFrameRotationalJacobian(frameName, jac);
@@ -769,7 +768,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         py::arg("body_idx"))
 
 
-        .def("get_body_index", &raisim::ArticulatedSystem::getBodyIdx, R"mydelimiter(
+        .def("getBodyIdx", &raisim::ArticulatedSystem::getBodyIdx, R"mydelimiter(
         Return the body index associated with the given name.
 
         Args:
@@ -781,23 +780,14 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         py::arg("name"))
 
 
-        .def("get_num_dof", &raisim::ArticulatedSystem::getDOF, R"mydelimiter(
+        .def("getDOF", &raisim::ArticulatedSystem::getDOF, R"mydelimiter(
         Return the number of degrees of freedom.
 
         Returns:
             int: the number of degrees of freedom.
         )mydelimiter")
 
-
-        .def("get_dof", &raisim::ArticulatedSystem::getDOF, R"mydelimiter(
-        Return the number of degrees of freedom.
-
-        Returns:
-            int: the number of degrees of freedom.
-        )mydelimiter")
-
-
-        .def("get_generalized_coordinate_dim", &raisim::ArticulatedSystem::getGeneralizedCoordinateDim, R"mydelimiter(
+        .def("getGeneralizedCoordinateDim", &raisim::ArticulatedSystem::getGeneralizedCoordinateDim, R"mydelimiter(
         Return the dimension/size of the generalized coordinates vector.
 
         Returns:
@@ -805,7 +795,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         )mydelimiter")
 
 
-        .def("get_body_position", [](raisim::ArticulatedSystem &self, size_t body_id) {
+        .def("getBodyPosition", [](raisim::ArticulatedSystem &self, size_t body_id) {
                Vec<3> pos;
                self.getBodyPosition(body_id, pos);
                auto pos_np = convert_vec_to_np(pos);
@@ -821,7 +811,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         )mydelimiter",
         py::arg("body_id"))
 
-        .def("get_body_orientation", [](raisim::ArticulatedSystem &self, size_t body_id) {
+        .def("getBodyOrientation", [](raisim::ArticulatedSystem &self, size_t body_id) {
                Mat<3,3> ori;
                self.getBodyOrientation(body_id, ori);
                auto ori_np = convert_mat_to_np(ori);
@@ -843,7 +833,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
          some precomputed dynamic properties.
          returns the reference to joint position relative to its parent, expressed in the parent frame. */
 
-        .def("get_joint_cartesian_positions", [](raisim::ArticulatedSystem &self) {
+        .def("getJointPos_P", [](raisim::ArticulatedSystem &self) {
             std::vector<raisim::Vec<3>>& positions = self.getJointPos_P();
 
             py::list list;
@@ -858,7 +848,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
             list[np.array[float[3]]]: joint cartesian positions (relative to their parent frame).
         )mydelimiter")
 
-        .def("set_joint_cartesian_positions", [](raisim::ArticulatedSystem &self, py::list &list) {
+        .def("setJointPos_P", [](raisim::ArticulatedSystem &self, py::list &list) {
             // get references to joint cartesian positions
             std::vector<raisim::Vec<3>>& positions = self.getJointPos_P();
 
@@ -886,7 +876,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         )mydelimiter",
         py::arg("positions"))
 
-        .def_property("joint_cartesian_positions",
+        .def_property("getJointPos_P",
             [](raisim::ArticulatedSystem &self) {  // getter
                 std::vector<raisim::Vec<3>> positions = self.getJointPos_P();
 
@@ -920,14 +910,14 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
 
 
 
-        .def("get_masses", py::overload_cast<>(&raisim::ArticulatedSystem::getMass), R"mydelimiter(
+        .def("getMass", py::overload_cast<>(&raisim::ArticulatedSystem::getMass), R"mydelimiter(
         Return the body/link masses.
 
         Returns:
             list[double]: body masses.
         )mydelimiter")
 
-        .def("set_masses", [](raisim::ArticulatedSystem &self, std::vector<double> &list) {
+        .def("setMass", [](raisim::ArticulatedSystem &self, std::vector<double> &list) {
             // get references to masses
             std::vector<double>& masses = self.getMass();
 
@@ -978,7 +968,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
             })
 
 
-        .def("get_inertias", [](raisim::ArticulatedSystem &self) {
+        .def("getInertia", [](raisim::ArticulatedSystem &self) {
             std::vector<raisim::Mat<3, 3> >& inertia = self.getInertia();
 
             py::list list;
@@ -993,7 +983,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
             list[np.array[float[3,3]]]: inertias.
         )mydelimiter")
 
-        .def("set_inertias", [](raisim::ArticulatedSystem &self, py::list &list) {
+        .def("setInertia", [](raisim::ArticulatedSystem &self, py::list &list) {
             // get references to inertias
             std::vector<raisim::Mat<3, 3> >& inertia = self.getInertia();
 
@@ -1055,7 +1045,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
 
 
 
-        .def("get_link_coms", [](raisim::ArticulatedSystem &self) {
+        .def("getLinkCOM", [](raisim::ArticulatedSystem &self) {
             std::vector<raisim::Vec<3>> positions = self.getLinkCOM();
 
             py::list list;
@@ -1070,7 +1060,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
             list[np.array[float[3]]]: center of mass of each link (expressed in the body frame).
         )mydelimiter")
 
-        .def("set_link_coms", [](raisim::ArticulatedSystem &self, py::list &list) {
+        .def("setLinkCOM", [](raisim::ArticulatedSystem &self, py::list &list) {
             // get references to joint cartesian positions
             std::vector<raisim::Vec<3>>& positions = self.getLinkCOM();
 
@@ -1098,7 +1088,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         )mydelimiter",
         py::arg("coms"))
 
-        .def_property("link_coms",
+        .def_property("linkComs",
             [](raisim::ArticulatedSystem &self) {  // getter
                 std::vector<raisim::Vec<3>>& positions = self.getLinkCOM();
 
@@ -1206,11 +1196,11 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
 
 
         // this is automatically done when you use properties so you don't have to call it (more pythonic)
-        .def("update_mass_info", &raisim::ArticulatedSystem::updateMassInfo,
+        .def("updateMassInfo", &raisim::ArticulatedSystem::updateMassInfo,
             "Update the mass information. This function must be called after we change the dynamic parameters.")
 
 
-        .def("get_mass", py::overload_cast<size_t>(&raisim::ArticulatedSystem::getMass, py::const_), R"mydelimiter(
+        .def("getMass", py::overload_cast<size_t>(&raisim::ArticulatedSystem::getMass, py::const_), R"mydelimiter(
         Get the mass of the link.
 
         Args:
@@ -1221,7 +1211,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         )mydelimiter",
         py::arg("localIdx"))
 
-        .def("set_mass", &raisim::ArticulatedSystem::setMass, R"mydelimiter(
+        .def("setMass", &raisim::ArticulatedSystem::setMass, R"mydelimiter(
         Set the mass of the link.
 
         Args:
@@ -1231,7 +1221,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         py::arg("link_idx"), py::arg("value"))
 
 
-        .def("get_total_mass", &raisim::ArticulatedSystem::getTotalMass, R"mydelimiter(
+        .def("getTotalMass", &raisim::ArticulatedSystem::getTotalMass, R"mydelimiter(
         Get the total mass of the system.
 
         Returns:
@@ -1239,7 +1229,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         )mydelimiter")
 
 
-        .def("set_external_force", [](raisim::ArticulatedSystem &self, size_t local_idx, py::array_t<double> pos, py::array_t<double> force) {
+        .def("setExternalForce", [](raisim::ArticulatedSystem &self, size_t local_idx, py::array_t<double> pos, py::array_t<double> force) {
 	        Vec<3> f = convert_np_to_vec<3>(force);
             Vec<3> p = convert_np_to_vec<3>(pos);
 	        self.setExternalForce(local_idx, p, f);
@@ -1253,7 +1243,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
 	    py::arg("local_idx"), py::arg("pos"), py::arg("force"))
 
 
-	    .def("set_external_torque", [](raisim::ArticulatedSystem &self, size_t local_idx, py::array_t<double> torque) {
+	    .def("setExternalTorque", [](raisim::ArticulatedSystem &self, size_t local_idx, py::array_t<double> torque) {
 	        Vec<3> t = convert_np_to_vec<3>(torque);
 	        self.setExternalTorque(local_idx, t);
 	    }, R"mydelimiter(
@@ -1266,7 +1256,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
 	    py::arg("local_idx"), py::arg("torque"))
 
 
-	    .def("set_external_force", [](raisim::ArticulatedSystem &self, size_t local_idx,
+	    .def("setExternalForce", [](raisim::ArticulatedSystem &self, size_t local_idx,
 	            raisim::ArticulatedSystem::Frame force_frame, py::array_t<double> force,
 	            raisim::ArticulatedSystem::Frame pos_frame, py::array_t<double> position) {
 	        Vec<3> f = convert_np_to_vec<3>(force);
@@ -1287,7 +1277,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
 	    py::arg("local_idx"), py::arg("force_frame"), py::arg("force"), py::arg("pos_frame"), py::arg("position"))
 
 
-        .def("set_control_mode", &raisim::ArticulatedSystem::setControlMode, R"mydelimiter(
+        .def("setControlMode", &raisim::ArticulatedSystem::setControlMode, R"mydelimiter(
 	    Set the control mode.
 
 	    Args:
@@ -1296,7 +1286,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
 	    )mydelimiter",
 	    py::arg("mode"))
 
-        .def("get_control_mode", &raisim::ArticulatedSystem::getControlMode, R"mydelimiter(
+        .def("getControlMode", &raisim::ArticulatedSystem::getControlMode, R"mydelimiter(
 	    Get the control mode.
 
 	    Returns:
@@ -1308,7 +1298,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         /* set PD targets. It is effective only in the control mode "PD_PLUS_FEEDFORWARD_TORQUE". set any arbitrary
         number for unactuated degrees of freedom */
 
-        .def("set_pd_targets", py::overload_cast<const Eigen::VectorXd &, const Eigen::VectorXd &>(&raisim::ArticulatedSystem::setPdTarget), R"mydelimiter(
+        .def("setPdTarget", py::overload_cast<const Eigen::VectorXd &, const Eigen::VectorXd &>(&raisim::ArticulatedSystem::setPdTarget), R"mydelimiter(
 	    Set the PD targets. It is effective only in the control mode 'PD_PLUS_FEEDFORWARD_TORQUE'. Set any arbitrary
         number for unactuated degrees of freedom.
 
@@ -1319,7 +1309,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
 	    py::arg("pos_targets"), py::arg("vel_targets"))
 
 
-        .def("set_pd_gains", py::overload_cast<const Eigen::VectorXd &, const Eigen::VectorXd &>(&raisim::ArticulatedSystem::setPdGains), R"mydelimiter(
+        .def("setPdGains", py::overload_cast<const Eigen::VectorXd &, const Eigen::VectorXd &>(&raisim::ArticulatedSystem::setPdGains), R"mydelimiter(
 	    Set the PD gains. It is effective only in the control mode 'PD_PLUS_FEEDFORWARD_TORQUE'. Set any arbitrary
         number for unactuated degrees of freedom.
 
@@ -1330,7 +1320,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
 	    py::arg("p_gains"), py::arg("d_gains"))
 
 
-	    .def("set_joint_dampings", py::overload_cast<const Eigen::VectorXd &>(&raisim::ArticulatedSystem::setJointDamping), R"mydelimiter(
+	    .def("setJointDamping", py::overload_cast<const Eigen::VectorXd &>(&raisim::ArticulatedSystem::setJointDamping), R"mydelimiter(
 	    Set the joint dampings (passive elements at the joints).
 
 	    Args:
@@ -1339,7 +1329,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
 	    py::arg("dampings"))
 
 
-        .def("compute_sparse_inverse_mass_matrix", [](raisim::ArticulatedSystem &self, py::array_t<double> mass) {
+        .def("computeSparseInverse", [](raisim::ArticulatedSystem &self, py::array_t<double> mass) {
             MatDyn M = convert_np_to_matdyn(mass);
             MatDyn Minv;
             self.computeSparseInverse(M, Minv);
@@ -1375,7 +1365,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
 //	    py::arg("vector"))
 
 
-	    .def("ignore_collision_between", &raisim::ArticulatedSystem::ignoreCollisionBetween, R"mydelimiter(
+	    .def("ignoreCollisionBetween", &raisim::ArticulatedSystem::ignoreCollisionBetween, R"mydelimiter(
 	    Ignore collision between the 2 specified bodies.
 
 	    Args:
@@ -1385,7 +1375,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
 	    py::arg("body_idx1"), py::arg("body_idx2"))
 
 
-	    .def("get_options", &raisim::ArticulatedSystem::getOptions, R"mydelimiter(
+	    .def("getOptions", &raisim::ArticulatedSystem::getOptions, R"mydelimiter(
 	    Return the options associated with the articulated system.
 
 	    Returns:
@@ -1393,7 +1383,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
 	    )mydelimiter")
 
 
-	    .def("get_body_names", &raisim::ArticulatedSystem::getBodyNames, R"mydelimiter(
+	    .def("getBodyNames", &raisim::ArticulatedSystem::getBodyNames, R"mydelimiter(
 	    Return the body names.
 
 	    Returns:
@@ -1401,7 +1391,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
 	    )mydelimiter")
 
 
-        .def("get_visual_objects", &raisim::ArticulatedSystem::getVisOb, R"mydelimiter(
+        .def("getVisOb", &raisim::ArticulatedSystem::getVisOb, R"mydelimiter(
 	    Get the visual objects.
 
 	    Returns:
@@ -1409,7 +1399,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
 	    )mydelimiter")
 
 
-	    .def("get_visual_collision_objects", &raisim::ArticulatedSystem::getVisColOb, R"mydelimiter(
+	    .def("getVisColOb", &raisim::ArticulatedSystem::getVisColOb, R"mydelimiter(
 	    Get the visual collision objects.
 
 	    Returns:
@@ -1417,7 +1407,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
 	    )mydelimiter")
 
 
-	    .def("get_visual_object_pose", [](raisim::ArticulatedSystem &self, size_t body_idx) {
+	    .def("getVisualObjectPose", [](raisim::ArticulatedSystem &self, size_t body_idx) {
 	        Vec<3> pos;
             Mat<3,3> rot;
             self.getVisObPose(body_idx, rot, pos);
@@ -1439,7 +1429,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
 	        np.array[float[4]]: visual object orientation (expressed as a quaternion [w,x,y,z]).
 	    )mydelimiter")
 
-	    .def("get_visual_object_pose1", [](raisim::ArticulatedSystem &self, size_t body_idx) {
+	    .def("getVisualObjectPose1", [](raisim::ArticulatedSystem &self, size_t body_idx) {
 	        Vec<3> pos;
             Mat<3,3> rot;
             self.getVisObPose(body_idx, rot, pos);
@@ -1458,7 +1448,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
 	    )mydelimiter")
 
 
-	    .def("get_visual_collision_object_pose", [](raisim::ArticulatedSystem &self, size_t body_idx) {
+	    .def("getVisColObPose", [](raisim::ArticulatedSystem &self, size_t body_idx) {
 	        Vec<3> pos;
             Mat<3,3> rot;
             self.getVisColObPose(body_idx, rot, pos);
@@ -1480,7 +1470,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
 	        np.array[float[4]]: visual object orientation (expressed as a quaternion [w,x,y,z]).
 	    )mydelimiter")
 
-	    .def("get_visual_collision_object_pose1", [](raisim::ArticulatedSystem &self, size_t body_idx) {
+	    .def("getVisColObPose1", [](raisim::ArticulatedSystem &self, size_t body_idx) {
 	        Vec<3> pos;
             Mat<3,3> rot;
             self.getVisColObPose(body_idx, rot, pos);
@@ -1499,7 +1489,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
 	    )mydelimiter")
 
 
-        .def("get_resource_directory", &raisim::ArticulatedSystem::getResourceDir, R"mydelimiter(
+        .def("getResourceDir", &raisim::ArticulatedSystem::getResourceDir, R"mydelimiter(
 	    Get the robot resource directory.
 
 	    Returns:
@@ -1507,7 +1497,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
 	    )mydelimiter")
 
 
-	    .def("get_robot_description_filename", &raisim::ArticulatedSystem::getRobotDescriptionfFileName, R"mydelimiter(
+	    .def("getRobotDescriptionfFileName", &raisim::ArticulatedSystem::getRobotDescriptionfFileName, R"mydelimiter(
 	    Get the robot description filename (e.g. path to the URDF).
 
 	    Returns:
@@ -1515,7 +1505,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
 	    )mydelimiter")
 
 
-	    .def("get_robot_description_directory_name", &raisim::ArticulatedSystem::getRobotDescriptionfTopDirName, R"mydelimiter(
+	    .def("getRobotDescriptionfTopDirName", &raisim::ArticulatedSystem::getRobotDescriptionfTopDirName, R"mydelimiter(
 	    Get the robot description top directory name.
 
 	    Returns:
@@ -1524,7 +1514,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
 
 
         /* change the base position and orientation of the base. */
-        .def("set_base_position", [](raisim::ArticulatedSystem &self, py::array_t<double> position) {
+        .def("setBasePos", [](raisim::ArticulatedSystem &self, py::array_t<double> position) {
 	        Vec<3> pos = convert_np_to_vec<3>(position);
             self.setBasePos(pos);
 	    }, R"mydelimiter(
@@ -1535,7 +1525,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
 	    )mydelimiter",
 	    py::arg("position"))
 
-	    .def("set_base_orientation", [](raisim::ArticulatedSystem &self, py::array_t<double> orientation) {
+	    .def("setBaseOrientation", [](raisim::ArticulatedSystem &self, py::array_t<double> orientation) {
 	        Mat<3,3> rot;
 	        if (orientation.size() == 3) { // rpy angles
 	            Vec<3> rpy = convert_np_to_vec<3>(orientation);
@@ -1561,7 +1551,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
 	    py::arg("orientation"))
 
 
-	    .def("set_actuation_limits", &raisim::ArticulatedSystem::setActuationLimits, R"mydelimiter(
+	    .def("setActuationLimits", &raisim::ArticulatedSystem::setActuationLimits, R"mydelimiter(
 	    Set the upper and lower limits in actuation forces.
 
 	    Args:
@@ -1571,7 +1561,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
 	    py::arg("upper"), py::arg("lower"))
 
 
-	    .def("set_collision_object_shape_parameters", &raisim::ArticulatedSystem::setCollisionObjectShapeParameters, R"mydelimiter(
+	    .def("setCollisionObjectShapeParameters", &raisim::ArticulatedSystem::setCollisionObjectShapeParameters, R"mydelimiter(
 	    Set the collision object shape parameters.
 
 	    Args:
@@ -1581,7 +1571,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
 	    py::arg("id_"), py::arg("parameters"))
 
 
-        .def("set_collision_object_position_offset", [](raisim::ArticulatedSystem &self, size_t id_, py::array_t<double> &position) {
+        .def("setCollisionObjectPositionOffset", [](raisim::ArticulatedSystem &self, size_t id_, py::array_t<double> &position) {
             Vec<3> pos = convert_np_to_vec<3>(position);
             self.setCollisionObjectPositionOffset(id_, pos);
         }, R"mydelimiter(
@@ -1594,7 +1584,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
 	    py::arg("id_"), py::arg("position"))
 
 
-	    .def("set_collision_object_position_offset", [](raisim::ArticulatedSystem &self, size_t id_, py::array_t<double> &orientation) {
+	    .def("setCollisionObjectOrientationOffset", [](raisim::ArticulatedSystem &self, size_t id_, py::array_t<double> &orientation) {
             Mat<3,3> rot;
 	        if (orientation.size() == 3) { // rpy angles
 	            Vec<3> rpy = convert_np_to_vec<3>(orientation);
@@ -1625,5 +1615,4 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
     system.attr("get_base_orientation") = system.attr("get_base_quaternion");
     system.attr("get_frame_world_orientation") = system.attr("get_frame_world_quaternion");
     system.attr("get_world_orientation") = system.attr("get_world_quaternion");
-
 }

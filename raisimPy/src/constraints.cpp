@@ -82,7 +82,7 @@ void init_constraints(py::module &m) {
         .def("update", &raisim::LengthConstraint::update, "update internal variables (called by `integrate1()`).")
 
 
-        .def("get_length", &raisim::LengthConstraint::getLength, R"mydelimiter(
+        .def("getLength", &raisim::LengthConstraint::getLength, R"mydelimiter(
 	    Get the length of the LengthConstraint constraint.
 
 	    Returns:
@@ -90,7 +90,7 @@ void init_constraints(py::module &m) {
 	    )mydelimiter")
 
 
-        .def("get_p1", [](raisim::LengthConstraint &self) {
+        .def("getP1", [](raisim::LengthConstraint &self) {
             Vec<3> p1 = self.getP1();
             return convert_vec_to_np(p1);
         }, R"mydelimiter(
@@ -101,7 +101,7 @@ void init_constraints(py::module &m) {
 	    )mydelimiter")
 
 
-	    .def("get_p2", [](raisim::LengthConstraint &self) {
+	    .def("getP2", [](raisim::LengthConstraint &self) {
             Vec<3> p2 = self.getP2();
             return convert_vec_to_np(p2);
         }, R"mydelimiter(
@@ -112,7 +112,7 @@ void init_constraints(py::module &m) {
 	    )mydelimiter")
 
 
-        .def("get_body1", &raisim::LengthConstraint::getBody1, R"mydelimiter(
+        .def("getBody1", &raisim::LengthConstraint::getBody1, R"mydelimiter(
 	    Return the first object to which the LengthConstraint is attached.
 
 	    Returns:
@@ -120,7 +120,7 @@ void init_constraints(py::module &m) {
 	    )mydelimiter")
 
 
-        .def("get_body2", &raisim::LengthConstraint::getBody2, R"mydelimiter(
+        .def("getBody2", &raisim::LengthConstraint::getBody2, R"mydelimiter(
 	    Return the second object to which the LengthConstraint is attached.
 
 	    Returns:
@@ -128,7 +128,7 @@ void init_constraints(py::module &m) {
 	    )mydelimiter")
 
 
-        .def("get_normal", [](raisim::LengthConstraint &self) {
+        .def("getNorm", [](raisim::LengthConstraint &self) {
             Vec<3> normal = self.getNorm();
             return convert_vec_to_np(normal);
         }, R"mydelimiter(
@@ -139,7 +139,7 @@ void init_constraints(py::module &m) {
 	    )mydelimiter")
 
 
-        .def("get_local_idx1", &raisim::LengthConstraint::getLocalIdx1, R"mydelimiter(
+        .def("getLocalIdx1", &raisim::LengthConstraint::getLocalIdx1, R"mydelimiter(
 	    Return the local index of object1.
 
 	    Returns:
@@ -147,7 +147,7 @@ void init_constraints(py::module &m) {
 	    )mydelimiter")
 
 
-        .def("get_local_idx2", &raisim::LengthConstraint::getLocalIdx2, R"mydelimiter(
+        .def("getLocalIdx2", &raisim::LengthConstraint::getLocalIdx2, R"mydelimiter(
 	    Return the local index of object2.
 
 	    Returns:
@@ -155,7 +155,7 @@ void init_constraints(py::module &m) {
 	    )mydelimiter")
 
 
-        .def("get_stretch", &raisim::LengthConstraint::getStretch, R"mydelimiter(
+        .def("getStretch", &raisim::LengthConstraint::getStretch, R"mydelimiter(
 	    Return the stretch length (i.e., constraint violation).
 
 	    Returns:
@@ -224,7 +224,6 @@ void init_constraints(py::module &m) {
             "    length (float): length of the wire constraint.\n"
             "    stiffness (float): stiffness of the wire.",
             py::arg("object1"), py::arg("local_idx1"), py::arg("pos_body1"), py::arg("object2"), py::arg("local_idx2"),
-            py::arg("pos_body2"), py::arg("length"), py::arg("stiffness"))
-        .def("apply_tension", &raisim::CompliantLengthConstraint::applyTension, "Apply a tension in the compliant wire.");
+            py::arg("pos_body2"), py::arg("length"), py::arg("stiffness"));
 
 }
