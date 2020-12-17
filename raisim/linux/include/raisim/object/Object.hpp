@@ -67,7 +67,7 @@ class Object {
   virtual void getPosition(size_t localIdx, const Vec<3>& pos_b, Vec<3>& pos_w) const = 0;
   virtual BodyType getBodyType(size_t localIdx) const { return bodyType_; };
   virtual BodyType getBodyType() const { return bodyType_; };
-  virtual void getContactPointVel(size_t pointId, Vec<3> &vel) = 0;
+  virtual void getContactPointVel(size_t pointId, Vec<3> &vel) const = 0;
   void setName(const std::string& name) { name_ = name; }
   const std::string& getName() const { return name_; }
 
