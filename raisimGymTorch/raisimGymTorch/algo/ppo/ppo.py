@@ -130,7 +130,7 @@ class PPO:
         mean_surrogate_loss = 0
         for epoch in range(self.num_learning_epochs):
             for actor_obs_batch, critic_obs_batch, actions_batch, target_values_batch, advantages_batch, returns_batch, old_actions_log_prob_batch \
-                    in self.storage.mini_batch_generator_inorder(self.num_mini_batches):
+                    in self.batch_sampler(self.num_mini_batches):
 
                 actions_log_prob_batch, entropy_batch = self.actor.evaluate(actor_obs_batch, actions_batch)
                 value_batch = self.critic.evaluate(critic_obs_batch)

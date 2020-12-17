@@ -12,6 +12,9 @@ import numpy as np
 import torch
 import datetime
 
+# check if gpu is available
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
 # directories
 task_path = os.path.dirname(os.path.realpath(__file__))
 home_path = task_path + "/../../../../.."
@@ -41,13 +44,13 @@ actor = ppo_module.Actor(ppo_module.MLP(cfg['architecture']['policy_net'],
                                         ob_dim,
                                         act_dim),
                          ppo_module.MultivariateGaussianDiagonalCovariance(act_dim, 1.0),
-                         'cuda')
+                         device)
 
 critic = ppo_module.Critic(ppo_module.MLP(cfg['architecture']['value_net'],
                                           nn.LeakyReLU,
                                           ob_dim,
                                           1),
-                           'cuda')
+                           device)
 
 ppo = PPO.PPO(actor=actor,
               critic=critic,
@@ -57,7 +60,7 @@ ppo = PPO.PPO(actor=actor,
               gamma=0.996,
               lam=0.95,
               num_mini_batches=4,
-              device='cuda',
+              device=device,
               log_dir=saver.data_dir,
               mini_batch_sampling='in_order',
               )
@@ -118,7 +121,7 @@ for update in range(1000000):
     average_dones = done_sum / total_steps
     avg_rewards.append(average_ll_performance)
 
-    actor.distribution.enforce_minimum_std((torch.ones(12)*0.2).to('cuda'))
+    actor.distribution.enforce_minimum_std((torch.ones(12)*0.2).to(device))
 
     print('----------------------------------------------------')
     print('{:>6}th iteration'.format(update))

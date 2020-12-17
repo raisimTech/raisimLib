@@ -12,22 +12,27 @@ Examples
 .. image:: image/demo_robots.gif
   :alt: RaiSimPy demo (robots.py)
   :width: 600
+
 **RaisimPy example** in ``raisimPy/examples/robots.py``
 
 .. image:: image/skeleton.bmp
   :alt: Skeleton img from S. K at KAIST
   :width: 600
+
 **Biomechanical simulation**, created by Young-Jun Koo, PhD and Seungbum Koo, PhD at Musculoskeletal BioDynamics Lab, KAIST.
+
 The geometric model is created using the Full-body musculoskeletal model in Rajagopal et al. (2016).
 
 .. image:: image/huskyScan.gif
   :alt: husky
   :width: 600
+
 **Ray Test example with Husky and Velodyne**
 
 .. image:: image/anymals.png
   :alt: anymals
   :width: 600
+
 **ANYmal B and C robots**, by ANYbotics AG.
 
 .. toctree::
@@ -44,8 +49,8 @@ The geometric model is created using the Full-body musculoskeletal model in Raja
 
    sections/Introduction
    sections/Installation
-   sections/LoggingSystem
    sections/ConventionsAndNotations
+   sections/LoggingSystem
    sections/WorldSystem
    sections/Object
    sections/Contact

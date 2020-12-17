@@ -90,7 +90,7 @@ inline bool directoryExists (const std::string& name) {
 
 void read_png_file(const char *file_name, int &width, int &height, std::vector<double> &values, double scale, double zOffset);
 
-template<typename T, std::size_t Alignment>
+template<typename T, std::size_t RSALOCATOR_ALIGNMENT>
 class AlignedAllocator {
  public:
 
@@ -116,7 +116,7 @@ class AlignedAllocator {
 
   template<typename U>
   struct rebind {
-    typedef AlignedAllocator<U, Alignment> other;
+    typedef AlignedAllocator<U, RSALOCATOR_ALIGNMENT> other;
   };
 
   bool operator!=(const AlignedAllocator &other) const {
@@ -142,7 +142,7 @@ class AlignedAllocator {
   AlignedAllocator(const AlignedAllocator &) {}
 
   template<typename U>
-  AlignedAllocator(const AlignedAllocator<U, Alignment> &) {}
+  AlignedAllocator(const AlignedAllocator<U, RSALOCATOR_ALIGNMENT> &) {}
 
   ~AlignedAllocator() {}
 
@@ -150,7 +150,7 @@ class AlignedAllocator {
     if (n == 0)
       return NULL;
 
-    void *const pv = _mm_malloc(n * sizeof(T), Alignment);
+    void *const pv = _mm_malloc(n * sizeof(T), RSALOCATOR_ALIGNMENT);
 
     if (pv == NULL) {
       throw std::bad_alloc();

@@ -42,7 +42,7 @@ You can override it as
     raisim::RaiSimMsg::setFatalCallback([](){throw;});
 
 The macros actually affect the performance.
-Force examples, all ``_IF`` macros will check the boolean and branching might occur.
+For examples, all ``_IF`` macros will check the boolean and branching might occur.
 
 So if you only want to add the macros only in the debugging mode, add these lines in your CMAKE
 

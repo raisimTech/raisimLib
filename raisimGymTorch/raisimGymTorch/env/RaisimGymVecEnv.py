@@ -4,11 +4,15 @@
 # //----------------------------//
 
 import numpy as np
+import platform
+import os
 
 
 class RaisimGymVecEnv:
 
     def __init__(self, impl, cfg, normalize_ob=True, seed=0, normalize_rew=True, clip_obs=10.):
+        if platform.system() == "Darwin":
+            os.environ['KMP_DUPLICATE_LIB_OK']='True'
         self.normalize_ob = normalize_ob
         self.normalize_rew = normalize_rew
         self.clip_obs = clip_obs

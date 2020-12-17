@@ -67,7 +67,7 @@ class Object {
   virtual void getPosition(size_t localIdx, const Vec<3>& pos_b, Vec<3>& pos_w) const = 0;
   virtual BodyType getBodyType(size_t localIdx) const { return bodyType_; };
   virtual BodyType getBodyType() const { return bodyType_; };
-  virtual void getContactPointVel(size_t pointId, Vec<3> &vel) = 0;
+  virtual void getContactPointVel(size_t pointId, Vec<3> &vel) const = 0;
   void setName(const std::string& name) { name_ = name; }
   const std::string& getName() const { return name_; }
 
@@ -78,7 +78,7 @@ class Object {
   const std::vector<raisim::Vec<3>>& getExternalTorquePosition() const { return externalTorqueVizPos_; }
 
  protected:
-  std::vector<std::pair<std::vector <raisim::Mat<3, 3>>, raisim::Vec<3>>> &getDelassusAndTauStar();
+  DelassusType &getDelassusAndTauStar();
   double &getImpactVel(size_t idx);
   contact::PerObjectContactList &getPerObjectContact();
   virtual void destroyCollisionBodies(dSpaceID id) = 0;
