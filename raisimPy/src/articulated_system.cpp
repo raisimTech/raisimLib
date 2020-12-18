@@ -489,7 +489,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
          you have to use this with "void getPosition_W(size_t bodyIdx, const Vec<3> &point_B, Vec<3> &point_W)".
          If you want the orientation expressed in the world frame,
          you have to get the parent body orientation and pre-multiply it by the relative orientation*/
-        .def("getFrameByName", &raisim::ArticulatedSystem::getFrameByName, R"mydelimiter(
+        .def("getFrameByName", py::overload_cast<const std::string &>(&raisim::ArticulatedSystem::getFrameByName), R"mydelimiter(
         Get the coordinate frame from its name.
 
         Args:
@@ -501,7 +501,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         py::arg("name"))
 
 
-        .def("getFrameByIdx", &raisim::ArticulatedSystem::getFrameByIdx, R"mydelimiter(
+        .def("getFrameByIdx", py::overload_cast<size_t>(&raisim::ArticulatedSystem::getFrameByIdx), R"mydelimiter(
         Get the coordinate frame from its index.
 
         Args:
@@ -523,7 +523,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         )mydelimiter",
         py::arg("name"))
 
-        .def("getFrames", &raisim::ArticulatedSystem::getFrames, R"mydelimiter(
+        .def("getFrames", py::overload_cast<>(&raisim::ArticulatedSystem::getFrames), R"mydelimiter(
         Get all the coordinate frames.
 
         Returns:
@@ -1391,7 +1391,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
 	    )mydelimiter")
 
 
-        .def("getVisOb", &raisim::ArticulatedSystem::getVisOb, R"mydelimiter(
+        .def("getVisOb", py::overload_cast<>(&raisim::ArticulatedSystem::getVisOb), R"mydelimiter(
 	    Get the visual objects.
 
 	    Returns:
@@ -1399,7 +1399,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
 	    )mydelimiter")
 
 
-	    .def("getVisColOb", &raisim::ArticulatedSystem::getVisColOb, R"mydelimiter(
+	    .def("getVisColOb", py::overload_cast<>(&raisim::ArticulatedSystem::getVisColOb), R"mydelimiter(
 	    Get the visual collision objects.
 
 	    Returns:
@@ -1610,9 +1610,4 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
 	    )mydelimiter",
 	    py::arg("id_"), py::arg("orientation"));
 
-
-    // aliases
-    system.attr("get_base_orientation") = system.attr("get_base_quaternion");
-    system.attr("get_frame_world_orientation") = system.attr("get_frame_world_quaternion");
-    system.attr("get_world_orientation") = system.attr("get_world_quaternion");
 }

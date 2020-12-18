@@ -62,7 +62,7 @@ void init_materials(py::module &m) {
         "Args:\n"
         "    xml_file (float): xml file.",
         py::arg("xml_file"))
-        .def("set_material_pair_properties", &raisim::MaterialManager::setMaterialPairProp, R"mydelimiter(
+        .def("setMaterialPairProp", &raisim::MaterialManager::setMaterialPairProp, R"mydelimiter(
         Set the material pair properties (friction and restitution).
 
         Args:
@@ -73,7 +73,7 @@ void init_materials(py::module &m) {
             threshold (float): restitution threshold.
         )mydelimiter",
         py::arg("material1"), py::arg("material2"), py::arg("friction"), py::arg("restitution"), py::arg("threshold"))
-        .def("get_material_pair_properties", &raisim::MaterialManager::getMaterialPairProp, R"mydelimiter(
+        .def("getMaterialPairProp", &raisim::MaterialManager::getMaterialPairProp, R"mydelimiter(
         Get the material pair properties (friction and restitution).
 
         Args:
@@ -84,7 +84,7 @@ void init_materials(py::module &m) {
             MaterialPairProperties: material pair properties (friction, restitution, and restitution threshold).
         )mydelimiter",
         py::arg("material1"), py::arg("material2"))
-        .def("set_default_material_properties", &raisim::MaterialManager::setDefaultMaterialProperties, R"mydelimiter(
+        .def("setDefaultMaterialProperties", &raisim::MaterialManager::setDefaultMaterialProperties, R"mydelimiter(
         Set the default material properties.
 
         Args:

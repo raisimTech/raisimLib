@@ -84,7 +84,7 @@ void init_single_bodies(py::module &m) {
 	    .def(py::init<raisim::ObjectType>(), "Initialize the Object.", py::arg("object_type"))
 
 
-        .def("get_quaternion", py::overload_cast<>(&raisim::SingleBodyObject::getQuaternion, py::const_), R"mydelimiter(
+        .def("getQuaternion", py::overload_cast<>(&raisim::SingleBodyObject::getQuaternion, py::const_), R"mydelimiter(
 	    Get the body's orientation (expressed as a quaternion [w,x,y,z]) with respect to the world frame.
 
 	    Returns:
@@ -92,7 +92,7 @@ void init_single_bodies(py::module &m) {
 	    )mydelimiter")
 
 
-	    .def("get_rotation_matrix", py::overload_cast<>(&raisim::SingleBodyObject::getRotationMatrix, py::const_), R"mydelimiter(
+	    .def("getRotationMatrix", py::overload_cast<>(&raisim::SingleBodyObject::getRotationMatrix, py::const_), R"mydelimiter(
 	    Get the body's orientation (expressed as a rotation matrix) with respect to the world frame.
 
 	    Returns:
@@ -100,7 +100,7 @@ void init_single_bodies(py::module &m) {
 	    )mydelimiter")
 
 
-	    .def("get_position", py::overload_cast<>(&raisim::SingleBodyObject::getPosition, py::const_), R"mydelimiter(
+	    .def("getPosition", py::overload_cast<>(&raisim::SingleBodyObject::getPosition, py::const_), R"mydelimiter(
 	    Get the body's position with respect to the world frame.
 
 	    Returns:
@@ -108,7 +108,7 @@ void init_single_bodies(py::module &m) {
 	    )mydelimiter")
 
 
-	    .def("get_com_position", &raisim::SingleBodyObject::getComPosition, R"mydelimiter(
+	    .def("getComPosition", &raisim::SingleBodyObject::getComPosition, R"mydelimiter(
 	    Get the body's center of mass position with respect to the world frame.
 
 	    Returns:
@@ -116,7 +116,7 @@ void init_single_bodies(py::module &m) {
 	    )mydelimiter")
 
 
-	    .def("get_linear_velocity", py::overload_cast<>(&raisim::SingleBodyObject::getLinearVelocity, py::const_), R"mydelimiter(
+	    .def("getLinearVelocity", py::overload_cast<>(&raisim::SingleBodyObject::getLinearVelocity, py::const_), R"mydelimiter(
 	    Get the body's linear velocity with respect to the world frame.
 
 	    Returns:
@@ -124,14 +124,14 @@ void init_single_bodies(py::module &m) {
 	    )mydelimiter")
 
 
-	    .def("get_angular_velocity", py::overload_cast<>(&raisim::SingleBodyObject::getAngularVelocity, py::const_), R"mydelimiter(
+	    .def("getAngularVelocity", py::overload_cast<>(&raisim::SingleBodyObject::getAngularVelocity, py::const_), R"mydelimiter(
 	    Get the body's angular velocity position with respect to the world frame.
 
 	    Returns:
 	        np.array[float[3]]: angular velocity in the world frame.
 	    )mydelimiter")
 
-	    .def("get_kinetic_energy", &raisim::SingleBodyObject::getKineticEnergy, R"mydelimiter(
+	    .def("getKineticEnergy", &raisim::SingleBodyObject::getKineticEnergy, R"mydelimiter(
 	    Get the body's kinetic energy.
 
 	    Returns:
@@ -139,7 +139,7 @@ void init_single_bodies(py::module &m) {
 	    )mydelimiter")
 
 
-	    .def("get_potential_energy", [](raisim::SingleBodyObject &self, py::array_t<double> gravity) {
+	    .def("getPotentialEnergy", [](raisim::SingleBodyObject &self, py::array_t<double> gravity) {
             Vec<3> g = convert_np_to_vec<3>(gravity);
 	        return self.getPotentialEnergy(g);
 	    }, R"mydelimiter(
@@ -154,7 +154,7 @@ void init_single_bodies(py::module &m) {
 	    py::arg("gravity"))
 
 
-	    .def("get_energy", [](raisim::SingleBodyObject &self, py::array_t<double> gravity) {
+	    .def("getEnergy", [](raisim::SingleBodyObject &self, py::array_t<double> gravity) {
             Vec<3> g = convert_np_to_vec<3>(gravity);
 	        return self.getEnergy(g);
 	    }, R"mydelimiter(
@@ -169,7 +169,7 @@ void init_single_bodies(py::module &m) {
 	    py::arg("gravity"))
 
 
-	    .def("get_linear_momentum", &raisim::SingleBodyObject::getLinearMomentum, R"mydelimiter(
+	    .def("getLinearMomentum", &raisim::SingleBodyObject::getLinearMomentum, R"mydelimiter(
 	    Get the body's linear momentum.
 
 	    Returns:
@@ -177,7 +177,7 @@ void init_single_bodies(py::module &m) {
 	    )mydelimiter")
 
 
-	    .def("get_mass", &raisim::SingleBodyObject::getMass, R"mydelimiter(
+	    .def("getMass", &raisim::SingleBodyObject::getMass, R"mydelimiter(
 	    Get the body's mass.
 
 	    Args:
@@ -189,7 +189,7 @@ void init_single_bodies(py::module &m) {
 	    py::arg("local_idx"))
 
 
-	    .def("get_world_inertia_matrix", &raisim::SingleBodyObject::getInertiaMatrix_W, R"mydelimiter(
+	    .def("getInertiaMatrix_W", &raisim::SingleBodyObject::getInertiaMatrix_W, R"mydelimiter(
 	    Get the body's inertia matrix expressed in the world frame.
 
 	    Returns:
@@ -197,7 +197,7 @@ void init_single_bodies(py::module &m) {
 	    )mydelimiter")
 
 
-	    .def("get_body_inertia_matrix", &raisim::SingleBodyObject::getInertiaMatrix_B, R"mydelimiter(
+	    .def("getInertiaMatrix_B", &raisim::SingleBodyObject::getInertiaMatrix_B, R"mydelimiter(
 	    Get the body's inertia matrix expressed in the body frame.
 
 	    Returns:
@@ -205,7 +205,7 @@ void init_single_bodies(py::module &m) {
 	    )mydelimiter")
 
 
-	    .def("get_object_type", &raisim::SingleBodyObject::getObjectType, R"mydelimiter(
+	    .def("getObjectType", &raisim::SingleBodyObject::getObjectType, R"mydelimiter(
 	    Get the body's type.
 
 	    Returns:
@@ -213,7 +213,7 @@ void init_single_bodies(py::module &m) {
 	    )mydelimiter")
 
 
-        .def("get_collision_object", &raisim::SingleBodyObject::getCollisionObject, R"mydelimiter(
+        .def("getCollisionObject", &raisim::SingleBodyObject::getCollisionObject, R"mydelimiter(
 	    Get the collision object.
 
 	    Returns:
@@ -221,7 +221,7 @@ void init_single_bodies(py::module &m) {
 	    )mydelimiter")
 
 
-        .def("get_gyroscopic_mode", &raisim::SingleBodyObject::getCollisionObject, R"mydelimiter(
+        .def("getGyroscopicMode", &raisim::SingleBodyObject::getGyroscopicMode, R"mydelimiter(
 	    Get the gyroscopic mode.
 
 	    Returns:
@@ -230,7 +230,7 @@ void init_single_bodies(py::module &m) {
 	    )mydelimiter")
 
 
-        .def("set_position", py::overload_cast<const Eigen::Vector3d &>(&raisim::SingleBodyObject::setPosition), R"mydelimiter(
+        .def("setPosition", py::overload_cast<const Eigen::Vector3d &>(&raisim::SingleBodyObject::setPosition), R"mydelimiter(
 	    Set the specified origin position.
 
 	    Args:
@@ -239,7 +239,7 @@ void init_single_bodies(py::module &m) {
 	    py::arg("origin_position"))
 
 
-	    .def("set_position", py::overload_cast<double, double, double>(&raisim::SingleBodyObject::setPosition), R"mydelimiter(
+	    .def("setPosition", py::overload_cast<double, double, double>(&raisim::SingleBodyObject::setPosition), R"mydelimiter(
 	    Set the specified origin position.
 
 	    Args:
@@ -250,7 +250,7 @@ void init_single_bodies(py::module &m) {
 	    py::arg("x"), py::arg("y"), py::arg("z"))
 
 
-        .def("set_orientation", py::overload_cast<double, double, double, double>(&raisim::SingleBodyObject::setOrientation), R"mydelimiter(
+        .def("setOrientation", py::overload_cast<double, double, double, double>(&raisim::SingleBodyObject::setOrientation), R"mydelimiter(
 	    Set the specified orientation (expressed as a quaternion [x,y,z,w]) for the body.
 
 	    Args:
@@ -262,7 +262,7 @@ void init_single_bodies(py::module &m) {
 	    py::arg("w")=1.0, py::arg("x")=0.0, py::arg("y")=0.0, py::arg("z")=0.0)
 
 
-        .def("set_orientation", py::overload_cast<const Eigen::Matrix3d &>(&raisim::SingleBodyObject::setOrientation), R"mydelimiter(
+        .def("setOrientation", py::overload_cast<const Eigen::Matrix3d &>(&raisim::SingleBodyObject::setOrientation), R"mydelimiter(
 	    Set the specified orientation (expressed as a rotation matrix) for the body.
 
 	    Args:
@@ -271,7 +271,7 @@ void init_single_bodies(py::module &m) {
 	    py::arg("rotation_matrix"))
 
 
-        .def("set_orientation", [](raisim::SingleBodyObject &self, py::array_t<double> quaternion) {
+        .def("setOrientation", [](raisim::SingleBodyObject &self, py::array_t<double> quaternion) {
             Eigen::Quaterniond quat = convert_np_to_quaternion(quaternion);
             self.setOrientation(quat);
         }, R"mydelimiter(
@@ -283,7 +283,7 @@ void init_single_bodies(py::module &m) {
 	    py::arg("quaternion"))
 
 
-        .def("set_pose", py::overload_cast<const Eigen::Vector3d &, const Eigen::Matrix3d &>(&raisim::SingleBodyObject::setPose), R"mydelimiter(
+        .def("setPose", py::overload_cast<const Eigen::Vector3d &, const Eigen::Matrix3d &>(&raisim::SingleBodyObject::setPose), R"mydelimiter(
 	    Set the specified pose for the body.
 
 	    Args:
@@ -293,7 +293,7 @@ void init_single_bodies(py::module &m) {
 	    py::arg("position"), py::arg("rotation_matrix"))
 
 
-	    .def("set_pose", [](raisim::SingleBodyObject &self, Eigen::Vector3d position, py::array_t<double> quaternion) {
+	    .def("setPose", [](raisim::SingleBodyObject &self, Eigen::Vector3d position, py::array_t<double> quaternion) {
 	        Eigen::Quaterniond quat = convert_np_to_quaternion(quaternion);
             self.setPose(position, quat);
 	    }, R"mydelimiter(
@@ -306,7 +306,7 @@ void init_single_bodies(py::module &m) {
 	    py::arg("position"), py::arg("quaternion"))
 
 
-        .def("set_velocity", py::overload_cast<const Eigen::Vector3d &, const Eigen::Vector3d &>(&raisim::SingleBodyObject::setVelocity), R"mydelimiter(
+        .def("setVelocity", py::overload_cast<const Eigen::Vector3d &, const Eigen::Vector3d &>(&raisim::SingleBodyObject::setVelocity), R"mydelimiter(
 	    Set the specified linear and angular velocities for the body.
 
 	    Args:
@@ -316,7 +316,7 @@ void init_single_bodies(py::module &m) {
 	    py::arg("linear_velocity"), py::arg("angular_velocity"))
 
 
-        .def("set_velocity", py::overload_cast<double, double, double, double, double, double>(&raisim::SingleBodyObject::setVelocity), R"mydelimiter(
+        .def("setVelocity", py::overload_cast<double, double, double, double, double, double>(&raisim::SingleBodyObject::setVelocity), R"mydelimiter(
 	    Set the specified linear and angular velocities for the body.
 
 	    Args:
@@ -330,7 +330,7 @@ void init_single_bodies(py::module &m) {
 	    py::arg("dx"), py::arg("dy"), py::arg("dz"), py::arg("wx"), py::arg("wy"), py::arg("wz"))
 
 
-        .def("set_external_force", [](raisim::SingleBodyObject &self, size_t local_idx, py::array_t<double> pos, py::array_t<double> force) {
+        .def("setExternalForce", [](raisim::SingleBodyObject &self, size_t local_idx, py::array_t<double> pos, py::array_t<double> force) {
 	        // convert np.array[3] to Vec<3>
 	        Vec<3> p = convert_np_to_vec<3>(pos);
 			Vec<3> f = convert_np_to_vec<3>(force);
@@ -345,7 +345,7 @@ void init_single_bodies(py::module &m) {
 	    py::arg("local_idx"), py::arg("pos"), py::arg("force"))
 
 
-	    .def("set_external_torque", [](raisim::SingleBodyObject &self, size_t local_idx, py::array_t<double> torque) {
+	    .def("setExternalTorque", [](raisim::SingleBodyObject &self, size_t local_idx, py::array_t<double> torque) {
 	        // convert np.array[3] to Vec<3>
 	        Vec<3> t = convert_np_to_vec<3>(torque);
 	        self.setExternalTorque(local_idx, t);
@@ -359,7 +359,7 @@ void init_single_bodies(py::module &m) {
 	    py::arg("local_idx"), py::arg("torque"))
 
 
-        .def("set_gyroscopic_mode", &raisim::SingleBodyObject::setGyroscopicMode, R"mydelimiter(
+        .def("setGyroscopicMode", &raisim::SingleBodyObject::setGyroscopicMode, R"mydelimiter(
 	    Set the gyroscopic mode for the body.
 
 	    Args:
@@ -370,20 +370,20 @@ void init_single_bodies(py::module &m) {
 	    py::arg("mode"))
 
 
-        .def("pre_contact_solver_update1", [](raisim::SingleBodyObject &self, py::array_t<double> gravity, double dt) {
+        .def("preContactSolverUpdate1", [](raisim::SingleBodyObject &self, py::array_t<double> gravity, double dt) {
 	        // convert np.array[3] to Vec<3>
 	        Vec<3> vec = convert_np_to_vec<3>(gravity);
 	        self.preContactSolverUpdate1(vec, dt);
 	    }, py::arg("gravity"), py::arg("dt"))
 
 
-	    .def("pre_contact_solver_update2", [](raisim::SingleBodyObject &self, py::array_t<double> gravity, double dt) {
+	    .def("preContactSolverUpdate2", [](raisim::SingleBodyObject &self, py::array_t<double> gravity, double dt) {
 	        // convert np.array[3] to Vec<3>
 	        Vec<3> vec = convert_np_to_vec<3>(gravity);
-	        self.preContactSolverUpdate1(vec, dt);
+	        self.preContactSolverUpdate2(vec, dt);
 	    }, py::arg("gravity"), py::arg("dt"))
 
-        .def("get_contact_point_velocity", [](raisim::SingleBodyObject &self, size_t point_id) {
+        .def("getContactPointVel", [](raisim::SingleBodyObject &self, size_t point_id) {
 	        Vec<3> vel;
 	        self.getContactPointVel(point_id, vel);
 	        return convert_vec_to_np(vel);
@@ -399,10 +399,10 @@ void init_single_bodies(py::module &m) {
 	    py::arg("point_id"))
 
 
-        .def("update_collision", &raisim::SingleBodyObject::updateCollision, "Update the collisions.")
+        .def("updateCollision", &raisim::SingleBodyObject::updateCollision, "Update the collisions.")
 
 
-        .def("set_linear_damping", &raisim::SingleBodyObject::setLinearDamping, R"mydelimiter(
+        .def("setLinearDamping", &raisim::SingleBodyObject::setLinearDamping, R"mydelimiter(
 	    Set the body's linear damping coefficient.
 
 	    Args:
@@ -411,7 +411,7 @@ void init_single_bodies(py::module &m) {
 	    py::arg("damping"))
 
 
-	    .def("set_angular_damping", [](raisim::SingleBodyObject &self, py::array_t<double> damping) {
+	    .def("setAngularDamping", [](raisim::SingleBodyObject &self, py::array_t<double> damping) {
             // convert np.array[3] to Vec<3>
 	        Vec<3> vec = convert_np_to_vec<3>(damping);
 	        self.setAngularDamping(vec);
@@ -424,7 +424,7 @@ void init_single_bodies(py::module &m) {
 	    py::arg("damping"))
 
 
-	    .def("set_body_type", &raisim::SingleBodyObject::setBodyType, R"mydelimiter(
+	    .def("setBodyType", &raisim::SingleBodyObject::setBodyType, R"mydelimiter(
 	    Set the body's type.
 
 	    Args:
@@ -433,14 +433,14 @@ void init_single_bodies(py::module &m) {
 	    py::arg("body_type"))
 
 
-	    .def("get_collision_group", &raisim::SingleBodyObject::getCollisionGroup, R"mydelimiter(
+	    .def("getCollisionGroup", &raisim::SingleBodyObject::getCollisionGroup, R"mydelimiter(
 	    Get the body's collision group.
 
 	    Returns:
 	        int: collision group.
 	    )mydelimiter")
 
-	    .def("get_collision_mask", &raisim::SingleBodyObject::getCollisionMask, R"mydelimiter(
+	    .def("getCollisionMask", &raisim::SingleBodyObject::getCollisionMask, R"mydelimiter(
 	    Get the body's collision mask.
 
 	    Returns:
@@ -462,7 +462,7 @@ void init_single_bodies(py::module &m) {
 	    "    z (float): length along the z axis.\n"
 	    "    mass (float): mass of the box.",
 	    py::arg("x"), py::arg("y"), py::arg("z"), py::arg("mass"))
-	    .def("get_dimensions", [](raisim::Box &box) {
+	    .def("getDim", [](raisim::Box &box) {
 	        Vec<3> dimensions = box.getDim();
 	        return convert_vec_to_np(dimensions);
 	    }, R"mydelimiter(
@@ -485,13 +485,13 @@ void init_single_bodies(py::module &m) {
 	    "    height (float): height of the capsule.\n"
 	    "    mass (float): mass of the capsule.",
 	    py::arg("radius"), py::arg("height"), py::arg("mass"))
-	    .def("get_radius", &raisim::Capsule::getRadius, R"mydelimiter(
+	    .def("getRadius", &raisim::Capsule::getRadius, R"mydelimiter(
 	    Get the capsule's radius.
 
 	    Returns:
 	        float: radius of the capsule.
 	    )mydelimiter")
-	    .def("get_height", &raisim::Capsule::getHeight, R"mydelimiter(
+	    .def("getHeight", &raisim::Capsule::getHeight, R"mydelimiter(
 	    Get the capsule's height.
 
 	    Returns:
@@ -506,8 +506,8 @@ void init_single_bodies(py::module &m) {
     py::class_<raisim::Compound, raisim::SingleBodyObject> compound(m, "Compound", "Raisim Compound bodies.");
 
     py::class_<raisim::Compound::CompoundObjectChild>(compound, "CompoundObjectChild", "Raisim Compound object child.")
-        .def_readwrite("object_type", &raisim::Compound::CompoundObjectChild::objectType)
-        .def_property("object_param",
+        .def_readwrite("objectType", &raisim::Compound::CompoundObjectChild::objectType)
+        .def_property("objectParam",
             [](raisim::Compound::CompoundObjectChild &self) { // getter
                 // convert from Vec<4> to np.array
                 return convert_vec_to_np(self.objectParam);
@@ -517,7 +517,7 @@ void init_single_bodies(py::module &m) {
                 self.objectParam = vec;
             })
         .def_readwrite("material", &raisim::Compound::CompoundObjectChild::material)
-        .def_readwrite("transformation", &raisim::Compound::CompoundObjectChild::trans);
+        .def_readwrite("trans", &raisim::Compound::CompoundObjectChild::trans);
 
     compound.def(py::init([](const std::vector<raisim::Compound::CompoundObjectChild>& children, double mass,
                              py::array_t<double> center_of_mass,
@@ -543,13 +543,13 @@ void init_single_bodies(py::module &m) {
     /************/
     // Cylinder class (from include/raisim/object/singleBodies/Cylinder.hpp)
 	py::class_<raisim::Cylinder, raisim::SingleBodyObject>(m, "Cylinder", "Raisim Cylinder.")
-	    .def("get_radius", &raisim::Cylinder::getRadius, R"mydelimiter(
+	    .def("getRadius", &raisim::Cylinder::getRadius, R"mydelimiter(
 	    Get the cylinder's radius.
 
 	    Returns:
 	        float: radius of the cylinder.
 	    )mydelimiter")
-	    .def("get_height", &raisim::Cylinder::getHeight, R"mydelimiter(
+	    .def("getHeight", &raisim::Cylinder::getHeight, R"mydelimiter(
 	    Get the cylinder's height.
 
 	    Returns:
@@ -561,7 +561,7 @@ void init_single_bodies(py::module &m) {
     /********/
     // Mesh class (from include/raisim/object/singleBodies/Mesh.hpp)
 	py::class_<raisim::Mesh, raisim::SingleBodyObject>(m, "Mesh", "Raisim Mesh.")
-        .def("get_file_name", &raisim::Mesh::getMeshFileName, R"mydelimiter(
+        .def("getMeshFileName", &raisim::Mesh::getMeshFileName, R"mydelimiter(
 	    Get the mesh's full path.
 
 	    Returns:
@@ -573,7 +573,7 @@ void init_single_bodies(py::module &m) {
 	/**********/
 	// Sphere class (from include/raisim/object/singleBodies/Sphere.hpp)
 	py::class_<raisim::Sphere, raisim::SingleBodyObject>(m, "Sphere", "Raisim Sphere.")
-        .def("get_radius", &raisim::Sphere::getRadius, R"mydelimiter(
+        .def("getRadius", &raisim::Sphere::getRadius, R"mydelimiter(
 	    Get the sphere's radius.
 
 	    Returns:

@@ -736,44 +736,44 @@ class ArticulatedSystem : public Object {
    * the model permenantly. After you change the dynamic properties, call "void updateMassInfo()" to update
    * some precomputed dynamic properties */
   /**
-   * @return a non-const reference to joint position relative to its parent, expressed in the parent frame. */
+   * @return a reference to joint position relative to its parent, expressed in the parent frame. */
   std::vector<raisim::Vec<3>> &getJointPos_P() { return jointPos_P; }
   const std::vector<raisim::Vec<3>> &getJointPos_P() const { return jointPos_P; }
 
   /**
-   * @return a non-const reference to joint orientation relative to its parent, expressed in the parent frame. */
+   * @return a reference to joint orientation relative to its parent, expressed in the parent frame. */
   std::vector<raisim::Mat<3,3>> &getJointOrientation_P() { return rot_JB; }
   const std::vector<raisim::Mat<3,3>> &getJointOrientation_P() const { return rot_JB; }
 
   /**
-   * @return a non-const reference to joint axis relative to its parent, expressed in the parent frame. */
+   * @return a reference to joint axis relative to its parent, expressed in the parent frame. */
   std::vector<raisim::Vec<3>> &getJointAxis_P() { return jointAxis_P; }
   const std::vector<raisim::Vec<3>> &getJointAxis_P() const { return jointAxis_P; }
 
   /**
    * You MUST call updateMassInfo() after you change the mass
-   * @return a non-const reference to mass of each joint.*/
+   * @return a reference to mass of each joint.*/
   std::vector<double> &getMass() { return mass; }
   const std::vector<double> &getMass() const { return mass; }
 
   /**
-   * @return a non-const reference to inertia of each body.*/
+   * @return a reference to inertia of each body.*/
   std::vector<raisim::Mat<3, 3>> &getInertia() { return inertia_comB; }
   const std::vector<raisim::Mat<3, 3>> &getInertia() const { return inertia_comB; }
 
   /**
-   * @return a non-const reference to the position of the center of the mass in the body frame.*/
+   * @return a reference to the position of the center of the mass in the body frame.*/
   std::vector<raisim::Vec<3>> &getLinkCOM() { return comPos_B; }
   const std::vector<raisim::Vec<3>> &getLinkCOM() const { return comPos_B; }
 
   /**
-   * @return a non-const reference to the collision bodies. Position and orientation can be set dynamically */
+   * @return a reference to the collision bodies. Position and orientation can be set dynamically */
   raisim::CollisionSet &getCollisionBodies() { return collisionBodies; }
   const raisim::CollisionSet &getCollisionBodies() const { return collisionBodies; }
 
   /**
    * @param name collision body name which is "LINK_NAME" + "/" + "COLLISION_NUMBER". For example, the first collision body of the link "base" is named as "base/0"
-   * @return a non-const reference to the collision bodies. Position and orientation can be set dynamically */
+   * @return a reference to the collision bodies. Position and orientation can be set dynamically */
   raisim::CollisionDefinition &getCollisionBody(const std::string& name) {
     return *std::find_if(collisionBodies.begin(), collisionBodies.end(),
                       [name](const raisim::CollisionDefinition& ref){ return ref.name == name; }); }

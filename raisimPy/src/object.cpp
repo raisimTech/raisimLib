@@ -78,13 +78,13 @@ void init_object(py::module &m) {
 	// Object class (from include/raisim/object/Object.hpp)
 	py::class_<raisim::Object>(m, "Object", "Raisim Object from which all other objects/bodies inherit from.")
 	    .def_property("name", &raisim::Object::getName, &raisim::Object::setName)
-	    .def("get_name", &raisim::Object::getName, R"mydelimiter(
+	    .def("getName", &raisim::Object::getName, R"mydelimiter(
 	    Get the object's name.
 
 	    Returns:
 	        str: object's name.
 	    )mydelimiter")
-	    .def("set_name", &raisim::Object::setName, R"mydelimiter(
+	    .def("setName", &raisim::Object::setName, R"mydelimiter(
 	    Set the object's name.
 
 	    Args:
@@ -92,7 +92,7 @@ void init_object(py::module &m) {
 	    )mydelimiter",
 	    py::arg("name"))
 
-	    .def("set_index_in_world", &raisim::Object::setIndexInWorld, R"mydelimiter(
+	    .def("setIndexInWorld", &raisim::Object::setIndexInWorld, R"mydelimiter(
 	    Set the object index in the world.
 
 	    Args:
@@ -100,27 +100,27 @@ void init_object(py::module &m) {
 	    )mydelimiter",
 	    py::arg("index"))
 
-	    .def("get_index_in_world", &raisim::Object::getIndexInWorld, R"mydelimiter(
+	    .def("getIndexInWorld", &raisim::Object::getIndexInWorld, R"mydelimiter(
 	    Get the object index in the world.
 
 	    Returns:
 	        int: object index in the world.
 	    )mydelimiter")
 
-	    .def("get_contacts", py::overload_cast<>(&raisim::Object::getContacts), R"mydelimiter(
+	    .def("getContacts", py::overload_cast<>(&raisim::Object::getContacts), R"mydelimiter(
 	    Get the list of contact points.
 
 	    Returns:
 	        list[Contact]: list of contact points.
 	    )mydelimiter")
-	    .def("get_contacts", py::overload_cast<>(&raisim::Object::getContacts, py::const_), R"mydelimiter(
+	    .def("getContacts", py::overload_cast<>(&raisim::Object::getContacts, py::const_), R"mydelimiter(
 	    Get the list of contact points.
 
 	    Returns:
 	        list[Contact]: list of contact points.
 	    )mydelimiter")
 
-	    .def("set_external_force", [](raisim::Object &self, size_t local_idx, py::array_t<double> force) {
+	    .def("setExternalForce", [](raisim::Object &self, size_t local_idx, py::array_t<double> force) {
 	        // convert np.array[3] to Vec<3>
 	        Vec<3> f = convert_np_to_vec<3>(force);
 	        self.setExternalForce(local_idx, f);
@@ -134,7 +134,7 @@ void init_object(py::module &m) {
 	    py::arg("local_idx"), py::arg("force"))
 
 
-	    .def("set_external_torque", [](raisim::Object &self, size_t local_idx, py::array_t<double> torque) {
+	    .def("setExternalTorque", [](raisim::Object &self, size_t local_idx, py::array_t<double> torque) {
 	        // convert np.array[3] to Vec<3>
 	        Vec<3> t = convert_np_to_vec<3>(torque);
 	        self.setExternalTorque(local_idx, t);
@@ -147,11 +147,11 @@ void init_object(py::module &m) {
 	    )mydelimiter",
 	    py::arg("local_idx"), py::arg("torque"))
 
-	    .def("get_mass", &raisim::Object::getMass, py::arg("local_idx"))
-	    .def("get_object_type", &raisim::Object::getObjectType)
+	    .def("getMass", &raisim::Object::getMass, py::arg("local_idx"))
+	    .def("getObjectType", &raisim::Object::getObjectType)
 
 
-	    .def("get_world_position", [](raisim::Object &self, size_t local_idx) {
+	    .def("getPosition", [](raisim::Object &self, size_t local_idx) {
 	        Vec<3> pos;
 	        self.getPosition(local_idx, pos);
 	        // convert vec<3> to np.array[3]
@@ -168,7 +168,7 @@ void init_object(py::module &m) {
 	    py::arg("local_idx"))
 
 
-	    .def("get_world_linear_velocity", [](raisim::Object &self, size_t local_idx) {
+	    .def("getVelocity", [](raisim::Object &self, size_t local_idx) {
 	        Vec<3> vel;
 	        self.getVelocity(local_idx, vel);
 	        return convert_vec_to_np(vel);
@@ -184,7 +184,7 @@ void init_object(py::module &m) {
 	    py::arg("local_idx"))
 
 
-	    .def("get_world_rotation_matrix", [](raisim::Object &self, size_t local_idx) {
+	    .def("getOrientation", [](raisim::Object &self, size_t local_idx) {
 	        Mat<3,3> rot;
 	        self.getOrientation(local_idx, rot);
 	        return convert_mat_to_np(rot);
@@ -200,15 +200,15 @@ void init_object(py::module &m) {
 	    py::arg("local_idx"))
 
 
-	    .def("get_world_position", [](raisim::Object &self, size_t local_idx, py::array_t<double> body_pos) {
+	    .def("getPosition", [](raisim::Object &self, size_t local_idx, py::array_t<double> body_pos) {
 	        Vec<3> pos_b =convert_np_to_vec<3>(body_pos);
 	        Vec<3> pos;
 	        self.getPosition(local_idx, pos_b, pos);
 	        return convert_vec_to_np(pos);
 	     })
-	    .def("get_body_type", py::overload_cast<size_t>(&raisim::Object::getBodyType, py::const_))
-	    .def("get_body_type", py::overload_cast<>(&raisim::Object::getBodyType, py::const_))
-	    .def("get_contact_point_velocity", [](raisim::Object &self, size_t point_id) {
+	    .def("getBodyType", py::overload_cast<size_t>(&raisim::Object::getBodyType, py::const_))
+	    .def("getBodyType", py::overload_cast<>(&raisim::Object::getBodyType, py::const_))
+	    .def("getContactPointVel", [](raisim::Object &self, size_t point_id) {
 	        Vec<3> vel;
 	        self.getContactPointVel(point_id, vel);
 	        return convert_vec_to_np(vel);
