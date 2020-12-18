@@ -18,8 +18,7 @@ There is nothing to compile here. This only provides a header file for an enviro
 
 ### Retrain policy
 
-1. Set ```save_all_checkpoints``` in ```cfg.yaml``` be ```True``` in previous ```runner``` training
-2. run runner.py of the task with policy (for anymal example): ``` python raisimGymTorch/env/envs/rsg_anymal/runner.py --mode retrain --weight data/roughTerrain/FOLDER_NAME/policy_XXX```
+1. run runner.py of the task with policy (for anymal example): ``` python raisimGymTorch/env/envs/rsg_anymal/runner.py --mode retrain --weight data/roughTerrain/FOLDER_NAME/policy_XXX```
 
 ### Debugging
 1. Compile raisimgym with debug symbols: ```python setup develop --Debug```. This compiles <YOUR_APP_NAME>_debug_app

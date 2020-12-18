@@ -1,6 +1,5 @@
 seed: 1
 record_video: yes
-save_all_checkpoints: False
 
 environment:
   render: True

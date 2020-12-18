@@ -38,24 +38,6 @@ env = VecEnv(rsg_anymal.RaisimGymEnv(home_path + "/rsc", dump(cfg['environment']
 ob_dim = env.num_obs
 act_dim = env.num_acts
 
-if mode == 'retrain':
-    # save the configuration and related files to pre-trained model
-    if weight_path == "":
-        raise Exception("\nCan't find the pre-trained weight, please provide a pre-trained weight with --weight switch\n")
-    print("\nRetraining from the policy:", weight_path+".pt\n")
-
-    full_checkpoint_path = weight_path.rsplit('/', 1)[0] + '/' + 'full_' + weight_path.rsplit('/', 1)[1].split('_', 1)[1] + '.pt'
-    mean_csv_path = weight_path.rsplit('/', 1)[0] + '/' + 'mean' + weight_path.rsplit('/', 1)[1].split('_', 1)[1] + '.csv'
-    var_csv_path = weight_path.rsplit('/', 1)[0] + '/' + 'var' + weight_path.rsplit('/', 1)[1].split('_', 1)[1] + '.csv'
-    saver = ConfigurationSaver(log_dir=home_path + "/raisimGymTorch/data/roughTerrain",
-                               save_items=[task_path + "/cfg.yaml", task_path + "/Environment.hpp"],
-                               pretrained_items=[weight_path.rsplit('/', 1)[0].rsplit('/', 1)[1], [weight_path+'.pt', weight_path+'.txt', full_checkpoint_path, mean_csv_path, var_csv_path]])
-
-else:
-    # save the configuration and other files
-    saver = ConfigurationSaver(log_dir=home_path + "/raisimGymTorch/data/roughTerrain",
-                               save_items=[task_path + "/cfg.yaml", task_path + "/Environment.hpp"])
-
 # Training
 n_steps = math.floor(cfg['environment']['max_time'] / cfg['environment']['control_dt'])
 total_steps = n_steps * env.num_envs
@@ -76,6 +58,17 @@ critic = ppo_module.Critic(ppo_module.MLP(cfg['architecture']['value_net'],
                            device)
 
 if mode == 'retrain':
+    # save the configuration and related files to pre-trained model
+    if weight_path == "":
+        raise Exception("\nCan't find the pre-trained weight, please provide a pre-trained weight with --weight switch\n")
+    print("\nRetraining from the policy:", weight_path+".pt\n")
+
+    full_checkpoint_path = weight_path.rsplit('/', 1)[0] + '/' + 'full_' + weight_path.rsplit('/', 1)[1].split('_', 1)[1] + '.pt'
+    mean_csv_path = weight_path.rsplit('/', 1)[0] + '/' + 'mean' + weight_path.rsplit('/', 1)[1].split('_', 1)[1] + '.csv'
+    var_csv_path = weight_path.rsplit('/', 1)[0] + '/' + 'var' + weight_path.rsplit('/', 1)[1].split('_', 1)[1] + '.csv'
+    saver = ConfigurationSaver(log_dir=home_path + "/raisimGymTorch/data/roughTerrain",
+                               save_items=[task_path + "/cfg.yaml", task_path + "/Environment.hpp"],
+                               pretrained_items=[weight_path.rsplit('/', 1)[0].rsplit('/', 1)[1], [weight_path+'.pt', weight_path+'.txt', full_checkpoint_path, mean_csv_path, var_csv_path]])
     ## load observation scaling from files of pre-trained model
     env.load_scaling(weight_path.rsplit('/', 1)[0], int(weight_path.rsplit('/', 1)[1].split('_', 1)[1]))
     print("Load observation scaling in", weight_path.rsplit('/', 1)[0]+":", "mean"+str(int(weight_path.rsplit('/', 1)[1].split('_', 1)[1])) + ".csv", "and", "var"+str(int(weight_path.rsplit('/', 1)[1].split('_', 1)[1])) + ".csv")
@@ -84,7 +77,11 @@ if mode == 'retrain':
     actor.architecture.load_state_dict(checkpoint['actor_architecture_state_dict'])
     actor.distribution.load_state_dict(checkpoint['actor_distribution_state_dict'])
     critic.architecture.load_state_dict(checkpoint['critic_architecture_state_dict'])
-
+else:
+    # save the configuration and other files
+    saver = ConfigurationSaver(log_dir=home_path + "/raisimGymTorch/data/roughTerrain",
+                               save_items=[task_path + "/cfg.yaml", task_path + "/Environment.hpp"])
+    
 ppo = PPO.PPO(actor=actor,
               critic=critic,
               num_envs=cfg['environment']['num_envs'],
@@ -112,13 +109,12 @@ for update in range(1000000):
     if update %  cfg['environment']['eval_every_n'] == 0:
         print("Visualizing and evaluating the current policy")
         actor.save_deterministic_graph(saver.data_dir+"/policy_"+str(update)+'.pt', torch.rand(1, ob_dim).cpu())
-        if cfg['save_all_checkpoints']:
-            torch.save({
-                'actor_architecture_state_dict': actor.architecture.state_dict(),
-                'actor_distribution_state_dict': actor.distribution.state_dict(),
-                'critic_architecture_state_dict': critic.architecture.state_dict(),
-                'optimizer_state_dict': ppo.optimizer.state_dict(),
-            }, saver.data_dir+"/full_"+str(update)+'.pt')
+        torch.save({
+            'actor_architecture_state_dict': actor.architecture.state_dict(),
+            'actor_distribution_state_dict': actor.distribution.state_dict(),
+            'critic_architecture_state_dict': critic.architecture.state_dict(),
+            'optimizer_state_dict': ppo.optimizer.state_dict(),
+        }, saver.data_dir+"/full_"+str(update)+'.pt')
 
         parameters = np.zeros([0], dtype=np.float32)
         for param in actor.deterministic_parameters():
