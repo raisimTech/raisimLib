@@ -69,6 +69,7 @@ int main(int argc, char* argv[]) {
       auto* ball = world.addSphere(0.1, 1.0);
       ball->setPosition(0, -2, 0.8);
       ball->setVelocity(0, 10, 0, 0, 0, 0);
+      ball->setAppearance("red");
       j++;
     }
 

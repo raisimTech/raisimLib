@@ -53,6 +53,7 @@ create_executable(visualObjects src/server/visualObjects.cpp)
 create_executable(rayDemo src/server/rayDemo.cpp)
 create_executable(rayDemo2 src/server/rayDemo2.cpp)
 create_executable(anymals src/server/anymals.cpp)
+create_executable(compound src/server/compound.cpp)
 
 # xml reader
 create_executable(xmlRader src/xml/xmlReader.cpp)
