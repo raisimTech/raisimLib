@@ -52,6 +52,7 @@ The geometric model is created using the Full-body musculoskeletal model in Raja
    sections/ConventionsAndNotations
    sections/LoggingSystem
    sections/WorldSystem
+   sections/RaisimServer
    sections/Object
    sections/Contact
    sections/MaterialSystem
@@ -61,21 +62,9 @@ The geometric model is created using the Full-body musculoskeletal model in Raja
 
 .. toctree::
    :maxdepth: 1
-   :caption: RaiSimMatlab
-
-   sections/RaiSimMatlabIntroduction
-   sections/RaiSimMatlabExample
-
-.. toctree::
-   :maxdepth: 1
-   :caption: RaiSimPy
-
-   sections/RaiSimPyIntroduction
-   sections/RaiSimPyExample
-
-.. toctree::
-   :maxdepth: 1
    :caption: Related Software
 
    sections/RaisimGymTorch
+   sections/RaiSimPy
    sections/RaisimUnity
+   sections/RaiSimMatlab
