@@ -54,6 +54,23 @@ struct PolyLine {
   Vec<4> color = {1, 1, 1, 1};
   std::vector<Vec<3>> points;
   double width = 0.01;
+
+  /**
+   * @param[in] r red value of the color (max=1).
+   * @param[in] g green value of the color (max=1).
+   * @param[in] b blue value of the color (max=1).
+   * @param[in] a alpha value of the color (max=1).
+   * set the color of the polyline. */
+  void setColor(double r, double g, double b, double a) {color = {r,g,b,a}; }
+
+  /**
+   * @param[in] point new polyline point.
+   * append a new point to the polyline. */
+  void addPoint(const Eigen::Vector3d& point) { points.push_back(point); }
+
+  /**
+   * clear all polyline points. */
+  void clearPoints() { points.clear(); }
 };
 
 struct Visuals {
@@ -84,18 +101,82 @@ struct Visuals {
    */
   Vec<3> size = {0, 0, 0};
 
+  /**
+   * @param[in] radius the raidus of the sphere.
+   * set size of the sphere. */
   void setSphereSize(double radius) { size[0] = radius; }
+
+  /**
+   * @param[in] x length.
+   * @param[in] y width.
+   * @param[in] z height.
+   * set size of the box. */
   void setBoxSize(double x, double y, double z) { size = {x,y,z}; }
+
+  /**
+   * @param[in] radius the raidus of the cylinder.
+   * @param[in] height the height of the cylinder.
+   * set size of the cylinder. */
   void setCylinderSize(double radius, double height) { size = {radius, height, 1.}; }
+
+  /**
+   * @param[in] radius the raidus of the capsule.
+   * @param[in] height the height of the capsule.
+   * set size of the capsule. */
   void setCapsuleSize(double radius, double height) { size = {radius, height, 1.}; }
 
+  /**
+   * @param[in] x x coordinate of the visual object.
+   * @param[in] y y coordinate of the visual object.
+   * @param[in] z z coordinate of the visual object.
+   * set the position of the visual object. */
   void setPosition(double x, double y, double z) { position = {x, y, z}; }
+
+  /**
+   * @param[in] w angle part of the quaternion.
+   * @param[in] x scaled x coordinate of the rotation axis.
+   * @param[in] y scaled y coordinate of the rotation axis.
+   * @param[in] z scaled z coordinate of the rotation axis.
+   * set the orientation of the visual object. */
   void setOrientation(double w, double x, double y, double z) { quaternion = {w, x, y, z}; }
+
+  /**
+   * @param[in] pos position of the visual object in raisim::Vec<3>.
+   * set the position of the visual object. */
   void setPosition(const Vec<3>& pos) { position = pos; }
+
+  /**
+   * @param[in] ori quaternion of the visual object in raisim::Vec<4>.
+   * set the orientation of the visual object. */
   void setOrientation(const Vec<4>& ori) {quaternion = ori; }
 
-  Vec<3> &getPosition() { return position; }
-  Vec<4> &getOrientation() { return quaternion; }
+  /**
+   * @param[in] pos position of the visual object in Eigen::Vector3d.
+   * set the position of the visual object. */
+  void setPosition(const Eigen::Vector3d& pos) { position = pos; }
+
+  /**
+   * @param[in] ori quaternion of the visual object in Eigen::Vector4d.
+   * set the orientation of the visual object. */
+  void setOrientation(const Eigen::Vector4d& ori) {quaternion = ori; }
+
+  /**
+   * @param[in] r red value of the color (max=1).
+   * @param[in] g green value of the color (max=1).
+   * @param[in] b blue value of the color (max=1).
+   * @param[in] a alpha value of the color (max=1).
+   * set the color of the visual object. */
+  void setColor(double r, double g, double b, double a) {color = {r,g,b,a}; }
+
+  /**
+   * @return the position of the visual object.
+   * get the position of the visual object. */
+  Eigen::Vector3d getPosition() { return position.e(); }
+
+  /**
+   * @return the orientation of the visual object.
+   * get the orientation of the visual object. */
+  Eigen::Vector4d getOrientation() { return quaternion.e(); }
 
  private:
   Vec<3> position = {0, 0, 0};
@@ -149,12 +230,16 @@ class RaisimServer final {
     STATUS_TERMINATING = 2
   };
 
+  /**
+   * @param[in] world the world to visualize.
+   * create a raisimSever for a world. */
   explicit RaisimServer(World *world) : world_(world) {
     receive_buffer.resize(RECEIVE_BUFFER_SIZE);
     send_buffer.resize(SEND_BUFFER_SIZE);
     memset(tempBuffer, 0, MAXIMUM_PACKET_SIZE * sizeof(char));
   }
 
+ private:
 #if __linux__ || __APPLE__
   inline void loop() {
     int opt = 1;
@@ -373,21 +458,35 @@ class RaisimServer final {
     return data;
   }
 
+ public:
+  /**
+   * @param[in] port port number to stream
+   * start spinning. */
   inline void launchServer(int port = 8080) {
     raisimPort_ = port;
     serverThread_ = std::thread(&raisim::RaisimServer::loop, this);
   }
 
+  /**
+   * set the world mutex.
+   * This will prevent visualization thread reading from the world (otherwise, there can be a segfault).
+   * Integrate the world. */
   inline void integrateWorldThreadSafe() {
-    // std::lock_guard<std::mutex> guard(serverMutex_);
+    std::lock_guard<std::mutex> guard(serverMutex_);
     world_->integrate();
     updateReady_ = true;
   }
 
+  /**
+   * hibernate the server. This will stop the server spinning. */
   inline void hibernate() { std::lock_guard<std::mutex> guard(serverMutex_); state_ = STATUS_HIBERNATING; }
 
+  /**
+   * wake up the server. Restart the server from hibernation */
   inline void wakeup() { std::lock_guard<std::mutex> guard(serverMutex_); state_ = STATUS_RENDERING; }
 
+  /**
+   * stop spinning the server and disconnect the client */
   inline void killServer() {
     terminateRequested_ = true;
     if(serverThread_.joinable())
@@ -395,23 +494,41 @@ class RaisimServer final {
     terminateRequested_ = false;
   }
 
+  /**
+   * currently not used */
   inline void informClientForUpdate() { updateReady_ = true; }
 
+  /**
+   * lock the visualization mutex so that the server cannot read from the world */
   inline void lockVisualizationServerMutex() { serverMutex_.lock(); }
 
+  /**
+   * unlock the visualization mutex so that the server can read from the world */
   inline void unlockVisualizationServerMutex() { serverMutex_.unlock(); }
 
+  // currently not used
   inline bool isPauseRequested() { return pauseRequested_; }
-
   inline bool isResumeRuested() { return resumeRequested_; }
 
   inline bool isTerminateRequested() { return terminateRequested_; }
 
+  /**
+   * @param[in] name the name of the visual object
+   * @param[in] radius radius of the sphere
+   * @param[in] colorR the red value of the color (max=1)
+   * @param[in] colorG the green value of the color (max=1)
+   * @param[in] colorB the blue value of the color (max=1)
+   * @param[in] colorA the alpha value of the color (max=1)
+   * @param[in] material visualization material
+   * @param[in] glow to glow or not
+   * @param[in] shadow to cast shadow or not
+   * @return the sphere pointer
+   * add a sphere without physics */
   inline Visuals *addVisualSphere(const std::string name, double radius,
                                   double colorR = 1, double colorG = 1,
                                   double colorB = 1, double colorA = 1,
                                   const std::string &material = "",
-                                  bool glow = true, bool shadow = false) {
+                                  bool glow = false, bool shadow = false) {
     if (_visualObjects.find(name) != _visualObjects.end())
     RSFATAL("Duplicated visual object name: " + name)
     updateVisualConfig();
@@ -425,12 +542,26 @@ class RaisimServer final {
     return _visualObjects[name];
   }
 
+  /**
+   * @param[in] name the name of the visual object
+   * @param[in] xLength length of the box
+   * @param[in] yLength width of the box
+   * @param[in] zLength height of the box
+   * @param[in] colorR the red value of the color (max=1)
+   * @param[in] colorG the green value of the color (max=1)
+   * @param[in] colorB the blue value of the color (max=1)
+   * @param[in] colorA the alpha value of the color (max=1)
+   * @param[in] material visualization material
+   * @param[in] glow to glow or not
+   * @param[in] shadow to cast shadow or not
+   * @return the box pointer
+   * add a box without physics */
   inline Visuals *addVisualBox(const std::string name, double xLength,
                                double yLength, double zLength,
                                double colorR = 1, double colorG = 1,
                                double colorB = 1, double colorA = 1,
                                const std::string &material = "",
-                               bool glow = true, bool shadow = false) {
+                               bool glow = false, bool shadow = false) {
     if (_visualObjects.find(name) != _visualObjects.end())
     RSFATAL("Duplicated visual object name: " + name)
     updateVisualConfig();
@@ -446,12 +577,25 @@ class RaisimServer final {
     return _visualObjects[name];
   }
 
+  /**
+   * @param[in] name the name of the visual object
+   * @param[in] radius radius of the cylinder
+   * @param[in] length length of the cylinder
+   * @param[in] colorR the red value of the color (max=1)
+   * @param[in] colorG the green value of the color (max=1)
+   * @param[in] colorB the blue value of the color (max=1)
+   * @param[in] colorA the alpha value of the color (max=1)
+   * @param[in] material visualization material
+   * @param[in] glow to glow or not
+   * @param[in] shadow to cast shadow or not
+   * @return the cylinder pointer
+   * add a cylinder without physics */
   inline Visuals *addVisualCylinder(const std::string name, double radius,
                                     double length, double colorR = 1,
                                     double colorG = 1, double colorB = 1,
                                     double colorA = 1,
                                     const std::string &material = "",
-                                    bool glow = true, bool shadow = false) {
+                                    bool glow = false, bool shadow = false) {
     if (_visualObjects.find(name) != _visualObjects.end())
     RSFATAL("Duplicated visual object name: " + name)
     updateVisualConfig();
@@ -466,12 +610,25 @@ class RaisimServer final {
     return _visualObjects[name];
   }
 
+  /**
+   * @param[in] name the name of the visual object
+   * @param[in] radius radius of the capsule
+   * @param[in] length length of the capsule
+   * @param[in] colorR the red value of the color (max=1)
+   * @param[in] colorG the green value of the color (max=1)
+   * @param[in] colorB the blue value of the color (max=1)
+   * @param[in] colorA the alpha value of the color (max=1)
+   * @param[in] material visualization material
+   * @param[in] glow to glow or not
+   * @param[in] shadow to cast shadow or not
+   * @return the capsule pointer
+   * add a capsule without physics */
   inline Visuals* addVisualCapsule(const std::string name, double radius,
                                    double length, double colorR = 1,
                                    double colorG = 1, double colorB = 1,
                                    double colorA = 1,
                                    const std::string &material = "",
-                                   bool glow = true, bool shadow = false) {
+                                   bool glow = false, bool shadow = false) {
     if (_visualObjects.find(name) != _visualObjects.end())
     RSFATAL("Duplicated visual object name: " + name)
     updateVisualConfig();
@@ -486,6 +643,10 @@ class RaisimServer final {
     return _visualObjects[name];
   }
 
+  /**
+   * @param[in] name the name of the polyline
+   * @return the polyline pointer
+   * add a polyline without physics */
   inline PolyLine* addVisualPolyLine(const std::string& name) {
     RSFATAL_IF(_polyLines.find(name) != _polyLines.end(), "Duplicated polyline object name: " + name)
     _polyLines[name] = new PolyLine();
@@ -493,11 +654,17 @@ class RaisimServer final {
     return _polyLines[name];
   }
 
+  /**
+   * @param[in] name the name of the polyline
+   * add a polyline without physics */
   inline PolyLine* getVisualPolyLine(const std::string& name) {
     RSFATAL_IF(_polyLines.find(name) == _polyLines.end(), name + " doesn't exist")
     return _polyLines[name];
   }
 
+  /**
+   * @param[in] name the name of the polyline to be removed
+   * remove an existing polyline */
   inline void removeVisualPolyLine(const std::string& name) {
     if (_polyLines.find(name) == _polyLines.end())
     RSFATAL("Visual polyline with name \"" + name + "\" doesn't exist.")
@@ -506,12 +673,19 @@ class RaisimServer final {
     _polyLines.erase(name);
   }
 
+  /**
+   * @param[in] name the name of the visual object to be retrieved
+   * @return visual object with a specified name
+   * retrieve a visual object with a specified name */
   inline Visuals *getVisualObject(const std::string& name) {
     if (_visualObjects.find(name) == _visualObjects.end())
     RSFATAL("Visual object with name \"" + name + "\" doesn't exist.")
     return _visualObjects[name];
   }
 
+  /**
+   * @param[in] name the name of the visual object to be removed
+   * remove an existing visual object */
   inline void removeVisualObject(const std::string& name) {
     if (_visualObjects.find(name) == _visualObjects.end())
     RSFATAL("Visual object with name \"" + name + "\" doesn't exist.")
@@ -520,15 +694,21 @@ class RaisimServer final {
     _visualObjects.erase(name);
   }
 
+  /**
+   * @param[in] videoName name of the video file to be saved
+   * start recording video. RaisimUnity only supports video recording in linux */
   inline void startRecordingVideo(const std::string& videoName) {
     serverRequest_.push_back(ServerRequestType::START_RECORD_VIDEO);
     videoName_ = videoName;
   }
 
+  /**
+   * stop recording video */
   inline void stopRecordingVideo() {
     serverRequest_.push_back(ServerRequestType::STOP_RECORD_VIDEO);
   }
 
+ private:
   inline bool waitForReadEvent(int timeout) {
     fd_set sdset;
     struct timeval tv;
@@ -540,17 +720,28 @@ class RaisimServer final {
     return select(server_fd + 1, &sdset, NULL, NULL, &tv) > 0;
   }
 
+ public:
+  /**
+   * @param[in] pos the position of the camera
+   * @param[in] lookAt the forward direction of the camera (the up direction is always z-axis)
+   * set the camera to a specified position */
   void setCameraPositionAndLookAt (const Eigen::Vector3d& pos, const Eigen::Vector3d& lookAt) {
     serverRequest_.push_back(ServerRequestType::STOP_RECORD_VIDEO);
     position_ = pos; lookAt_ = lookAt;
   }
 
+  /**
+   * @param[in] obj the object to look at
+   * move the camera to look at the specified object */
   void focusOn (raisim::Object* obj) {
     RSFATAL_IF(obj==nullptr, "object does not exist.")
     serverRequest_.push_back(ServerRequestType::FOCUS_ON_SPECIFIC_OBJECT);
     focusedObjectName_ = obj->getName();
   }
 
+  /**
+   * @return if a client is connected to a server
+   * check if a client is connected to a server */
   bool isConnected () const { return connected_; }
 
  private:
