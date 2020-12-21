@@ -35,7 +35,7 @@ anymal.setPdTarget(anymal_nominal_joint_config, np.zeros([18]))
 server = raisim.RaisimServer(world)
 server.launchServer(8080)
 
-for i in range(5000):
+for i in range(500000):
     world.integrate()
     time.sleep(0.0005)
 

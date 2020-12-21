@@ -25,11 +25,150 @@ using namespace raisim;
 
 void init_world(py::module &m) {
 
-    py::class_<raisim::RaisimServer>(m, "RaisimServer")
+  py::class_<raisim::PolyLine>(m, "Polyline")
+      .def(py::init<>())
+      .def("setColor", &raisim::PolyLine::setColor, R"mydelimiter(
+	    Set the color of the visual body.
+        Args:
+            r: red value (1 is max).
+            g: green value (1 is max).
+            b: blue value (1 is max).
+            a: alpha value (1 is max).
+	    )mydelimiter", py::arg("r"), py::arg("g"), py::arg("b"), py::arg("a"))
+      .def("clearPoints", &raisim::PolyLine::clearPoints, R"mydelimiter(
+	    Clear points.
+	    )mydelimiter")
+      .def("addPoint", &raisim::PolyLine::addPoint, R"mydelimiter(
+	    Add a point.
+        Args:
+          point: 3d numpy array
+	    )mydelimiter", py::arg("point"));
+
+  py::class_<raisim::Visuals>(m, "Visual")
+      .def(py::init<>())
+      .def("setPosition", py::overload_cast<const Eigen::Vector3d&>(&raisim::Visuals::setPosition), R"mydelimiter(
+	    Set the position of the visual body.
+        Args:
+            position: the new position of the visual body.
+	    )mydelimiter", py::arg("position"))
+
+      .def("setOrientation", py::overload_cast<const Eigen::Vector4d&>(&raisim::Visuals::setOrientation), R"mydelimiter(
+	    Set the orientation of the visual body.
+        Args:
+            orientation: the new orientation of the visual body.
+	    )mydelimiter", py::arg("orientation"))
+
+      .def("setColor", &raisim::Visuals::setColor, R"mydelimiter(
+	    Set the color of the visual body.
+        Args:
+            r: red value (1 is max).
+            g: green value (1 is max).
+            b: blue value (1 is max).
+            a: alpha value (1 is max).
+	    )mydelimiter", py::arg("r"), py::arg("g"), py::arg("b"), py::arg("a"))
+
+      .def("setBoxSize", &raisim::Visuals::setBoxSize, R"mydelimiter(
+	    Set the size of the visual box.
+        Args:
+            x: length (in x axis).
+            y: width (in y axis).
+            z: height (in z axis).
+	    )mydelimiter", py::arg("x"), py::arg("y"), py::arg("z"))
+
+      .def("setCylinderSize", &raisim::Visuals::setCylinderSize, R"mydelimiter(
+	    Set the size of the visual cylinder.
+        Args:
+            radius: radius.
+            height: height.
+	    )mydelimiter", py::arg("radius"), py::arg("height"))
+
+      .def("setCapsuleSize", &raisim::Visuals::setCapsuleSize, R"mydelimiter(
+	    Set the size of the visual capsule.
+        Args:
+            radius: radius.
+            height: height.
+	    )mydelimiter", py::arg("radius"), py::arg("height"))
+
+      .def("setSphereSize", &raisim::Visuals::setSphereSize, R"mydelimiter(
+	    Set the size of the visual sphere.
+        Args:
+            x: radius.
+	    )mydelimiter", py::arg("radius"));
+
+  py::class_<raisim::RaisimServer>(m, "RaisimServer")
         .def(py::init<raisim::World*>())
         .def("launchServer", &raisim::RaisimServer::launchServer)
         .def("killServer", &raisim::RaisimServer::killServer)
-        .def("integrateWorldThreadSafe", &raisim::RaisimServer::integrateWorldThreadSafe);
+        .def("integrateWorldThreadSafe", &raisim::RaisimServer::integrateWorldThreadSafe)
+        .def("addVisualCapsule", &raisim::RaisimServer::addVisualCapsule, R"mydelimiter(
+          Add a visual capsule without physics
+          Args:
+            name: name
+            radius: radius
+            length: length
+            colorR: red value (max:1),
+            colorG: green value (max:1),
+            colorB: blue value (max:1),
+            colorA: alpha value (max:1),
+            material = "",
+            glow = false
+            shadow = false
+	    )mydelimiter", py::arg("name"), py::arg("radius"), py::arg("length"), py::arg("colorR")=1, py::arg("colorG")=1,
+            py::arg("colorB")=1, py::arg("colorA")=1, py::arg("material")="", py::arg("glow")=false, py::arg("shadow")=false)
+
+      .def("addVisualCylinder", &raisim::RaisimServer::addVisualCylinder, R"mydelimiter(
+	    Add a visual cylinder without physics
+        Args:
+            name: name
+            radius: radius
+            length: length
+            colorR: red value (max:1),
+            colorG: green value (max:1),
+            colorB: blue value (max:1),
+            colorA: alpha value (max:1),
+            material = "",
+            glow = false
+            shadow = false
+	    )mydelimiter", py::arg("name"), py::arg("radius"), py::arg("length"), py::arg("colorR")=1, py::arg("colorG")=1,
+           py::arg("colorB")=1, py::arg("colorA")=1, py::arg("material")="", py::arg("glow")=false, py::arg("shadow")=false)
+
+      .def("addVisualBox", &raisim::RaisimServer::addVisualBox, R"mydelimiter(
+	    Add a visual box without physics
+        Args:
+            name: name
+            x: length (in x axis)
+            y: width (in y axis)
+            z: height (in z axis)
+            colorR: red value (max:1),
+            colorG: green value (max:1),
+            colorB: blue value (max:1),
+            colorA: alpha value (max:1),
+            material = "",
+            glow = false
+            shadow = false
+	    )mydelimiter", py::arg("name"), py::arg("x"), py::arg("y"), py::arg("z"), py::arg("colorR")=1, py::arg("colorG")=1,
+           py::arg("colorB")=1, py::arg("colorA")=1, py::arg("material")="", py::arg("glow")=false, py::arg("shadow")=false)
+
+      .def("addVisualSphere", &raisim::RaisimServer::addVisualSphere, R"mydelimiter(
+	    Add a visual sphere without physics
+        Args:
+            name: name
+            radius: radius
+            colorR: red value (max:1),
+            colorG: green value (max:1),
+            colorB: blue value (max:1),
+            colorA: alpha value (max:1),
+            material = "",
+            glow = false
+            shadow = false
+	    )mydelimiter", py::arg("name"), py::arg("radius"), py::arg("colorR")=1, py::arg("colorG")=1,
+           py::arg("colorB")=1, py::arg("colorA")=1, py::arg("material")="", py::arg("glow")=false, py::arg("shadow")=false)
+
+      .def("addVisualPolyLine", &raisim::RaisimServer::addVisualPolyLine, R"mydelimiter(
+	    Add a visual polyline without physics
+        Args:
+            name: name
+	    )mydelimiter", py::arg("name"));
 
     /*********/
 	/* World */

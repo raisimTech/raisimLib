@@ -54,6 +54,10 @@ struct PolyLine {
   Vec<4> color = {1, 1, 1, 1};
   std::vector<Vec<3>> points;
   double width = 0.01;
+
+  void setColor(double r, double g, double b, double a) {color = {r,g,b,a}; }
+  void addPoint(const Eigen::Vector3d& point) { points.push_back(point); }
+  void clearPoints() { points.clear(); }
 };
 
 struct Visuals {
@@ -93,6 +97,9 @@ struct Visuals {
   void setOrientation(double w, double x, double y, double z) { quaternion = {w, x, y, z}; }
   void setPosition(const Vec<3>& pos) { position = pos; }
   void setOrientation(const Vec<4>& ori) {quaternion = ori; }
+  void setPosition(const Eigen::Vector3d& pos) { position = pos; }
+  void setOrientation(const Eigen::Vector4d& ori) {quaternion = ori; }
+  void setColor(double r, double g, double b, double a) {color = {r,g,b,a}; }
 
   Vec<3> &getPosition() { return position; }
   Vec<4> &getOrientation() { return quaternion; }
@@ -411,7 +418,7 @@ class RaisimServer final {
                                   double colorR = 1, double colorG = 1,
                                   double colorB = 1, double colorA = 1,
                                   const std::string &material = "",
-                                  bool glow = true, bool shadow = false) {
+                                  bool glow = false, bool shadow = false) {
     if (_visualObjects.find(name) != _visualObjects.end())
     RSFATAL("Duplicated visual object name: " + name)
     updateVisualConfig();
@@ -430,7 +437,7 @@ class RaisimServer final {
                                double colorR = 1, double colorG = 1,
                                double colorB = 1, double colorA = 1,
                                const std::string &material = "",
-                               bool glow = true, bool shadow = false) {
+                               bool glow = false, bool shadow = false) {
     if (_visualObjects.find(name) != _visualObjects.end())
     RSFATAL("Duplicated visual object name: " + name)
     updateVisualConfig();
@@ -451,7 +458,7 @@ class RaisimServer final {
                                     double colorG = 1, double colorB = 1,
                                     double colorA = 1,
                                     const std::string &material = "",
-                                    bool glow = true, bool shadow = false) {
+                                    bool glow = false, bool shadow = false) {
     if (_visualObjects.find(name) != _visualObjects.end())
     RSFATAL("Duplicated visual object name: " + name)
     updateVisualConfig();
@@ -471,7 +478,7 @@ class RaisimServer final {
                                    double colorG = 1, double colorB = 1,
                                    double colorA = 1,
                                    const std::string &material = "",
-                                   bool glow = true, bool shadow = false) {
+                                   bool glow = false, bool shadow = false) {
     if (_visualObjects.find(name) != _visualObjects.end())
     RSFATAL("Duplicated visual object name: " + name)
     updateVisualConfig();
