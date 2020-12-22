@@ -3,7 +3,7 @@
     <gravity value="0.000000, 0.000000, -9.810000" />
     <timeStep value="0.002" />
     <objects>
-        <box name="treadmill" mass="1" body_type="kinematic">
+        <box name="treadmill" mass="1" body_type="kinematic" appearance="gray">
             <dim x="10" y="2" z="0.05"/>
             <inertia xx="0.1" xy="0" xz="0" yy="0.1" yz="0" zz="0.1" />
             <state pos="0 0 0" quat="1 0 0 0" linVel="2 0 0" angVel="0 0 0" />

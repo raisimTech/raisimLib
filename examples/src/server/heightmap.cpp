@@ -23,7 +23,7 @@ int main(int argc, char* argv[]) {
   terrainProperties.fractalLacunarity = 2.0;
   terrainProperties.fractalGain = 0.25;
   raisim::HeightMap* hm = world.addHeightMap(0.0, 0.0, terrainProperties);
-  hm->setAppearance("brown");
+  hm->setAppearance("blue");
 
   std::vector<raisim::ArticulatedSystem*> anymals;
 
