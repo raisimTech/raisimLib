@@ -1127,6 +1127,8 @@ class RaisimServer final {
 
             for (auto &vob : *visOb) {
               data_ = set(data_, vob.shape);
+              data_ = setString(data_, vob.material);
+              data_ = setN(data_, vob.color.ptr(), 4);
               data_ = set(data_, i);
               if (vob.shape == Shape::Mesh) {
                 data_ = setString(data_, vob.fileName);
