@@ -853,7 +853,6 @@ class RaisimServer final {
 
     // set message type
     data_ = set(data_, ServerMessageType::OBJECT_POSITION_UPDATE);
-
     data_ = set(data_, (uint64_t)world_->getConfigurationNumber() + visualConfiguration_);
 
     // Data begins
@@ -901,29 +900,26 @@ class RaisimServer final {
         }
       } else if (ob->getObjectType() == ObjectType::COMPOUND) {
         auto* com = static_cast<Compound *>(ob);
-        data_ = set(data_, (uint64_t)(com->getObjList().size() * 2));
-        for (uint64_t i = 0; i < 2; i++) {
-          for (uint64_t k = 0; k < com->getObjList().size(); k++) {
-            std::string name = std::to_string(ob->getIndexInWorld()) + "/" + std::to_string(i) + "/" + std::to_string(k);
-            data_ = setString(data_, name);
-            Vec<3> pos, center; com->getPosition(center);
+        data_ = set(data_, (uint64_t)(com->getObjList().size()));
+        for (uint64_t k = 0; k < com->getObjList().size(); k++) {
+          std::string name = std::to_string(ob->getIndexInWorld()) + "/" + std::to_string(k);
+          data_ = setString(data_, name);
+          Vec<3> pos, center; com->getPosition(center);
 
-            matvecmul(com->getRotationMatrix(), com->getObjList()[k].trans.pos, pos);
-            data_ = set(data_, pos[0] + center[0]);
-            data_ = set(data_, pos[1] + center[1]);
-            data_ = set(data_, pos[2] + center[2]);
+          matvecmul(com->getRotationMatrix(), com->getObjList()[k].trans.pos, pos);
+          data_ = set(data_, pos[0] + center[0]);
+          data_ = set(data_, pos[1] + center[1]);
+          data_ = set(data_, pos[2] + center[2]);
 
-            Mat<3,3> rot;
-            matmul(com->getRotationMatrix(), com->getObjList()[k].trans.rot, rot);
-            Vec<4> quat;
-            raisim::rotMatToQuat(rot, quat);
-            data_ = set(data_, quat[0]);
-            data_ = set(data_, quat[1]);
-            data_ = set(data_, quat[2]);
-            data_ = set(data_, quat[3]);
-          }
+          Mat<3,3> rot;
+          matmul(com->getRotationMatrix(), com->getObjList()[k].trans.rot, rot);
+          Vec<4> quat;
+          raisim::rotMatToQuat(rot, quat);
+          data_ = set(data_, quat[0]);
+          data_ = set(data_, quat[1]);
+          data_ = set(data_, quat[2]);
+          data_ = set(data_, quat[3]);
         }
-
       } else {
         data_ = set(data_, (uint64_t)(1));
         Vec<3> pos;
@@ -1031,17 +1027,21 @@ class RaisimServer final {
       // object name
       data_ = setString(data_, ob->getName());
 
+
       switch (ob->getObjectType()) {
         case SPHERE:
+          data_ = setString(data_, dynamic_cast<SingleBodyObject*>(ob)->getAppearance());
           data_ = set(data_, float(static_cast<Sphere *>(ob)->getRadius()));
           break;
 
         case BOX:
+          data_ = setString(data_, dynamic_cast<SingleBodyObject*>(ob)->getAppearance());
           for (int i = 0; i < 3; i++)
             data_ = set(data_, float(static_cast<Box *>(ob)->getDim()[i]));
           break;
 
         case CYLINDER:
+          data_ = setString(data_, dynamic_cast<SingleBodyObject*>(ob)->getAppearance());
           data_ = set(data_, float(static_cast<Cylinder *>(ob)->getRadius()));
           data_ = set(data_, float(static_cast<Cylinder *>(ob)->getHeight()));
           break;
@@ -1050,47 +1050,51 @@ class RaisimServer final {
           break;
 
         case CAPSULE:
+          data_ = setString(data_, dynamic_cast<SingleBodyObject*>(ob)->getAppearance());
           data_ = set(data_, float(static_cast<Capsule *>(ob)->getRadius()));
           data_ = set(data_, float(static_cast<Capsule *>(ob)->getHeight()));
           break;
 
         case HALFSPACE:
+          data_ = setString(data_, dynamic_cast<SingleBodyObject*>(ob)->getAppearance());
           data_ = set(data_, float(static_cast<Ground *>(ob)->getHeight()));
           break;
 
         case COMPOUND:
-          for (uint64_t i = 0; i < 2; i++) {
-            data_ = set(data_, (uint64_t)(static_cast<Compound*>(ob)->getObjList().size()));
+          data_ = setString(data_, dynamic_cast<SingleBodyObject*>(ob)->getAppearance());
+          data_ = set(data_, (uint64_t)(static_cast<Compound*>(ob)->getObjList().size()));
 
-            for (auto &vob : static_cast<Compound*>(ob)->getObjList()) {
-              data_ = set(data_, vob.objectType);
+          for (auto &vob : static_cast<Compound*>(ob)->getObjList()) {
+            data_ = set(data_, vob.objectType);
 
-              switch (vob.objectType) {
-                case BOX:
-                  data_ = set(data_, vob.objectParam[0]);
-                  data_ = set(data_, vob.objectParam[1]);
-                  data_ = set(data_, vob.objectParam[2]);
-                  break;
-                case CAPSULE:
-                case CYLINDER:
-                  data_ = set(data_, vob.objectParam[0]);
-                  data_ = set(data_, vob.objectParam[1]);
-                  break;
-                case SPHERE:
-                  data_ = set(data_, vob.objectParam[0]);
-                  break;
-              }
+            switch (vob.objectType) {
+              case BOX:
+                data_ = set(data_, vob.objectParam[0]);
+                data_ = set(data_, vob.objectParam[1]);
+                data_ = set(data_, vob.objectParam[2]);
+                break;
+              case CAPSULE:
+              case CYLINDER:
+                data_ = set(data_, vob.objectParam[0]);
+                data_ = set(data_, vob.objectParam[1]);
+                break;
+              case SPHERE:
+                data_ = set(data_, vob.objectParam[0]);
+                break;
             }
           }
+
           break;
 
         case MESH:
+          data_ = setString(data_, dynamic_cast<SingleBodyObject*>(ob)->getAppearance());
           data_ = setString(data_, static_cast<Mesh *>(ob)->getMeshFileName());
           data_ = set(data_, float(static_cast<Mesh *>(ob)->getScale()));
           break;
 
         case HEIGHTMAP:
           // misc data
+          data_ = setString(data_, dynamic_cast<SingleBodyObject*>(ob)->getAppearance());
           data_ = set(data_, float(static_cast<HeightMap *>(ob)->getCenterX()));
           data_ = set(data_, float(static_cast<HeightMap *>(ob)->getCenterY()));
           data_ = set(data_, float(static_cast<HeightMap *>(ob)->getXSize()));

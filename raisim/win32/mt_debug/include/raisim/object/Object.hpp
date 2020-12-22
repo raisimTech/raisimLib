@@ -96,9 +96,7 @@ class Object {
   size_t indexInWorld_;
   BodyType bodyType_ = BodyType::DYNAMIC;
   bool useDel_ = true;
-  bool visualizeFramesAndCom_ = true;
   std::string name_;
-  std::vector<std::string> localNames_;
 
   // external force/torque visualization
   std::vector<bool> isExternalForces_;
