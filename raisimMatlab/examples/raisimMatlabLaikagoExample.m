@@ -66,9 +66,7 @@ raisim('setDTarget', 'anymal0', ones(18,1));
 raisim('setExternalForce', 'anymal0', 'base_to_base_inertia', [10000.0, 0.0, 0.0]);
 
 for i=1:5000
-    tic
     pause(1./500)
-    toc
     raisim('setGeneralizedForce', 'anymal0', zeros(18,1));
     raisim('integrate1');
     
