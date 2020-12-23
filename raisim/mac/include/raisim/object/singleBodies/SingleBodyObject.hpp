@@ -197,6 +197,19 @@ class SingleBodyObject : public Object {
   CollisionGroup getCollisionGroup();
   CollisionGroup getCollisionMask();
 
+  void setAppearance(const std::string& appearance) { appearance_ = appearance; }
+  const std::string& getAppearance() const { return appearance_; }
+
+  void clearExternalForcesAndTorques() {
+    isExternalForces_.resize(0);
+    externalForceAndTorque_.resize(0);
+    externalForceAndTorquePos_.resize(0);
+    externalForceViz_.resize(0);
+    externalForceVizPos_.resize(0);
+    externalTorqueViz_.resize(0);
+    externalTorqueVizPos_.resize(0);
+  }
+
  protected:
 
   virtual void destroyCollisionBodies(dSpaceID id) override;
@@ -263,8 +276,11 @@ class SingleBodyObject : public Object {
   std::vector <raisim::Mat<6,3>> MinvJT_;
   std::vector <raisim::Mat<3,6>> J_;
 
-  /// constrained systems use different integration shceme
+  /// constrained systems use different integration scheme
   bool constrained_ = false;
+
+  /// for visualization
+  std::string appearance_;
 };
 
 } // rai_simulator

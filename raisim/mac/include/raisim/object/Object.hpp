@@ -76,6 +76,7 @@ class Object {
   const std::vector<raisim::Vec<3>>& getExternalForcePosition() const { return externalForceVizPos_; }
   const std::vector<raisim::Vec<3>>& getExternalTorque() const { return externalTorqueViz_; }
   const std::vector<raisim::Vec<3>>& getExternalTorquePosition() const { return externalTorqueVizPos_; }
+  virtual void clearExternalForcesAndTorques() = 0;
 
  protected:
   DelassusType &getDelassusAndTauStar();
@@ -96,9 +97,7 @@ class Object {
   size_t indexInWorld_;
   BodyType bodyType_ = BodyType::DYNAMIC;
   bool useDel_ = true;
-  bool visualizeFramesAndCom_ = true;
   std::string name_;
-  std::vector<std::string> localNames_;
 
   // external force/torque visualization
   std::vector<bool> isExternalForces_;
