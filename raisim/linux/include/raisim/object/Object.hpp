@@ -76,6 +76,7 @@ class Object {
   const std::vector<raisim::Vec<3>>& getExternalForcePosition() const { return externalForceVizPos_; }
   const std::vector<raisim::Vec<3>>& getExternalTorque() const { return externalTorqueViz_; }
   const std::vector<raisim::Vec<3>>& getExternalTorquePosition() const { return externalTorqueVizPos_; }
+  virtual void clearExternalForcesAndTorques() = 0;
 
  protected:
   DelassusType &getDelassusAndTauStar();
