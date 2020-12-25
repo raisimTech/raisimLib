@@ -1215,6 +1215,8 @@ class ArticulatedSystem : public Object {
     return jointLimitViolation_;
   }
 
+  /**
+   * Clears all external forces and torques */
   void clearExternalForcesAndTorques() {
     isExternalForces_.resize(0);
     externalForceAndTorque_.resize(0);
