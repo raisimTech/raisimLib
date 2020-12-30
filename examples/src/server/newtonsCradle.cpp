@@ -19,18 +19,22 @@ int main(int argc, char **argv) {
   world.setMaterialPairProp("steel", "steel", 0.1, 1.0, 0.0);
 
   auto pin1 = world.addSphere(0.1, 0.8);
+  pin1->setAppearance("1,0,0,0.3");
   pin1->setPosition(0.0, 0.0, 3.0);
   pin1->setBodyType(raisim::BodyType::STATIC);
 
   auto pin2 = world.addSphere(0.1, 0.8);
+  pin2->setAppearance("0,1,0,0.3");
   pin2->setPosition(0.3, 0.0, 3.0);
   pin2->setBodyType(raisim::BodyType::STATIC);
 
   auto pin3 = world.addSphere(0.1, 0.8);
+  pin3->setAppearance("0,0,1,0.3");
   pin3->setPosition(0.6, 0.0, 3.0);
   pin3->setBodyType(raisim::BodyType::STATIC);
 
   auto pin4 = world.addSphere(0.1, 0.8);
+  pin4->setAppearance("1,0,0,0.3");
   pin4->setPosition(0.9, 0.0, 3.0);
   pin4->setBodyType(raisim::BodyType::STATIC);
 
@@ -41,6 +45,7 @@ int main(int argc, char **argv) {
   auto pin6 = world.addSphere(0.1, 0.8);
   pin6->setPosition(-3., 0.0, 7.0);
   pin6->setBodyType(raisim::BodyType::STATIC);
+
   auto anymalC = world.addArticulatedSystem(binaryPath.getDirectory() + "\\rsc\\anymal_c\\urdf\\anymal.urdf");
   /// anymalC joint PD controller
   Eigen::VectorXd jointNominalConfig(anymalC->getGeneralizedCoordinateDim()), jointVelocityTarget(anymalC->getDOF());

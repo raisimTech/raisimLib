@@ -41,6 +41,7 @@ int main(int argc, char* argv[]) {
   raisim::Mat<3,3> inertia; inertia.setIdentity();
   auto compound = world.addCompound(children, 5, {0,0,0}, inertia);
   compound->setPosition(0, 0, 3);
+  compound->setAppearance("1,0,0,0.3");
 
   /// launch raisim servear
   raisim::RaisimServer server(&world);
