@@ -30,45 +30,69 @@ RaiSim is installed using cmake. The following options are available
 
 * ``RAISIM_EXAMPLE`` : Compile C++ RaiSim examples
 * ``RAISIM_MATLAB`` : Compile raisimMatlab (compiled binary is also provided). You need MATLAB for this option
-* ``RAISIM_PY`` : Compile raisimPy. The desired python version can be set by ``-DPYTHON_EXECUTABLE=$(python3 -c "import sys; print(sys.executable)")``
+* ``RAISIM_PY`` : Compile raisimPy. The desired python version can be set by ``-DPYTHON_EXECUTABLE=$(python3 -c "import sys; print(sys.executable)")`` in Linux or Mac.
 
-Example install in Linux/Mac
+You can generate build files using CMake as following
 
-.. code-block:: bash
+.. tabs::
+  .. group-tab:: Linux or Mac
 
-    cd $WORKSPACE/raisimLib
-    mkdir build
-    cd build
-    cmake .. -DCMAKE_INSTALL_PREFIX=$LOCAL_INSTALL -DRAISIM_EXAMPLE=ON -DRAISIM_PY=ON
-    make install -j4
+    Replace ``$(python3 -c "import sys; print(sys.executable)")`` to specify which python executable to use.
 
-In Windows, you can use CMake gui or just use powershell.
-CMake gui will open Visual Studio
-Instead of `make install -j4` command, you should use the following command in Windows
+    .. code-block:: c
 
-.. code-block:: bash
+      cd $WORKSPACE/raisimLib
+      mkdir build
+      cd build
+      cmake .. -DCMAKE_INSTALL_PREFIX=$LOCAL_INSTALL -DRAISIM_EXAMPLE=ON -DRAISIM_PY=ON -DPYTHON_EXECUTABLE=$(python3 -c "import sys; print(sys.executable)")
+      make install -j4
 
-    cmake --build . --target install --config Release
+  .. group-tab:: Windows
 
-Because the build is done by Visual Studio, not by make.
+    We recommend using the CMake GUI.
+    After generating the build files with the CMake GUI, you can build and install RaiSim using Visual Studio.
+    Alternatively, you can do it as below in Windows Powershell
+
+    .. code-block::
+
+      cd $WORKSPACE/raisimLib
+      mkdir build
+      cd build
+      cmake .. -DCMAKE_INSTALL_PREFIX=$LOCAL_INSTALL -DRAISIM_EXAMPLE=ON -DRAISIM_PY=ON -DPYTHON_EXECUTABLE=<THE-PATH-TO-THE-PYTHON-EXE>
+      cmake --build . --target install --config Release
 
 To use RaiSim more conveniently, you have to let your linker know where you installed RaiSim
 
-In **Linux**, you can do that by adding the following line to your ``~/.bashrc`` file
+.. tabs::
+  .. group-tab:: Linux
+
+    Add the following lines to your ``~/.bashrc`` file
 
     .. code-block:: bash
 
         export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/<WHERE-YOU-HAVE-INSTALLED-RAISIM>/lib
         export PYTHONPATH=$PYTHONPATH:~/<WHERE-YOU-HAVE-INSTALLED-RAISIM>/lib
 
-In **Mac**, you can do that by adding the following line to your `.zshrc` file
+  .. group-tab:: Mac
+
+    Add the following lines to your ``.zshrc`` file
 
     .. code-block:: bash
 
         export DYLD_LIBRARY_PATH=DYLD_LIBRARY_PATH:~/<WHERE-YOU-HAVE-INSTALLED-RAISIM>/lib
         export PYTHONPATH=$PYTHONPATH:~/<WHERE-YOU-HAVE-INSTALLED-RAISIM>/lib
 
-In **Windows**, you can do that by adding the installation directory to your `Path` environment variable.
+  .. group-tab:: Windows
+    Add the installation directory to your `Path` environment variable.
+    You can do that by following these steps
+
+    1. “Edit the system environment variables”
+
+    2. In "Advanced tab", "Environment Variables"
+
+    3. Click "Path" variable in the "System variables" list and click "edit"
+
+    4. Append the install directory
 
 .. note::
     **For Linux users**
@@ -88,7 +112,7 @@ In **Windows**, you can do that by adding the installation directory to your `Pa
 Examples
 ===============
 
-To run examples, copy-paste the activation that you received by email to ``rsc`` directory.
+To run examples, copy-paste the activation that you received by email to ``rsc`` directory and rename it to ``activation,raisim``.
 When you run CMake, it will copy the ``rsc`` directory to a build directory.
 
 In **Windows**, also copy your activation key to ``raisim\win32\mt_release\bin\rsc`` directory.

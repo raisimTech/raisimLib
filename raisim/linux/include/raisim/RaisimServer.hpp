@@ -77,10 +77,19 @@ struct ArticulatedSystemVisual {
     color.setZero();
   }
 
+  /**
+   * @param[in] r red value (max 1)
+   * @param[in] g green value (max 1)
+   * @param[in] b blue value (max 1)
+   * @param[in] a alpha value (max 1)
+   * set color. if the alpha value is 0, it uses the original color defined in the mesh file */
   void setColor(double r, double g, double b, double a) {
     color = {r,g,b,a};
   }
 
+  /**
+   * @param[in] gc the generalized coordinate (max 1)
+   * set the configuration of the visualized articulated system */
   void setGeneralizedCoordinate(const Eigen::VectorXd& gc) {
     obj->setGeneralizedCoordinate(gc);
   }

@@ -30,3 +30,9 @@ Polyline API
 
 .. doxygenstruct:: raisim::PolyLine
    :members:
+
+ArticulatedSystemVisual API
+============================
+
+.. doxygenstruct:: raisim::ArticulatedSystemVisual
+   :members:
