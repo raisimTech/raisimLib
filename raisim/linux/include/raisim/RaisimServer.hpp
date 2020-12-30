@@ -76,6 +76,15 @@ struct ArticulatedSystemVisual {
   ArticulatedSystemVisual(const std::string &urdfFile) : obj(new ArticulatedSystem(urdfFile)) {
     color.setZero();
   }
+
+  void setColor(double r, double g, double b, double a) {
+    color = {r,g,b,a};
+  }
+
+  void setGeneralizedCoordinate(const Eigen::VectorXd& gc) {
+    obj->setGeneralizedCoordinate(gc);
+  }
+
   raisim::Vec<4> color;
   std::unique_ptr<ArticulatedSystem> obj;
 };

@@ -28,7 +28,9 @@ int main(int argc, char* argv[]) {
   visSphere->setPosition(2,0,0);
   visCylinder->setPosition(0,2,0);
   visCapsule->setPosition(2,2,0);
-  anymalB->obj->setGeneralizedCoordinate({0, 0, 3.54, 1.0, 0.0, 0.0, 0.0, 0.03, 0.4, -0.8, -0.03, 0.4, -0.8, 0.03, -0.4, 0.8, -0.03, -0.4, 0.8});
+  Eigen::VectorXd gc(19);
+  gc << 0, 0, 3.54, 1.0, 0.0, 0.0, 0.0, 0.03, 0.4, -0.8, -0.03, 0.4, -0.8, 0.03, -0.4, 0.8, -0.03, -0.4, 0.8;
+  anymalB->setGeneralizedCoordinate(gc);
   anymalB->color = {0.5,0.0,0.0,0.5};
   auto lines = server.addVisualPolyLine("lines");
   lines->color = {0,0,1,1};
