@@ -782,7 +782,8 @@ class ArticulatedSystem : public Object {
                          [name](const raisim::CollisionDefinition& ref){ return ref.name == name; }); }
 
   /**
-   * This method updates the precomputed composite mass. Call this method after you change link mass */
+   * This method updates the precomputed composite mass. Call this method after you change link mass.
+   * This also updates the center of mass without integration*/
   void updateMassInfo();
 
   /**
