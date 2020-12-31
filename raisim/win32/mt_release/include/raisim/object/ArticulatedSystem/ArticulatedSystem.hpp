@@ -799,12 +799,16 @@ class ArticulatedSystem : public Object {
   double getTotalMass() const { return compositeMass[0]; }
 
   /**
-   * set external forces or torques expressed in the world frame acting on the COM of the body
+   * set external forces or torques expressed in the world frame acting on the COM of the body.
+   * The external force is applied for a single time step only.
+   * You have to apply the force for every time step if you want persistent force
    * @param[in] bodyIdx the body index. it can be retrieved by getBodyIdx()
    * @param[in] force force applied to the body (at the center of mass) */
   void setExternalForce(size_t bodyIdx, const Vec<3> &force) final;
 
   /** set external force acting on the point specified
+   * The external force is applied for a single time step only.
+   * You have to apply the force for every time step if you want persistent force
    * @param[in] bodyIdx the body index. it can be retrieved by getBodyIdx()
    * @param[in] frameOfForce the frame in which the force is expressed. Options: Frame::WORLD_FRAME, Frame::PARENT_FRAME or Frame::BODY_FRAME
    * @param[in] force the applied force
@@ -813,6 +817,8 @@ class ArticulatedSystem : public Object {
   void setExternalForce(size_t bodyIdx, Frame frameOfForce, const Vec<3> &force, Frame frameOfPos, const Vec<3> &pos);
 
   /** set external force (expressed in the world frame) acting on the point (expressed in the body frame) specified
+   * The external force is applied for a single time step only.
+   * You have to apply the force for every time step if you want persistent force
    * @param[in] bodyIdx the body index. it can be retrieved by getBodyIdx()
    * @param[in] force the applied force
    * @param[in] pos position at which the force is applied*/
@@ -821,6 +827,8 @@ class ArticulatedSystem : public Object {
   }
 
   /** set external force (expressed in the world frame) acting on the point specified by the frame
+   * The external force is applied for a single time step only.
+   * You have to apply the force for every time step if you want persistent force
    * @param[in] frame the name of the frame where you want to applied the force. The force is applied to the origin of the frame, on the body where the frame is attached to.
    * @param[in] force the applied force in the world frame*/
   void setExternalForce(const std::string& frame_name, const Vec<3>& force) {
@@ -829,6 +837,9 @@ class ArticulatedSystem : public Object {
   }
 
   /**
+   * set external torque.
+   * The external torque is applied for a single time step only.
+   * You have to apply the force for every time step if you want persistent torque
    * @param[in] bodyIdx the body index. it can be retrieved by getBodyIdx()
    * @param[in] torque_in_world_frame the applied torque expressed in the world frame */
   void setExternalTorque(size_t bodyIdx, const Vec<3> &torque_in_world_frame) final;
@@ -1202,6 +1213,19 @@ class ArticulatedSystem : public Object {
    * @return get contact problems associated with violated joint limits */
   const std::vector<contact::Single3DContactProblem*>& getJointLimitViolations() {
     return jointLimitViolation_;
+  }
+
+  /**
+   * Clears all external forces and torques */
+  void clearExternalForcesAndTorques() {
+    isExternalForces_.resize(0);
+    externalForceAndTorque_.resize(0);
+    externalForceAndTorquePos_.resize(0);
+    externalForceViz_.resize(0);
+    externalForceVizPos_.resize(0);
+    externalTorqueViz_.resize(0);
+    externalTorqueVizPos_.resize(0);
+    externalForceAndTorqueJaco_.resize(0);
   }
 
  protected:

@@ -200,6 +200,16 @@ class SingleBodyObject : public Object {
   void setAppearance(const std::string& appearance) { appearance_ = appearance; }
   const std::string& getAppearance() const { return appearance_; }
 
+  void clearExternalForcesAndTorques() {
+    isExternalForces_.resize(0);
+    externalForceAndTorque_.resize(0);
+    externalForceAndTorquePos_.resize(0);
+    externalForceViz_.resize(0);
+    externalForceVizPos_.resize(0);
+    externalTorqueViz_.resize(0);
+    externalTorqueVizPos_.resize(0);
+  }
+
  protected:
 
   virtual void destroyCollisionBodies(dSpaceID id) override;
