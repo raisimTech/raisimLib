@@ -7,8 +7,8 @@ class RolloutStorage:
         self.device = device
 
         # Core
-        self.critic_obs = torch.zeros(num_transitions_per_env, num_envs, *actor_obs_shape).to(self.device)
-        self.actor_obs = torch.zeros(num_transitions_per_env, num_envs, *critic_obs_shape).to(self.device)
+        self.critic_obs = torch.zeros(num_transitions_per_env, num_envs, *critic_obs_shape).to(self.device)
+        self.actor_obs = torch.zeros(num_transitions_per_env, num_envs, *actor_obs_shape).to(self.device)
         self.rewards = torch.zeros(num_transitions_per_env, num_envs, 1).to(self.device)
         self.actions = torch.zeros(num_transitions_per_env, num_envs, *actions_shape).to(self.device)
         self.dones = torch.zeros(num_transitions_per_env, num_envs, 1).byte().to(self.device)
