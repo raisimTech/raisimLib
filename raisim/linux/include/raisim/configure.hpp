@@ -94,6 +94,9 @@ inline std::string objectTypeToString(ObjectType type) {
 
     case ARTICULATED_SYSTEM:
       return "articulatedSystem";
+
+    case UNRECOGNIZED:
+      return "unrecognized";
   }
 
   return "";

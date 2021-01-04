@@ -204,8 +204,8 @@ class VecDyn: public DynamicArray {
     resize(size);
   }
 
-  inline double operator ()(size_t i, size_t j) const { return v[i]; }
-  inline double & operator ()(size_t i, size_t j) {return v[i];}
+  inline double operator ()(size_t i, size_t j) const { return v[i+j*0]; }
+  inline double & operator ()(size_t i, size_t j) {return v[i+j*0];}
 
   size_t size() const {
     return n;
