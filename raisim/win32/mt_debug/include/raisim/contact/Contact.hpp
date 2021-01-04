@@ -33,14 +33,16 @@ class Contact {
                    size_t pairContactIndexInPairObject,
                    size_t localBodyIndex,
                    double depth)
-    : position_(position), normal_(normal), objectA_(objectA),
-      pairObjectBodyType_(pairObjectBodyType),
+    : position_(position), normal_(normal),
+      depth_(depth),
       contactIndexInObject_(contactIndexInObject),
-      contactProblemIndex_(contactProblemIndex),
       pairObjectIndex_(pairObjectIndex),
       pairContactIndexInPairObject_(pairContactIndexInPairObject),
+      contactProblemIndex_(contactProblemIndex),
       localBodyIndex_(localBodyIndex),
-      depth_(depth) {
+      objectA_(objectA),
+      pairObjectBodyType_(pairObjectBodyType)
+  {
     computeFrame();
   }
 
@@ -87,6 +89,10 @@ class Contact {
 
   size_t getIndexContactProblem() const {
     return contactProblemIndex_;
+  }
+
+  size_t getIndexInObjectContactList() const {
+    return contactIndexInObject_;
   }
 
   size_t getPairObjectIndex() const {

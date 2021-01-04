@@ -166,16 +166,6 @@ struct Visuals {
   void setOrientation(double w, double x, double y, double z) { quaternion = {w, x, y, z}; }
 
   /**
-   * @param[in] pos position of the visual object in raisim::Vec<3>.
-   * set the position of the visual object. */
-  void setPosition(const Vec<3> &pos) { position = pos; }
-
-  /**
-   * @param[in] ori quaternion of the visual object in raisim::Vec<4>.
-   * set the orientation of the visual object. */
-  void setOrientation(const Vec<4> &ori) { quaternion = ori; }
-
-  /**
    * @param[in] pos position of the visual object in Eigen::Vector3d.
    * set the position of the visual object. */
   void setPosition(const Eigen::Vector3d &pos) { position = pos; }
@@ -715,10 +705,18 @@ class RaisimServer final {
 
   /**
    * @param[in] name the name of the polyline
-   * add a polyline without physics */
+   * get visualized polyline */
   inline PolyLine *getVisualPolyLine(const std::string &name) {
     RSFATAL_IF(_polyLines.find(name) == _polyLines.end(), name + " doesn't exist")
     return _polyLines[name];
+  }
+
+  /**
+   * @param[in] name the name of the visual articulated system
+   * get visualized articulated system */
+  inline ArticulatedSystemVisual *getVisualArticulatedSystem(const std::string &name) {
+    RSFATAL_IF(_visualArticulatedSystem.find(name) == _visualArticulatedSystem.end(), name + " doesn't exist")
+    return _visualArticulatedSystem[name];
   }
 
   /**

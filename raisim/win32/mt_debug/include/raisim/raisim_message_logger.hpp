@@ -63,9 +63,9 @@ class RaiSimMsg {
 
     auto now = std::chrono::system_clock::now();
     auto in_time_t = std::chrono::system_clock::to_time_t(now);
-    struct tm timeinfo;
 
 #ifdef WIN32
+    struct tm timeinfo;
     localtime_s(&timeinfo, &in_time_t);
     std::tm* timePtr = &timeinfo;
 #else
