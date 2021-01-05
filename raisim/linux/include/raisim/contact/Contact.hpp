@@ -34,12 +34,12 @@ class Contact {
                    size_t localBodyIndex,
                    double depth)
     : position_(position), normal_(normal),
+      depth_(depth),
       contactIndexInObject_(contactIndexInObject),
       pairObjectIndex_(pairObjectIndex),
       pairContactIndexInPairObject_(pairContactIndexInPairObject),
       contactProblemIndex_(contactProblemIndex),
       localBodyIndex_(localBodyIndex),
-      depth_(depth),
       objectA_(objectA),
       pairObjectBodyType_(pairObjectBodyType)
   {

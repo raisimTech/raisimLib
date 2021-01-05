@@ -26,16 +26,31 @@ void fatalIf(bool fatal, const std::string& msg) {
 }
 
 #define CHECK_IF_STRING(X, Y) \
-if (!mxIsChar(prhs[X])) mexErrMsgTxt(Y);
+if (!(nrhs>X)) mexErrMsgTxt((std::to_string(X) + "th argument is missing").c_str()); \
+if (!mxIsChar(prhs[X])) mexErrMsgTxt((std::to_string(X) + std::string(Y)).c_str());
+
+#define CHECK_IF_DOUBLE(X, Y) \
+if (!(nrhs>X)) mexErrMsgTxt((std::to_string(X) + "th argument is missing").c_str()); \
+if (!mxIsDouble(prhs[X])) mexErrMsgTxt((std::to_string(X) + std::string(Y)).c_str());
 
 #define CHECK_CMD CHECK_IF_STRING(0, "The first argument is the type of command and must be a string")
 
 #define GET_STRING(X, Y) \
-    CHECK_IF_STRING(X, "%d th argument must be a string") \
+    CHECK_IF_STRING(X, " th argument must be a string") \
     char Y##Char[256]; \
     if (mxGetString(prhs[X], Y##Char, sizeof(Y##Char)) >256) \
       mexErrMsgTxt("First input should be a command string less than 256 characters long."); \
     std::string Y(Y##Char);
+
+#define GET_DOUBLE(X, Y) \
+    CHECK_IF_DOUBLE(X, " th argument must be a double") \
+    double Y = mxGetScalar(prhs[X]);                                           \
+
+#define GET_COLOR(X, RED, GREEN, BLUE, ALPHA) \
+  GET_DOUBLE(X, RED)                          \
+  GET_DOUBLE(X + 1, GREEN)                    \
+  GET_DOUBLE(X + 2, BLUE)                     \
+  GET_DOUBLE(X + 3, ALPHA)
 
 #define GETOBJ                                                              \
   CHECK_IF_STRING(1, "The second argument must be the name of the object"); \
@@ -100,7 +115,14 @@ void quit() {
   const mwSize* dim = mxGetDimensions(prhs[POSITION]);          \
   if (!mxIsDouble(prhs[POSITION])) mexErrMsgTxt((std::to_string(POSITION) + "th argument is not double array").c_str()); \
   if (std::max(dim[0], dim[1])!=SIZE) mexErrMsgTxt((std::to_string(POSITION) + "th argument should be " + std::to_string(SIZE) + " long. "+std::to_string(std::max(dim[0], dim[1])) +" given.").c_str()); \
-  Eigen::Map<Eigen::Matrix<double, -1, 1>> vec(mxGetPr(prhs[POSITION]), std::max(dim[0], dim[1]), 1);    \
+  Eigen::Map<Eigen::Matrix<double, -1, 1>> vec(mxGetPr(prhs[POSITION]), std::max(dim[0], dim[1]), 1);\
+
+#define GET_EIGEN_VEC_WITH_CHECK_AND_NAME(POSITION, SIZE, NAME) \
+  if (!(nrhs>POSITION)) mexErrMsgTxt((std::to_string(POSITION) + "th argument is missing").c_str()); \
+  const mwSize* dim = mxGetDimensions(prhs[POSITION]);          \
+  if (!mxIsDouble(prhs[POSITION])) mexErrMsgTxt((std::to_string(POSITION) + "th argument is not double array").c_str()); \
+  if (std::max(dim[0], dim[1])!=SIZE) mexErrMsgTxt((std::to_string(POSITION) + "th argument should be " + std::to_string(SIZE) + " long. "+std::to_string(std::max(dim[0], dim[1])) +" given.").c_str()); \
+  Eigen::Map<Eigen::Matrix<double, -1, 1>> NAME(mxGetPr(prhs[POSITION]), std::max(dim[0], dim[1]), 1);\
 
 #define GET_EIGEN_VEC(POSITION) \
   if (!(nrhs>POSITION)) mexErrMsgTxt((std::to_string(POSITION) + "th argument is missing").c_str()); \
@@ -441,6 +463,72 @@ void mexFunction(
 
   SINGLE_BODY_GETTER(getPosition)
   SINGLE_BODY_GETTER(getQuaternion)
+
+  else if (!strcmp("addVisualArticulatedSystem", cmd)) {
+    GET_STRING(1, name)
+    GET_STRING(2, filePath)
+    GET_COLOR(3, r, g, b, a)
+
+    server_->addVisualArticulatedSystem(name, filePath, r, g, b, a);
+  }
+
+  else if (!strcmp("updateVisualArticulatedSystem", cmd)) {
+    GET_STRING(1, name)
+    GET_EIGEN_VEC(2)
+    GET_COLOR(3, r, g, b, a)
+    auto* asv = server_->getVisualArticulatedSystem(name);
+    asv->setGeneralizedCoordinate(vec);
+    asv->setColor(r,g,b,a);
+  }
+
+  else if (!strcmp("addVisualSphere", cmd)) {
+    GET_STRING(1, name)
+    GET_DOUBLE(2, radius)
+    GET_COLOR(3, r, g, b, a)
+    server_->addVisualSphere(name, radius, r, g, b, a);
+  }
+
+  else if (!strcmp("addVisualCapsule", cmd)) {
+    GET_STRING(1, name)
+    GET_DOUBLE(2, radius)
+    GET_DOUBLE(3, length)
+    GET_COLOR(4, r, g, b, a)
+    server_->addVisualCapsule(name, radius, length, r, g, b, a);
+  }
+
+  else if (!strcmp("addVisualCylinder", cmd)) {
+    GET_STRING(1, name)
+    GET_DOUBLE(2, radius)
+    GET_DOUBLE(3, length)
+    GET_COLOR(4, r, g, b, a)
+    server_->addVisualCylinder(name, radius, length, r, g, b, a);
+  }
+
+  else if (!strcmp("addVisualBox", cmd)) {
+    GET_STRING(1, name)
+    GET_DOUBLE(2, x)
+    GET_DOUBLE(3, y)
+    GET_DOUBLE(4, z)
+    GET_COLOR(5, r, g, b, a)
+    server_->addVisualBox(name, x, y, z, r, g, b, a);
+  }
+
+  else if (!strcmp("updateVisualPose", cmd)) {
+    GET_STRING(1, name)
+    auto* vis = server_->getVisualObject(name);
+    {
+      GET_EIGEN_VEC_WITH_CHECK_AND_NAME(2, 3, position)
+      vis->setPosition(position);
+    }
+
+    {
+      GET_EIGEN_VEC_WITH_CHECK_AND_NAME(3, 4, quaternion)
+      vis->setOrientation(quaternion);
+    }
+
+    GET_COLOR(4, r, g, b, a)
+    vis->setColor(r,g,b,a);
+  }
 
   else {
     mexErrMsgTxt("The first argument must be from the available command list. Check either raisim_interface_mex.cpp file or MATLAB examples.");

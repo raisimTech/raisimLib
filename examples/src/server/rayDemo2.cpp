@@ -68,7 +68,7 @@ int main(int argc, char* argv[]) {
         if (col.size() > 0)
           scans[i * scanSize2 + j]->setPosition(col[0].getPosition());
         else
-          scans[i * scanSize2 + j]->setPosition(raisim::Vec<3>{0, 0, 100});
+          scans[i * scanSize2 + j]->setPosition({0, 0, 100});
       }
     }
 
