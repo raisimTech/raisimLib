@@ -782,7 +782,8 @@ class ArticulatedSystem : public Object {
                          [name](const raisim::CollisionDefinition& ref){ return ref.name == name; }); }
 
   /**
-   * This method updates the precomputed composite mass. Call this method after you change link mass */
+   * This method updates the precomputed composite mass. Call this method after you change link mass.
+   * This also updates the center of mass without integration*/
   void updateMassInfo();
 
   /**
@@ -863,8 +864,8 @@ class ArticulatedSystem : public Object {
    * @param[in] posTarget position target
    * @param[in] velTarget velocity target */
   void setPdTarget(const Eigen::VectorXd &posTarget, const Eigen::VectorXd &velTarget) {
-    RSFATAL_IF(posTarget.rows() != gcDim,"position target should have the same dimension as the generalized coordinate")
-    RSFATAL_IF(velTarget.rows() != dof, "the velocity target should have the same dimension as the degrees of freedom")
+    RSFATAL_IF(size_t(posTarget.rows()) != gcDim,"position target should have the same dimension as the generalized coordinate")
+    RSFATAL_IF(size_t(velTarget.rows()) != dof, "the velocity target should have the same dimension as the degrees of freedom")
     qref_ = posTarget;
     uref_ = velTarget;
   }
@@ -874,8 +875,8 @@ class ArticulatedSystem : public Object {
    * @param[in] posTarget position target (dimension == getGeneralizedCoordinateDim())
    * @param[in] velTarget velocity target (dimension == getDOF()) */
   void setPdTarget(const raisim::VecDyn &posTarget, const raisim::VecDyn &velTarget) {
-    RSFATAL_IF(posTarget.rows() != gcDim,"position target should have the same dimension as the generalized coordinate")
-    RSFATAL_IF(velTarget.rows() != dof, "the velocity target should have the same dimension as the degrees of freedom")
+    RSFATAL_IF(size_t(posTarget.rows()) != gcDim,"position target should have the same dimension as the generalized coordinate")
+    RSFATAL_IF(size_t(velTarget.rows()) != dof, "the velocity target should have the same dimension as the degrees of freedom")
     qref_ = posTarget;
     uref_ = velTarget;
   }
@@ -886,7 +887,7 @@ class ArticulatedSystem : public Object {
   template<class T>
   void setPTarget(const T &posTarget) {
     setControlMode(ControlMode::PD_PLUS_FEEDFORWARD_TORQUE);
-    RSFATAL_IF(posTarget.rows() != gcDim,"position target should have the same dimension as the generalized coordinate")
+    RSFATAL_IF(size_t(posTarget.rows()) != gcDim,"position target should have the same dimension as the generalized coordinate")
     qref_ = posTarget;
   }
 
@@ -895,7 +896,7 @@ class ArticulatedSystem : public Object {
    * @param[in] velTarget velocity target (dimension == getDOF()) */
   template<class T>
   void setDTarget(const T &velTarget) {
-    RSFATAL_IF(velTarget.rows() != dof, "the velocity target should have the same dimension as the degrees of freedom")
+    RSFATAL_IF(size_t(velTarget.rows()) != dof, "the velocity target should have the same dimension as the degrees of freedom")
     uref_ = velTarget;
   }
 
@@ -924,7 +925,7 @@ class ArticulatedSystem : public Object {
    * @param[in] pgain position gain (dimension == getDOF())*/
   template<class T>
   void setPGains(const T &pgain) {
-    RSFATAL_IF(pgain.rows() !=dof, "p gains should have the same dimension as the degrees of freedom")
+    RSFATAL_IF(size_t(pgain.rows()) !=dof, "p gains should have the same dimension as the degrees of freedom")
     kp_ = pgain;
     if(jointType[0] == Joint::FLOATING) {
       for(size_t i=0; i < 6; i++)
@@ -938,7 +939,7 @@ class ArticulatedSystem : public Object {
    * @param[in] dgain velocity gain (dimension == getDOF())*/
   template<class T>
   void setDGains(const T &dgain) {
-    RSFATAL_IF(dgain.rows() != dof, "d gains should have the same dimension as the degrees of freedom")
+    RSFATAL_IF(size_t(dgain.rows()) != dof, "d gains should have the same dimension as the degrees of freedom")
     kd_ = dgain;
     if(jointType[0] == Joint::FLOATING) {
       for(size_t i=0; i < 6; i++)

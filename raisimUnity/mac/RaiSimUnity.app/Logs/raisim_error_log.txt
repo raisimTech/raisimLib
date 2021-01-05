@@ -1,25 +1,13 @@
 error logs 
-System.Exception: RsUnityRemote: InitializeObjects
-Object reference not set to an instance of an object
-  at raisimUnity.RsuException..ctor (System.Exception ex, System.String message) [0x00017] in <99ad4c0a13dc4a90b6f19bca7a466245>:0 
-  at raisimUnity.RsUnityRemote.Update () [0x002e3] in <99ad4c0a13dc4a90b6f19bca7a466245>:0 
- 
-
 System.Exception: RsUnityRemote: UpdateObjectPosition
-Cannot find unity game object: 0
-  at raisimUnity.RsuException..ctor (System.Exception ex, System.String message) [0x00017] in <99ad4c0a13dc4a90b6f19bca7a466245>:0 
-  at raisimUnity.RsUnityRemote.Update () [0x003c2] in <99ad4c0a13dc4a90b6f19bca7a466245>:0 
+Server is terminating
+  at raisimUnity.RsuException..ctor (System.Exception ex, System.String message) [0x00017] in <fd2365c0edc74125a7d6ba4cb6486964>:0 
+  at raisimUnity.RsUnityRemote.Update () [0x003c2] in <fd2365c0edc74125a7d6ba4cb6486964>:0 
  
 
-System.Exception: RsUnityRemote: InitializeObjects
+System.Exception: RsUnityRemote: ClientStatus.Idle
 Object reference not set to an instance of an object
-  at raisimUnity.RsuException..ctor (System.Exception ex, System.String message) [0x00017] in <99ad4c0a13dc4a90b6f19bca7a466245>:0 
-  at raisimUnity.RsUnityRemote.Update () [0x002e3] in <99ad4c0a13dc4a90b6f19bca7a466245>:0 
- 
-
-System.Exception: RsUnityRemote: UpdateObjectPosition
-Cannot find unity game object: 0
-  at raisimUnity.RsuException..ctor (System.Exception ex, System.String message) [0x00017] in <99ad4c0a13dc4a90b6f19bca7a466245>:0 
-  at raisimUnity.RsUnityRemote.Update () [0x003c2] in <99ad4c0a13dc4a90b6f19bca7a466245>:0 
+  at raisimUnity.RsuException..ctor (System.Exception ex, System.String message) [0x00017] in <fd2365c0edc74125a7d6ba4cb6486964>:0 
+  at raisimUnity.RsUnityRemote.Update () [0x00058] in <fd2365c0edc74125a7d6ba4cb6486964>:0 
  
 

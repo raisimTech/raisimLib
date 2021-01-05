@@ -97,7 +97,7 @@ public:
   }
 
   template <typename T>
-  const bool getAttributeIfExists(const std::string &attName, T &attribute) const {
+  bool getAttributeIfExists(const std::string &attName, T &attribute) const {
     auto result = node_->Attribute(attName);
     if (!result)
       return false;

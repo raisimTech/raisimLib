@@ -88,7 +88,7 @@ class SingleBodyObject : public Object {
   double getPotentialEnergy(const Vec<3> &gravity) const;
   double getEnergy(const Vec<3> &gravity) const;
   Eigen::Vector3d getLinearMomentum() const;
-  double getMass(size_t localIdx) const;
+  double getMass(size_t localIdx) const override;
 
   inline void setMass(double mass) {
     mass_ = mass; inverseMass_ = 1./mass;

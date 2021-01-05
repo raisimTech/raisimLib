@@ -71,7 +71,8 @@ class RowRef : public MatExpr<RowRef<T, m>> {
 
   template<class T2>
   inline RowRef<T, m>& operator = (const MatExpr<T2>& expr) {
-    for (size_t j = 0; j < ref.rows(); ++j) ref(row, j) = expr(j); return *this;
+    for (size_t j = 0; j < ref.rows(); ++j) ref(row, j) = expr(j);
+    return *this;
   }
 
   RAIMATH_MATEXPR_OPERATORS
@@ -100,7 +101,8 @@ class ColRef : public MatExpr<ColRef<T, n>> {
 
   template<class T2>
   inline ColRef<T, n>& operator = (const T2& expr) {
-    for (size_t j = 0; j < ref.rows(); ++j) ref(j, col) = expr(j); return *this;
+    for (size_t j = 0; j < ref.rows(); ++j) ref(j, col) = expr(j);
+    return *this;
   }
 
   RAIMATH_MATEXPR_OPERATORS
