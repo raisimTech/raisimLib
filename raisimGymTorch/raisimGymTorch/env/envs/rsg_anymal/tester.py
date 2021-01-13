@@ -1,17 +1,13 @@
 from ruamel.yaml import YAML, dump, RoundTripDumper
 from raisimGymTorch.env.bin import rsg_anymal
 from raisimGymTorch.env.RaisimGymVecEnv import RaisimGymVecEnv as VecEnv
-from raisimGymTorch.helper.raisim_gym_helper import ConfigurationSaver
+import raisimGymTorch.algo.ppo.module as ppo_module
 import os
 import math
 import time
-import raisimGymTorch.algo.ppo.module as ppo_module
-import raisimGymTorch.algo.ppo.ppo as PPO
-import torch.nn as nn
-import numpy as np
 import torch
-import datetime
 import argparse
+
 
 # configuration
 parser = argparse.ArgumentParser()
@@ -35,6 +31,9 @@ ob_dim = env.num_obs
 act_dim = env.num_acts
 
 weight_path = args.weight
+iteration_number = weight_path.rsplit('/', 1)[1].split('_', 1)[1].rsplit('.', 1)[0]
+weight_dir = weight_path.rsplit('/', 1)[0] + '/'
+
 if weight_path == "":
     print("Can't find trained weight, please provide a trained weight with --weight switch\n")
 else:
@@ -48,24 +47,24 @@ else:
     total_steps = n_steps * 1
     start_step_id = 0
 
-    print("Visualizing and evaluating the policy", weight_path+".pt")
-    loaded_graph = torch.jit.load(weight_path+'.pt')
+    print("Visualizing and evaluating the policy: ", weight_path)
+    loaded_graph = ppo_module.MLP(cfg['architecture']['policy_net'], torch.nn.LeakyReLU, ob_dim, act_dim)
+    loaded_graph.load_state_dict(torch.load(weight_path)['actor_architecture_state_dict'])
 
-    env.load_scaling(weight_path.rsplit('/', 1)[0], int(weight_path.rsplit('/', 1)[1].split('_', 1)[1]))
-    print("Load observation scaling in", weight_path.rsplit('/', 1)[0]+":", "mean"+str(int(weight_path.rsplit('/', 1)[1].split('_', 1)[1])) + ".csv", "and", "var"+str(int(weight_path.rsplit('/', 1)[1].split('_', 1)[1])) + ".csv")
+    env.load_scaling(weight_dir, int(iteration_number))
     env.turn_on_visualization()
 
     # max_steps = 1000000
     max_steps = 1000 ## 10 secs
+
     for step in range(max_steps):
         time.sleep(0.01)
         obs = env.observe(False)
-        action_ll = loaded_graph(torch.from_numpy(obs).cpu())
+        action_ll = loaded_graph.architecture(torch.from_numpy(obs).cpu())
         reward_ll, dones = env.step(action_ll.cpu().detach().numpy())
         reward_ll_sum = reward_ll_sum + reward_ll[0]
         if dones or step == max_steps - 1:
             print('----------------------------------------------------')
-            print('{:<40} {:>6}'.format("sum reward: ", '{:0.10f}'.format(reward_ll_sum)))
             print('{:<40} {:>6}'.format("average ll reward: ", '{:0.10f}'.format(reward_ll_sum / (step + 1 - start_step_id))))
             print('{:<40} {:>6}'.format("time elapsed [sec]: ", '{:6.4f}'.format((step + 1 - start_step_id) * 0.01)))
             print('----------------------------------------------------\n')

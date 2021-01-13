@@ -6,7 +6,6 @@
 #pragma once
 
 #include <stdlib.h>
-#include <cstdint>
 #include <set>
 #include "../../RaisimGymEnv.hpp"
 
@@ -46,7 +45,7 @@ class ENVIRONMENT : public RaisimGymEnv {
     anymal_->setGeneralizedForce(Eigen::VectorXd::Zero(gvDim_));
 
     /// MUST BE DONE FOR ALL ENVIRONMENTS
-    obDim_ = 34; /// convention described on top
+    obDim_ = 34;
     actionDim_ = nJoints_; actionMean_.setZero(actionDim_); actionStd_.setZero(actionDim_);
     obDouble_.setZero(obDim_);
 
@@ -140,8 +139,6 @@ class ENVIRONMENT : public RaisimGymEnv {
   raisim::ArticulatedSystem* anymal_;
   Eigen::VectorXd gc_init_, gv_init_, gc_, gv_, pTarget_, pTarget12_, vTarget_;
   double terminalRewardCoeff_ = -10.;
-  double forwardVelRewardCoeff_ = 0., forwardVelReward_ = 0.;
-  double torqueRewardCoeff_ = 0., torqueReward_ = 0.;
   Eigen::VectorXd actionMean_, actionStd_, obDouble_;
   Eigen::Vector3d bodyLinearVel_, bodyAngularVel_;
   std::set<size_t> footIndices_;

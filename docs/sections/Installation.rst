@@ -70,8 +70,10 @@ To use RaiSim more conveniently, you have to let your linker know where you inst
 
     .. code-block:: bash
 
-        export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/<WHERE-YOU-HAVE-INSTALLED-RAISIM>/lib
-        export PYTHONPATH=$PYTHONPATH:~/<WHERE-YOU-HAVE-INSTALLED-RAISIM>/lib
+        export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:<WHERE-YOU-HAVE-INSTALLED-RAISIM>/lib
+        export PYTHONPATH=$PYTHONPATH:<WHERE-YOU-HAVE-INSTALLED-RAISIM>/lib
+
+    Do not use ``~`` to reference your home directory. Write the full path
 
   .. group-tab:: Mac
 
@@ -79,8 +81,10 @@ To use RaiSim more conveniently, you have to let your linker know where you inst
 
     .. code-block:: bash
 
-        export DYLD_LIBRARY_PATH=DYLD_LIBRARY_PATH:~/<WHERE-YOU-HAVE-INSTALLED-RAISIM>/lib
-        export PYTHONPATH=$PYTHONPATH:~/<WHERE-YOU-HAVE-INSTALLED-RAISIM>/lib
+        export DYLD_LIBRARY_PATH=DYLD_LIBRARY_PATH:<WHERE-YOU-HAVE-INSTALLED-RAISIM>/lib
+        export PYTHONPATH=$PYTHONPATH:<WHERE-YOU-HAVE-INSTALLED-RAISIM>/lib
+
+    Do not use ``~`` to reference your home directory. Write the full path
 
   .. group-tab:: Windows
     Add the installation directory to your `Path` environment variable.

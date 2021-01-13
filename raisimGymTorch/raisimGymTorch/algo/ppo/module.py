@@ -1,7 +1,7 @@
 import torch.nn as nn
 import numpy as np
 import torch
-from torch.distributions import MultivariateNormal, Normal
+from torch.distributions import Normal
 
 
 class Actor:
