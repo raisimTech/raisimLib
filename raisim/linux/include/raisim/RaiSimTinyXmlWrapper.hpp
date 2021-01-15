@@ -25,7 +25,7 @@ public:
   RaiSimTinyXmlWrapper(const std::string &filePath, const std::string &childElement) {
     if (filePath.find('<') == std::string::npos) {
       fileName_ = Path(filePath).getPath();      
-      RSFATAL_IF(!doc_.LoadFile(filePath.c_str()), "cannot read file: " << "\'" << filePath<< "\'")      
+      RSFATAL_IF(!doc_.LoadFile(filePath.c_str()), "cannot read the xml file: " << "\'" << filePath<< "\'")
     } else {
       fileName_ = "\"URDF from a string\"";
       doc_.Parse(filePath.c_str(), 0, TIXML_ENCODING_UTF8);

@@ -76,7 +76,7 @@ class RaiSimMsg {
              << std::put_time(timePtr, "%Y:%m:%d:%X")<< ' '
              << std::setfill(' ')
              << filename
-             << ':' << line << "] " << color << msg.str() << "\033[0m\n";
+             << ':' << line << "] " << color << msg.str() << "\033[0m" << std::endl;
 
     std::cout << printout.str();
 

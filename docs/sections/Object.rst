@@ -47,3 +47,9 @@ All objects can be specified as either a SingleBodyObject or an ArticulatedSyste
 
    ArticulatedSystem
    SingleBodyObjects
+
+API
+=========
+
+.. doxygenclass:: raisim::Object
+   :members:

@@ -12,14 +12,6 @@
 
 namespace raisim {
 
-inline int countNumOfSpaces(const char *str) {
-  int iSpaces = 0;
-  for (unsigned int iLoop = 0; iLoop < (sizeof(str) / sizeof(str[0])); iLoop++)
-    if (str[iLoop] == ' ')
-      iSpaces++;
-  return iSpaces;
-}
-
 inline double firstNumber(const char *txt) {
   double num;
   std::string s(txt);
