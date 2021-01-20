@@ -12,7 +12,57 @@ You can also mix the two ways, by loading an XML file and dynamically adding obj
 RaiSim World Configuration File Convention
 =============================================
 
-Most feature documentations include a world config file.
+We provide a few examples `here <https://github.com/raisimTech/raisimLib/tree/master/rsc/xmlScripts>`_.
+
+The following describes the RaiSim world configuration xml convention.
+The (optional) tag means that the element is optional given the parent.
+If the element is not marked (optional), it must exist given that the parent exist.
+The (multiple) tag means that there can be multiple elements for the same parent.
+
+1. raisim
+    1. <attribute> version: Describes the version of RaiSim that created the configuration file. The file might be read by different version.
+    2. <child> (optional) material: For more information and examples, check out `here <https://raisim.com/sections/MaterialSystem.html>`_.
+        1. <child> (optional) default: If it doesn't exist, the default parameters are as described `here <https://raisim.com/sections/MaterialSystem.html>`_.
+            1. <attribute> friction
+            2. <attribute> restitution
+            3. <attribute> restitution_threshold
+        2. <child> (optional, multiple) pair_prop
+            1. <attribute> name1
+            2. <attribute> name2
+            3. <attribute> friction
+            4. <attribute> restitution
+            5. <attribute> restitution_threshold
+    3. <child> (optional) gravity: default={0, 0, -9.81}
+        1. <attribute> value
+    4. <child> (optional) timestep: default = 0.005
+        1. <attribute> value
+    5. <child> (optional) erp: For experts only. It is a spring and damper term to the error dynamics.
+        1. <attribute> erp: spring term
+        2. <attribute> erp2: damping term
+    6. <child> objects
+        1. <child> TYPE_OF_OBJECT, can be one of "sphere", "box", "cylinder", "cone", "capsule", "mesh", "ground", "compound", "heightmap", "articulated_system"
+            1. <attribute> (optional, for all objects) collision_group: default=1
+            2. <attribute> (optional, for all objects) collision_mask: default=-1
+            3. <attribute> (for sphere, capsule, cylinder, box, mesh, compound) mass
+            4. <child> (for sphere, capsule, cylinder, box, mesh, compound) inertia
+                1. <attribute> xx
+                2. <attribute> xy
+                3. <attribute> xz
+                4. <attribute> yy
+                5. <attribute> yz
+                6. <attribute> zz
+            5. <attribute> (optional, for sphere, capsule, cylinder, box, mesh, compound) body_type, can be one of "dynamic", "kinematic", "static". For more information, check out `this link <https://raisim.com/sections/Object.html#body-types>`_.
+            6. <attribute> (optional) material: default="default"
+            7. <child> (for sphere, capsule, cylinder, box) dim
+                1. <attribute> (for sphere, capsule, cylinder) radius
+                2. <attribute> (for capsule, cylinder) height
+                3. <attribute> (for box) x
+                4. <attribute> (for box) y
+                5. <attribute> (for box) z
+            8. <attribute> (for mesh) file_
+    7. <child> constraints: NOT IMPLEMENTED YET
+
+
 
 Adding New Objects
 ============================

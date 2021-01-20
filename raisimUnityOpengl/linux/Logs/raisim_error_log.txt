@@ -1,19 +1,1 @@
 error logs 
-System.Exception: RsUnityRemote: InitializeObjects
-ReadData timeout!
-  at raisimUnity.RsuException..ctor (System.Exception ex, System.String message) [0x00017] in <ec336543f08748bd97910f800ac47da6>:0 
-  at raisimUnity.RsUnityRemote.Update () [0x002e3] in <ec336543f08748bd97910f800ac47da6>:0 
- 
-
-System.Exception: RsUnityRemote: InitializeObjects
-ReadData timeout!
-  at raisimUnity.RsuException..ctor (System.Exception ex, System.String message) [0x00017] in <ec336543f08748bd97910f800ac47da6>:0 
-  at raisimUnity.RsUnityRemote.Update () [0x002e3] in <ec336543f08748bd97910f800ac47da6>:0 
- 
-
-System.Exception: RsUnityRemote: UpdateObjectPosition
-ReadData timeout!
-  at raisimUnity.RsuException..ctor (System.Exception ex, System.String message) [0x00017] in <ec336543f08748bd97910f800ac47da6>:0 
-  at raisimUnity.RsUnityRemote.Update () [0x003c2] in <ec336543f08748bd97910f800ac47da6>:0 
- 
-

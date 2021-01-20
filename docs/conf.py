@@ -1,7 +1,6 @@
 import subprocess, os
 
 extensions = [
-    "sphinx_rtd_theme",
     "breathe",
     'sphinx.ext.autosectionlabel',
     'sphinx_tabs.tabs'
