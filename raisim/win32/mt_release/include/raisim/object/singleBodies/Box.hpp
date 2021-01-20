@@ -17,6 +17,10 @@ class Box : public SingleBodyObject {
   /// body origin of Box is C.O.M of Box
  public:
   Box(double xLength, double yLength, double zLength, double mass);
+
+  /**
+   * returns the dimension of the box
+   * @return the box of the box */
   Vec<3> getDim() { Vec<3> vec = {xLength_, yLength_, zLength_}; return vec; }
 
  protected:

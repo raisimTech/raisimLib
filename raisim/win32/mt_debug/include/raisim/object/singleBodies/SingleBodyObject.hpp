@@ -26,54 +26,95 @@ class SingleBodyObject : public Object {
  public:
   explicit SingleBodyObject(ObjectType singleBodyObjectType);
 
+  /**
+   * returns the quaternion in Eigen::Vector4d
+   * @return the orientation of the object */
   inline Eigen::Vector4d getQuaternion() const {
     Eigen::Vector4d quat = bodyQuaternion_.e();
     return quat;
   };
 
+  /**
+   * returns the quaternion in raisim::Vec<4>
+   * @param[out] quat the orientation of the object */
   inline void getQuaternion(Vec<4>& quat) const {
     quat = bodyQuaternion_;
   }
 
+  /**
+   * returns the rotation matrix in Eigen::Matrix3d
+   * @return the orientation of the object */
   inline Eigen::Matrix3d getRotationMatrix() const {
     Eigen::Matrix3d rot = bodyRotationMatrix_.e();
     return rot;
   };
 
+  /**
+   * returns the quaternion in raisim::Mat<3,3>
+   * @param[out] rotation the orientation of the object */
   inline void getRotationMatrix(Mat<3,3>& rotation) const {
     rotation = bodyRotationMatrix_;
   }
 
+
+  /**
+   * returns the body position in Eigen::Vector3d.
+   * Currently, all body positions are the same as the COM position
+   * @return the position of the object */
   inline Eigen::Vector3d getPosition() const {
     Eigen::Vector3d pos = bodyPosition_.e();
     return pos;
   };
 
+  /**
+   * returns the body position in Eigen::Vector3d.
+   * Currently, all body positions are the same as the COM position
+   * @return the position of the object */
   inline Eigen::Vector3d getComPosition() const {
     Eigen::Vector3d pos = comPosition_.e();
     return pos;
   };
 
+  /**
+   * returns the body position in raisim::Vec<3>.
+   * Currently, all body positions are the same as the COM position
+   * @return the position of the object */
   inline const raisim::Vec<3>& getComPosition_rs() const {
     return comPosition_;
   };
 
+  /**
+   * returns the body position in raisim::Vec<3>.
+   * Currently, all body positions are the same as the COM position
+   * @return the position of the object */
   inline const raisim::Vec<3>& getBodyToComPosition_rs() const {
     return body2com_;
   };
 
+  /**
+   * returns the linear velocity
+   * @return the linear velocity of the object */
   inline Eigen::Vector3d getLinearVelocity() const {
     Eigen::Vector3d vel = linVel_.e();
     return vel;
   };
 
+  /**
+   * returns the linear velocity
+   * @param[out] linVel the linear velocity of the object */
   inline void getLinearVelocity(Vec<3>& linVel) { linVel = linVel_; }
 
+  /**
+   * returns the angular velocity
+   * @return the angular velocity of the object */
   inline Eigen::Vector3d getAngularVelocity() const {
     Eigen::Vector3d vel = angVel_.e();
     return vel;
   };
 
+  /**
+   * returns the angular velocity
+   * @param[out] angVel the angular velocity of the object */
   inline void getAngularVelocity(Vec<3>& angVel) { angVel = angVel_; }
 
   inline void getPosition(size_t localIdx, Vec<3>& pos_w) const final {
@@ -84,36 +125,75 @@ class SingleBodyObject : public Object {
     rot = bodyRotationMatrix_;
   }
 
+  /**
+   * returns the kinetic energy
+   * @return the kinetic energy of the object */
   double getKineticEnergy() const;
-  double getPotentialEnergy(const Vec<3> &gravity) const;
-  double getEnergy(const Vec<3> &gravity) const;
-  Eigen::Vector3d getLinearMomentum() const;
-  double getMass(size_t localIdx) const;
 
+  /**
+   * returns the potential energy w.r.t. z=0 and the given gravitational acceleration
+   * param[in] gravity gravitational acceleration
+   * @return the potential energy of the object */
+  double getPotentialEnergy(const Vec<3> &gravity) const;
+
+  /**
+   * equivalent to getKineticEnergy() + getPotentialEnergy(gravity)
+   * param[in] gravity gravitational acceleration
+   * @return the sum of the potential and gravitational energy of the object */
+  double getEnergy(const Vec<3> &gravity) const;
+
+  /**
+   * returns the linear momentum of the object
+   * @return the linear momentum of the object */
+  Eigen::Vector3d getLinearMomentum() const;
+
+  /**
+   * returns the mass of the object. The localIdx is unused
+   * @return the linear momentum of the object */
+  double getMass(size_t localIdx = 0) const override;
+
+  /**
+   * set the mass of the object.
+   * @param[in] mass set the mass of the object */
   inline void setMass(double mass) {
     mass_ = mass; inverseMass_ = 1./mass;
   }
 
+  /**
+   * get the inertia matrix in the body frame.
+   * This value is constant.
+   * @return the inertia matrix in the body frame */
   inline Eigen::Matrix3d getInertiaMatrix_B() const {
     Eigen::Matrix3d iner = inertia_b_.e();
     return iner;
   }
 
+  /**
+   * get the inertia matrix in the world frame.
+   * This value changes as the body rotates.
+   * @return the inertia matrix in the world frame */
   inline Eigen::Matrix3d getInertiaMatrix_W() const {
     Eigen::Matrix3d iner = inertia_w_.e();
     return iner;
   }
 
+  /**
+   * get the inertia matrix in the body frame (raisim matrix type).
+   * This value is constant.
+   * @return the inertia matrix in the body frame */
   const raisim::Mat<3,3>& getInertiaMatrix_B_rs() const {
     return inertia_b_;
   }
 
+  /**
+   * get the inertia matrix in the world frame (raisim matrix type).
+   * This value changes as the body rotates.
+   * @return the inertia matrix in the world frame */
   const raisim::Mat<3,3>& getInertiaMatrix_W_rs() const {
     return inertia_w_;
   }
 
   ObjectType getObjectType() const final;
-
   dGeomID getCollisionObject() const;
 
   GyroscopicMode getGyroscopicMode() const;
