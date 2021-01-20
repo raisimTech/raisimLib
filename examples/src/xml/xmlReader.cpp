@@ -8,7 +8,7 @@ int main(int argc, char* argv[]) {
   auto binaryPath = raisim::Path::setFromArgv(argv[0]);
   raisim::World::setActivationKey(binaryPath.getDirectory() + "\\rsc\\activation.raisim");
 
-  RSINFO_IF(!strcmp("--help", argv[1]) || !strcmp("-h", argv[1]) || argc != 2,
+  RSFATAL_IF(argc != 2 || !strcmp("--help", argv[1]) || !strcmp("-h", argv[1]),
       "Requires the full path to the XML file as the first argument.")
 
   std::string xmlPath = argv[1];
