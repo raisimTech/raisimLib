@@ -40,7 +40,15 @@ class Object {
   void addContactToPerObjectContact(contact::Contact &contact);
   void setIndexInWorld(size_t indexInWorld_);
 
+  /**
+   * get the world index. raisim::World::getObjects() returns a vector of object pointers.
+   * This is method returns the index of this object in the vector.
+   * @return the world index */
   size_t getIndexInWorld() const;
+
+  /**
+   * get a vector of all contacts on the object.
+   * @return contacts on the body */
   const std::vector<contact::Contact> &getContacts() const;
   std::vector<contact::Contact> &getContacts();
 
@@ -60,15 +68,43 @@ class Object {
   virtual void setConstraintForce(size_t localIdx, const Vec<3>& pos, const Vec<3>& force) = 0;
 
   virtual double getMass(size_t localIdx) const = 0;
+
+  /**
+   * get the object type.
+   * Possible types are SPHERE, BOX, CYLINDER, CONE, CAPSULE, MESH, HALFSPACE, COMPOUND, HEIGHTMAP, ARTICULATED_SYSTEM
+   * @return the object type */
   virtual ObjectType getObjectType() const = 0;
   virtual void getPosition(size_t localIdx, Vec<3>& pos_w) const = 0;
   virtual void getVelocity(size_t localIdx, Vec<3>& vel_w) const = 0;
   virtual void getOrientation(size_t localIdx, Mat<3,3>& rot) const = 0;
   virtual void getPosition(size_t localIdx, const Vec<3>& pos_b, Vec<3>& pos_w) const = 0;
+
+  /**
+   * get the object body type.
+   * Available types are: DYNAMIC (movable and finite mass), STATIC (not movable and infinite mass), KINETIC (movable and infinite mass)
+   * @return the body type */
   virtual BodyType getBodyType(size_t localIdx) const { return bodyType_; };
+
+  /**
+   * get the object body type.
+   * Available types are: DYNAMIC (movable and finite mass), STATIC (not movable and infinite mass), KINETIC (movable and infinite mass).
+   * @return the body type */
   virtual BodyType getBodyType() const { return bodyType_; };
+
+  /**
+   * get the contact point velocity in the world frame.
+   * @param[in] pointId the contact index. This is an index of a contact in the contact vector that you can retrieve from getContacts().
+   * @param[out] vel the contact point velocity in the world frame */
   virtual void getContactPointVel(size_t pointId, Vec<3> &vel) const = 0;
+
+  /**
+   * set the name of the object. You can retrieve an object by name using raisim::World::getObject()
+   * @param[in] name name of the object. */
   void setName(const std::string& name) { name_ = name; }
+
+  /**
+   * get the name of the object
+   * @return name of the object */
   const std::string& getName() const { return name_; }
 
   // external force visualization
