@@ -1217,6 +1217,24 @@ class ArticulatedSystem : public Object {
   }
 
   /**
+   * set new joint limits
+   * For revolute and prisimatic joints, the joint limit is {lower, upper}
+   * For spherical joint, the joint limit is {angle, NOT_USED}
+   * @param[in] jointLimits joint limits*/
+   void setJointLimits(const std::vector<raisim::Vec<2>>& jointLimits) {
+     jointLimits_ = jointLimits;
+   }
+
+  /**
+   * get the joint limits
+   * For revolute and prisimatic joints, the joint limit is {lower, upper}
+   * For spherical joint, the joint limit is {angle, NOT_USED}
+   * @return jointLimits joint limits*/
+  const std::vector<raisim::Vec<2>>& getJointLimits() {
+    return jointLimits_;
+  }
+
+  /**
    * Clears all external forces and torques */
   void clearExternalForcesAndTorques() {
     isExternalForces_.resize(0);
