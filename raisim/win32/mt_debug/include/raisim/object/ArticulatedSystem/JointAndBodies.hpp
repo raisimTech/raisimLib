@@ -164,8 +164,8 @@ struct VisObject {
 class Joint {
  public:
 
-  enum Type {
-    FIXED,
+  enum Type : int {
+    FIXED = 0,
     REVOLUTE,
     PRISMATIC,
     SPHERICAL,

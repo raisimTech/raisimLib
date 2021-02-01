@@ -7,10 +7,16 @@
 #ifndef RAISIM_CONFIGURE_HPP
 #define RAISIM_CONFIGURE_HPP
 
-typedef uint64_t CollisionGroup;
-#define RAISIM_STATIC_COLLISION_GROUP CollisionGroup(1)<<63
-
 namespace raisim {
+
+typedef unsigned long CollisionGroup;
+
+#ifdef WIN32
+#define RAISIM_STATIC_COLLISION_GROUP CollisionGroup(1)<<31
+#else
+#define RAISIM_STATIC_COLLISION_GROUP CollisionGroup(1)<<63
+#endif
+
 enum ObjectType : int { SPHERE = 0, BOX, CYLINDER, CONE, CAPSULE, MESH, HALFSPACE, COMPOUND, HEIGHTMAP, ARTICULATED_SYSTEM, UNRECOGNIZED };
 
 inline bool isSingleBody(ObjectType type) {
