@@ -57,7 +57,9 @@ inline ObjectType stringToObjectType(const std::string& typeName) {
   else if (typeName == "heightmap")
     return HEIGHTMAP;
   else if (typeName == "articulatedSystem")
-    return ARTICULATED_SYSTEM;  
+    return ARTICULATED_SYSTEM;
+  else if (typeName == "articulated_system")
+    return ARTICULATED_SYSTEM;
 
   return ObjectType::UNRECOGNIZED;
 }

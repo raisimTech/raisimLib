@@ -17,13 +17,20 @@ class Cylinder : public SingleBodyObject {
  public:
   Cylinder(double radius, double height, double mass);
 
-  float getRadius() const;
-  float getHeight() const;
+  /**
+   * returns the radius of the cylinder
+   * @return the radius of the cylinder */
+  double getRadius() const;
+
+  /**
+   * returns the height of the cylinder
+   * @return the height of the cylinder */
+  double getHeight() const;
 
  protected:
 
-  float radius_;
-  float height_;
+  double radius_;
+  double height_;
 };
 
 } // raisim

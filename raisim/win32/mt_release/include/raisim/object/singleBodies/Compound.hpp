@@ -26,8 +26,14 @@ class Compound : public SingleBodyObject {
 
   Compound(const std::vector<CompoundObjectChild>& list, double mass, const Vec<3>& COM, const Mat<3,3>& inertia);
 
+  /**
+   * returns the children of the compound
+   * @return the children of the compound */
   const std::vector<CompoundObjectChild>& getObjList () { return list_; };
 
+  /**
+   * returns the collision list of the compound
+   * @return the collision list of the compound */
   const std::vector<dGeomID>& getCollisionObjectList () { return co; };
 
   virtual void destroyCollisionBodies(dSpaceID id) final;

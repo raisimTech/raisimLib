@@ -18,6 +18,9 @@ class Sphere : public SingleBodyObject {
  public:
   explicit Sphere(double radius, double mass);
 
+  /**
+   * returns the radius of the sphere
+   * @return the radius of the sphere */
   double getRadius() const;
 
  protected:

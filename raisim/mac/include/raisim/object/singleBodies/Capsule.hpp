@@ -18,7 +18,14 @@ class Capsule: public SingleBodyObject {
  public:
   Capsule(double radius, double height, double mass);
 
+  /**
+   * returns the radius of the capsule
+   * @return the radius of the capsule */
   double getRadius() const;
+
+  /**
+   * returns the height of the capsule
+   * @return the height of the capsule */
   double getHeight() const;
 
  protected:
