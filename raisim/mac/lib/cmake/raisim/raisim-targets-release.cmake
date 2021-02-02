@@ -39,7 +39,7 @@ list(APPEND _IMPORT_CHECK_FILES_FOR_raisim::raisimMine "${_IMPORT_PREFIX}/lib/li
 set_property(TARGET raisim::raisimODE APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
 set_target_properties(raisim::raisimODE PROPERTIES
   IMPORTED_LOCATION_RELEASE "${_IMPORT_PREFIX}/lib/libraisimODE.dylib"
-  IMPORTED_SONAME_RELEASE "@rpath/libraisimODE.dylib"
+  IMPORTED_SONAME_RELEASE "libraisimODE.dylib"
   )
 
 list(APPEND _IMPORT_CHECK_TARGETS raisim::raisimODE )
