@@ -812,7 +812,8 @@ class RaisimServer final {
       return false;
     }
 
-    get(&receive_buffer[0], &type);
+    auto data = get(&receive_buffer[0], &type);
+    get(data, &objectId_);
 
     data_ = set(data_, state_);
 
@@ -1095,6 +1096,74 @@ class RaisimServer final {
         data_ = setN(data_, ob->getExternalTorquePosition()[extNum].ptr(), 3);
         data_ = setN(data_, ob->getExternalTorque()[extNum].ptr(), 3);
       }
+    }
+
+    if(objectId_ > -1) {
+      RSFATAL_IF(objectId_ >= world_->getObjList().size(), "The client is requesting non-existent object")
+      auto *obSelected = world_->getObjList()[objectId_];
+      if(obSelected->getObjectType() == ObjectType::ARTICULATED_SYSTEM) {
+        data_ = set(data_, int32_t(1));
+        auto* as = reinterpret_cast<ArticulatedSystem*>(obSelected);
+        data_ = set(data_, int32_t(as->getGeneralizedCoordinateDim()));
+        data_ = set(data_, int32_t(as->getDOF()));
+        data_ = set(data_, int32_t(as->getMovableJointNames().size()));
+        data_ = set(data_, int32_t(as->getFrames().size()));
+
+        for(int i=0; i<as->getGeneralizedCoordinateDim(); i++)
+          data_ = set(data_, float(as->getGeneralizedCoordinate()[i]));
+
+        for(int i=0; i<as->getDOF(); i++)
+          data_ = set(data_, float(as->getGeneralizedVelocity()[i]));
+
+        for(int i=0; i<as->getMovableJointNames().size(); i++) {
+          data_ = setString(data_, as->getMovableJointNames()[i]);
+          data_ = set(data_, int(as->getJointType(i)));
+        }
+
+        Vec<3> pos;
+        Vec<4> quat;
+        Mat<3,3> rot;
+        for(int i=0; i<as->getFrames().size(); i++) {
+          data_ = setString(data_, as->getFrames()[i].name);
+          as->getFramePosition(i, pos);
+          as->getFrameOrientation(i, rot);
+          rotMatToQuat(rot, quat);
+          data_ = set(data_, float(pos[0]));
+          data_ = set(data_, float(pos[1]));
+          data_ = set(data_, float(pos[2]));
+
+          data_ = set(data_, float(quat[0]));
+          data_ = set(data_, float(quat[1]));
+          data_ = set(data_, float(quat[2]));
+          data_ = set(data_, float(quat[3]));
+        }
+      } else {
+        data_ = set(data_, int32_t(0));
+        auto* sb = reinterpret_cast<SingleBodyObject*>(obSelected);
+        auto pos = sb->getPosition();
+        auto quat = sb->getQuaternion();
+        data_ = set(data_, float(pos[0]));
+        data_ = set(data_, float(pos[1]));
+        data_ = set(data_, float(pos[2]));
+
+        data_ = set(data_, float(quat[0]));
+        data_ = set(data_, float(quat[1]));
+        data_ = set(data_, float(quat[2]));
+        data_ = set(data_, float(quat[3]));
+
+        auto linVel = sb->getLinearVelocity();
+        auto angVel = sb->getAngularVelocity();
+
+        data_ = set(data_, float(linVel[0]));
+        data_ = set(data_, float(linVel[1]));
+        data_ = set(data_, float(linVel[2]));
+
+        data_ = set(data_, float(angVel[0]));
+        data_ = set(data_, float(angVel[1]));
+        data_ = set(data_, float(angVel[2]));
+      }
+    } else {
+      data_ = set(data_, int32_t(-1));
     }
 
     updateReady_ = true;
@@ -1535,6 +1604,7 @@ class RaisimServer final {
   std::vector<ServerRequestType> serverRequest_;
   std::string focusedObjectName_;
   std::string videoName_;
+  int objectId_;
 
   bool pauseRequested_ = false;
   bool resumeRequested_ = false;
