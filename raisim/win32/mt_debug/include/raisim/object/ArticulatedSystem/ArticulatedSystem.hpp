@@ -871,6 +871,17 @@ class ArticulatedSystem : public Object {
   }
 
   /**
+   * get PD targets.
+   * @param[out] posTarget position target
+   * @param[out] velTarget velocity target */
+   void getPdTarget(Eigen::VectorXd &posTarget, Eigen::VectorXd &velTarget) {
+     RSFATAL_IF(size_t(posTarget.rows()) != gcDim,"position target should have the same dimension as the generalized coordinate")
+     RSFATAL_IF(size_t(velTarget.rows()) != dof, "the velocity target should have the same dimension as the degrees of freedom")
+     posTarget = qref_.e();
+     velTarget = uref_.e();
+   }
+
+  /**
    * set PD targets.
    * @param[in] posTarget position target (dimension == getGeneralizedCoordinateDim())
    * @param[in] velTarget velocity target (dimension == getDOF()) */
@@ -908,6 +919,15 @@ class ArticulatedSystem : public Object {
     setControlMode(ControlMode::PD_PLUS_FEEDFORWARD_TORQUE);
     setPGains(pgain);
     setDGains(dgain);
+  }
+
+  /**
+   * get PD gains.
+   * @param[out] pgain position gain (dimension == getDOF())
+   * @param[out] dgain velocity gain (dimension == getDOF())*/
+  void getPdGains(Eigen::VectorXd &pgain, Eigen::VectorXd &dgain) {
+    pgain = kp_.e();
+    dgain = kd_.e();
   }
 
   /**
