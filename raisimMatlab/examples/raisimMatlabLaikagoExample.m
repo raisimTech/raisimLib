@@ -1,3 +1,6 @@
+clear all;
+
+
 %%
 % load raisim
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -28,13 +31,21 @@ raisim('setDGains', 'laikago0', ones(18,1));
 
 raisim('setPTarget', 'laikago0', [0, 0, 0.48, 1, 0.0, 0.0, 0.0, 0.0, 0.5, -1, 0, 0.5, -1, 0.00, 0.5, -1, 0, 0.5, -1]');
 raisim('setDTarget', 'laikago0', zeros(18,1));
+test = 0
 
 for i=1:2000
+    test = 1
     pause(1./500)
+    test = 2
     raisim('integrate');
+    test = 3
     raisim('setPosition', 'treadmill', 0, 0, 0);
+    test = 4
     [force, position, objects] = raisim('getContactForcePositionsObject', 'laikago0', 'trunk');
+    test = 5
 end
+
+test = 6
 
 %%
 % articulated systems properties. 

@@ -72,6 +72,7 @@ void quit() {
   world_.reset(nullptr);
   server_.reset(nullptr);
   initialized = false;
+  mexUnlock();
 }
 
 #define CHECK_INPUT_SIZE(X) if(nrhs != X) mexErrMsgTxt("Expecting X inputs");
@@ -191,8 +192,9 @@ void quit() {
   }
 
 void mexFunction(
-    int nlhs, mxArray* plhs[], int nrhs,
-    const mxArray* prhs[]) {
+  int nlhs, mxArray* plhs[], int nrhs,
+  const mxArray* prhs[]) {
+
   // nlhs   number of expected outputs
   // plhs   array to be populated by outputs (DATA BACK TO MATLAB)
   // nrhs   number of inputs
@@ -201,7 +203,6 @@ void mexFunction(
   // get the command string
   // mxGetString (from API) will convert the first input prhs[0] to char
   CHECK_CMD
-
   char cmd[256];
   if (nrhs < 1 || mxGetString(prhs[0], cmd, sizeof(cmd)) > 64)
     mexErrMsgTxt("First input should be a command string less than 64 characters long.");
@@ -220,7 +221,6 @@ void mexFunction(
     raisim::RaiSimMsg::setFatalCallback([]() { mexErrMsgTxt(""); });
 
     int portPosition;
-
     if (mxIsChar(prhs[1])) {
       GET_STRING(1, fileName)
       world_.reset(new raisim::World(fileName));
@@ -298,6 +298,7 @@ void mexFunction(
     CHECK_OUTPUT_SIZE(0)
     if(!server_)
       mexErrMsgTxt("no graphics option is chosen during init. Use the \"integrateNoGraphics\" method instead");
+
     server_->integrateWorldThreadSafe();
   }
   // integration
