@@ -110,6 +110,8 @@ for i=1:5000
     raisim('updateVisualArticulatedSystem', 'anymal0', [2*cos(i*0.001), 2*sin(i*0.001), 0.54, 1.0, 0.0, 0.0, 0.0, 0.03, 0.4, -0.8, -0.03, 0.4, -0.8, 0.03, -0.4, 0.8, -0.03, -0.4, 0.8]', 1,0,0,0.5);    
 end
 
+
+
 box_position = raisim('getPosition', 'box');
 box_orientation = raisim('getQuaternion', 'box');
 
