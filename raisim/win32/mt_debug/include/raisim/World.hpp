@@ -19,6 +19,7 @@
 #include "raisim/object/singleBodies/Cone.hpp"
 #include "raisim/object/singleBodies/Compound.hpp"
 #include "raisim/constraints/StiffLengthConstraint.hpp"
+#include "raisim/constraints/CustomLengthConstraint.hpp"
 #include "raisim/constraints/CompliantLengthConstraint.hpp"
 #include "raisim/object/terrain/Ground.hpp"
 #include "raisim/object/terrain/HeightMap.hpp"
@@ -383,6 +384,24 @@ class World {
                                               double stiffness);
 
   /**
+   * Custom wire that applies user-set tension between two points.
+   * @param obj1 the first object the wire is attached to
+   * @param localIdx1 the body index (0 for a SingleBodyObject) for the first object
+   * @param pos1_b location of the cable attachment on the first object
+   * @param obj2 the second object the wire is attached to
+   * @param localIdx2 the body index (0 for a SingleBodyObject) for the second object
+   * @param pos2_b location of the cable attachment on the second object
+   * @param length length of the wire. You can use this to compute how much it stretched from a nominal length. It might not be necessary for some wire types.
+   * @return pointer to the created wire  */
+  CustomLengthConstraint *addCustomWire(Object *obj1,
+                                        int localIdx1,
+                                        Vec<3> pos1_b,
+                                        Object *obj2,
+                                        int localIdx2,
+                                        Vec<3> pos2_b,
+                                        double length);
+
+  /**
    * @return object with the given name. returns nullptr if the object doesn't exist. The name can be set by Object::setName() */
   Object *getObject(const std::string &name);
 
@@ -395,7 +414,7 @@ class World {
   std::vector<Object*> &getObjList();
 
   /**
-   * @return a constraint (e.g., wires) with the given name. returns nullptr if the object doesn't exist. The name can be set by Wire::setName() */
+   * @return a constraint (e.g., wires) with the given name. returns nullptr if the object doesn't exist. The name can be set by Wire::setName(). This is equivalent to getWire(const std::string&) */
   Constraints *getConstraint(const std::string &name);
 
   /**
@@ -428,14 +447,9 @@ class World {
   void removeObject(Object *obj);
 
   /**
-   * removes a stiff wire
-   * @param wire the stiff wire to be removed */
-  void removeObject(StiffLengthConstraint *wire);
-
-  /**
- * removes a compliant wire
- * @param wire the compliant wire to be removed */
-  void removeObject(CompliantLengthConstraint *wire);
+   * removes a wire (i.e., LengthConstraint)
+   * @param wire the wire to be removed */
+  void removeObject(LengthConstraint *wire);
 
   /**
    * integrate the world
@@ -536,16 +550,10 @@ class World {
   const std::string &getConfigFile() { return configFile_; };
 
   /**
-   * get a vector stiff wires in the world
-   * @return a vector of unique_ptrs of stiff wires
+   * get a vector wires in the world
+   * @return a vector of unique_ptrs of wires
    */
-  std::vector<std::unique_ptr<StiffLengthConstraint>>& getStiffWire () { return stiffWire_; }
-
-  /**
-   * get a vector compliant wires in the world
-   * @return a vector of unique_ptrs of compliant wires
-   */
-  std::vector<std::unique_ptr<CompliantLengthConstraint>>& getCompliantWire () { return compliantWire_; }
+  std::vector<std::unique_ptr<LengthConstraint>>& getWires () { return wire_; }
 
 protected:
   void init();
@@ -571,8 +579,7 @@ protected:
   std::vector<size_t> colIdxToLocalObjIdx_;
 
   // constraints
-  std::vector<std::unique_ptr<StiffLengthConstraint>> stiffWire_;
-  std::vector<std::unique_ptr<CompliantLengthConstraint>> compliantWire_;
+  std::vector<std::unique_ptr<LengthConstraint>> wire_;
 
   MaterialManager mat_;
   MaterialPairProperties defaultMaterialProperty_;
