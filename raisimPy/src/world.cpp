@@ -606,6 +606,35 @@ void init_world(py::module &m) {
            py::arg("pos_body2"), py::arg("length"),
            py::return_value_policy::reference_internal)
 
+      .def("addCustomWire", [](raisim::World &self, raisim::Object &object1, size_t local_idx1,
+                              py::array_t<double> pos_body1, raisim::Object &object2, size_t local_idx2,
+                              py::array_t<double> pos_body2, double length) {
+
+             // convert the arrays to Vec<3>
+             raisim::Vec<3> pos1 = convert_np_to_vec<3>(pos_body1);
+             raisim::Vec<3> pos2 = convert_np_to_vec<3>(pos_body2);
+
+             // return the stiff wire instance.
+             return self.addCustomWire(&object1, local_idx1, pos1, &object2, local_idx2, pos2, length);
+           }, R"mydelimiter(
+	    Add a custom wire constraint between two bodies in the world.
+
+	    Args:
+            object1 (Object): first object/body instance.
+	        local_idx1 (int): local index of the first object/body.
+	        pos_body1 (np.array[float[3]]): position of the constraint on the first body.
+            object2 (Object): second object/body instance.
+	        local_idx2 (int): local index of the second object/body.
+	        pos_body2 (np.array[float[3]]): position of the constraint on the second body.
+            length (float): length of the wire constraint.
+
+	    Returns:
+	        StiffWire: the stiff wire constraint instance.
+	    )mydelimiter",
+           py::arg("object1"), py::arg("local_idx1"), py::arg("pos_body1"), py::arg("object2"), py::arg("local_idx2"),
+           py::arg("pos_body2"), py::arg("length"),
+           py::return_value_policy::reference_internal)
+
       .def("addCompliantWire", [](raisim::World &self, raisim::Object &object1, size_t local_idx1,
                                   py::array_t<double> pos_body1, raisim::Object &object2, size_t local_idx2,
                                   py::array_t<double> pos_body2, double length, double stiffness) {

@@ -70,7 +70,6 @@ non_linearities = anymal.getNonlinearities()
 jaco_foot_lh_linear = anymal.getDenseFrameJacobian("LF_ADAPTER_TO_FOOT")
 jaco_foot_lh_angular = anymal.getDenseFrameRotationalJacobian("LF_ADAPTER_TO_FOOT")
 
-
 for i in range(5000):
     world.integrate()
 

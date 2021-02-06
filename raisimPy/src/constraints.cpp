@@ -32,6 +32,7 @@
 #include "raisim/constraints/LengthConstraint.hpp"
 #include "raisim/constraints/StiffLengthConstraint.hpp"
 #include "raisim/constraints/CompliantLengthConstraint.hpp"
+#include "raisim/constraints/CustomLengthConstraint.hpp"
 
 #include "converter.hpp"  // contains code that allows to convert between the Vec, Mat to numpy arrays.
 
@@ -45,7 +46,10 @@ void init_constraints(py::module &m) {
     // create submodule
     py::module constraints_module = m.def_submodule("constraints", "RaiSim contact submodule.");
 
-
+    py::enum_<raisim::LengthConstraint::StretchType>(m, "StretchType", py::arithmetic())
+        .value("STRETCH_RESISTANT_ONLY", raisim::LengthConstraint::StretchType::STRETCH_RESISTANT_ONLY)
+        .value("COMPRESSION_RESISTANT_ONLY", raisim::LengthConstraint::StretchType::COMPRESSION_RESISTANT_ONLY)
+        .value("BOTH", raisim::LengthConstraint::StretchType::BOTH);
     /**************/
     /* Constraint */
     /**************/
@@ -140,11 +144,17 @@ void init_constraints(py::module &m) {
 	        float: stretch length.
 	    )mydelimiter")
 
+        .def("setStretchType", &raisim::LengthConstraint::setStretchType, R"mydelimiter(
+	    Return the stretch type (i.e., constraint violation).
 
-	    .def_property("name", &raisim::LengthConstraint::getName, &raisim::LengthConstraint::setName)
-	    .def("get_name", &raisim::LengthConstraint::getName, "Get the LengthConstraint constraint's name.")
-	    .def("set_name", &raisim::LengthConstraint::setName, "Set the LengthConstraint constraint's name.", py::arg("name"))
-	    .def_readwrite("is_active", &raisim::LengthConstraint::isActive)
+	    Returns:
+	        stretch_type: stretch type.
+	    )mydelimiter")
+
+        .def_property("name", &raisim::LengthConstraint::getName, &raisim::LengthConstraint::setName)
+	    .def("getName", &raisim::LengthConstraint::getName, "Get the LengthConstraint constraint's name.")
+	    .def("setName", &raisim::LengthConstraint::setName, "Set the LengthConstraint constraint's name.", py::arg("name"))
+	    .def_readwrite("isActive", &raisim::LengthConstraint::isActive)
     ;
 
 
@@ -152,56 +162,21 @@ void init_constraints(py::module &m) {
     /* StiffLengthConstraint */
     /*************/
 
-    py::class_<raisim::StiffLengthConstraint, raisim::LengthConstraint>(constraints_module, "StiffLengthConstraint", "Raisim StiffLengthConstraint constraint class; it creates a stiff wire constraint between 2 bodies.")
-        .def(py::init([](raisim::Object &object1, size_t local_idx1, py::array_t<double> pos_body1,
-            raisim::Object &object2, size_t local_idx2, py::array_t<double> pos_body2, double length)
-            {
-                // convert the arrays to Vec<3>
-                raisim::Vec<3> pos1 = convert_np_to_vec<3>(pos_body1);
-                raisim::Vec<3> pos2 = convert_np_to_vec<3>(pos_body2);
-
-                // instantiate the class
-                return new raisim::StiffLengthConstraint(&object1, local_idx1, pos1, &object2, local_idx2, pos2, length);
-            }),
-            "Instantiate the stiff wire constraint class.\n\n"
-	        "Args:\n"
-	        "    object1 (Object): first object/body instance.\n"
-	        "    local_idx1 (int): local index of the first object/body.\n"
-	        "    pos_body1 (np.array[float[3]]): position of the constraint on the first body.\n"
-            "    object2 (Object): second object/body instance.\n"
-	        "    local_idx2 (int): local index of the second object/body.\n"
-	        "    pos_body2 (np.array[float[3]]): position of the constraint on the second body.\n"
-            "    length (float): length of the wire constraint.",
-            py::arg("object1"), py::arg("local_idx1"), py::arg("pos_body1"), py::arg("object2"), py::arg("local_idx2"),
-            py::arg("pos_body2"), py::arg("length"));
+    py::class_<raisim::StiffLengthConstraint, raisim::LengthConstraint>(constraints_module, "StiffLengthConstraint", "Raisim StiffLengthConstraint constraint class; it creates a stiff wire constraint between 2 bodies.");
 
 
-    /*****************/
+    /*************/
+    /* CustomLengthConstraint */
+    /*************/
+    py::class_<raisim::CustomLengthConstraint, raisim::LengthConstraint>(constraints_module, "CustomLengthConstraint", "Raisim CustomLengthConstraint class; it creates a stiff wire constraint between 2 bodies.")
+        .def("setTension", &raisim::CustomLengthConstraint::setTension, "Set the tension in the wire.\n"
+                                                                        "Args:\n"
+                                                                        "   tension (float): tension in the wire", py::arg("tension"));
+
+  /*****************/
     /* CompliantLengthConstraint */
     /*****************/
 
-    py::class_<raisim::CompliantLengthConstraint, raisim::LengthConstraint>(constraints_module, "CompliantLengthConstraint", "Raisim Compliant Wire constraint class; it creates a compliant wire constraint between 2 bodies.")
-        .def(py::init([](raisim::Object &object1, size_t local_idx1, py::array_t<double> pos_body1,
-            raisim::Object &object2, size_t local_idx2, py::array_t<double> pos_body2, double length, double stiffness)
-            {
-                // convert the arrays to Vec<3>
-                raisim::Vec<3> pos1 = convert_np_to_vec<3>(pos_body1);
-                raisim::Vec<3> pos2 = convert_np_to_vec<3>(pos_body2);
-
-                // instantiate the class
-                return new raisim::CompliantLengthConstraint(&object1, local_idx1, pos1, &object2, local_idx2, pos2, length, stiffness);
-            }),
-            "Instantiate the compliant wire constraint class.\n\n"
-	        "Args:\n"
-	        "    object1 (Object): first object/body instance.\n"
-	        "    local_idx1 (int): local index of the first object/body.\n"
-	        "    pos_body1 (np.array[float[3]]): position of the constraint on the first body.\n"
-            "    object2 (Object): second object/body instance.\n"
-	        "    local_idx2 (int): local index of the second object/body.\n"
-	        "    pos_body2 (np.array[float[3]]): position of the constraint on the second body.\n"
-            "    length (float): length of the wire constraint.\n"
-            "    stiffness (float): stiffness of the wire.",
-            py::arg("object1"), py::arg("local_idx1"), py::arg("pos_body1"), py::arg("object2"), py::arg("local_idx2"),
-            py::arg("pos_body2"), py::arg("length"), py::arg("stiffness"));
+    py::class_<raisim::CompliantLengthConstraint, raisim::LengthConstraint>(constraints_module, "CompliantLengthConstraint", "Raisim Compliant Wire constraint class; it creates a compliant wire constraint between 2 bodies.");
 
 }

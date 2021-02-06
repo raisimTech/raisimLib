@@ -432,6 +432,14 @@ void init_single_bodies(py::module &m) {
 	    )mydelimiter",
 	    py::arg("body_type"))
 
+        .def("setAppearance", &raisim::SingleBodyObject::setAppearance, R"mydelimiter(
+	    Set the appearance
+
+	    Args:
+	        appearance (string): can be a color name (e.g., brown) or a color code (e.g., "150,200,100,150" which is in an RGBA format).
+	    )mydelimiter",
+             py::arg("appearance"))
+
 
 	    .def("getCollisionGroup", &raisim::SingleBodyObject::getCollisionGroup, R"mydelimiter(
 	    Get the body's collision group.
