@@ -46,7 +46,13 @@ int main(int argc, char **argv) {
   pin6->setPosition(-3., 0.0, 7.0);
   pin6->setBodyType(raisim::BodyType::STATIC);
 
+  auto pin7 = world.addSphere(0.1, 0.8);
+  pin7->setPosition(-4., 0.0, 7.0);
+  pin7->setBodyType(raisim::BodyType::STATIC);
+
   auto anymalC = world.addArticulatedSystem(binaryPath.getDirectory() + "\\rsc\\anymal_c\\urdf\\anymal.urdf");
+  auto anymalB = world.addArticulatedSystem(binaryPath.getDirectory() + "\\rsc\\anymal\\urdf\\anymal.urdf");
+
   /// anymalC joint PD controller
   Eigen::VectorXd jointNominalConfig(anymalC->getGeneralizedCoordinateDim()), jointVelocityTarget(anymalC->getDOF());
   jointNominalConfig << -3, 0, 4.54, 1.0, 0.0, 0.0, 0.0, 0.03, 0.4, -0.8, -0.03, 0.4, -0.8, 0.03, -0.4, 0.8, -0.03, -0.4, 0.8;
@@ -61,6 +67,13 @@ int main(int argc, char **argv) {
   anymalC->setPdGains(jointPgain, jointDgain);
   anymalC->setPdTarget(jointNominalConfig, jointVelocityTarget);
   anymalC->setName("anymalC");
+
+  jointNominalConfig[0] = -4;
+  anymalB->setGeneralizedCoordinate(jointNominalConfig);
+  anymalB->setGeneralizedForce(Eigen::VectorXd::Zero(anymalB->getDOF()));
+  anymalB->setPdGains(jointPgain, jointDgain);
+  anymalB->setPdTarget(jointNominalConfig, jointVelocityTarget);
+  anymalB->setName("anymalB");
 
   auto ball1 = world.addSphere(0.1498, 0.8, "steel");
   ball1->setPosition(0, 0.0, 1.0);
@@ -88,13 +101,19 @@ int main(int argc, char **argv) {
   auto wire6 = world.addCompliantWire(pin6, 0, {0,0,0}, anymalC, 0, {0., 0, 0}, 2.0, 1000);
   wire6->setStretchType(raisim::LengthConstraint::StretchType::BOTH);
 
+  auto wire7 = world.addCustomWire(pin7, 0, {0,0,0}, anymalB, 0, {0., 0, 0}, 2.0);
+  wire7->setTension(310);
+
   /// launch raisim servear
   raisim::RaisimServer server(&world);
-  server.launchServer();
+  server.launchServer(8080);
 
-  for (int i=0; i< 50000; i++) {
+  for (int i=0; i< 500000; i++) {
     std::this_thread::sleep_for(std::chrono::microseconds(1000));
     server.integrateWorldThreadSafe();
+
+    if(i==5000)
+      world.removeObject(wire7);
   }
 
   server.killServer();

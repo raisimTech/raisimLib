@@ -56,28 +56,6 @@ void init_constraints(py::module &m) {
     /* Wire */
     /********/
     py::class_<raisim::LengthConstraint, raisim::Constraints>(constraints_module, "LengthConstraint", "Raisim LengthConstraint constraint class; it creates a LengthConstraint constraint between 2 bodies.")
-        .def(py::init([](raisim::Object &object1, size_t local_idx1, py::array_t<double> pos_body1,
-            raisim::Object &object2, size_t local_idx2, py::array_t<double> pos_body2, double length)
-            {
-                // convert the arrays to Vec<3>
-                raisim::Vec<3> pos1 = convert_np_to_vec<3>(pos_body1);
-                raisim::Vec<3> pos2 = convert_np_to_vec<3>(pos_body2);
-
-                // instantiate the class
-                return new raisim::LengthConstraint(&object1, local_idx1, pos1, &object2, local_idx2, pos2, length);
-            }),
-            "Instantiate the LengthConstraint constraint class.\n\n"
-	        "Args:\n"
-	        "    object1 (Object): first object/body instance.\n"
-	        "    local_idx1 (int): local index of the first object/body.\n"
-	        "    pos_body1 (np.array[float[3]]): position of the constraint on the first body.\n"
-            "    object2 (Object): second object/body instance.\n"
-	        "    local_idx2 (int): local index of the second object/body.\n"
-	        "    pos_body2 (np.array[float[3]]): position of the constraint on the second body.\n"
-            "    length (float): length of the LengthConstraint constraint.",
-            py::arg("object1"), py::arg("local_idx1"), py::arg("pos_body1"), py::arg("object2"), py::arg("local_idx2"),
-            py::arg("pos_body2"), py::arg("length"))
-
 
         .def("update", &raisim::LengthConstraint::update, "update internal variables (called by `integrate1()`).")
 

@@ -9,6 +9,7 @@ RaiSim currently has two types of constraints:
 
    StiffLengthConstraint
    CompliantLengthConstraint
+   CustomLengthConstraint
 
 Both constraints offer three stretch types: ``STRETCH_RESISTANT_ONLY``, ``COMPRESSION_RESISTANT_ONLY``, ``BOTH``.
 The first two are unilateral constraints (i.e., acting only in one direction) and ``BOTH`` is a bilateral constraint (i.e., acting in both directions).
