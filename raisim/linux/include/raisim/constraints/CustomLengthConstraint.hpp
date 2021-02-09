@@ -13,6 +13,7 @@ namespace raisim {
 class CustomLengthConstraint : public LengthConstraint {
  public:
   CustomLengthConstraint(Object* obj1, size_t localIdx1, Vec<3> pos1_b, Object* obj2, size_t localIdx2, Vec<3> pos2_b, double length);
+  ~CustomLengthConstraint() = default;
 
   /**
    * set the tension of the wire
