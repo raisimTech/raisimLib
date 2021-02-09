@@ -10,6 +10,8 @@
 namespace raisim {
 
 class Constraints {
+ public:
+  virtual ~Constraints() = default;
 
  protected:
   std::string name_;

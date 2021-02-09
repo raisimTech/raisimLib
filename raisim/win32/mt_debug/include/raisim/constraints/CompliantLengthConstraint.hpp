@@ -14,6 +14,7 @@ namespace raisim {
 class CompliantLengthConstraint : public LengthConstraint {
  public:
   CompliantLengthConstraint(Object* obj1, int localIdx1, Vec<3> pos1_b, Object* obj2, int localIdx2, Vec<3> pos2_b, double length, double stiffness);
+  virtual ~CompliantLengthConstraint() override = default;
   double getStiffness() const { return stiffness_; }
   double getPotentialEnergy() const { return 0.5*stiffness_*stretch_*stretch_; }
   const Vec<3>& getTension() const { return tension_; }
