@@ -881,7 +881,7 @@ void init_world(py::module &m) {
             @param[in] closestOnly Only stores the first collision.
             @param[in] collisionMask Collision mask to filter collisions. By default, it records collisions with all collision groups.
             @return A reference to the internal container which contains all ray collisions.
-        )mydelimiter") 
+        )mydelimiter", py::arg("start"), py::arg("direction"), py::arg("length"), py::arg("closestOnly") = true, py::arg("collisionMask") = raisim::CollisionGroup(-1)) 
     ;
 
 }
