@@ -751,7 +751,7 @@ class RaisimServer final {
   }
 
   /**
-   * @param[in] videoName name of the video file to be saved
+   * @param[in] videoName name of the video file to be saved. The videoName must be a valid file name (e.g., no spaces, ending in .mp4)
    * start recording video. RaisimUnity only supports video recording in linux */
   inline void startRecordingVideo(const std::string &videoName) {
     serverRequest_.push_back(ServerRequestType::START_RECORD_VIDEO);
@@ -1061,16 +1061,11 @@ class RaisimServer final {
     }
 
     // wires
-    data_ = set(data_, (uint64_t) (world_->getStiffWire().size() + world_->getCompliantWire().size()));
+    data_ = set(data_, (uint64_t) (world_->getWires().size()));
 
-    for (auto &sw: world_->getStiffWire()) {
+    for (auto &sw: world_->getWires()) {
       data_ = setN(data_, sw->getP1().ptr(), 3);
       data_ = setN(data_, sw->getP2().ptr(), 3);
-    }
-
-    for (auto &cw: world_->getCompliantWire()) {
-      data_ = setN(data_, cw->getP1().ptr(), 3);
-      data_ = setN(data_, cw->getP2().ptr(), 3);
     }
 
     // External forces
@@ -1312,12 +1307,10 @@ class RaisimServer final {
     }
 
     // constraints
-    data_ = set(data_, (uint64_t) (world_->getCompliantWire().size() + world_->getStiffWire().size()));
+    data_ = set(data_, (uint64_t) (world_->getWires().size()));
   }
 
   inline void serializeContacts() {
-    // std::lock_guard<std::mutex> guard(serverMutex_);
-
     auto *contactList = world_->getContactProblem();
 
     // set message type

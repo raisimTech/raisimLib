@@ -9,12 +9,19 @@
 
 #include <raisim/object/Object.hpp>
 #include "Constraints.hpp"
+#include "raisim/contact/Contact.hpp"
 
 namespace raisim {
 
 class LengthConstraint : public Constraints {
 
  public:
+  enum class WireType : int {
+    STIFF = 0,
+    COMPLIANT,
+    CUSTOM
+  };
+
   enum class StretchType : int {
     STRETCH_RESISTANT_ONLY = 0,
     COMPRESSION_RESISTANT_ONLY,
@@ -22,10 +29,11 @@ class LengthConstraint : public Constraints {
   };
 
   LengthConstraint(Object *obj1, size_t localIdx1, Vec<3> pos1_b, Object *obj2, size_t localIdx2, Vec<3> pos2_b, double length);
+  virtual ~LengthConstraint() = default;
 
   /**
-   * update internal variables (called by integrate1()) */
-  void update();
+   * update internal variables (called by World::integrate1()) */
+  void update(contact::ContactProblems& contact_problems);
 
   /**
    * @return the length of the wire */
@@ -105,8 +113,10 @@ class LengthConstraint : public Constraints {
   double length_;
   double distance_;
   double stretch_;
-  double dampedStretch_;
+  WireType type_;
   StretchType stretchType_ = StretchType::COMPRESSION_RESISTANT_ONLY;
+
+  virtual void applyTension(contact::ContactProblems& contact_problems) = 0;
 
  public:
   bool isActive = false;

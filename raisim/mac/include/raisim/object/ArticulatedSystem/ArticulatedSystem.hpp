@@ -340,7 +340,7 @@ class ArticulatedSystem : public Object {
 
   /**
    * set the generalized velocity of each joint in order
-   * @param[in] jointState the generalized velocity */
+   * @param[in] jointVel the generalized velocity */
   void setGeneralizedVelocity(std::initializer_list<double> jointVel);
 
   /**
@@ -601,7 +601,6 @@ class ArticulatedSystem : public Object {
 
   /**
    * @param[in] bodyIdx the body index. Note that body index and the joint index are the same because every body has one parent joint. It can be retrieved by getBodyIdx()
-   * @param[in] point_W the point expressed in the world frame. If you want to use a point expressed in the body frame, use getDenseRotationalJacobian()
    * @param[out] jaco the rotational Jacobian. \omega = J * u. \omgea is the angular velocity expressed in the world frame and u is the generalized velocity */
   void getSparseRotationalJacobian(size_t bodyIdx, SparseJacobian &jaco) const;
 
@@ -830,7 +829,7 @@ class ArticulatedSystem : public Object {
   /** set external force (expressed in the world frame) acting on the point specified by the frame
    * The external force is applied for a single time step only.
    * You have to apply the force for every time step if you want persistent force
-   * @param[in] frame the name of the frame where you want to applied the force. The force is applied to the origin of the frame, on the body where the frame is attached to.
+   * @param[in] frame_name the name of the frame where you want to applied the force. The force is applied to the origin of the frame, on the body where the frame is attached to.
    * @param[in] force the applied force in the world frame*/
   void setExternalForce(const std::string& frame_name, const Vec<3>& force) {
     auto& frame = getFrameByName(frame_name);
