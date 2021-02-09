@@ -868,9 +868,9 @@ void init_world(py::module &m) {
 
         Returns:
             BisectionContactSolver: contact solver.
-        )mydelimiter");
-
-      .def("rayTest", &raisim::World::rayTest), R"mydelimiter(
+        )mydelimiter")
+        
+      .def("rayTest", &raisim::World::rayTest, R"mydelimiter(
         Returns the internal reference of the ray collision list it 
         contains the geoms (position, normal, object world/local id) and the number of intersections
         
@@ -881,6 +881,7 @@ void init_world(py::module &m) {
             @param[in] closestOnly Only stores the first collision.
             @param[in] collisionMask Collision mask to filter collisions. By default, it records collisions with all collision groups.
             @return A reference to the internal container which contains all ray collisions.
-        )mydelimiter");
+        )mydelimiter") 
+    ;
 
 }
