@@ -114,6 +114,15 @@ void init_world(py::module &m) {
       .def("launchServer", &raisim::RaisimServer::launchServer)
       .def("killServer", &raisim::RaisimServer::killServer)
       .def("integrateWorldThreadSafe", &raisim::RaisimServer::integrateWorldThreadSafe)
+      .def("focusOn", [](raisim::RaisimServer& self, raisim::Object& object) {
+          // convert the arrays to Vec<3>
+          // return the stiff wire instance.
+          return self.focusOn(&object);
+        },R"mydelimiter(Focus camera on an object
+            Args:
+              object: name
+	    )mydelimiter",
+           py::arg("object"))
 
       .def("addVisualArticulatedSystem",
           &raisim::RaisimServer::addVisualArticulatedSystem,
@@ -868,6 +877,28 @@ void init_world(py::module &m) {
 
         Returns:
             BisectionContactSolver: contact solver.
-        )mydelimiter");
+        )mydelimiter")
 
+      .def("rayTest", &raisim::World::rayTest, R"mydelimiter(
+        Returns the internal reference of the ray collision list it
+        contains the geoms (position, normal, object world/local id) and the number of intersections
+
+        Args:
+            start The start position of the ray.
+            direction The direction of the ray.
+            length The length of the ray.
+            closestOnly Only stores the first collision.
+            collisionMask Collision mask to filter collisions. By default, it records collisions with all collision groups.
+            @return A reference to the internal container which contains all ray collisions.
+        )mydelimiter", py::arg("start"), py::arg("direction"), py::arg("length"), py::arg("closestOnly") = true, py::arg("collisionMask") = raisim::CollisionGroup(-1))
+      ;
+
+  py::class_<RayCollisionItem>(m, "RayCollisionItem")
+      .def("getPosition", &RayCollisionItem::getPosition)
+      .def("getObject", &RayCollisionItem::getObject);
+
+  py::class_<RayCollisionList>(m, "RayCollisionList")
+      .def("size", &RayCollisionList::size)
+      .def("len", &RayCollisionList::size)
+      .def("at", [](RayCollisionList& self, int idx){ return self[idx]; });
 }

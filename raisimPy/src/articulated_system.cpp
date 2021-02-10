@@ -279,6 +279,8 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
             forces (list[float]): generalized forces to set.
         )mydelimiter",
         py::arg("forces"))
+
+
         .def("setGeneralizedForce", py::overload_cast<const Eigen::VectorXd &>(&raisim::ArticulatedSystem::setGeneralizedForce), R"mydelimiter(
         Set the generalized forces.
 
@@ -547,6 +549,23 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         )mydelimiter",
         py::arg("frame_id"))
 
+        /* returns position and orientation in the world frame of a frame defined in the robot description
+         * Frames are attached to the joint position */
+        .def("getFramePosition", [](raisim::ArticulatedSystem &self, const std::string& name) {
+               Vec<3> vec;
+               self.getFramePosition(name, vec);
+               return convert_vec_to_np(vec);
+             }, R"mydelimiter(
+        Get the frame position expressed in the Cartesian world frame.
+
+        Args:
+            frame_name (string): frame name.
+
+        Returns:
+            np.array[float[3]]: the coordinate frame position in the world space.
+        )mydelimiter",
+             py::arg("frame_name"))
+
         .def("getFrameOrientation", [](raisim::ArticulatedSystem &self, size_t frame_id) {
             Mat<3, 3> mat;
             self.getFrameOrientation(frame_id, mat);
@@ -562,22 +581,20 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         )mydelimiter",
         py::arg("frame_id"))
 
-        .def("getFrameOrientation", [](raisim::ArticulatedSystem &self, size_t frame_id) {
+        .def("getFrameOrientation", [](raisim::ArticulatedSystem &self, const std::string& frame_name) {
             Mat<3, 3> mat;
-            self.getFrameOrientation(frame_id, mat);
-            Vec<4> quat;
-            rotMatToQuat(mat, quat);
-            return convert_vec_to_np(quat);
-        }, R"mydelimiter(
-        Get the frame orientation as a quaternion ([w,x,y,z]) expressed in the Cartesian world frame.
+            self.getFrameOrientation(frame_name, mat);
+            return convert_mat_to_np(mat);
+           }, R"mydelimiter(
+        Get the frame orientation as a rotation matrix expressed in the Cartesian world frame
 
         Args:
-            frame_id (int): frame id.
+            frame_name (string): frame name.
 
         Returns:
             np.array[float[3,3]]: the coordinate frame orientation (quaternion) in the world space.
         )mydelimiter",
-        py::arg("frame_id"))
+        py::arg("frame_name"))
 
         .def("getFrameVelocity", [](raisim::ArticulatedSystem &self, size_t frame_id) {
             Vec<3> vec;

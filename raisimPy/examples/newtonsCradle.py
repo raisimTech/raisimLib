@@ -4,6 +4,7 @@ import raisimpy as raisim
 import math
 import time
 
+
 raisim.World.setLicenseFile(os.path.dirname(os.path.abspath(__file__)) + "/../../rsc/activation.raisim")
 world = raisim.World()
 ground = world.addGround()
