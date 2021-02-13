@@ -23,6 +23,7 @@ class VectorizedEnvironment {
 	raisim::World::setActivationKey(raisim::Path(resourceDir + "/activation.raisim").getString());
     if(&cfg_["render"])
       render_ = cfg_["render"].template As<bool>();
+    init();
   }
 
   ~VectorizedEnvironment() {
