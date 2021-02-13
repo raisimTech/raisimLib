@@ -18,7 +18,7 @@ class VectorizedEnvironment {
  public:
 
   explicit VectorizedEnvironment(std::string resourceDir, std::string cfg)
-      : resourceDir_(resourceDir) {
+      : resourceDir_(resourceDir), cfg_string_(cfg) {
     Yaml::Parse(cfg_, cfg);
 	raisim::World::setActivationKey(raisim::Path(resourceDir + "/activation.raisim").getString());
     if(&cfg_["render"])
@@ -29,6 +29,9 @@ class VectorizedEnvironment {
     for (auto *ptr: environments_)
       delete ptr;
   }
+
+  const std::string& get_resource_directory() const { return resourceDir_; }
+  const std::string& get_cfg_string() const { return cfg_string_; }
 
   void init() {
     omp_set_num_threads(cfg_["num_threads"].template As<int>());
@@ -140,6 +143,7 @@ class VectorizedEnvironment {
   bool recordVideo_=false, render_=false;
   std::string resourceDir_;
   Yaml::Node cfg_;
+  std::string cfg_string_;
 };
 
 }

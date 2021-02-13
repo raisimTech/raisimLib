@@ -35,5 +35,23 @@ PYBIND11_MODULE(RAISIMGYM_TORCH_ENV_NAME, m) {
     .def("turnOffVisualization", &VectorizedEnvironment<ENVIRONMENT>::turnOffVisualization)
     .def("stopRecordingVideo", &VectorizedEnvironment<ENVIRONMENT>::stopRecordingVideo)
     .def("startRecordingVideo", &VectorizedEnvironment<ENVIRONMENT>::startRecordingVideo)
-    .def("curriculumUpdate", &VectorizedEnvironment<ENVIRONMENT>::curriculumUpdate);
+    .def("curriculumUpdate", &VectorizedEnvironment<ENVIRONMENT>::curriculumUpdate)
+    .def(py::pickle(
+        [](const VectorizedEnvironment<ENVIRONMENT> &p) { // __getstate__
+            /* Return a tuple that fully encodes the state of the object */
+            // std::cout << "PICKLING TO PYTHON" << std::endl;
+            return py::make_tuple(p.get_resource_directory(), p.get_cfg_string());
+        },
+        [](py::tuple t) { // __setstate__
+            // std::cout << "PICKLING FROM PYTHON" << std::endl;
+            if (t.size() != 2) {
+              throw std::runtime_error("Invalid state!");
+            }
+
+            /* Create a new C++ instance */
+            VectorizedEnvironment<ENVIRONMENT> p(t[0].cast<std::string>(), t[1].cast<std::string>());
+
+            return p;
+        }
+    ));
 }
