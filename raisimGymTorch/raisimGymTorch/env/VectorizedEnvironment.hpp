@@ -33,6 +33,13 @@ class VectorizedEnvironment {
   const std::string& get_resource_directory() const { return resourceDir_; }
   const std::string& get_cfg_string() const { return cfg_string_; }
 
+  // Space action_space;
+  // Space observation_space;
+  Eigen::VectorXd action_space;
+  Eigen::VectorXd observation_space;
+  std::map<std::string, std::vector<std::string>> metadata;
+  std::tuple<double, double> reward_range;
+
   void init() {
     omp_set_num_threads(cfg_["num_threads"].template As<int>());
     num_envs_ = cfg_["num_envs"].template As<int>();
@@ -54,6 +61,12 @@ class VectorizedEnvironment {
     obDim_ = environments_[0]->getObDim();
     actionDim_ = environments_[0]->getActionDim();
     RSFATAL_IF(obDim_ == 0 || actionDim_ == 0, "Observation/Action dimension must be defined in the constructor of each environment!")
+
+    // action_space.shape = std::make_tuple<int, int>(int(actionDim_), 1);
+    // observation_space.shape = std::make_tuple<int, int>(int(obDim_), 1);
+    action_space.setZero(actionDim_);   // Work-around such that dtype is exposed proper...
+    observation_space.setZero(obDim_);  // Work-around such that dtype is exposed proper...
+    reward_range = std::make_tuple<double, double>(-std::numeric_limits<double>::infinity(), +std::numeric_limits<double>::infinity());
   }
 
   // resets all environments and returns observation
