@@ -1,0 +1,50 @@
+Collecting tensorboard
+  Using cached https://files.pythonhosted.org/packages/e4/c5/94a66686b86adfb3ef6f34837d0a7cc2efdc995bc39cad64a9b3e103f0d5/tensorboard-2.1.0-py2-none-any.whl
+Collecting protobuf>=3.6.0 (from tensorboard)
+  Using cached https://files.pythonhosted.org/packages/41/c8/649a298f247305010c57ef2fffd8416686fbdb9e8d3754393ab4ee64f8cf/protobuf-3.14.0-cp27-cp27mu-manylinux1_x86_64.whl
+Collecting setuptools>=41.0.0 (from tensorboard)
+  Using cached https://files.pythonhosted.org/packages/e1/b7/182161210a13158cd3ccc41ee19aadef54496b74f2817cc147006ec932b4/setuptools-44.1.1-py2.py3-none-any.whl
+Collecting google-auth-oauthlib<0.5,>=0.4.1 (from tensorboard)
+  Using cached https://files.pythonhosted.org/packages/7b/b8/88def36e74bee9fce511c9519571f4e485e890093ab7442284f4ffaef60b/google_auth_oauthlib-0.4.1-py2.py3-none-any.whl
+Collecting futures>=3.1.1; python_version < "3" (from tensorboard)
+  Using cached https://files.pythonhosted.org/packages/d8/a6/f46ae3f1da0cd4361c344888f59ec2f5785e69c872e175a748ef6071cdb5/futures-3.3.0-py2-none-any.whl
+Collecting werkzeug>=0.11.15 (from tensorboard)
+  Using cached https://files.pythonhosted.org/packages/cc/94/5f7079a0e00bd6863ef8f1da638721e9da21e5bacee597595b318f71d62e/Werkzeug-1.0.1-py2.py3-none-any.whl
+Collecting absl-py>=0.4 (from tensorboard)
+Collecting wheel; python_version < "3" (from tensorboard)
+  Using cached https://files.pythonhosted.org/packages/65/63/39d04c74222770ed1589c0eaba06c05891801219272420b40311cd60c880/wheel-0.36.2-py2.py3-none-any.whl
+Collecting six>=1.10.0 (from tensorboard)
+  Using cached https://files.pythonhosted.org/packages/ee/ff/48bde5c0f013094d729fe4b0316ba2a24774b3ff1c52d924a8a4cb04078a/six-1.15.0-py2.py3-none-any.whl
+Collecting numpy>=1.12.0 (from tensorboard)
+  Using cached https://files.pythonhosted.org/packages/3a/5f/47e578b3ae79e2624e205445ab77a1848acdaa2929a00eeef6b16eaaeb20/numpy-1.16.6-cp27-cp27mu-manylinux1_x86_64.whl
+Collecting grpcio>=1.24.3 (from tensorboard)
+Collecting google-auth<2,>=1.6.3 (from tensorboard)
+  Using cached https://files.pythonhosted.org/packages/f7/78/d15c9579274d5d06f11e351edfdac36c4e09d42550f5de083b4b77155421/google_auth-1.26.1-py2.py3-none-any.whl
+Collecting requests<3,>=2.21.0 (from tensorboard)
+  Using cached https://files.pythonhosted.org/packages/29/c1/24814557f1d22c56d50280771a17307e6bf87b70727d975fd6b2ce6b014a/requests-2.25.1-py2.py3-none-any.whl
+Collecting markdown>=2.6.8 (from tensorboard)
+  Using cached https://files.pythonhosted.org/packages/c0/4e/fd492e91abdc2d2fcb70ef453064d980688762079397f779758e055f6575/Markdown-3.1.1-py2.py3-none-any.whl
+Collecting requests-oauthlib>=0.7.0 (from google-auth-oauthlib<0.5,>=0.4.1->tensorboard)
+  Using cached https://files.pythonhosted.org/packages/a3/12/b92740d845ab62ea4edf04d2f4164d82532b5a0b03836d4d4e71c6f3d379/requests_oauthlib-1.3.0-py2.py3-none-any.whl
+Collecting enum34; python_version < "3.4" (from absl-py>=0.4->tensorboard)
+  Using cached https://files.pythonhosted.org/packages/6f/2c/a9386903ece2ea85e9807e0e062174dc26fdce8b05f216d00491be29fad5/enum34-1.1.10-py2-none-any.whl
+Collecting cachetools<5.0,>=2.0.0 (from google-auth<2,>=1.6.3->tensorboard)
+  Using cached https://files.pythonhosted.org/packages/2f/a6/30b0a0bef12283e83e58c1d6e7b5aabc7acfc4110df81a4471655d33e704/cachetools-3.1.1-py2.py3-none-any.whl
+Collecting pyasn1-modules>=0.2.1 (from google-auth<2,>=1.6.3->tensorboard)
+  Using cached https://files.pythonhosted.org/packages/95/de/214830a981892a3e286c3794f41ae67a4495df1108c3da8a9f62159b9a9d/pyasn1_modules-0.2.8-py2.py3-none-any.whl
+Collecting rsa<4.6; python_version < "3.6" (from google-auth<2,>=1.6.3->tensorboard)
+  Using cached https://files.pythonhosted.org/packages/26/f8/8127fdda0294f044121d20aac7785feb810e159098447967a6103dedfb96/rsa-4.5-py2.py3-none-any.whl
+Collecting chardet<5,>=3.0.2 (from requests<3,>=2.21.0->tensorboard)
+  Using cached https://files.pythonhosted.org/packages/19/c7/fa589626997dd07bd87d9269342ccb74b1720384a4d739a1872bd84fbe68/chardet-4.0.0-py2.py3-none-any.whl
+Collecting certifi>=2017.4.17 (from requests<3,>=2.21.0->tensorboard)
+  Using cached https://files.pythonhosted.org/packages/5e/a0/5f06e1e1d463903cf0c0eebeb751791119ed7a4b3737fdc9a77f1cdfb51f/certifi-2020.12.5-py2.py3-none-any.whl
+Collecting urllib3<1.27,>=1.21.1 (from requests<3,>=2.21.0->tensorboard)
+  Using cached https://files.pythonhosted.org/packages/23/fc/8a49991f7905261f9ca9df5aa9b58363c3c821ce3e7f671895442b7100f2/urllib3-1.26.3-py2.py3-none-any.whl
+Collecting idna<3,>=2.5 (from requests<3,>=2.21.0->tensorboard)
+  Using cached https://files.pythonhosted.org/packages/a2/38/928ddce2273eaa564f6f50de919327bf3a00f091b5baba8dfa9460f3a8a8/idna-2.10-py2.py3-none-any.whl
+Collecting oauthlib>=3.0.0 (from requests-oauthlib>=0.7.0->google-auth-oauthlib<0.5,>=0.4.1->tensorboard)
+  Using cached https://files.pythonhosted.org/packages/05/57/ce2e7a8fa7c0afb54a0581b14a65b56e62b5759dbc98e80627142b8a3704/oauthlib-3.1.0-py2.py3-none-any.whl
+Collecting pyasn1<0.5.0,>=0.4.6 (from pyasn1-modules>=0.2.1->google-auth<2,>=1.6.3->tensorboard)
+  Using cached https://files.pythonhosted.org/packages/62/1e/a94a8d635fa3ce4cfc7f506003548d0a2447ae76fd5ca53932970fe3053f/pyasn1-0.4.8-py2.py3-none-any.whl
+Installing collected packages: six, protobuf, setuptools, oauthlib, chardet, certifi, urllib3, idna, requests, requests-oauthlib, cachetools, pyasn1, pyasn1-modules, rsa, google-auth, google-auth-oauthlib, futures, werkzeug, enum34, absl-py, wheel, numpy, grpcio, markdown, tensorboard
+Successfully installed absl-py-0.11.0 cachetools-3.1.1 certifi-2020.12.5 chardet-4.0.0 enum34-1.1.10 futures-3.3.0 google-auth-1.26.1 google-auth-oauthlib-0.4.1 grpcio-1.35.0 idna-2.10 markdown-3.1.1 numpy-1.16.6 oauthlib-3.1.0 protobuf-3.14.0 pyasn1-0.4.8 pyasn1-modules-0.2.8 requests-2.25.1 requests-oauthlib-1.3.0 rsa-4.5 setuptools-44.1.1 six-1.15.0 tensorboard-2.1.0 urllib3-1.26.3 werkzeug-1.0.1 wheel-0.36.2

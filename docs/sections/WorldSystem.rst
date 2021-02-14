@@ -38,9 +38,18 @@ The (multiple) tag means that there can be multiple elements for the same parent
         1. <attribute> ``value`` [double]: default = 0.005
     5. <child> (optional) ``erp`` : For experts only. It is a spring and damper term to the error dynamics.
         1. <attribute> ``erp`` : spring term [double]
-        2. <attribute> ``erp2`` : damping term[double]
+        2. <attribute> ``erp2`` : damping term [double]
     6. <child> ``objects`` : described in "Object XML Description"
-    7. <child> ``constraints`` : WORKING IN PROGRESS
+    7. <child> ``wire`` : `DESCRIPTION <https://raisim.com/sections/Constraints.html>`_, `EXAMPLES <https://github.com/raisimTech/raisimLib/blob/master/rsc/xmlScripts/wire/newtonsCradle.xml>`_
+        1. <attribute> ``name`` [string]: wire name
+        2. <attribute> ``type`` [string]: wire type. "stiff", "compliant", or "custom"
+        3. <attribute> ``stretch_type`` [string]: stretch type
+        4. <child> ``object1`` and ``object2`` : the object to which the wire is attached
+            First option
+            1. <attribute> ``local_index`` [int]: The body index for the wire attachment. 0 for singleBodyObject.
+            2. <attribute> ``pos`` [Vec<3>]: The position in the local body frame to where the wire is attached.
+            Second option, for articulated system only
+            1. <attribute> ``frame`` [string]: The name of the frame to where the wire is attached.
 
 Object XML Description
 ----------------------------
@@ -55,7 +64,7 @@ sphere
 
 2. <child> dim: <attribute> radius[double]
 
-3. <child> state: <attribute> ``pos`` [Vec<3>], ``quat`` [Vec<4>], ``lin_vel`` [Vec<3>], ``ang_vel`` [Vec<3>]
+3. <child> state: <attribute> ``pos`` [Vec<3>], (optional, default=1,0,0,0) ``quat`` [Vec<4>], (optional, default=0,0,0) ``lin_vel`` [Vec<3>], (optional, default=0,0,0) ``ang_vel`` [Vec<3>]
 
 capsule and cylinder
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -67,7 +76,7 @@ capsule and cylinder
 
 2. <child> dim: <attribute> ``radius`` [double], ``height`` [double]
 
-3. <child> state: <attribute> ``pos`` [Vec<3>], ``quat`` [Vec<4>], ``lin_vel`` [Vec<3>], ``ang_vel`` [Vec<3>]
+3. <child> state: <attribute> ``pos`` [Vec<3>], (optional, default=1,0,0,0) ``quat`` [Vec<4>], (optional, default=0,0,0) ``lin_vel`` [Vec<3>], (optional, default=0,0,0) ``ang_vel`` [Vec<3>]
 
 box
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -79,7 +88,7 @@ box
 
 2. <child> dim: <attribute> ``x`` [double], ``y`` [double], ``z`` [double]
 
-3. <child> state: <attribute> ``pos`` [Vec<3>], ``quat`` [Vec<4>], ``lin_vel`` [Vec<3>], ``ang_vel`` [Vec<3>]
+3. <child> state: <attribute> ``pos`` [Vec<3>], (optional, default=1,0,0,0) ``quat`` [Vec<4>], (optional, default=0,0,0) ``lin_vel`` [Vec<3>], (optional, default=0,0,0) ``ang_vel`` [Vec<3>]
 
 compound
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -113,7 +122,7 @@ compound
         2. <attribute> (optional, default=default) ``material``
 
 3. <child> state
-    **attributes**: ``pos`` [Vec<3>], ``quat`` [Vec<4>], ``lin_vel`` [Vec<3>], ``ang_vel`` [Vec<3>]
+    **attributes**: ``pos`` [Vec<3>], (optional, default=1,0,0,0) ``quat`` [Vec<4>], (optional, default=0,0,0) ``lin_vel`` [Vec<3>], (optional, default=0,0,0) ``ang_vel`` [Vec<3>]
 
 mesh
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -125,7 +134,7 @@ mesh
     **attributes**: ``xx`` [double], ``xy`` [double], ``xz`` [double], ``yy`` [double], ``yz`` [double], ``zz`` [double]
 
 2. <child> ``state``
-    **attributes**: ``pos`` [Vec<3>], ``quat`` [Vec<4>], ``lin_vel`` [Vec<3>], ``ang_vel`` [Vec<3>]
+    **attributes**: ``pos`` [Vec<3>], (optional, default=1,0,0,0) ``quat`` [Vec<4>], (optional, default=0,0,0) ``lin_vel`` [Vec<3>], (optional, default=0,0,0) ``ang_vel`` [Vec<3>]
 
 ground
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -156,7 +165,7 @@ articulated_system
 **attributes**: (optional, default=1) ``collision_group`` [uint64_t], (optional, default=-1) ``collision_mask`` [uint64_t], (optional) ``name`` [string], (optional, default=the URDF directory) ``res_dir`` [string], ``urdf_path`` [string]
 
 1. <child> ``state``
-    **attributes**: ``qpos`` [VecDyn], ``qvel`` [VecDyn]
+    **attributes**: ``qpos`` [VecDyn], (optional, default=zeros) ``qvel`` [VecDyn]
 
 Adding New Objects
 ============================
