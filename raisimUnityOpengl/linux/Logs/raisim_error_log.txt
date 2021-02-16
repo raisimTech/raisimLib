@@ -1,17 +1,23 @@
 error logs 
 System.Exception: RsUnityRemote: UpdateObjectPosition
-ReadData timeout!
-  at raisimUnity.TcpHelper.ReadData () [0x0004a] in <715b1505d327416ea82f238850a92018>:0 
-  at raisimUnity.RsUnityRemote.ReadAndCheckServer (raisimUnity.ClientMessageType type) [0x000a2] in <715b1505d327416ea82f238850a92018>:0 
+Server is terminating
+  at raisimUnity.RsUnityRemote.ReadAndCheckServer (raisimUnity.ClientMessageType type) [0x000e0] in <715b1505d327416ea82f238850a92018>:0 
   at raisimUnity.RsUnityRemote.Update () [0x002bf] in <715b1505d327416ea82f238850a92018>:0 
   at raisimUnity.RsuException..ctor (System.Exception ex, System.String message) [0x00037] in <715b1505d327416ea82f238850a92018>:0 
   at raisimUnity.RsUnityRemote.Update () [0x00308] in <715b1505d327416ea82f238850a92018>:0 
  
 
 System.Exception: RsUnityRemote: UpdateObjectPosition
-ReadData timeout!
-  at raisimUnity.TcpHelper.ReadData () [0x0004a] in <715b1505d327416ea82f238850a92018>:0 
-  at raisimUnity.RsUnityRemote.ReadAndCheckServer (raisimUnity.ClientMessageType type) [0x000a2] in <715b1505d327416ea82f238850a92018>:0 
+Server is terminating
+  at raisimUnity.RsUnityRemote.ReadAndCheckServer (raisimUnity.ClientMessageType type) [0x000e0] in <715b1505d327416ea82f238850a92018>:0 
+  at raisimUnity.RsUnityRemote.Update () [0x002bf] in <715b1505d327416ea82f238850a92018>:0 
+  at raisimUnity.RsuException..ctor (System.Exception ex, System.String message) [0x00037] in <715b1505d327416ea82f238850a92018>:0 
+  at raisimUnity.RsUnityRemote.Update () [0x00308] in <715b1505d327416ea82f238850a92018>:0 
+ 
+
+System.Exception: RsUnityRemote: UpdateObjectPosition
+Server is terminating
+  at raisimUnity.RsUnityRemote.ReadAndCheckServer (raisimUnity.ClientMessageType type) [0x000e0] in <715b1505d327416ea82f238850a92018>:0 
   at raisimUnity.RsUnityRemote.Update () [0x002bf] in <715b1505d327416ea82f238850a92018>:0 
   at raisimUnity.RsuException..ctor (System.Exception ex, System.String message) [0x00037] in <715b1505d327416ea82f238850a92018>:0 
   at raisimUnity.RsUnityRemote.Update () [0x00308] in <715b1505d327416ea82f238850a92018>:0 

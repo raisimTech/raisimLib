@@ -790,7 +790,7 @@ class RaisimServer final {
   /**
    * @param[in] obj the object to look at
    * move the camera to look at the specified object */
-  void focusOn(const raisim::Object *obj) {
+  void focusOn(raisim::Object *obj) {
     RSFATAL_IF(obj == nullptr, "object does not exist.")
     serverRequest_.push_back(ServerRequestType::FOCUS_ON_SPECIFIC_OBJECT);
     focusedObjectName_ = obj->getName();

@@ -29,9 +29,6 @@ class RaisimGymVecEnv:
     def seed(self, seed=None):
         self.wrapper.setSeed(seed)
 
-    def set_command(self, command):
-        self.wrapper.setCommand(command)
-
     def turn_on_visualization(self):
         self.wrapper.turnOnVisualization()
 
@@ -84,21 +81,6 @@ class RaisimGymVecEnv:
         else:
             return obs
 
-    def reset_and_update_info(self):
-        return self.reset(), self._update_epi_info()
-
-    def _update_epi_info(self):
-        info = [{} for _ in range(self.num_envs)]
-
-        for i in range(self.num_envs):
-            eprew = sum(self.rewards[i])
-            eplen = len(self.rewards[i])
-            epinfo = {"r": eprew, "l": eplen}
-            info[i]['episode'] = epinfo
-            self.rewards[i].clear()
-
-        return info
-
     def close(self):
         self.wrapper.close()
 
@@ -108,10 +90,6 @@ class RaisimGymVecEnv:
     @property
     def num_envs(self):
         return self.wrapper.getNumOfEnvs()
-
-    @property
-    def extra_info_names(self):
-        return self._extraInfoNames
 
 
 class RunningMeanStd(object):

@@ -20,7 +20,7 @@ typedef unsigned long CollisionGroup;
 enum ObjectType : int { SPHERE = 0, BOX, CYLINDER, CONE, CAPSULE, MESH, HALFSPACE, COMPOUND, HEIGHTMAP, ARTICULATED_SYSTEM, UNRECOGNIZED };
 
 inline bool isSingleBody(ObjectType type) {
-  return type==SPHERE || type==BOX || type==CYLINDER || type==CAPSULE || type==MESH || type==COMPOUND || type==HALFSPACE;
+  return type==SPHERE || type==BOX || type==CYLINDER || type==CAPSULE || type==MESH || type==COMPOUND || type==HALFSPACE || type==HEIGHTMAP;
 }
 
 inline bool isMovableBody(ObjectType type) {
