@@ -1,0 +1,103 @@
+<?xml version="1.0" ?>
+<raisim version="1.0">
+    <timeStep value="0.001"/>
+    <objects>
+        <sphere name="pin1" body_type="static" mass="1" appearance="1 0 0 0.3">
+            <dim radius="0.1"/>
+            <state pos="0 0 3"/>
+        </sphere>
+        <sphere name="pin2" body_type="static" mass="1" appearance="0 1 0 0.3">
+            <dim radius="0.1"/>
+            <state pos="0.3 0 3"/>
+        </sphere>
+        <sphere name="pin3" body_type="static" mass="1" appearance="0 0 1 0.3">
+            <dim radius="0.1"/>
+            <state pos="0.6 0 3"/>
+        </sphere>
+        <sphere name="pin4" body_type="static" mass="1" appearance="1 0 0 0.3">
+            <dim radius="0.1"/>
+            <state pos="0.9 0 3"/>
+        </sphere>
+        <sphere name="pin5" body_type="static" mass="1" appearance="1 0 0 0.3">
+            <dim radius="0.1"/>
+            <state pos="0.9 0 6"/>
+        </sphere>
+        <sphere name="pin6" body_type="static" mass="1" appearance="1 0 0 0.3">
+            <dim radius="0.1"/>
+            <state pos="-3 0 7"/>
+        </sphere>
+        <sphere name="pin7" body_type="static" mass="1" appearance="1 0 0 0.3">
+            <dim radius="0.1"/>
+            <state pos="-4 0 7"/>
+        </sphere>
+
+        <sphere name="ball1" mass="1" material="steel">
+            <dim radius="0.1498"/>
+            <state pos="0 0 1"/>
+        </sphere>
+        <sphere name="ball2" mass="1" material="steel">
+            <dim radius="0.1499"/>
+            <state pos="0.3 0 1"/>
+        </sphere>
+        <sphere name="ball3" mass="1" material="steel">
+            <dim radius="0.1499"/>
+            <state pos="0.6 0 1"/>
+        </sphere>
+        <sphere name="ball4" mass="1" material="steel">
+            <dim radius="0.1499"/>
+            <state pos="2.9 0 3"/>
+        </sphere>
+
+        <box name="box" mass="1" material="steel">
+            <dim x="0.1" y="0.1" z="0.1"/>
+            <state pos="0.9 0 4.2"/>
+        </box>
+
+        <articulated_system name="anymalB" res_dir="[THIS_DIR]/../../anymal" urdf_path="[THIS_DIR]/../../anymal/urdf/anymal.urdf">
+            <state qpos="-4, 0, 4.54, 1.0, 0.0, 0.0, 0.0, 0.03, 0.4, -0.8, -0.03, 0.4, -0.8, 0.03, -0.4, 0.8, -0.03, -0.4, 0.8"/>
+        </articulated_system>
+        <articulated_system name="anymalC" res_dir="[THIS_DIR]/../../anymal_c" urdf_path="[THIS_DIR]/../../anymal_c/urdf/anymal.urdf">
+            <state qpos="-3, 0, 4.54, 1.0, 0.0, 0.0, 0.0, 0.03, 0.4, -0.8, -0.03, 0.4, -0.8, 0.03, -0.4, 0.8, -0.03, -0.4, 0.8"/>
+        </articulated_system>
+
+        <ground name="ground" height="0"/>
+    </objects>
+
+    <wire name="wire1" type="stiff" length="2">
+        <object1 name="pin1" local_index="0" pos="0 0 0"/>
+        <object2 name="ball1" local_index="0" pos="0 0 0"/>
+    </wire>
+    <wire name="wire2" type="stiff" length="2">
+        <object1 name="pin2" local_index="0" pos="0 0 0"/>
+        <object2 name="ball2" local_index="0" pos="0 0 0"/>
+    </wire>
+    <wire name="wire3" type="stiff" length="2">
+        <object1 name="pin3" local_index="0" pos="0 0 0"/>
+        <object2 name="ball3" local_index="0" pos="0 0 0"/>
+    </wire>
+    <wire name="wire4" type="stiff" length="2">
+        <object1 name="pin4" local_index="0" pos="0 0 0"/>
+        <object2 name="ball4" local_index="0" pos="0 0 0"/>
+    </wire>
+
+    <wire name="wire5" type="compliant" length="2" stiffness="200">
+        <object1 name="pin5" local_index="0" pos="0 0 0"/>
+        <object2 name="box" local_index="0" pos="0 0 0"/>
+    </wire>
+    <wire name="wire6" type="compliant" length="2" stiffness="1000">
+        <object1 name="pin6" local_index="0" pos="0 0 0"/>
+        <object2 name="anymalC" local_index="0" pos="0 0 0"/>
+    </wire>
+
+    <wire name="wire7" type="custom" length="2">
+        <object1 name="pin7" local_index="0" pos="0 0 0"/>
+        <object2 name="anymalB" frame="base_to_base_inertia"/>
+    </wire>
+
+    <material>
+        <default friction="0.8" restitution="0" restitution_threshold="0"/>
+        <pair_prop name1="steel" name2="steel" friction="0.1" restitution="1.0" restitution_threshold="0"/>
+    </material>
+
+    <camera follow="anymalB" x="1" y="1" z="1"/>
+</raisim>
