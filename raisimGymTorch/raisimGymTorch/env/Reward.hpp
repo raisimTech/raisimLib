@@ -76,9 +76,18 @@ class Reward {
     return costSum_;
   }
 
+  const std::map<std::string, float>& getStdMapOfRewardReward() {
+    for(auto& rw: rewards_)
+      reward_map_[rw.first] = rw.second.reward;
+    reward_map_["reward_sum"] = sum();
+
+    return reward_map_;
+  }
+
  private:
   std::map<std::string, raisim::RewardElement> rewards_;
   std::map<std::string, float> costSum_;
+  std::map<std::string, float> reward_map_;
 };
 
 }
