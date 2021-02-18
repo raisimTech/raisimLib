@@ -45,10 +45,13 @@ class VectorizedEnvironment {
     omp_set_num_threads(cfg_["num_threads"].template As<int>());
     num_envs_ = cfg_["num_envs"].template As<int>();
 
+    environments_.reserve(num_envs_);
+    reward_information_.reserve(num_envs_);
     for (int i = 0; i < num_envs_; i++) {
       environments_.push_back(new ChildEnvironment(resourceDir_, cfg_, render_ && i == 0));
       environments_.back()->setSimulationTimeStep(cfg_["simulation_dt"].template As<double>());
       environments_.back()->setControlTimeStep(cfg_["control_dt"].template As<double>());
+      reward_information_.push_back(environments_.back()->getRewards().getStdMapOfRewardIntegral());
     }
 
     setSeed(0);
@@ -133,6 +136,8 @@ class VectorizedEnvironment {
       env->curriculumUpdate();
   };
 
+  const std::vector<std::map<std::string, float>>& getRewardInfo() { return reward_information_; }
+
  private:
 
   inline void perAgentStep(int agentId,
@@ -140,6 +145,7 @@ class VectorizedEnvironment {
                            Eigen::Ref<EigenVec> &reward,
                            Eigen::Ref<EigenBoolVec> &done) {
     reward[agentId] = environments_[agentId]->step(action.row(agentId));
+    reward_information_[agentId] = environments_[agentId]->getRewards().getStdMapOfRewardIntegral();
 
     float terminalReward = 0;
     done[agentId] = environments_[agentId]->isTerminalState(terminalReward);
@@ -151,6 +157,7 @@ class VectorizedEnvironment {
   }
 
   std::vector<ChildEnvironment *> environments_;
+  std::vector<std::map<std::string, float>> reward_information_;
 
   int num_envs_ = 1;
   int obDim_ = 0, actionDim_ = 0;

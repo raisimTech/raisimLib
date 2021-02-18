@@ -142,7 +142,6 @@ class ENVIRONMENT : public RaisimGymEnv {
   Eigen::VectorXd actionMean_, actionStd_, obDouble_;
   Eigen::Vector3d bodyLinearVel_, bodyAngularVel_;
   std::set<size_t> footIndices_;
-  raisim::Reward rewards_;
 };
 }
 
