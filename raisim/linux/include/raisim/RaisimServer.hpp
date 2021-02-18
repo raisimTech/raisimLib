@@ -1112,7 +1112,10 @@ class RaisimServer final {
 
         for(int i=0; i<as->getMovableJointNames().size(); i++) {
           data_ = setString(data_, as->getMovableJointNames()[i]);
-          data_ = set(data_, int(as->getJointType(i)));
+          if(as->getJointType(0) == Joint::Type::FIXED)
+            data_ = set(data_, int(as->getJointType(i+1)));
+          else
+            data_ = set(data_, int(as->getJointType(i)));
         }
 
         Vec<3> pos;

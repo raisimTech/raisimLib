@@ -39,7 +39,7 @@ int main(int argc, char* argv[]) {
     lines->points.push_back({sin(i*0.1), cos(i*0.1), i*0.01});
 
   size_t counter = 0;
-  for (int i=0; i<5000; i++) {
+  for (int i=0; i<500000; i++) {
     counter++;
     visBox->color[2] = double((counter)%255+1)/256.;
     visBox->setBoxSize(double((counter)%255+1)/256.+0.01, 1, 1);

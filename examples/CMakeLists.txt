@@ -56,6 +56,7 @@ create_executable(rayDemo2 src/server/rayDemo2.cpp)
 create_executable(anymals src/server/anymals.cpp)
 create_executable(anymal_stress_test src/server/anymals_stress_test.cpp)
 create_executable(compound src/server/compound.cpp)
+create_executable(kinova src/server/kinova.cpp)
 
 # xml reader
 create_executable(xmlRader src/xml/xmlReader.cpp)
