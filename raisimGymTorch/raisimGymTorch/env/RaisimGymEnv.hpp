@@ -28,13 +28,6 @@ using EigenRowMajorMat=Eigen::Matrix<Dtype, -1, -1, Eigen::RowMajor>;
 using EigenVec=Eigen::Matrix<Dtype, -1, 1>;
 using EigenBoolVec=Eigen::Matrix<bool, -1, 1>;
 
-struct Space
-{
-  Space() {}
-  Space(const std::tuple<int, int>& shape_in) : shape(shape_in) {}
-  std::tuple<int, int> shape;
-};
-
 class RaisimGymEnv {
 
  public:

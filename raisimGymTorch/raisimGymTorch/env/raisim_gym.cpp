@@ -17,11 +17,6 @@ using namespace raisim;
 #endif
 
 PYBIND11_MODULE(RAISIMGYM_TORCH_ENV_NAME, m) {
-  py::class_<Space>(m, "Space")
-    .def(py::init<>())
-    // .def(py::init<const std::tuple<int, int>&>())
-    .def_readonly("shape", &Space::shape);
-
   py::class_<VectorizedEnvironment<ENVIRONMENT>>(m, RSG_MAKE_STR(ENVIRONMENT_NAME))
     .def(py::init<std::string, std::string>(), py::arg("resourceDir"), py::arg("cfg"))
     .def("init", &VectorizedEnvironment<ENVIRONMENT>::init)
@@ -29,16 +24,7 @@ PYBIND11_MODULE(RAISIMGYM_TORCH_ENV_NAME, m) {
     .def("observe", &VectorizedEnvironment<ENVIRONMENT>::observe)
     .def("step", &VectorizedEnvironment<ENVIRONMENT>::step)
     .def("setSeed", &VectorizedEnvironment<ENVIRONMENT>::setSeed)
-    .def("seed", &VectorizedEnvironment<ENVIRONMENT>::setSeed)  // OpenAI Gym compatibility
-    // .def("info", [](VectorizedEnvironment<ENVIRONMENT>* instance) {
-    //   std::cout << "ObDim " << instance->getObDim() << std::endl;
-    //   std::cout << "ActionDim " << instance->getActionDim() << std::endl;
-    //   std::cout << "NumOfEnvs " << instance->getNumOfEnvs() << std::endl;
-    // })
-    .def_readonly("action_space", &VectorizedEnvironment<ENVIRONMENT>::action_space)            // OpenAI Gym compatibility
-    .def_readonly("observation_space", &VectorizedEnvironment<ENVIRONMENT>::observation_space)  // OpenAI Gym compatibility
-    .def_readonly("metadata", &VectorizedEnvironment<ENVIRONMENT>::metadata)                    // OpenAI Gym compatibility
-    .def_readonly("reward_range", &VectorizedEnvironment<ENVIRONMENT>::reward_range)            // OpenAI Gym compatibility
+    .def("rewardInfo", &VectorizedEnvironment<ENVIRONMENT>::getRewardInfo)
     .def("close", &VectorizedEnvironment<ENVIRONMENT>::close)
     .def("isTerminalState", &VectorizedEnvironment<ENVIRONMENT>::isTerminalState)
     .def("setSimulationTimeStep", &VectorizedEnvironment<ENVIRONMENT>::setSimulationTimeStep)
