@@ -56,8 +56,9 @@ Here is an extensive example
       std::cout<<"Contact impulse in the contact frame: "<<contact.getImpulse()->e()<<std::endl;
       /// the impulse is acting from objectB to objectA. You can check if this object is objectA or B by
       std::cout<<"is ObjectA: "<<contact.isObjectA()<<std::endl;
-      std::cout<<"Contact frame: \n"<<contact.getContactFrame().e()<<std::endl;
-      std::cout<<"Contact impulse in the world frame: "<<contact.getContactFrame().e() * contact.getImpulse()->e()<<std::endl;
+      std::cout<<"Contact frame: \n"<<contact.getContactFrame().e().transpose()<<std::endl;
+      /// contact frame is transposed.
+      std::cout<<"Contact impulse in the world frame: "<<contact.getContactFrame().e().transpose() * contact.getImpulse()->e()<<std::endl;
       std::cout<<"Contact Normal in the world frame: "<<contact.getNormal().e().transpose()<<std::endl;
       std::cout<<"Contact position in the world frame: "<<contact.getPosition().e().transpose()<<std::endl;
       std::cout<<"It collides with: "<<world.getObject(contact.getPairObjectIndex())<<std::endl;
