@@ -11,6 +11,7 @@ int main(int argc, char* argv[]) {
   /// create raisim world
   raisim::World world;
   world.setTimeStep(0.001);
+  world.setERP(0,0);
 
   /// create objects
   auto ground = world.addGround();
