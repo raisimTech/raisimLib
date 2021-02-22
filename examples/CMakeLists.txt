@@ -58,6 +58,7 @@ create_executable(anymal_stress_test src/server/anymals_stress_test.cpp)
 create_executable(compound src/server/compound.cpp)
 create_executable(kinova src/server/kinova.cpp)
 create_executable(cartPole src/server/cartPole.cpp)
+create_executable(springTest src/server/springTest.cpp)
 
 # xml reader
 create_executable(xmlRader src/xml/xmlReader.cpp)

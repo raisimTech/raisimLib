@@ -740,12 +740,12 @@ class ArticulatedSystem : public Object {
   const std::vector<raisim::Vec<3>> &getJointPos_P() const { return jointPos_P; }
 
   /**
-   * @return a reference to joint orientation relative to the parent frame. */
+   * @return a reference to joint orientation relative to its parent. */
   std::vector<raisim::Mat<3,3>> &getJointOrientation_P() { return rot_JB; }
   const std::vector<raisim::Mat<3,3>> &getJointOrientation_P() const { return rot_JB; }
 
   /**
-   * @return a reference to joint axis expressed in the parent frame. */
+   * @return a reference to joint axis relative to its parent, expressed in the parent frame. */
   std::vector<raisim::Vec<3>> &getJointAxis_P() { return jointAxis_P; }
   const std::vector<raisim::Vec<3>> &getJointAxis_P() const { return jointAxis_P; }
 
