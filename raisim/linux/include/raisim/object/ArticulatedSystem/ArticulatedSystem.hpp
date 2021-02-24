@@ -993,7 +993,7 @@ class ArticulatedSystem : public Object {
    * The outcome also contains effects of the joint damping and strings
    * @param[in] M mass matrix
    * @param[out] Minv inverse mass matrix */
-  void computeSparseInverse(const MatDyn &M, MatDyn &Minv);
+  void computeSparseInverse(const MatDyn &M, MatDyn &Minv) noexcept;
 
   /**
    * this method exploits the sparsity of the mass matrix. If the mass matrix is
@@ -1278,7 +1278,7 @@ class ArticulatedSystem : public Object {
 
   void updateCollision() final;
 
-  void computeMassMatrix(MatDyn &M);
+  void computeMassMatrix(MatDyn &M)  noexcept;
 
   void computeNonlinearities(const Vec<3> &gravity, VecDyn &b);
 
