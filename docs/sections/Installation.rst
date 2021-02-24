@@ -30,7 +30,7 @@ RaiSim is installed using cmake. The following options are available
 
 * ``RAISIM_EXAMPLE`` : Compile C++ RaiSim examples
 * ``RAISIM_MATLAB`` : Compile raisimMatlab (compiled binary is also provided). You need MATLAB for this option
-* ``RAISIM_PY`` : Compile raisimPy. The desired python version can be set by ``-DPYTHON_EXECUTABLE=$(python3 -c "import sys; print(sys.executable)")`` in Linux or Mac.
+* ``RAISIM_PY`` : Compile raisimPy. The desired python version can be set by ``-DPYTHON_EXECUTABLE=$(python3 -c "import sys; print(sys.executable)")`` in Linux or Mac. In Linux, you need to install python library using ``sudo apt install python<YOUR_PYTHON_VERSION>-dev`` to build a python package.
 
 You can generate build files using CMake as following
 
