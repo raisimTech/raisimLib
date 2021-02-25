@@ -385,8 +385,8 @@ The elements are ordered by the body indicies (which is the same as the joint in
 
 * **Center of Mass Position**
 
-:code:`getLinkCOM` method returns (a non-const reference to) a :code:`std::vector` of the COM of the links.
-The elements are ordered by the body indicies.
+:code:`getBodyCOM_B` method returns (a non-const reference to) a :code:`std::vector` of the COM of the bodies.
+The elements are ordered by the body indices.
 
 * **Link Inertia**
 

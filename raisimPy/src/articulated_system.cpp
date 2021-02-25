@@ -1062,8 +1062,8 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
 
 
 
-        .def("getLinkCOM", [](raisim::ArticulatedSystem &self) {
-            std::vector<raisim::Vec<3>> positions = self.getLinkCOM();
+        .def("getBodyCOM_B", [](raisim::ArticulatedSystem &self) {
+            std::vector<raisim::Vec<3>> positions = self.getBodyCOM_B();
 
             py::list list;
             for (auto pos : positions)
@@ -1079,7 +1079,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
 
         .def("setLinkCOM", [](raisim::ArticulatedSystem &self, py::list &list) {
             // get references to joint cartesian positions
-            std::vector<raisim::Vec<3>>& positions = self.getLinkCOM();
+            std::vector<raisim::Vec<3>>& positions = self.getBodyCOM_B();
 
             // check list and vector sizes
             if (list.size() != positions.size()) {
@@ -1107,7 +1107,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
 
         .def_property("linkComs",
             [](raisim::ArticulatedSystem &self) {  // getter
-                std::vector<raisim::Vec<3>>& positions = self.getLinkCOM();
+                std::vector<raisim::Vec<3>>& positions = self.getBodyCOM_B();
 
                 py::list list;
                 for (auto pos : positions)
@@ -1117,7 +1117,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
             },
             [](raisim::ArticulatedSystem &self, py::list &list) { // setter
                 // get references to joint cartesian positions
-                std::vector<raisim::Vec<3>>& positions = self.getLinkCOM();
+                std::vector<raisim::Vec<3>>& positions = self.getBodyCOM_B();
 
                 // check list and vector sizes
                 if (list.size() != positions.size()) {
