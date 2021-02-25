@@ -139,12 +139,12 @@ class ArticulatedSystem : public Object {
 
     /* set center of mass position in parent frame */
     void setComPositionInParentFrame(const Vec<3>& com) {
-      system_->getLinkCOM()[localId_] = com;
+      system_->getBodyCOM_B()[localId_] = com;
     }
 
     /* get center of mass position in parent frame */
     const Vec<3>& getComPositionInParentFrame() const {
-      return system_->getLinkCOM()[localId_];
+      return system_->getBodyCOM_B()[localId_];
     }
 
     const std::unordered_map<std::string, CollisionDefinition*>& getCollisionSet() const {
@@ -765,9 +765,14 @@ class ArticulatedSystem : public Object {
   const std::vector<raisim::Mat<3, 3>> &getInertia() const { return inertia_comB; }
 
   /**
-   * @return a reference to the position of the center of the mass in the body frame.*/
-  std::vector<raisim::Vec<3>> &getLinkCOM() { return comPos_B; }
-  const std::vector<raisim::Vec<3>> &getLinkCOM() const { return comPos_B; }
+   * @return a reference to the position of the center of the mass of each body in the body frame.*/
+  std::vector<raisim::Vec<3>> &getBodyCOM_B() { return comPos_B; }
+  const std::vector<raisim::Vec<3>> &getBodyCOM_B() const { return comPos_B; }
+
+  /**
+ * @return a reference to the position of the center of the mass of each body in the world frame.*/
+  std::vector<raisim::Vec<3>> &getBodyCOM_W() { return comPos_W; }
+  const std::vector<raisim::Vec<3>> &getBodyCOM_W() const { return comPos_W; }
 
   /**
    * @return a reference to the collision bodies. Position and orientation can be set dynamically */
@@ -993,7 +998,7 @@ class ArticulatedSystem : public Object {
    * The outcome also contains effects of the joint damping and strings
    * @param[in] M mass matrix
    * @param[out] Minv inverse mass matrix */
-  void computeSparseInverse(const MatDyn &M, MatDyn &Minv);
+  void computeSparseInverse(const MatDyn &M, MatDyn &Minv) noexcept;
 
   /**
    * this method exploits the sparsity of the mass matrix. If the mass matrix is
@@ -1278,7 +1283,7 @@ class ArticulatedSystem : public Object {
 
   void updateCollision() final;
 
-  void computeMassMatrix(MatDyn &M);
+  void computeMassMatrix(MatDyn &M)  noexcept;
 
   void computeNonlinearities(const Vec<3> &gravity, VecDyn &b);
 
