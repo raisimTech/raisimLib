@@ -76,11 +76,20 @@ class Reward {
     return costSum_;
   }
 
+  const std::map<std::string, float>& getStdMap() {
+    for(auto& rw: rewards_)
+      rewardMap_[rw.first] = rw.second.reward;
+    rewardMap_["reward_sum"] = sum();
+
+    return rewardMap_;
+  }
+
  private:
   std::map<std::string, raisim::RewardElement> rewards_;
   std::map<std::string, float> costSum_;
+  std::map<std::string, float> rewardMap_;
 };
 
-}
+}  // namespace raisim
 
 #endif //_RAISIM_GYM_TORCH_RAISIMGYMTORCH_ENV_REWARD_HPP_

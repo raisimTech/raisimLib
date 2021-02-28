@@ -18,11 +18,12 @@ class VectorizedEnvironment {
  public:
 
   explicit VectorizedEnvironment(std::string resourceDir, std::string cfg)
-      : resourceDir_(resourceDir) {
+      : resourceDir_(resourceDir), cfgString_(cfg) {
     Yaml::Parse(cfg_, cfg);
 	raisim::World::setActivationKey(raisim::Path(resourceDir + "/activation.raisim").getString());
     if(&cfg_["render"])
       render_ = cfg_["render"].template As<bool>();
+    init();
   }
 
   ~VectorizedEnvironment() {
@@ -30,14 +31,20 @@ class VectorizedEnvironment {
       delete ptr;
   }
 
+  const std::string& getResourceDir() const { return resourceDir_; }
+  const std::string& getCfgString() const { return cfgString_; }
+
   void init() {
     omp_set_num_threads(cfg_["num_threads"].template As<int>());
     num_envs_ = cfg_["num_envs"].template As<int>();
 
+    environments_.reserve(num_envs_);
+    rewardInformation_.reserve(num_envs_);
     for (int i = 0; i < num_envs_; i++) {
       environments_.push_back(new ChildEnvironment(resourceDir_, cfg_, render_ && i == 0));
       environments_.back()->setSimulationTimeStep(cfg_["simulation_dt"].template As<double>());
       environments_.back()->setControlTimeStep(cfg_["control_dt"].template As<double>());
+      rewardInformation_.push_back(environments_.back()->getRewards().getStdMap());
     }
 
     setSeed(0);
@@ -116,6 +123,8 @@ class VectorizedEnvironment {
       env->curriculumUpdate();
   };
 
+  const std::vector<std::map<std::string, float>>& getRewardInfo() { return rewardInformation_; }
+
  private:
 
   inline void perAgentStep(int agentId,
@@ -123,6 +132,7 @@ class VectorizedEnvironment {
                            Eigen::Ref<EigenVec> &reward,
                            Eigen::Ref<EigenBoolVec> &done) {
     reward[agentId] = environments_[agentId]->step(action.row(agentId));
+    rewardInformation_[agentId] = environments_[agentId]->getRewards().getStdMap();
 
     float terminalReward = 0;
     done[agentId] = environments_[agentId]->isTerminalState(terminalReward);
@@ -134,12 +144,14 @@ class VectorizedEnvironment {
   }
 
   std::vector<ChildEnvironment *> environments_;
+  std::vector<std::map<std::string, float>> rewardInformation_;
 
   int num_envs_ = 1;
   int obDim_ = 0, actionDim_ = 0;
   bool recordVideo_=false, render_=false;
   std::string resourceDir_;
   Yaml::Node cfg_;
+  std::string cfgString_;
 };
 
 }
