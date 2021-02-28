@@ -812,77 +812,83 @@ class RaisimServer final {
       return false;
     }
 
-    auto data = get(&receive_buffer[0], &type);
-    get(data, &objectId_);
+    int clientVersion;
+    auto data = get(&receive_buffer[0], &clientVersion);
+    data_ = set(data_, version_);
 
-    data_ = set(data_, state_);
+    if (clientVersion == version_) {
+      data = get(data, &type);
+      data = get(data, &objectId_);
 
-    // set server request
-    data_ = set(data_, (uint64_t) serverRequest_.size());
-    for (const auto &sr : serverRequest_) {
-      data_ = set(data_, (int) sr);
+      data_ = set(data_, state_);
 
-      switch (sr) {
-        case ServerRequestType::NO_REQUEST:
-        case ServerRequestType::STOP_RECORD_VIDEO:
-          break;
+      // set server request
+      data_ = set(data_, (uint64_t) serverRequest_.size());
+      for (const auto &sr : serverRequest_) {
+        data_ = set(data_, (int) sr);
 
-        case ServerRequestType::START_RECORD_VIDEO:
-          data_ = setString(data_, videoName_);
-          break;
+        switch (sr) {
+          case ServerRequestType::NO_REQUEST:
+          case ServerRequestType::STOP_RECORD_VIDEO:
+            break;
 
-        case ServerRequestType::SET_CAMERA_TO:
-          data_ = setN(data_, position_.data(), 3);
-          data_ = setN(data_, lookAt_.data(), 3);
-          break;
+          case ServerRequestType::START_RECORD_VIDEO:
+            data_ = setString(data_, videoName_);
+            break;
 
-        case ServerRequestType::FOCUS_ON_SPECIFIC_OBJECT:
-          data_ = setString(data_, focusedObjectName_);
-          break;
+          case ServerRequestType::SET_CAMERA_TO:
+            data_ = setN(data_, position_.data(), 3);
+            data_ = setN(data_, lookAt_.data(), 3);
+            break;
+
+          case ServerRequestType::FOCUS_ON_SPECIFIC_OBJECT:
+            data_ = setString(data_, focusedObjectName_);
+            break;
+        }
       }
-    }
 
-    serverRequest_.clear();
+      serverRequest_.clear();
 
-    lockVisualizationServerMutex();
+      lockVisualizationServerMutex();
 
-    if (state_ != Status::STATUS_HIBERNATING) {
-      switch (type) {
-        case REQUEST_OBJECT_POSITION:
-          serializeWorld();
-          break;
+      if (state_ != Status::STATUS_HIBERNATING) {
+        switch (type) {
+          case REQUEST_OBJECT_POSITION:
+            serializeWorld();
+            break;
 
-        case REQUEST_INITIALIZATION:
-          serializeObjects();
-          serializeVisuals();
-          serializeWorld();
-          break;
+          case REQUEST_INITIALIZATION:
+            serializeObjects();
+            serializeVisuals();
+            serializeWorld();
+            break;
 
-        case REQUEST_CHANGE_REALTIME_FACTOR:
-          changeRealTimeFactor();
-          break;
+          case REQUEST_CHANGE_REALTIME_FACTOR:
+            changeRealTimeFactor();
+            break;
 
-        case REQUEST_CONTACT_INFOS:
-          serializeContacts();
-          break;
+          case REQUEST_CONTACT_INFOS:
+            serializeContacts();
+            break;
 
-        case REQUEST_CONFIG_XML:
-          serializeToXML();
-          break;
+          case REQUEST_CONFIG_XML:
+            serializeToXML();
+            break;
 
-        case REQUEST_INITIALIZE_VISUALS:
-          break;
+          case REQUEST_INITIALIZE_VISUALS:
+            break;
 
-        case REQUEST_VISUAL_POSITION:
-          break;
+          case REQUEST_VISUAL_POSITION:
+            break;
 
-        case REQUEST_SERVER_STATUS:
-          // Do nothing
-          return false;
-          break;
+          case REQUEST_SERVER_STATUS:
+            // Do nothing
+            return false;
+            break;
+        }
       }
+      unlockVisualizationServerMutex();
     }
-    unlockVisualizationServerMutex();
 
     bool eom = false;
     char *startPtr = &send_buffer[0];
@@ -1638,6 +1644,8 @@ class RaisimServer final {
 
   Eigen::Vector3d position_, lookAt_;
 
+  // version
+  constexpr static int version_ = 10002;
 };
 
 }  // namespace raisim
