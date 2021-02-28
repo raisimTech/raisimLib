@@ -40,7 +40,7 @@ PYBIND11_MODULE(RAISIMGYM_TORCH_ENV_NAME, m) {
     .def(py::pickle(
         [](const VectorizedEnvironment<ENVIRONMENT> &p) { // __getstate__ --> Pickling to Python
             /* Return a tuple that fully encodes the state of the object */
-            return py::make_tuple(p.get_resource_directory(), p.get_cfg_string());
+            return py::make_tuple(p.getResourceDir(), p.getCfgString());
         },
         [](py::tuple t) { // __setstate__ - Pickling from Python
             if (t.size() != 2) {

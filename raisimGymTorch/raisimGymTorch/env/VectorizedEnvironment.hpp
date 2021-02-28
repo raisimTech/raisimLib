@@ -18,7 +18,7 @@ class VectorizedEnvironment {
  public:
 
   explicit VectorizedEnvironment(std::string resourceDir, std::string cfg)
-      : resourceDir_(resourceDir), cfg_string_(cfg) {
+      : resourceDir_(resourceDir), cfgString_(cfg) {
     Yaml::Parse(cfg_, cfg);
 	raisim::World::setActivationKey(raisim::Path(resourceDir + "/activation.raisim").getString());
     if(&cfg_["render"])
@@ -31,20 +31,20 @@ class VectorizedEnvironment {
       delete ptr;
   }
 
-  const std::string& get_resource_directory() const { return resourceDir_; }
-  const std::string& get_cfg_string() const { return cfg_string_; }
+  const std::string& getResourceDir() const { return resourceDir_; }
+  const std::string& getCfgString() const { return cfgString_; }
 
   void init() {
     omp_set_num_threads(cfg_["num_threads"].template As<int>());
     num_envs_ = cfg_["num_envs"].template As<int>();
 
     environments_.reserve(num_envs_);
-    reward_information_.reserve(num_envs_);
+    rewardInformation_.reserve(num_envs_);
     for (int i = 0; i < num_envs_; i++) {
       environments_.push_back(new ChildEnvironment(resourceDir_, cfg_, render_ && i == 0));
       environments_.back()->setSimulationTimeStep(cfg_["simulation_dt"].template As<double>());
       environments_.back()->setControlTimeStep(cfg_["control_dt"].template As<double>());
-      reward_information_.push_back(environments_.back()->getRewards().getStdMapOfRewardIntegral());
+      rewardInformation_.push_back(environments_.back()->getRewards().getStdMap());
     }
 
     setSeed(0);
@@ -123,7 +123,7 @@ class VectorizedEnvironment {
       env->curriculumUpdate();
   };
 
-  const std::vector<std::map<std::string, float>>& getRewardInfo() { return reward_information_; }
+  const std::vector<std::map<std::string, float>>& getRewardInfo() { return rewardInformation_; }
 
  private:
 
@@ -132,7 +132,7 @@ class VectorizedEnvironment {
                            Eigen::Ref<EigenVec> &reward,
                            Eigen::Ref<EigenBoolVec> &done) {
     reward[agentId] = environments_[agentId]->step(action.row(agentId));
-    reward_information_[agentId] = environments_[agentId]->getRewards().getStdMapOfRewardReward();
+    rewardInformation_[agentId] = environments_[agentId]->getRewards().getStdMap();
 
     float terminalReward = 0;
     done[agentId] = environments_[agentId]->isTerminalState(terminalReward);
@@ -144,14 +144,14 @@ class VectorizedEnvironment {
   }
 
   std::vector<ChildEnvironment *> environments_;
-  std::vector<std::map<std::string, float>> reward_information_;
+  std::vector<std::map<std::string, float>> rewardInformation_;
 
   int num_envs_ = 1;
   int obDim_ = 0, actionDim_ = 0;
   bool recordVideo_=false, render_=false;
   std::string resourceDir_;
   Yaml::Node cfg_;
-  std::string cfg_string_;
+  std::string cfgString_;
 };
 
 }
