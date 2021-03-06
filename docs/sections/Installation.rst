@@ -113,14 +113,22 @@ To use RaiSim more conveniently, you have to let your linker know where you inst
     In that case, you should use raisimUnityOpengl.
     It only supports minimalistic graphics.
 
+Activation Key
+================
+
+Rename the activation key that you received by email to ``activation.raisim``.
+Save that file in ``<YOUR-HOME-DIR>/.raisim``.
+In Linux and Mac, this is ``/home/<YOUR-USERNAME>/.raisim``.
+In Windows, this is ``C:\Users\<YOUR-USERNAME>\.raisim`` (You might not be using ``C`` as your home directory).
+
+RaiSim will check the path you set by ``raisim::World::setActivationKey()``.
+If the file is not found, it will search in the user directory, where you saved your ``activation.raisim`` file.
+
 Examples
 ===============
 
-To run examples, copy-paste the activation that you received by email to ``rsc`` directory and rename it to ``activation.raisim``.
-Note that in Windows the file extension is hidden.
-When you run CMake, it will copy the ``rsc`` directory to a build directory.
-
-In **Windows**, also copy your activation key to ``raisim\win32\mt_release\bin\rsc`` directory.
-Then, you can run prebuilt examples in ``raisim\win32\mt_release\bin``.
+The built examples are stored in ``examples`` directory.
+In Windows, use powershell to run the examples, instead of manually clicking the icons.
+If you made a mistake during installation, it will give you an error message.
 
 Make sure that you run raisimUnity executable in ``raisimUnity/<OS>/RaiSimUnity`` before you run the examples.
