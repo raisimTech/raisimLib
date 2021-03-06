@@ -116,7 +116,8 @@ To use RaiSim more conveniently, you have to let your linker know where you inst
 Examples
 ===============
 
-To run examples, copy-paste the activation that you received by email to ``rsc`` directory and rename it to ``activation,raisim``.
+To run examples, copy-paste the activation that you received by email to ``rsc`` directory and rename it to ``activation.raisim``.
+Note that in Windows the file extension is hidden.
 When you run CMake, it will copy the ``rsc`` directory to a build directory.
 
 In **Windows**, also copy your activation key to ``raisim\win32\mt_release\bin\rsc`` directory.
