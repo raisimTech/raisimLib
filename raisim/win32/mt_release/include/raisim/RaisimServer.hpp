@@ -274,8 +274,7 @@ class RaisimServer final {
     // Creating socket file descriptor
     RSFATAL_IF((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0, "socket error: " << strerror(errno))
     RSFATAL_IF(setsockopt(server_fd, SOL_SOCKET, RAISIM_SERVER_SOCKET_OPTION,
-                          (char *) &opt, sizeof(opt)), "setsockopt error: "
-                   << strerror(errno))
+                          (char *) &opt, sizeof(opt)), "setsockopt error: "<< strerror(errno))
 
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
@@ -292,27 +291,14 @@ class RaisimServer final {
         connected_ = true;
       }
 
-      std::chrono::steady_clock::time_point lastChecked, current;
-      lastChecked = std::chrono::steady_clock::now();
-
       while (connected_) {
         if (terminateRequested_) {
           state_ = STATUS_TERMINATING;
           connected_ = false;
         }
 
-        if (processRequests()) {
-          lastChecked = std::chrono::steady_clock::now();
-        } else {
-          current = std::chrono::steady_clock::now();
-
-          if (std::chrono::duration_cast<std::chrono::seconds>(current - lastChecked).count() > 3.0) {
-            std::cout << "The client has been disconnected for "
-                      << std::chrono::duration_cast<std::chrono::seconds>(current - lastChecked).count()
-                      << " seconds. Waiting for a new connection..." << std::endl;
-            connected_ = false;
-          }
-        }
+        if (!processRequests())
+          connected_ = false;
 
         if (state_ == STATUS_HIBERNATING)
           usleep(100000);
@@ -384,13 +370,9 @@ class RaisimServer final {
 
     while (!terminateRequested_) {
       if (waitForReadEvent(2.0)) {
-        RSFATAL_IF((client_ = accept(server_fd, NULL, NULL)) < 0,
-                   "accept failed")
+        RSFATAL_IF((client_ = accept(server_fd, NULL, NULL)) < 0, "accept failed")
         connected_ = true;
       }
-
-      std::chrono::steady_clock::time_point lastChecked, current;
-      lastChecked = std::chrono::steady_clock::now();
 
       while (connected_) {
         if (terminateRequested_) {
@@ -398,16 +380,8 @@ class RaisimServer final {
           connected_ = false;
         }
 
-        if (processRequests()) {
-          lastChecked = std::chrono::steady_clock::now();
-        } else {
-          current = std::chrono::steady_clock::now();
-
-          if (std::chrono::duration_cast<std::chrono::seconds>(current - lastChecked).count() > 3.0) {
-            std::cout<<"The client has been disconnected for "<<std::chrono::duration_cast<std::chrono::seconds>(current - lastChecked).count()<<" seconds. Waiting for a new connection..."<<std::endl;
-            connected_ = false;
-          }
-        }
+        if (!processRequests())
+          connected_ = false;
 
         if (state_ == STATUS_HIBERNATING)
           std::this_thread::sleep_for(std::chrono::microseconds(100000));
@@ -807,10 +781,8 @@ class RaisimServer final {
     ClientMessageType type;
     int recv_size = recv(client_, &receive_buffer[0], MAXIMUM_PACKET_SIZE, 0);
 
-    if (recv_size == 0) {
-      connected_ = false;
+    if (recv_size <= 0)
       return false;
-    }
 
     int clientVersion;
     auto data = get(&receive_buffer[0], &clientVersion);
