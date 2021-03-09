@@ -34,7 +34,7 @@ int main(int argc, char* argv[]) {
   robot->setIntegrationScheme(raisim::ArticulatedSystem::IntegrationScheme::SEMI_IMPLICIT);
   robot->setControlMode(raisim::ControlMode::FORCE_AND_TORQUE);
 
-  /// launch raisim servear
+  /// launch raisim server
   raisim::RaisimServer server(&world);
   server.launchServer();
   server.focusOn(robot);

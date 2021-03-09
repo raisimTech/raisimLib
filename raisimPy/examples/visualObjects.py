@@ -8,7 +8,7 @@ raisim.World.setLicenseFile(os.path.dirname(os.path.abspath(__file__)) + "/../..
 world = raisim.World()
 ground = world.addGround()
 
-# launch raisim servear
+# launch raisim server
 server = raisim.RaisimServer(world)
 server.launchServer(8080)
 

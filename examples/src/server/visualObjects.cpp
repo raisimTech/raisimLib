@@ -21,7 +21,7 @@ int main(int argc, char* argv[]) {
   /// create objects
   auto ground = world.addGround();
 
-  /// launch raisim servear
+  /// launch raisim server
   raisim::RaisimServer server(&world);
   server.launchServer();
 

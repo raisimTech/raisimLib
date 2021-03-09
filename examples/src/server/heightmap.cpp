@@ -61,7 +61,7 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  /// launch raisim servear
+  /// launch raisim server
   raisim::RaisimServer server(&world);
   server.launchServer();
 

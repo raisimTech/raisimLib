@@ -40,7 +40,7 @@ int main(int argc, char* argv[]) {
   auto sphere = world.addSphere(1, 1);
   sphere->setPosition(-3,0,3);
 
-  /// launch raisim servear
+  /// launch raisim server
   raisim::RaisimServer server(&world);
   server.launchServer();
   int counter=0;

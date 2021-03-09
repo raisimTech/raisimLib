@@ -42,7 +42,7 @@ int main(int argc, char* argv[]) {
   damping.tail(4).setConstant(1.);
   robot->setJointDamping(damping);
 
-  /// launch raisim servear
+  /// launch raisim server
   raisim::RaisimServer server(&world);
   server.launchServer();
   std::vector<raisim::Visuals *> scans;

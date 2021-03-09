@@ -110,7 +110,7 @@ int main(int argc, char **argv) {
   auto wire7 = world.addCustomWire(pin7, 0, {0,0,0}, anymalB, 0, {0., 0, 0}, 2.0);
   wire7->setTension(310);
 
-  /// launch raisim servear
+  /// launch raisim server
   raisim::RaisimServer server(&world);
   server.launchServer(8080);
 

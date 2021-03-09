@@ -247,7 +247,7 @@ class RaisimServer final {
 
   /**
    * @param[in] world the world to visualize.
-   * create a raisimSever for a world. */
+   * create a raisimServer for a world. */
   explicit RaisimServer(World *world) : world_(world) {
     receive_buffer.resize(RECEIVE_BUFFER_SIZE);
     send_buffer.resize(SEND_BUFFER_SIZE);

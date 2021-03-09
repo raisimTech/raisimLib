@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
   revAndPrisSpringAndDamper->setName("rev_pris_joint");
   ballSpringAndDamper->setName("ball_joint");
 
-  /// launch raisim servear
+  /// launch raisim server
   raisim::RaisimServer server(&world);
   server.launchServer();
   server.focusOn(ballSpringAndDamper);

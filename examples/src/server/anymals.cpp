@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
   anymalB->setPdTarget(jointNominalConfig, jointVelocityTarget);
   anymalB->setName("anymalB");
 
-  /// launch raisim servear
+  /// launch raisim server
   raisim::RaisimServer server(&world);
   server.launchServer();
   server.focusOn(anymalC);

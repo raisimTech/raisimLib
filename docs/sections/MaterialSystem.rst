@@ -100,7 +100,7 @@ C++ Way
       world.setMaterialPairProp("steel", "rubber", 0.8, 0.15, 0.001);
       world.setMaterialPairProp("steel", "copper", 0.8, 0.65, 0.001);
 
-      /// launch raisim servear
+      /// launch raisim server
       raisim::RaisimServer server(&world);
       server.launchServer();
 

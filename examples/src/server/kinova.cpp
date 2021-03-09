@@ -37,7 +37,7 @@ int main(int argc, char* argv[]) {
   kinova->setPdTarget(jointNominalConfig, jointVelocityTarget);
   kinova->setName("kinova");
 
-  /// launch raisim servear
+  /// launch raisim server
   raisim::RaisimServer server(&world);
   server.launchServer();
   server.focusOn(kinova);

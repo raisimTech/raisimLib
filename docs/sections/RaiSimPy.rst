@@ -30,7 +30,7 @@ You can check the difference between RaiSim C++ and RaiSimPy in the following ex
           /// create objects
           auto ground = world.addGround();
 
-          /// launch raisim servear
+          /// launch raisim server
           raisim::RaisimServer server(&world);
           server.launchServer();
 
@@ -84,7 +84,7 @@ You can check the difference between RaiSim C++ and RaiSimPy in the following ex
         world = raisim.World()
         ground = world.addGround()
 
-        # launch raisim servear
+        # launch raisim server
         server = raisim.RaisimServer(world)
         server.launchServer(8080)
 

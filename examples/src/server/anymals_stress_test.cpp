@@ -38,7 +38,7 @@ int main(int argc, char* argv[]) {
   anymalB->setGeneralizedForce(Eigen::VectorXd::Zero(anymalB->getDOF()));
   anymalB->setName("anymalB");
 
-  /// launch raisim servear
+  /// launch raisim server
   raisim::RaisimServer server(&world);
   server.launchServer();
   server.focusOn(anymalC);

@@ -37,7 +37,7 @@ int main(int argc, char* argv[]) {
   aliengo->setPdTarget(jointNominalConfig, jointVelocityTarget);
   aliengo->setName("aliengo");
 
-  /// launch raisim servear
+  /// launch raisim server
   raisim::RaisimServer server(&world);
   server.launchServer();
   server.focusOn(aliengo);

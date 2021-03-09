@@ -28,7 +28,7 @@ robot.setGeneralizedCoordinate(np.array([0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0]))
 robot.setGeneralizedVelocity(np.zeros(7))
 robot.setJointDamping(np.array([0, 0, 0, 0, 0, 0, 1, 1, 1, 1]))
 
-# launch raisim servear
+# launch raisim server
 server = raisim.RaisimServer(world)
 server.launchServer(8080)
 scans = []

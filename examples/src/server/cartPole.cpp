@@ -28,7 +28,7 @@ int main(int argc, char* argv[]) {
   jointNominalConfig[1] = 0.01;
   cartPole->setGeneralizedCoordinate(jointNominalConfig);
   
-  /// launch raisim servear
+  /// launch raisim server
   raisim::RaisimServer server(&world);
   server.launchServer();
   server.focusOn(cartPole);

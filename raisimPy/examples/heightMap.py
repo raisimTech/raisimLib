@@ -31,7 +31,7 @@ anymal.setGeneralizedCoordinate(anymal_nominal_joint_config)
 anymal.setPdGains(200*np.ones([18]), np.ones([18]))
 anymal.setPdTarget(anymal_nominal_joint_config, np.zeros([18]))
 
-# launch raisim servear
+# launch raisim server
 server = raisim.RaisimServer(world)
 server.launchServer(8080)
 

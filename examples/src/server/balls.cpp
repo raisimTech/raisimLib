@@ -59,7 +59,7 @@ int main(int argc, char* argv[]) {
   std::srand(std::time(nullptr));
   anymals.back()->printOutBodyNamesInOrder();
 
-  /// launch raisim servear
+  /// launch raisim server
   raisim::RaisimServer server(&world);
   server.launchServer();
 

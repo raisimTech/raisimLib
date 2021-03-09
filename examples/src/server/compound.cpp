@@ -50,7 +50,7 @@ int main(int argc, char* argv[]) {
   compound->setPosition(0, 0, 3);
   compound->setAppearance("1,0,0,0.3");
 
-  /// launch raisim servear
+  /// launch raisim server
   raisim::RaisimServer server(&world);
   server.launchServer();
 
