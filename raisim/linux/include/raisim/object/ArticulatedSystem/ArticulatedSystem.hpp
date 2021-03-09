@@ -385,7 +385,7 @@ class ArticulatedSystem : public Object {
   /* get dynamics properties. Make sure that after integration you call "integrate1()" of the world object before using this method" */
 
   /**
-   * Generalized the force set by setGeneralizedForce(). This method should not be used when the built-in PD controller is used.
+   * Generalized user-set gen force (using setGeneralizedForce()). This method should not be used when the built-in PD controller is used.
    * @return the generalized force */
   const VecDyn &getGeneralizedForce() const { return tauFF_; }
 
