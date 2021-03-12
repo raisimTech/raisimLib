@@ -391,11 +391,11 @@ class ArticulatedSystem : public Object {
    * But if you set the time step small enough, the difference is negligible.
    * @return the generalized force */
   VecDyn getGeneralizedForce() const {
-    VecDyn genForce;
+    VecDyn genForce(dof);
     genForce = tauFF_;
     if(controlMode_ == ControlMode::PD_PLUS_FEEDFORWARD_TORQUE) {
       vecvecCwiseMulThenAdd(kp_, posErr_, genForce);
-      vecvecCwiseMulThenSub(kd_, gvAvg_, genForce);
+      vecvecCwiseMulThenSub(kd_, gv_, genForce);
       vecvecCwiseMulThenAdd(kd_, uref_, genForce);
     }
     return genForce;
