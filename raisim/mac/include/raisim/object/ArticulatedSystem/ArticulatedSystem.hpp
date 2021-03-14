@@ -385,9 +385,21 @@ class ArticulatedSystem : public Object {
   /* get dynamics properties. Make sure that after integration you call "integrate1()" of the world object before using this method" */
 
   /**
-   * Generalized force is the sum of (the feedforward force) and (the PD controller force after thresholding by the "effort" specified in the urdf)
+   * Generalized user-set gen force (using setGeneralizedForce()).
+   * This method a small error when the built-in PD controller is used.
+   * The PD controller is implicit (using a continuous, linear model) so we cannot get the true gen force.
+   * But if you set the time step small enough, the difference is negligible.
    * @return the generalized force */
-  const VecDyn &getGeneralizedForce() const { return tau_; }
+  VecDyn getGeneralizedForce() const {
+    VecDyn genForce(dof);
+    genForce = tauFF_;
+    if(controlMode_ == ControlMode::PD_PLUS_FEEDFORWARD_TORQUE) {
+      vecvecCwiseMulThenAdd(kp_, posErr_, genForce);
+      vecvecCwiseMulThenSub(kd_, gv_, genForce);
+      vecvecCwiseMulThenAdd(kd_, uref_, genForce);
+    }
+    return genForce;
+  }
 
   /**
    * get the feedfoward generalized force (which is set by the user)
