@@ -370,9 +370,13 @@ class RaisimServer final {
 
     while (!terminateRequested_) {
       if (waitForReadEvent(2.0)) {
-        RSFATAL_IF((client_ = accept(server_fd, NULL, NULL)) < 0, "accept failed")
+        RSFATAL_IF((client_ = accept(server_fd, NULL, NULL)) < 0,
+                   "accept failed")
         connected_ = true;
       }
+
+      std::chrono::steady_clock::time_point lastChecked, current;
+      lastChecked = std::chrono::steady_clock::now();
 
       while (connected_) {
         if (terminateRequested_) {
