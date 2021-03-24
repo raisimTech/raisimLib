@@ -55,6 +55,8 @@ install(
         ${CMAKE_INSTALL_PREFIX}
 )
 
+install(FILES package.xml DESTINATION "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}")
+
 if(RAISIM_ALL)
     set(RAISIM_EXAMPLE TRUE)
     set(RAISIM_MATLAB TRUE)
