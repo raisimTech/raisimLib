@@ -114,7 +114,9 @@ int main(int argc, char **argv) {
   raisim::RaisimServer server(&world);
   server.launchServer(8080);
 
-  for (int i=0; i< 500000; i++) {
+  world.exportToXml(binaryPath.getDirectory(), "exportedWorld.xml");
+
+  for (int i=0; i< 50000; i++) {
     std::this_thread::sleep_for(std::chrono::microseconds(1000));
     server.integrateWorldThreadSafe();
 

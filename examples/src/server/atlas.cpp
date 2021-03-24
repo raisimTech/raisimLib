@@ -37,7 +37,6 @@ int main(int argc, char* argv[]) {
            0.0,           0.0,       0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0});
       atlas.back()->setGeneralizedForce(Eigen::VectorXd::Zero(atlas.back()->getDOF()));
       atlas.back()->setName("atlas" + std::to_string(j + i * N));
-      atlas.back()->setIntegrationScheme(raisim::ArticulatedSystem::IntegrationScheme::RUNGE_KUTTA_4);
     }
   }
 
