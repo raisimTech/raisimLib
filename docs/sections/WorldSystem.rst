@@ -204,6 +204,11 @@ To designate each body, **local index** can be used.
 To keep the interface consistent, many methods ask for the local index even for simgle body objects.
 In a single body object case, local index arguments are ignored and users can simply put 0 to comply with the AIP.
 
+Save world to an XML file
+================================
+``raisim::World::exportToXml()`` lets you save the world to an XML file.
+`EXAMPLES <https://github.com/raisimTech/raisimLib/blob/master/examples/src/server/newtonsCradle.cpp>`_
+
 Changing Simulation Parameters
 ================================
 
