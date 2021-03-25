@@ -11,7 +11,7 @@
     <!--Package Dependencies-->
     <buildtool_depend>cmake</buildtool_depend>
     <exec_depend>catkin</exec_depend>
-    <build_depend>eigen3</build_depend>
+    <build_depend>eigen</build_depend>
     <!--Package Export-->
     <export>
         <build_type>cmake</build_type>
