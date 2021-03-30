@@ -100,6 +100,23 @@ class LengthConstraint : public Constraints {
    * @return the wire stretch type */
   StretchType getStretchType() const { return stretchType_; }
 
+  /**
+   * get wire type
+   * @return wire type */
+  WireType getWireType() const { return type_; }
+
+  /**
+   * get pos on ob1 where the wire is attached
+   * @return mount position 1
+   */
+  const Vec<3>& getOb1MountPos() const;
+
+  /**
+   * get pos on ob2 where the wire is attached
+   * @return mount position 2
+   */
+  const Vec<3>& getOb2MountPos() const;
+
  protected:
   Vec<3> position1_;
   Object* body1_;
