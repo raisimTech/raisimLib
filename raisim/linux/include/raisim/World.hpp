@@ -563,6 +563,9 @@ protected:
                           const std::string &material,
                           CollisionGroup collisionGroup,
                           CollisionGroup collisionMask);
+  void loadRaiSimConfig(const std::string& worldDescription, const std::string& configFile, Path& configPath);
+  void loadMjcf(const std::string& worldDescription, const std::string& configFile, Path& configPath);
+
   dSpaceID collisionWorld_;
   std::pair<std::vector<dContactGeom>, int> contacts_;
 

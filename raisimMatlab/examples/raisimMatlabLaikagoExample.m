@@ -98,6 +98,7 @@ raisim('updateVisualPose', 'v_capsule', [1,6,3]', [1, 0, 0, 0]', 1, 0, 1, 1);
 
 % add visualized articulated system
 raisim('addVisualArticulatedSystem', 'anymal0', strcat(pwd,'../../rsc/anymal/urdf/anymal.urdf'), 1, 0, 0, 0.5);
+raisim('addVisualArticulatedSystem', 'anymal1', strcat(pwd,'../../rsc/anymal/urdf/anymal.urdf'), 1, 0, 0, 0.5);
 
 for i=1:5000
     pause(1./500)
@@ -108,6 +109,7 @@ for i=1:5000
     raisim('setPosition', 'treadmill', 0, 0, 0);
     [force, position, objects] = raisim('getContactForcePositionsObject', 'sphere');    
     raisim('updateVisualArticulatedSystem', 'anymal0', [2*cos(i*0.001), 2*sin(i*0.001), 0.54, 1.0, 0.0, 0.0, 0.0, 0.03, 0.4, -0.8, -0.03, 0.4, -0.8, 0.03, -0.4, 0.8, -0.03, -0.4, 0.8]', 1,0,0,0.5);    
+    raisim('updateVisualArticulatedSystem', 'anymal1', [2*cos(i*0.001), 2*sin(i*0.001), 1.54, 1.0, 0.0, 0.0, 0.0, 0.03, 0.4, -0.8, -0.03, 0.4, -0.8, 0.03, -0.4, 0.8, -0.03, -0.4, 0.8]', 1,0,0,0.5);    
 end
 
 
