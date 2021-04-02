@@ -23,8 +23,8 @@ int main(int argc, char* argv[]) {
   server.startRecordingVideo("heightMapUsingPng.mp4");
 
   server.launchServer();
-  for (int i=0; i<10000; i++) {
-    world.integrate();
+  for (int i=0; i<10000000; i++) {
+//    world.integrate();
     std::this_thread::sleep_for(std::chrono::milliseconds(size_t(1000 * world.getTimeStep())));
   }
 
