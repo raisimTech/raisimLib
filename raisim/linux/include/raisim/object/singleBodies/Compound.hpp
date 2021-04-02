@@ -41,7 +41,9 @@ class Compound : public SingleBodyObject {
    * @return the collision list of the compound */
   const std::vector<dGeomID>& getCollisionObjectList () { return co; };
 
-  virtual void destroyCollisionBodies(dSpaceID id) final;
+  void setBodyType(BodyType type) final;
+
+  void destroyCollisionBodies(dSpaceID id) final;
 
  protected:
 
