@@ -284,6 +284,23 @@ class World {
                                           ArticulatedSystemOption options = ArticulatedSystemOption());
 
   /**
+   * @param xmlFileTemplate xml template file.
+   * @param params parameters for the xml file.
+   * @param resPath Path to the resource directory. Leave it empty ("") if it is the urdf file directory
+   * @param jointOrder this can be used to redefine the joint order. A child cannot precede its parent. Leave it empty ({}) to use the joint order defined in the URDF file.
+   * @param collisionGroup read "Contact and Collision/ Collision Group and Mask"
+   * @param collisionMask read "Contact and Collision/ Collision Group and Mask"
+   * @param option Currently only support "doNotCollideWithParent"
+   * @return pointer to the articulated system */
+  ArticulatedSystem *addArticulatedSystem(const std::string &xmlFileTemplate,
+                                          const std::unordered_map<std::string, std::string>& params,
+                                          const std::string &resPath = "",
+                                          const std::vector<std::string> &jointOrder = {},
+                                          CollisionGroup collisionGroup = 1,
+                                          CollisionGroup collisionMask = CollisionGroup(-1),
+                                          ArticulatedSystemOption options = ArticulatedSystemOption());
+
+  /**
    * This method programmatically creates an articulated system without an URDF file.
    * @param child an instance of Child class which has an articulated system structure.
    * @param resPath Path to the resource directory. Leave it empty ("") if it is the urdf file directory
@@ -563,8 +580,9 @@ protected:
                           const std::string &material,
                           CollisionGroup collisionGroup,
                           CollisionGroup collisionMask);
-  void loadRaiSimConfig(const std::string& worldDescription, const std::string& configFile, Path& configPath);
-  void loadMjcf(const std::string& worldDescription, const std::string& configFile, Path& configPath);
+  void loadRaiSimConfig(const std::string& configFile);
+  void loadMjcf(const std::string& configFile);
+  void flattenCompoundClass(std::vector<Compound::CompoundObjectChild>& oc);
 
   dSpaceID collisionWorld_;
   std::pair<std::vector<dContactGeom>, int> contacts_;

@@ -97,7 +97,7 @@ public:
     RSFATAL("in \'" << getFileName()
             << "\' at "<< "row:" << std::to_string(node_->Row()) 
             << " col:" << std::to_string(node_->Column())
-            << ", the node "<<"\'"<< getNodeName()<<"\'" << msg)
+            << ", the node "<<"\'"<< getNodeName()<<"\': " << msg)
   }
 
   template <typename T>

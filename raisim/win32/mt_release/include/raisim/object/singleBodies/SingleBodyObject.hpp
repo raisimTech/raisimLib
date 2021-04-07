@@ -272,7 +272,7 @@ class SingleBodyObject : public Object {
 
   void setLinearDamping(double damping);
   void setAngularDamping(Vec<3> damping);
-  void setBodyType(BodyType type);
+  virtual void setBodyType(BodyType type);
 
   CollisionGroup getCollisionGroup();
   CollisionGroup getCollisionMask();
