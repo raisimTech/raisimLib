@@ -582,7 +582,7 @@ protected:
                           CollisionGroup collisionMask);
   void loadRaiSimConfig(const std::string& configFile);
   void loadMjcf(const std::string& configFile);
-  void flattenCompoundClass(XmlObjectClass& oc);
+  void flattenCompoundClass(std::vector<Compound::CompoundObjectChild>& oc);
 
   dSpaceID collisionWorld_;
   std::pair<std::vector<dContactGeom>, int> contacts_;

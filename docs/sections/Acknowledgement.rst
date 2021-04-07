@@ -4,7 +4,7 @@ Acknowledgement
 
 If you write a paper using RaiSim, please cite RaiSim as below
 
-.. code-block:: c
+.. code-block:: latex
 
     @article{raisim,
       title={Per-contact iteration method for solving contact dynamics},
