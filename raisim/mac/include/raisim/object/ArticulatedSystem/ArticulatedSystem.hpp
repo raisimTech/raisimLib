@@ -1289,6 +1289,12 @@ class ArticulatedSystem : public Object {
 
  protected:
 
+  ArticulatedSystem(const std::string &filePath,
+                    const std::string &xmlScript,
+                    const std::string &resDir,
+                    const std::vector<std::string> &jointOrder,
+                    ArticulatedSystemOption options);
+
   void getPose(const VisObject& vob, Mat<3, 3>& rot, Vec<3>& pos) const;
 
   void getSparseJacobian_internal(size_t bodyIdx, const Vec<3> &point_W, SparseJacobian &jaco);
@@ -1429,13 +1435,10 @@ class ArticulatedSystem : public Object {
   std::vector<contact::Single3DContactProblem*> jointLimitViolation_;
 
  private:
-  size_t nbody, dof = 0, gcDim = 0, baseDOFminusOne = 0;
-  bool hasSphericalJoint_ = false;
-  bool kinematicsUpdated_ = false;
+  size_t nbody, dof = 0, gcDim = 0;
   bool dampedDiagonalTermUpdated_ = false;
   ControlMode::Type controlMode_ = ControlMode::FORCE_AND_TORQUE;
   raisim::SparseJacobian tempJaco_;
-  Vec<3> gravity_;
   double dt_ = 0.001;
 
   // damping

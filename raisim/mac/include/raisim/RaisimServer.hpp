@@ -1004,8 +1004,7 @@ class RaisimServer final {
 
         for (uint64_t k = 0; k < (*visOb).size(); k++) {
           auto &vob = (*visOb)[k];
-          std::string name = vis.first + std::to_string(ob->getIndexInWorld()) +
-              "/" + std::to_string(i) + "/" + std::to_string(k);
+          std::string name = vis.first + "/" + std::to_string(i) + "/" + std::to_string(k);
           data_ = setString(data_, name);
 
           Vec<3> pos, offsetInWorld;
@@ -1621,7 +1620,7 @@ class RaisimServer final {
   Eigen::Vector3d position_, lookAt_;
 
   // version
-  constexpr static int version_ = 10002;
+  constexpr static int version_ = 10003;
 };
 
 }  // namespace raisim
