@@ -1337,7 +1337,8 @@ class RaisimServer final {
         auto contactFrame = contact.getContactFrame();
 
         Vec<3> impulseW;
-        raisim::matvecmul(contactFrame, *impulseB, impulseW);
+        raisim::matTransposevecmul(contactFrame, *impulseB, impulseW);
+        impulseW /= world_->getTimeStep();
         data_ = set(data_, impulseW[0]);
         data_ = set(data_, impulseW[1]);
         data_ = set(data_, impulseW[2]);
