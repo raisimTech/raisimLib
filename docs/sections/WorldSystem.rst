@@ -100,6 +100,7 @@ compound
     **attributes**: ``xx`` [double], ``xy`` [double], ``xz`` [double], ``yy`` [double], ``yz`` [double], ``zz`` [double]
 
 2. <child> ``children``
+        Common attributes of the children: ``appearance`` [string]
     1. <child> (optional, multiple) ``sphere``
         1. <child> dim
             1. <attribute> ``radius`` [double]

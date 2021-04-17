@@ -1159,8 +1159,6 @@ class RaisimServer final {
   }
 
   inline void serializeObjects() {
-    // std::lock_guard<std::mutex> guard(serverMutex_);
-
     auto &objList = world_->getObjList();
 
     // set message type
@@ -1185,19 +1183,19 @@ class RaisimServer final {
       switch (ob->getObjectType()) {
         case SPHERE:
           data_ = setString(data_, dynamic_cast<SingleBodyObject *>(ob)->getAppearance());
-          data_ = set(data_, float(static_cast<Sphere *>(ob)->getRadius()));
+          data_ = set(data_, float(dynamic_cast<Sphere *>(ob)->getRadius()));
           break;
 
         case BOX:
           data_ = setString(data_, dynamic_cast<SingleBodyObject *>(ob)->getAppearance());
           for (int i = 0; i < 3; i++)
-            data_ = set(data_, float(static_cast<Box *>(ob)->getDim()[i]));
+            data_ = set(data_, float(dynamic_cast<Box *>(ob)->getDim()[i]));
           break;
 
         case CYLINDER:
           data_ = setString(data_, dynamic_cast<SingleBodyObject *>(ob)->getAppearance());
-          data_ = set(data_, float(static_cast<Cylinder *>(ob)->getRadius()));
-          data_ = set(data_, float(static_cast<Cylinder *>(ob)->getHeight()));
+          data_ = set(data_, float(dynamic_cast<Cylinder *>(ob)->getRadius()));
+          data_ = set(data_, float(dynamic_cast<Cylinder *>(ob)->getHeight()));
           break;
 
         case CONE:
@@ -1205,21 +1203,22 @@ class RaisimServer final {
 
         case CAPSULE:
           data_ = setString(data_, dynamic_cast<SingleBodyObject *>(ob)->getAppearance());
-          data_ = set(data_, float(static_cast<Capsule *>(ob)->getRadius()));
-          data_ = set(data_, float(static_cast<Capsule *>(ob)->getHeight()));
+          data_ = set(data_, float(dynamic_cast<Capsule *>(ob)->getRadius()));
+          data_ = set(data_, float(dynamic_cast<Capsule *>(ob)->getHeight()));
           break;
 
         case HALFSPACE:
           data_ = setString(data_, dynamic_cast<SingleBodyObject *>(ob)->getAppearance());
-          data_ = set(data_, float(static_cast<Ground *>(ob)->getHeight()));
+          data_ = set(data_, float(dynamic_cast<Ground *>(ob)->getHeight()));
           break;
 
         case COMPOUND:
           data_ = setString(data_, dynamic_cast<SingleBodyObject *>(ob)->getAppearance());
-          data_ = set(data_, (uint64_t) (static_cast<Compound *>(ob)->getObjList().size()));
+          data_ = set(data_, (uint64_t) (dynamic_cast<Compound *>(ob)->getObjList().size()));
 
-          for (auto &vob : static_cast<Compound *>(ob)->getObjList()) {
+          for (auto &vob : dynamic_cast<Compound *>(ob)->getObjList()) {
             data_ = set(data_, vob.objectType);
+            data_ = setString(data_, vob.appearance);
 
             switch (vob.objectType) {
               case BOX:
@@ -1242,25 +1241,25 @@ class RaisimServer final {
 
         case MESH:
           data_ = setString(data_, dynamic_cast<SingleBodyObject *>(ob)->getAppearance());
-          data_ = setString(data_, static_cast<Mesh *>(ob)->getMeshFileName());
-          data_ = set(data_, float(static_cast<Mesh *>(ob)->getScale()));
+          data_ = setString(data_, dynamic_cast<Mesh *>(ob)->getMeshFileName());
+          data_ = set(data_, float(dynamic_cast<Mesh *>(ob)->getScale()));
           break;
 
         case HEIGHTMAP:
           // misc data
           data_ = setString(data_, dynamic_cast<SingleBodyObject *>(ob)->getAppearance());
-          data_ = set(data_, float(static_cast<HeightMap *>(ob)->getCenterX()));
-          data_ = set(data_, float(static_cast<HeightMap *>(ob)->getCenterY()));
-          data_ = set(data_, float(static_cast<HeightMap *>(ob)->getXSize()));
-          data_ = set(data_, float(static_cast<HeightMap *>(ob)->getYSize()));
-          data_ = set(data_, (uint64_t) (static_cast<HeightMap *>(ob)->getXSamples()));
-          data_ = set(data_, (uint64_t) (static_cast<HeightMap *>(ob)->getYSamples()));
+          data_ = set(data_, float(dynamic_cast<HeightMap *>(ob)->getCenterX()));
+          data_ = set(data_, float(dynamic_cast<HeightMap *>(ob)->getCenterY()));
+          data_ = set(data_, float(dynamic_cast<HeightMap *>(ob)->getXSize()));
+          data_ = set(data_, float(dynamic_cast<HeightMap *>(ob)->getYSize()));
+          data_ = set(data_, (uint64_t) (dynamic_cast<HeightMap *>(ob)->getXSamples()));
+          data_ = set(data_, (uint64_t) (dynamic_cast<HeightMap *>(ob)->getYSamples()));
 
           // size of height map
-          data_ = set(data_, (uint64_t) (static_cast<HeightMap *>(ob)->getHeightVector().size()));
+          data_ = set(data_, (uint64_t) (dynamic_cast<HeightMap *>(ob)->getHeightVector().size()));
 
           // height values in float
-          for (auto h : static_cast<HeightMap *>(ob)->getHeightVector())
+          for (auto h : dynamic_cast<HeightMap *>(ob)->getHeightVector())
             data_ = set(data_, float(h));
 
           break;
