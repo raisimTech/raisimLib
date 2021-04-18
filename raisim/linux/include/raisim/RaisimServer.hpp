@@ -1620,7 +1620,7 @@ class RaisimServer final {
   Eigen::Vector3d position_, lookAt_;
 
   // version
-  constexpr static int version_ = 10003;
+  constexpr static int version_ = 10004;
 };
 
 }  // namespace raisim
