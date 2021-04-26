@@ -21,7 +21,6 @@ class RaisimSbGymVecEnv(VecEnv):
         self.normalize_rew = normalize_rew
         self.clip_obs = clip_obs
         self.wrapper = impl
-        self.wrapper.init()
         self.num_obs = self.wrapper.getObDim()
         self.num_acts = self.wrapper.getActionDim()
         self.observation_space = gym.spaces.Box(-np.full(self.num_obs, np.inf), np.full(self.num_obs, np.inf), dtype=np.float32)
