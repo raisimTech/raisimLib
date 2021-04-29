@@ -35,6 +35,12 @@ The geometric model is created using the Full-body musculoskeletal model in Raja
 
 **ANYmal B and C robots**, by ANYbotics AG.
 
+.. image:: image/trackedRobot.gif
+  :alt: trackedRobot
+  :width: 600
+
+**Simple URDF by RaiSim Tech.**
+
 .. toctree::
    :maxdepth: 1
    :caption: Get started

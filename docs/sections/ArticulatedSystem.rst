@@ -296,6 +296,9 @@ However, this is often not so bad for robotics since this instability is also pr
 For other applications like animation and graphics, it is often desirable to have a stable PD controller when a user wants to keep the time step small.
 Therefore, this PD controller exploits a more stable integration scheme and can have much smaller time step than a naive implementation.
 
+**This PD controller does not respect the actuation limits of the robot**.
+It uses an implicit integration scheme and we do not even compute the actual torque that is applied to the joints.
+
 To use this PD controller, you have to set the desirable control gains first
 
 .. code-block:: c
