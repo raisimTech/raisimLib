@@ -582,6 +582,7 @@ protected:
                           CollisionGroup collisionMask);
   void loadRaiSimConfig(const std::string& configFile);
   void loadMjcf(const std::string& configFile);
+  void addArticulatedSystem(RaiSimTinyXmlWrapper& node);
   void flattenCompoundClass(std::vector<Compound::CompoundObjectChild>& oc);
 
   dSpaceID collisionWorld_;

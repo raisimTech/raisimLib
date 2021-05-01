@@ -33,6 +33,7 @@ inline double Div_func(const T1& exp1, const T2&  exp2, size_t i, size_t j) { re
 template<typename T1, typename T2>                                                                  \
 class OpFunc##_op : public MatExpr<OpFunc##_op<T1, T2>> {                                           \
  public:                                                                                            \
+  using SelfType = OpFunc##_op<T1, T2>;                                                             \
   const T1 &_u;                                                                                     \
   const T2 &_v;                                                                                     \
   inline OpFunc##_op(T1 const &u, T2 const &v) : _u(u), _v(v) {}                                    \
@@ -92,6 +93,7 @@ inline double Sub_S_func(const T& exp1, double scalar, size_t i, size_t j) { ret
 template<typename T>                                                                                \
 class OpFunc##_S_op : public MatExpr<OpFunc##_S_op<T>> {                                            \
  public:                                                                                            \
+  using SelfType = MatExpr<OpFunc##_S_op<T>>;                                                       \
   const T &_u;                                                                                      \
   const double _s;                                                                                  \
   inline OpFunc##_S_op(T const &u, double s) : _u(u), _s(s) {}                                      \

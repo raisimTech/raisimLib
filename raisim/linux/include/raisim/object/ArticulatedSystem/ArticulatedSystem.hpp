@@ -25,7 +25,7 @@
 namespace raisim {
 
 namespace mjcf {
-class LoadFromMJCF;
+class LoadFromMjcf;
 }
 
 namespace urdf {
@@ -253,10 +253,9 @@ class ArticulatedSystem : public Object {
  private:
   friend class raisim::World;
   friend class raisim::urdf::LoadFromURDF2;
-  friend class raisim::mjcf::LoadFromMJCF;
+  friend class raisim::mjcf::LoadFromMjcf;
 
  public:
-
   typedef Eigen::Map<Eigen::Matrix<double, -1, 1> > EigenVec;
   typedef Eigen::Map<Eigen::Matrix<double, -1, -1> > EigenMat;
 

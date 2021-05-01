@@ -21,13 +21,14 @@ class ElementRef {
 template<class T, size_t n, size_t m>
 class BlockRef : public MatExpr<BlockRef<T, n, m>> {
  public:
+  typedef BlockRef<T, n, m> SelfType;
   BlockRef(T& array, size_t r_s, size_t c_s) :
       ref(array), rowStart(r_s), colStart(c_s) { }
   #define RAIMATH_BLOCKREF_SINGLE_ACCESOR ref(i+rowStart)
 
-  constexpr inline size_t size() const { return n*m; }
-  constexpr inline size_t rows() const { return n; }
-  constexpr inline size_t cols() const { return m; }
+  static constexpr inline size_t size() { return n*m; }
+  static constexpr inline size_t rows() { return n; }
+  static constexpr inline size_t cols() { return m; }
 
   inline double operator()(size_t i) const { return ref(i+rowStart); }
   inline double &operator()(size_t i) { return ref(i+rowStart); }
@@ -45,6 +46,7 @@ class BlockRef : public MatExpr<BlockRef<T, n, m>> {
 template<class T, size_t n>
 class DiagonalRef : public MatExpr<DiagonalRef<T, n>> {
  public:
+  typedef DiagonalRef<T, n> SelfType;
   DiagonalRef(T& array) :
       ref(array) { }
 
@@ -54,6 +56,8 @@ class DiagonalRef : public MatExpr<DiagonalRef<T, n>> {
 template<class T, size_t m>
 class RowRef : public MatExpr<RowRef<T, m>> {
  public:
+  typedef RowRef<T, m> SelfType;
+
   RowRef(T& array, size_t r) :
       ref(array), row(r) { }
   #define RAIMATH_ROWREF_SINGLE_ACCESOR ref(row, i)
@@ -65,9 +69,9 @@ class RowRef : public MatExpr<RowRef<T, m>> {
   inline double operator()(size_t i, size_t j) const { return ref(row, j); }
   inline double &operator()(size_t i, size_t j) { return ref(row, j); }
 
-  constexpr inline size_t size() const { return m; }
-  constexpr inline size_t rows() const { return size_t(1); }
-  constexpr inline size_t cols() const { return m; }
+  static constexpr inline size_t size() { return m; }
+  static constexpr inline size_t rows() { return size_t(1); }
+  static constexpr inline size_t cols() { return m; }
 
   template<class T2>
   inline RowRef<T, m>& operator = (const MatExpr<T2>& expr) {
@@ -83,6 +87,7 @@ class RowRef : public MatExpr<RowRef<T, m>> {
 template<class T, size_t n>
 class ColRef : public MatExpr<ColRef<T, n>> {
  public:
+  typedef ColRef<T, n> SelfType;
   ColRef(T& array, size_t c) :
       ref(array), col(c) { }
 #define RAIMATH_COLREF_SINGLE_ACCESOR ref(i, col)
@@ -95,9 +100,9 @@ class ColRef : public MatExpr<ColRef<T, n>> {
   inline double operator()(size_t i, size_t j) const { return ref(i, col); }
   inline double &operator()(size_t i, size_t j) { return ref(i, col); }
 
-  constexpr inline size_t size() const { return n; }
-  constexpr inline size_t rows() const { return n; }
-  constexpr inline size_t cols() const { return 1; }
+  static constexpr inline size_t size() { return n; }
+  static constexpr inline size_t rows() { return n; }
+  static constexpr inline size_t cols() { return 1; }
 
   template<class T2>
   inline ColRef<T, n>& operator = (const T2& expr) {
