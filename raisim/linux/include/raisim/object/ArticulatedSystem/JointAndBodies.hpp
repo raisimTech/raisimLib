@@ -33,6 +33,22 @@ enum Type :
   Cone, // cone is not currently supported
   NotShape
 };
+
+inline Shape::Type stringToShape (const std::string& shape) {
+  if(shape == "mesh") {
+    return Shape::Type::Mesh;
+  } else if (shape == "sphere") {
+    return Shape::Type::Sphere;
+  } else if (shape == "capsule") {
+    return Shape::Type::Capsule;
+  } else if (shape == "cylinder") {
+    return Shape::Type::Cylinder;
+  } else if (shape == "box") {
+    return Shape::Type::Box;
+  }
+  return Shape::Type::NotShape;
+}
+
 }
 
 /* collision definition that is stored in Articulated System.

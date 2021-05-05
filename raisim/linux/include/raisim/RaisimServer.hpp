@@ -480,7 +480,6 @@ class RaisimServer final {
   inline void integrateWorldThreadSafe() {
     std::lock_guard<std::mutex> guard(serverMutex_);
     world_->integrate();
-    updateReady_ = true;
   }
 
   /**
@@ -507,20 +506,12 @@ class RaisimServer final {
   }
 
   /**
-   * currently not used */
-  inline void informClientForUpdate() { updateReady_ = true; }
-
-  /**
    * lock the visualization mutex so that the server cannot read from the world */
   inline void lockVisualizationServerMutex() { serverMutex_.lock(); }
 
   /**
    * unlock the visualization mutex so that the server can read from the world */
   inline void unlockVisualizationServerMutex() { serverMutex_.unlock(); }
-
-  // currently not used
-  inline bool isPauseRequested() { return pauseRequested_; }
-  inline bool isResumeRuested() { return resumeRequested_; }
 
   inline bool isTerminateRequested() { return terminateRequested_; }
 
@@ -746,12 +737,11 @@ class RaisimServer final {
   inline bool waitForReadEvent(int timeout) {
     fd_set sdset;
     struct timeval tv;
-
     tv.tv_sec = timeout;
     tv.tv_usec = 0;
     FD_ZERO(&sdset);
     FD_SET(server_fd, &sdset);
-    return select(server_fd + 1, &sdset, NULL, NULL, &tv) > 0;
+    return select(server_fd + 1, &sdset, nullptr, nullptr, &tv) > 0;
   }
 
  public:
@@ -852,15 +842,11 @@ class RaisimServer final {
             break;
 
           case REQUEST_INITIALIZE_VISUALS:
-            break;
-
           case REQUEST_VISUAL_POSITION:
             break;
 
           case REQUEST_SERVER_STATUS:
-            // Do nothing
             return false;
-            break;
         }
       }
       unlockVisualizationServerMutex();
@@ -888,7 +874,6 @@ class RaisimServer final {
   }
 
   inline void serializeWorld() {
-    // std::lock_guard<std::mutex> guard(serverMutex_);
     auto &objList = world_->getObjList();
 
     // set message type
@@ -1074,6 +1059,7 @@ class RaisimServer final {
       }
     }
 
+    // object information
     if(objectId_ > -1) {
       RSFATAL_IF(objectId_ >= world_->getObjList().size(), "The client is requesting non-existent object")
       auto *obSelected = world_->getObjList()[objectId_];
@@ -1126,6 +1112,14 @@ class RaisimServer final {
           data_ = set(data_, float(quat[2]));
           data_ = set(data_, float(quat[3]));
         }
+
+        // COM position
+        if(as->getJointType(0) == Joint::FLOATING) {
+          data_ = set(data_, int32_t(0));
+          data_ = setN(data_, as->getCompositeCOM().ptr(), 3);
+        } else
+          data_ = set(data_, int32_t(1));
+
       } else {
         data_ = set(data_, int32_t(0));
         auto* sb = reinterpret_cast<SingleBodyObject*>(obSelected);
@@ -1154,8 +1148,6 @@ class RaisimServer final {
     } else {
       data_ = set(data_, int32_t(-1));
     }
-
-    updateReady_ = true;
   }
 
   inline void serializeObjects() {
@@ -1348,8 +1340,6 @@ class RaisimServer final {
   }
 
   inline void serializeToXML() {
-    // std::lock_guard<std::mutex> guard(serverMutex_);
-
     // check if world is initialized by config xml
     const std::string configFile = world_->getConfigFile();
 
@@ -1538,10 +1528,6 @@ class RaisimServer final {
           break;
 
         case Visuals::VisualCylinder:
-          data_ = set(data_, (float) vo->size[0]);
-          data_ = set(data_, (float) vo->size[1]);
-          break;
-
         case Visuals::VisualCapsule:
           data_ = set(data_, (float) vo->size[0]);
           data_ = set(data_, (float) vo->size[1]);
@@ -1603,7 +1589,6 @@ class RaisimServer final {
   sockaddr_in address;
   int addrlen;
   std::thread serverThread_;
-  bool updateReady_ = true;
 
   std::mutex serverMutex_;
 
@@ -1615,12 +1600,10 @@ class RaisimServer final {
   void updateVisualConfig() { visualConfiguration_++; }
 
   int raisimPort_ = 8080;
-  double lastWaitTime = 0.;
-
   Eigen::Vector3d position_, lookAt_;
 
   // version
-  constexpr static int version_ = 10004;
+  constexpr static int version_ = 10005;
 };
 
 }  // namespace raisim

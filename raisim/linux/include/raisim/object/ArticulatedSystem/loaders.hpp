@@ -12,80 +12,6 @@
 
 namespace raisim {
 
-inline double firstNumber(const char *txt) {
-  double num;
-  std::string s(txt);
-  std::string delimiter = " ";
-
-  while (s.substr(0, 1) == " ")
-    s = s.substr(1, s.size());
-  std::string token = s.substr(0, s.find(delimiter));
-  num = std::stod(token);
-
-  return num;
-}
-
-inline Vec<3> char2Vec3(const char *txt) {
-  Vec<3> vec;
-  std::string s(txt);
-  std::string delimiter = " ";
-
-  for (int i = 0; i < 3; i++) {
-    while (s.substr(0, 1) == " ")
-      s = s.substr(1, s.size());
-    std::string token = s.substr(0, s.find(delimiter));
-    vec[i] = std::stod(token);
-    if (i != 2) s.erase(0, s.find(delimiter) + delimiter.length());
-  }
-  return vec;
-}
-
-inline Vec<2> char2Vec2(const char *txt) {
-  Vec<2> vec;
-  std::string s(txt);
-  std::string delimiter = " ";
-
-  for (int i = 0; i < 2; i++) {
-    while (s.substr(0, 1) == " ")
-      s = s.substr(1, s.size());
-    std::string token = s.substr(0, s.find(delimiter));
-    vec[i] = std::stod(token);
-    if (i != 1) s.erase(0, s.find(delimiter) + delimiter.length());
-  }
-  return vec;
-}
-
-inline Vec<6> char2Vec6(const char *txt) {
-  Vec<6> vec;
-  std::string s(txt);
-  std::string delimiter = " ";
-
-  for (int i = 0; i < 6; i++) {
-    while (s.substr(0, 1) == " ")
-      s = s.substr(1, s.size());
-
-    std::string token = s.substr(0, s.find(delimiter));
-    vec[i] = std::stod(token);
-    if (i != 5) s.erase(0, s.find(delimiter) + delimiter.length());
-  }
-  return vec;
-}
-
-inline Vec<4> char2Vec4(const char *txt) {
-  Vec<4> vec;
-  std::string s(txt);
-  std::string delimiter = " ";
-
-  for (int i = 0; i < 4; i++) {
-    while (s.substr(0, 1) == " ")
-      s = s.substr(1, s.size());
-    std::string token = s.substr(0, s.find(delimiter));
-    vec[i] = std::stod(token);
-    if (i != 3) s.erase(0, s.find(delimiter) + delimiter.length());
-  }
-  return vec;
-}
-
 namespace object {
 class ArticulatedSystem;
 }
@@ -119,7 +45,7 @@ struct UrdfBody {
   UrdfBody() {
     origin.setZero();
     rot.setIdentity();
-    scale = {1.,1.,1.};
+    scale = {1., 1., 1.};
   };
 
   Shape::Type shape;
@@ -150,7 +76,9 @@ struct UrdfJoint {
   UrdfJoint() {
     limit.setZero();
     origin.setZero();
-    axis[0] = 1; axis[1] = 0; axis[2] = 0;
+    axis[0] = 1;
+    axis[1] = 0;
+    axis[2] = 0;
     limit[0] = std::numeric_limits<double>::lowest();
     limit[1] = std::numeric_limits<double>::max();
     rot.setIdentity();
@@ -173,7 +101,7 @@ struct UrdfJoint {
 struct UrdfLink {
   std::string name;
   UrdfJoint parentJoint;
-  UrdfLink* parent = nullptr;
+  UrdfLink *parent = nullptr;
   std::vector<UrdfLink *> child;
   std::vector<UrdfBody> visual, collision;
   UrdfLinkInertial inertial;
@@ -183,7 +111,10 @@ struct UrdfLink {
 class LoadFromURDF2 {
 
  public:
-  LoadFromURDF2(ArticulatedSystem &system, std::string filePath, std::vector<std::string> jointOrder, bool isItAFilePath);
+  LoadFromURDF2(ArticulatedSystem &system,
+                std::string filePath,
+                std::vector<std::string> jointOrder,
+                bool isItAFilePath);
  private:
   void processLinkFromUrdf(const UrdfLink *urdfLink,
                            Child &raiLink,
@@ -191,16 +122,16 @@ class LoadFromURDF2 {
   std::map<std::string, UrdfMaterial> mats;
   std::string currentObject_;
 
-
 };
 }
 
 namespace mjcf {
-class LoadFromMJCF {
- public:
-  LoadFromMJCF(ArticulatedSystem &system, std::string filePath, std::vector<std::string> jointOrder);
+class LoadFromMjcf {
+  LoadFromMjcf(ArticulatedSystem &sys, const RaiSimTinyXmlWrapper &c);
+  static void processBody(Child& child, const RaiSimTinyXmlWrapper &c);
 };
-}
+
 }
 
+} // namespace raisim
 #endif //RAISIM_LOADERS_HPP
