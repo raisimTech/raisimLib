@@ -395,10 +395,6 @@ typedef struct dxThreadingFunctionsInfo
   /* 
    * Beware of Jon Watte's anger if you dare to uncomment this!
    * May cryptic text below be you a warning!
-   * Стародавні легенди розказують, що кожного сміливця, хто наважиться порушити табу 
-   * і відкрити заборонений код, спіткає страшне прокляття і він відразу почне робити 
-   * одні лиш помилки.
-   *
    * dMutexGroupMutexTryLockFunction *trylock_group_mutex;
    */
 

@@ -69,7 +69,40 @@ inline void operator-=(const double val) {                        \
 template<class OtherType>                                         \
 CrossProduct<SelfType, OtherType> cross(const OtherType& other) const { \
   return CrossProduct<SelfType, OtherType>(*this, other);         \
-}
+}                                                                 \
+                                                                  \
+template<class OtherType>                                         \
+inline SelfType& operator=(const OtherType& val) {                \
+  for(size_t i=0; i<cols(); i++)                                  \
+    for(size_t j=0; j<rows(); j++)                                \
+      operator()(j,i) = val(j,i);                                 \
+  return *this;                                                   \
+}                                                                 \
+                                                                  \
+template<class SkewType>                                          \
+inline SelfType& operator=(const SkewRef<SkewType>& val) {        \
+  static_assert(SkewType::rows()==3, "skew matrix only works for 3X1 vector"); \
+  static_assert(SkewType::cols()==1, "skew matrix only works for 3X1 vector"); \
+                                                                  \
+  operator()(0,0) = 0;                                            \
+  operator()(1,1) = 0;                                            \
+  operator()(2,2) = 0;                                            \
+  operator()(1,0) = val(2);                                       \
+  operator()(2,0) = -val(1);                                      \
+  operator()(0,1) = -val(2);                                      \
+  operator()(2,1) = val(0);                                       \
+  operator()(0,2) = val(1);                                       \
+  operator()(1,2) = -val(0);                                      \
+  return *this;                                                   \
+}                                                                 \
+                                                                  \
+inline SkewRef<SelfType> skew() {                                 \
+  return SkewRef<SelfType>(*this); }                              \
+inline SkewRef<SelfType> skew() const {                           \
+  return SkewRef<SelfType>(*this); }                              \
+                                                                  \
+inline operator double() const { return operator()(0,0); }        \
+
 
 namespace raisim {
 

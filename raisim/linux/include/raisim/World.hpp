@@ -28,6 +28,7 @@
 #include "raisim/object/ArticulatedSystem/ArticulatedSystem.hpp"
 #include "raisim/rayCollision.hpp"
 #include "raisim/Path.hpp"
+#include "raisim/object/ArticulatedSystem/loaders.hpp"
 #include "ode/collision.h"
 #include "configure.hpp"
 
@@ -582,7 +583,12 @@ protected:
                           CollisionGroup collisionMask);
   void loadRaiSimConfig(const std::string& configFile);
   void loadMjcf(const std::string& configFile);
-  void addArticulatedSystem(RaiSimTinyXmlWrapper& node);
+  ArticulatedSystem* addArticulatedSystem(const RaiSimTinyXmlWrapper& node,
+                                          const std::string &resPath,
+                                          const std::unordered_map<std::string, RaiSimTinyXmlWrapper>& defaults,
+                                          const std::unordered_map<std::string, std::pair<std::string, Vec<3>>>& mesh,
+                                          const mjcf::MjcfCompilerSetting& setting,
+                                          ArticulatedSystemOption options = ArticulatedSystemOption());
   void flattenCompoundClass(std::vector<Compound::CompoundObjectChild>& oc);
 
   dSpaceID collisionWorld_;
@@ -624,7 +630,6 @@ protected:
 
   // the location of the license file
   RAISIM_STATIC_API static std::string activationKey_;
-
 };
 
 } // raisim

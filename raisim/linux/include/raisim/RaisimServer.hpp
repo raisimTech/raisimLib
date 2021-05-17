@@ -535,6 +535,24 @@ class RaisimServer final {
   }
 
   /**
+   * @param[in] as ArticulatedSystemVisual to be removed
+   * remove a visualized articulated system */
+  inline void removeVisualArticulatedSystem(ArticulatedSystemVisual* as) {
+    auto it = _visualArticulatedSystem.begin();
+
+    // Search for an element with value 2
+    while(it != _visualArticulatedSystem.end()) {
+      if(it->second == as)
+        break;
+      it++;
+    }
+
+    // Erase the element pointed by iterator it
+    if (it != _visualArticulatedSystem.end())
+      _visualArticulatedSystem.erase(it);
+  }
+
+  /**
    * @param[in] name the name of the visual object
    * @param[in] radius radius of the sphere
    * @param[in] colorR the red value of the color (max=1)

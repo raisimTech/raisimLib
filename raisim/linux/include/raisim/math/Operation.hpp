@@ -39,9 +39,9 @@ class OpFunc##_op : public MatExpr<OpFunc##_op<T1, T2>> {                       
   inline OpFunc##_op(T1 const &u, T2 const &v) : _u(u), _v(v) {}                                    \
   inline double operator()(size_t i, size_t j) const { return OpFunc##_func(_u, _v, i, j); }        \
   inline double operator()(size_t i) const { return OpFunc##_func(_u, _v, i, 0); }                  \
-  inline size_t size() const { return _v.size(); }                                                  \
-  inline size_t cols() const { return _v.cols(); }                                                  \
-  inline size_t rows() const { return _v.rows(); }                                                  \
+  inline constexpr static size_t size() { return T2::size(); }                                                  \
+  inline constexpr static size_t cols() { return T2::cols(); }                                                  \
+  inline constexpr static size_t rows() { return T2::rows(); }                                                  \
   RAIMATH_MATEXPR_OPERATORS                                                                         \
 };                                                                                                  \
 
@@ -74,9 +74,9 @@ class Prod_op<Mat<4, 4>, Mat<4, 4>> : public MatExpr<Prod_op<Mat<4, 4>, Mat<4, 4
   }
 
   inline double operator()(size_t i, size_t j) const { return result(i, j); }
-  inline size_t size() const { return 16; }
-  inline size_t cols() const { return 4; }
-  inline size_t rows() const { return 4; }
+  inline static size_t size() { return 16; }
+  inline static size_t cols() { return 4; }
+  inline static size_t rows() { return 4; }
 };
 
 template<class T>
@@ -100,10 +100,9 @@ class OpFunc##_S_op : public MatExpr<OpFunc##_S_op<T>> {                        
   inline double operator()(size_t i, size_t j) const { return OpFunc##_S_func(_u, _s, i, j); }      \
   inline double operator()(size_t i) const { return OpFunc##_S_func(_u, _s, i, 0); }                \
   inline double operator[](size_t i) const { return OpFunc##_S_func(_u, _s, i, 0); }                \
-  inline size_t size() const { return _u.size(); }                                                  \
-  inline size_t cols() const { return _u.cols(); }                                                  \
-  inline size_t rows() const { return _u.rows(); }                                                  \
-  RAIMATH_MATEXPR_OPERATORS                                                                         \
+  inline constexpr static size_t size() { return T::size(); }                                                  \
+  inline constexpr static size_t cols() { return T::cols(); }                                                  \
+  inline constexpr static size_t rows() { return T::rows(); }                                                  \
 };                                                                                                  \
 
 #define RaiSim_define_scalar_function(Operator,OpFunc)                                              \

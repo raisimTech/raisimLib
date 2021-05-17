@@ -60,12 +60,6 @@ class Mat : public MatExpr<Mat<n, m>> {
     return *this;
   }
 
-  template<class T>
-  inline Mat<n,m>& operator = (const T& expr) {
-    for (size_t j = 0; j < cols(); ++j) for (size_t i = 0; i < rows(); ++i) v[i + j * n] = expr(i,j);
-    return *this;
-  }
-
   template<typename T2, size_t n2, size_t m2>
   inline Mat<n,m>& operator = (const Mat<n2, m2>& expr) { for (size_t j = 0; j < size(); ++j) v[j] = expr[j];
     return *this;
@@ -122,7 +116,8 @@ class Mat : public MatExpr<Mat<n, m>> {
     return zero;
   }
 
-  Transpose<Mat<n,m>> transpose() { return Transpose<Mat<n,m>>(*this); }
+  inline Transpose<Mat<n,m>> transpose() { return Transpose<Mat<n,m>>(*this); }
+  inline const Transpose<Mat<n,m>> transpose() const { return Transpose<Mat<n,m>>(*this); }
 
   inline RowRef<Mat<n, m>, m> row(size_t r) { return RowRef<Mat<n,m>, m>(*this, r); }
   inline const RowRef<Mat<n, m>, m> row(size_t r) const { return RowRef<Mat<n,m>, m>(*this, r); }
@@ -157,6 +152,46 @@ class Mat : public MatExpr<Mat<n, m>> {
   inline BlockRef<Mat<n, m>, sizeRow, 1> tail() const {
     static_assert(m==1, "tail method is only for vectors");
     return BlockRef<Mat<n, m>, sizeRow, 1>(*this, n-sizeRow, 0); }
+
+  template<size_t sizeRow, size_t sizeCol>
+  inline BlockRef<Mat<n, m>, sizeRow, sizeCol> topLeftCorner() const {
+    return BlockRef<Mat<n, m>, sizeRow, sizeCol>(*this, 0, 0); }
+
+  template<size_t sizeRow, size_t sizeCol>
+  inline BlockRef<Mat<n, m>, sizeRow, sizeCol> topLeftCorner() {
+    return BlockRef<Mat<n, m>, sizeRow, sizeCol>(*this, 0, 0); }
+
+  template<size_t sizeRow, size_t sizeCol>
+  inline BlockRef<Mat<n, m>, sizeRow, sizeCol> topRightCorner() const {
+    return BlockRef<Mat<n, m>, sizeRow, sizeCol>(*this, size_t(0), m-sizeCol); }
+
+  template<size_t sizeRow, size_t sizeCol>
+  inline BlockRef<Mat<n, m>, sizeRow, sizeCol> topRightCorner() {
+    return BlockRef<Mat<n, m>, sizeRow, sizeCol>(*this, size_t(0), m-sizeCol); }
+
+  template<size_t sizeRow, size_t sizeCol>
+  inline BlockRef<Mat<n, m>, sizeRow, sizeCol> bottomRightCorner() const {
+    return BlockRef<Mat<n, m>, sizeRow, sizeCol>(*this, size_t(n-sizeRow), size_t(m-sizeCol)); }
+
+  template<size_t sizeRow, size_t sizeCol>
+  inline BlockRef<Mat<n, m>, sizeRow, sizeCol> bottomRightCorner() {
+    return BlockRef<Mat<n, m>, sizeRow, sizeCol>(*this, size_t(n-sizeRow), size_t(m-sizeCol)); }
+
+  template<size_t sizeRow, size_t sizeCol>
+  inline BlockRef<Mat<n, m>, sizeRow, sizeCol> bottomLeftCorner() const {
+    return BlockRef<Mat<n, m>, sizeRow, sizeCol>(*this, size_t(n-sizeRow), size_t(0)); }
+
+  template<size_t sizeRow, size_t sizeCol>
+  inline BlockRef<Mat<n, m>, sizeRow, sizeCol> bottomLeftCorner() {
+    return BlockRef<Mat<n, m>, sizeRow, sizeCol>(*this, size_t(n-sizeRow), size_t(0)); }
+
+  template<size_t sizeRow, size_t sizeCol, size_t startRow, size_t startCol>
+  inline BlockRef<Mat<n, m>, sizeRow, sizeCol> block() const {
+    return BlockRef<Mat<n, m>, sizeRow, sizeCol>(*this, size_t(startRow), size_t(startCol)); }
+
+  template<size_t sizeRow, size_t sizeCol, size_t startRow, size_t startCol>
+  inline BlockRef<Mat<n, m>, sizeRow, sizeCol> block() {
+    return BlockRef<Mat<n, m>, sizeRow, sizeCol>(*this, size_t(startRow), size_t(startCol)); }
 };
 
 }

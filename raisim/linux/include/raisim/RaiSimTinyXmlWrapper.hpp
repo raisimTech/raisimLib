@@ -33,7 +33,7 @@ public:
 
     nodeTree_.push_back(childElement);
     node_ = doc_.FirstChildElement(childElement);
-    RSFATAL_IF(!node_, filePath << " file does not contain node " << "\'" << childElement << "\'")    
+    RSFATAL_IF(!node_, filePath << " file does not contain node " << "\'" << childElement << "\'")
   }
 
   void setFileName(const std::string& name) {
@@ -41,6 +41,7 @@ public:
   }
 
   std::vector<RaiSimTinyXmlWrapper> getChildren(const std::string &child) const {
+    RSFATAL_IF(!node_, "You have accessed a dummy node")
     std::vector<RaiSimTinyXmlWrapper> children;
     for(TiXmlElement *oc = node_->FirstChildElement(child.c_str()); oc != NULL;
          oc = oc->NextSiblingElement(child.c_str()))
@@ -50,6 +51,7 @@ public:
   }
 
   std::vector<RaiSimTinyXmlWrapper> getChildrenMust(const std::string &child) const {
+    RSFATAL_IF(!node_, "You have accessed a dummy node")
     auto children = getChildren(child);
     RSFATAL_IF(children.size() == 0, "in \'" << getFileName()
                    << "\' at "<< "row:" << std::to_string(node_->Row()) 
@@ -61,6 +63,7 @@ public:
   }
 
   std::vector<RaiSimTinyXmlWrapper> getChildrenMust() const {
+    RSFATAL_IF(!node_, "You have accessed a dummy node")
     auto children = getChildren();
     RSFATAL_IF(children.size() == 0, "in \'" << getFileName()
                    << "\' at "<< "row:" << std::to_string(node_->Row()) 
@@ -72,6 +75,7 @@ public:
   }
 
   const std::vector<RaiSimTinyXmlWrapper> getChildren() const {
+    RSFATAL_IF(!node_, "You have accessed a dummy node")
     std::vector<RaiSimTinyXmlWrapper> children;
     for (TiXmlElement *oc = node_->FirstChildElement(); oc != NULL;
          oc = oc->NextSiblingElement())
@@ -81,8 +85,23 @@ public:
     return children;
   }
 
+  template<typename T>
+  std::vector<RaiSimTinyXmlWrapper> getChildrenWithAttribute(const std::string& att, T value) {
+    RSFATAL_IF(!node_, "You have accessed a dummy node")
+    auto children = getChildren();
+    std::vector<RaiSimTinyXmlWrapper> childrenWithAtt;
+    for(auto& c: children) {
+      T valueFromChild;
+      if(c.template getAttributeIfExists(att, valueFromChild) && valueFromChild==value) {
+        childrenWithAtt.push_back(c);
+      }
+    }
+    return childrenWithAtt;
+  }
+
   template <typename T>
   const T getAttributeMust(const std::string &attName) const {
+    RSFATAL_IF(!node_, "You have accessed a dummy node")
     T attribute;
     auto result = getAttributeIfExists(attName, attribute);
     RSFATAL_IF(!result, "in \'" << getFileName()
@@ -93,7 +112,14 @@ public:
     return attribute;
   }
 
+  template<typename T>
+  void setAttribute(const std::string &name, T attribute) {
+    RSFATAL_IF(!node_, "You have accessed a dummy node")
+    node_->SetAttribute(name, attribute);
+  }
+
   void errorMessage(const std::string& msg) const {
+    RSFATAL_IF(!node_, "You have accessed a dummy node")
     RSFATAL("in \'" << getFileName()
             << "\' at "<< "row:" << std::to_string(node_->Row()) 
             << " col:" << std::to_string(node_->Column())
@@ -102,6 +128,7 @@ public:
 
   template <typename T>
   bool getAttributeIfExists(const std::string &attName, T &attribute) const {
+    if(!node_) return false;
     auto result = node_->Attribute(attName);
     if (!result)
       return false;
@@ -118,6 +145,10 @@ public:
         }
       }
       delimiter = ' ';
+    } else {
+      attribute.resize(1);
+      attribute[0] = std::stod(s);
+      return true;
     }
 
     if(s[0]==' ')
@@ -143,6 +174,7 @@ public:
 
   template <size_t n>
   bool getAttributeIfExists(const std::string &attName, Vec<n> &attribute) const {
+    if(!node_) return false;
     auto result = node_->Attribute(attName);
     if (!result)
       return false;
@@ -181,14 +213,17 @@ public:
   }
 
   bool getAttributeIfExists(const std::string &attName, int &attribute) const {
+    if(!node_) return false;
     return node_->Attribute(attName, &attribute);
   }
 
   bool getAttributeIfExists(const std::string &attName, double &attribute) const {
+    if(!node_) return false;
     return node_->Attribute(attName, &attribute);
   }
 
   bool getAttributeIfExists(const std::string &attName, std::string &attribute) const {
+    if(!node_) return false;
     const std::string *result = node_->Attribute(attName);
     if (result)
       attribute = *result;
@@ -196,6 +231,7 @@ public:
   }
 
   bool getAttributeIfExists(const std::string &attName, unsigned long &attribute) const {
+    if(!node_) return false;
     auto result = node_->Attribute(attName);
     if (result)
       attribute = std::stoul(*result);
@@ -203,12 +239,14 @@ public:
   }
 
   bool getAttributeIfExists(const std::string &attName, unsigned long long &attribute) const {
+    if(!node_) return false;
     auto result = node_->Attribute(attName);
     if (result) attribute = std::stoul(*result);
     return result;
   }
 
   bool getAttributeIfExists(const std::string &attName, ObjectType &attribute) const {
+    if(!node_) return false;
     auto result = node_->Attribute(attName);
     if (result)
       attribute = stringToObjectType(*result);
