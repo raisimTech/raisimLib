@@ -134,7 +134,7 @@ struct MjcfCompilerSetting {
 class LoadFromMjcf {
  public:
   LoadFromMjcf(ArticulatedSystem &sys,
-               const RaiSimTinyXmlWrapper &c,
+               RaiSimTinyXmlWrapper &c,
                const std::unordered_map<std::string, RaiSimTinyXmlWrapper> &defaultDefaultNode,
                const std::unordered_map<std::string, std::pair<std::string, Vec < 3>> >& mesh,
                const MjcfCompilerSetting& setting);
@@ -168,7 +168,7 @@ class LoadFromMjcf {
                           const Vec<3> &parentBodyPos,
                           const std::string &defaultName,
                           bool isRoot,
-                          const RaiSimTinyXmlWrapper &c,
+                          RaiSimTinyXmlWrapper &c,
                           const std::unordered_map<std::string, RaiSimTinyXmlWrapper> &defaultDefaultNode,
                           const std::unordered_map<std::string, std::pair<std::string, Vec<3>>>& meshAsset,
                           const MjcfCompilerSetting& setting);

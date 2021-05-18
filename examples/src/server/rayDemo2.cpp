@@ -52,7 +52,7 @@ int main(int argc, char* argv[]) {
 
   for(int i=0; i<scanSize1; i++)
     for(int j=0; j<scanSize2; j++)
-      scans.push_back(server.addVisualBox("box" + std::to_string(i) + "/" + std::to_string(j), 0.3, 0.3, 0.3, 1, 0, 0));
+      scans.push_back(server.addVisualBox("box" + std::to_string(i) + "/" + std::to_string(j), 0.1, 0.1, 0.1, 1, 0, 0));
 
   Eigen::Vector3d direction;
 

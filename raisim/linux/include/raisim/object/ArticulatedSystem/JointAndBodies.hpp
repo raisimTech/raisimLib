@@ -193,6 +193,8 @@ class Joint {
 
   Joint() {
     rot.setIdentity();
+    limit.setZero();
+    springMount.setZero();
   }
 
   /* if upper and lower bounds of the limit are the same, the limit is ignored */

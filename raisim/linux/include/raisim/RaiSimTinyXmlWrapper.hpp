@@ -50,6 +50,11 @@ public:
     return children;
   }
 
+  bool removeFirstChild(const std::string& child) {
+    RSFATAL_IF(!node_, "You have accessed a dummy node")
+    return node_->RemoveChild(node_->FirstChildElement(child.c_str()));
+  }
+
   std::vector<RaiSimTinyXmlWrapper> getChildrenMust(const std::string &child) const {
     RSFATAL_IF(!node_, "You have accessed a dummy node")
     auto children = getChildren(child);
