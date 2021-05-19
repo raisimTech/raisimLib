@@ -203,7 +203,7 @@ class RaisimServer final {
   static constexpr int SEND_BUFFER_SIZE = 33554432;
   static constexpr int MAXIMUM_PACKET_SIZE = 1024;
   static constexpr int FOOTER_SIZE = sizeof(char);
-  static constexpr int RECEIVE_BUFFER_SIZE = 1024;
+  static constexpr int RECEIVE_BUFFER_SIZE = 33554432;
 
   enum ClientMessageType : int {
     REQUEST_OBJECT_POSITION = 0,
@@ -217,7 +217,7 @@ class RaisimServer final {
     REQUEST_CONFIG_XML,
     REQUEST_INITIALIZE_VISUALS,
     REQUEST_VISUAL_POSITION,
-    REQUEST_SERVER_STATUS,
+    REQUEST_SERVER_STATUS
   };
 
   enum ServerMessageType : int {
@@ -228,7 +228,7 @@ class RaisimServer final {
     CONTACT_INFO_UPDATE = 4,
     CONFIG_XML = 5,
     VISUAL_INITILIZATION = 6,
-    VISUAL_POSITION_UPDATE = 7,
+    VISUAL_POSITION_UPDATE = 7
   };
 
   enum class ServerRequestType : int {
@@ -236,7 +236,9 @@ class RaisimServer final {
     START_RECORD_VIDEO = 1,
     STOP_RECORD_VIDEO = 2,
     FOCUS_ON_SPECIFIC_OBJECT = 3,
-    SET_CAMERA_TO = 4
+    SET_CAMERA_TO = 4,
+    GET_SCREEN_SHOT = 5,
+    SET_SCREEN_SIZE = 6
   };
 
   enum Status : int {
@@ -751,6 +753,27 @@ class RaisimServer final {
     serverRequest_.push_back(ServerRequestType::STOP_RECORD_VIDEO);
   }
 
+  /**
+   * request for screenshot */
+  inline const std::vector<char>& getScreenShot(int& width, int& height) {
+    serverRequest_.push_back(ServerRequestType::GET_SCREEN_SHOT);
+    while(!screenShotReady_)
+      std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
+    screenShotReady_ = false;
+    width = screenShotWidth_;
+    height = screenShotHeight_;
+    return screenShot_;
+  }
+
+  /**
+   * change the screen size */
+  inline void setScreenSize(int width, int height) {
+    serverRequest_.push_back(ServerRequestType::SET_SCREEN_SIZE);
+    screenShotWidth_ = width;
+    screenShotHeight_ = height;
+  }
+
  private:
   inline bool waitForReadEvent(int timeout) {
     fd_set sdset;
@@ -803,6 +826,18 @@ class RaisimServer final {
     if (clientVersion == version_) {
       data = get(data, &type);
       data = get(data, &objectId_);
+      int requestSize;
+      data = get(data, &requestSize);
+      if(requestSize == 1) {
+        data = get(data, &screenShotWidth_);
+        data = get(data, &screenShotHeight_);
+        uint64_t dataSize = screenShotWidth_*screenShotHeight_*3;
+        if(screenShot_.size() != dataSize)
+          screenShot_.resize(dataSize);
+
+        data = getN(data, &screenShot_[0], dataSize);
+        screenShotReady_ = true;
+      }
 
       data_ = set(data_, state_);
 
@@ -814,6 +849,7 @@ class RaisimServer final {
         switch (sr) {
           case ServerRequestType::NO_REQUEST:
           case ServerRequestType::STOP_RECORD_VIDEO:
+          case ServerRequestType::GET_SCREEN_SHOT:
             break;
 
           case ServerRequestType::START_RECORD_VIDEO:
@@ -827,6 +863,11 @@ class RaisimServer final {
 
           case ServerRequestType::FOCUS_ON_SPECIFIC_OBJECT:
             data_ = setString(data_, focusedObjectName_);
+            break;
+
+          case ServerRequestType::SET_SCREEN_SIZE:
+            data_ = set(data_, screenShotWidth_);
+            data_ = set(data_, screenShotHeight_);
             break;
         }
       }
@@ -1619,6 +1660,10 @@ class RaisimServer final {
 
   int raisimPort_ = 8080;
   Eigen::Vector3d position_, lookAt_;
+
+  std::vector<char> screenShot_;
+  int screenShotWidth_, screenShotHeight_;
+  bool screenShotReady_ = false;
 
   // version
   constexpr static int version_ = 10005;
