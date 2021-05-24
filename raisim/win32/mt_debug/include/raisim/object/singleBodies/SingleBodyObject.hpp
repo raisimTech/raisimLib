@@ -280,7 +280,7 @@ class SingleBodyObject : public Object {
   void setAppearance(const std::string& appearance) { appearance_ = appearance; }
   const std::string& getAppearance() const { return appearance_; }
 
-  void clearExternalForcesAndTorques() {
+  void clearExternalForcesAndTorques() override {
     isExternalForces_.resize(0);
     externalForceAndTorque_.resize(0);
     externalForceAndTorquePos_.resize(0);
