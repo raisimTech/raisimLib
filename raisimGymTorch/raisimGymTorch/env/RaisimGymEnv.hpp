@@ -31,9 +31,7 @@ using EigenBoolVec=Eigen::Matrix<bool, -1, 1>;
 class RaisimGymEnv {
 
  public:
-  explicit RaisimGymEnv (std::string resourceDir, const Yaml::Node& cfg) : resourceDir_(std::move(resourceDir)), cfg_(cfg) {
-    world_ = std::make_unique<raisim::World>();
-  }
+  explicit RaisimGymEnv (std::string resourceDir, const Yaml::Node& cfg) : resourceDir_(std::move(resourceDir)), cfg_(cfg) { }
 
   virtual ~RaisimGymEnv() { close(); };
 

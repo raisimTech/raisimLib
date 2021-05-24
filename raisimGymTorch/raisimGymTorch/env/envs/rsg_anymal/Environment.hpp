@@ -18,6 +18,9 @@ class ENVIRONMENT : public RaisimGymEnv {
   explicit ENVIRONMENT(const std::string& resourceDir, const Yaml::Node& cfg, bool visualizable) :
       RaisimGymEnv(resourceDir, cfg), visualizable_(visualizable) {
 
+    /// create world
+    world_ = std::make_unique<raisim::World>();
+
     /// add objects
     anymal_ = world_->addArticulatedSystem(resourceDir_+"/anymal/urdf/anymal.urdf");
     anymal_->setName("anymal");
