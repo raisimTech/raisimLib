@@ -25,7 +25,8 @@
 namespace raisim {
 
 namespace mjcf {
-class LoadFromMJCF;
+class LoadFromMjcf;
+struct MjcfCompilerSetting;
 }
 
 namespace urdf {
@@ -84,39 +85,39 @@ class ArticulatedSystem : public Object {
 
   class LinkRef {
    public:
-    LinkRef(size_t localId, ArticulatedSystem* system) :
-      system_(system), localId_(localId) {
+    LinkRef(size_t localId, ArticulatedSystem *system) :
+        system_(system), localId_(localId) {
 
-      for(auto& col: system_->getCollisionBodies()) {
-        if(col.localIdx==localId_) {
+      for (auto &col: system_->getCollisionBodies()) {
+        if (col.localIdx == localId_) {
           colDef_.insert({col.name, &col});
         }
       }
 
-      for(auto& vis: system_->visObj) {
-        if(vis.localIdx == localId_) {
+      for (auto &vis: system_->visObj) {
+        if (vis.localIdx == localId_) {
           visDef_.insert({vis.name, &vis});
         }
       }
     }
 
-    void getPosition(Vec<3>& position) const {
+    void getPosition(Vec<3> &position) const {
       system_->getBodyPosition(localId_, position);
     }
 
-    void getOrientation(Mat<3,3>& orientation) const {
+    void getOrientation(Mat<3, 3> &orientation) const {
       system_->getBodyOrientation(localId_, orientation);
     }
 
-    void getPose(Vec<3>& position, Mat<3,3>& orientation) const {
+    void getPose(Vec<3> &position, Mat<3, 3> &orientation) const {
       system_->getBodyPose(localId_, orientation, position);
     }
 
-    CollisionDefinition* getCollisionDefinition(const std::string& name) {
+    CollisionDefinition *getCollisionDefinition(const std::string &name) {
       return colDef_[name];
     }
 
-    VisObject* getVisualObject(const std::string& name) {
+    VisObject *getVisualObject(const std::string &name) {
       return visDef_[name];
     }
 
@@ -129,49 +130,49 @@ class ArticulatedSystem : public Object {
       return system_->getMass(localId_);
     }
 
-    void setInertia(const Mat<3,3>& inertia) {
+    void setInertia(const Mat<3, 3> &inertia) {
       system_->getInertia()[localId_] = inertia;
     }
 
-    const Mat<3,3>& getInertia() const {
+    const Mat<3, 3> &getInertia() const {
       return system_->getInertia()[localId_];
     }
 
     /* set center of mass position in parent frame */
-    void setComPositionInParentFrame(const Vec<3>& com) {
+    void setComPositionInParentFrame(const Vec<3> &com) {
       system_->getBodyCOM_B()[localId_] = com;
     }
 
     /* get center of mass position in parent frame */
-    const Vec<3>& getComPositionInParentFrame() const {
+    const Vec<3> &getComPositionInParentFrame() const {
       return system_->getBodyCOM_B()[localId_];
     }
 
-    const std::unordered_map<std::string, CollisionDefinition*>& getCollisionSet() const {
+    const std::unordered_map<std::string, CollisionDefinition *> &getCollisionSet() const {
       return colDef_;
     }
 
-    const std::unordered_map<std::string, VisObject*>& getVisualSet() const {
+    const std::unordered_map<std::string, VisObject *> &getVisualSet() const {
       return visDef_;
     }
 
    private:
-    raisim::ArticulatedSystem* system_;
+    raisim::ArticulatedSystem *system_;
     size_t localId_;
-    std::unordered_map<std::string, CollisionDefinition*> colDef_;
-    std::unordered_map<std::string, VisObject*> visDef_;
+    std::unordered_map<std::string, CollisionDefinition *> colDef_;
+    std::unordered_map<std::string, VisObject *> visDef_;
   };
 
   class JointRef {
    public:
-    JointRef(size_t frameId, ArticulatedSystem* system) :
+    JointRef(size_t frameId, ArticulatedSystem *system) :
         system_(system), frameId_(frameId) {
-      auto& toGvIndex = system_->getMappingFromBodyIndexToGeneralizedVelocityIndex();
-      auto& toGcIndex = system_->getMappingFromBodyIndexToGeneralizedCoordinateIndex();
+      auto &toGvIndex = system_->getMappingFromBodyIndexToGeneralizedVelocityIndex();
+      auto &toGcIndex = system_->getMappingFromBodyIndexToGeneralizedCoordinateIndex();
 
       isMovable_ = system_->getFrames()[frameId].isChild;
 
-      if(isMovable_) {
+      if (isMovable_) {
         gvIndx_ = toGvIndex[system_->getFrames()[frameId].parentId];
         gcIndx_ = toGcIndex[system_->getFrames()[frameId].parentId];
       } else {
@@ -182,30 +183,30 @@ class ArticulatedSystem : public Object {
       jointType_ = system_->getFrames()[frameId].jointType;
     }
 
-    void getPosition(Vec<3>& position) const {
+    void getPosition(Vec<3> &position) const {
       system_->getFramePosition(frameId_, position);
     }
 
-    Mat<3,3> getOrientation() const {
-      Mat<3,3> orientation;
+    Mat<3, 3> getOrientation() const {
+      Mat<3, 3> orientation;
       system_->getFrameOrientation(frameId_, orientation);
       return orientation;
     }
 
-    void getPose(Vec<3>& position, Mat<3,3>& orientation) const {
+    void getPose(Vec<3> &position, Mat<3, 3> &orientation) const {
       system_->getFramePosition(frameId_, position);
       system_->getFrameOrientation(frameId_, orientation);
     }
 
     /* Joint coordinate can be multiple dimensional vector (for a spherical joint)
      * or 1D vector */
-    void getJointCoordinate(VecDyn& coordinate) const {
-      if(jointType_ == raisim::Joint::Type::SPHERICAL) {
+    void getJointCoordinate(VecDyn &coordinate) const {
+      if (jointType_ == raisim::Joint::Type::SPHERICAL) {
         coordinate.resize(4);
         coordinate[0] = system_->getGeneralizedCoordinate()[gcIndx_];
-        coordinate[1] = system_->getGeneralizedCoordinate()[gcIndx_+1];
-        coordinate[2] = system_->getGeneralizedCoordinate()[gcIndx_+2];
-        coordinate[3] = system_->getGeneralizedCoordinate()[gcIndx_+3];
+        coordinate[1] = system_->getGeneralizedCoordinate()[gcIndx_ + 1];
+        coordinate[2] = system_->getGeneralizedCoordinate()[gcIndx_ + 2];
+        coordinate[3] = system_->getGeneralizedCoordinate()[gcIndx_ + 3];
       }
 
       coordinate[0] = system_->getGeneralizedCoordinate()[gcIndx_];
@@ -215,18 +216,14 @@ class ArticulatedSystem : public Object {
       return system_->getGeneralizedCoordinate()[gcIndx_];
     }
 
-    const raisim::Vec<3>& getPositionInParentFrame() const {
-      if(isMovable_)
-        return system_->getJointPos_P()[gvIndx_];
-      else
-      RSFATAL("This is a fixed joint. You cannot change the position of a fixed joint.")
+    const raisim::Vec<3> &getPositionInParentFrame() const {
+      RSFATAL_IF(!isMovable_, "This is a fixed joint. You cannot change the position of a fixed joint.")
+      return system_->getJointPos_P()[gvIndx_];
     }
 
-    const raisim::Vec<3>& getJointAxis() const {
-      if(isMovable_)
-        return system_->getJointAxis_P()[gvIndx_];
-      else
-      RSFATAL("This is a fixed joint. You cannot change the position of a fixed joint.")
+    const raisim::Vec<3> &getJointAxis() const {
+      RSFATAL_IF(!isMovable_, "This is a fixed joint. You cannot change the position of a fixed joint.")
+      return system_->getJointAxis_P()[gvIndx_];
     }
 
     const Joint::Type getType() const {
@@ -244,7 +241,7 @@ class ArticulatedSystem : public Object {
     }
 
    private:
-    raisim::ArticulatedSystem* system_;
+    raisim::ArticulatedSystem *system_;
     size_t frameId_, gvIndx_, gcIndx_;
     bool isMovable_;
     Joint::Type jointType_;
@@ -253,22 +250,29 @@ class ArticulatedSystem : public Object {
  private:
   friend class raisim::World;
   friend class raisim::urdf::LoadFromURDF2;
-  friend class raisim::mjcf::LoadFromMJCF;
+  friend class raisim::mjcf::LoadFromMjcf;
 
  public:
-
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   typedef Eigen::Map<Eigen::Matrix<double, -1, 1> > EigenVec;
   typedef Eigen::Map<Eigen::Matrix<double, -1, -1> > EigenMat;
 
   ArticulatedSystem() = default;
 
-  ArticulatedSystem(const Child& child,
-                    const std::string& resDir,
+  ArticulatedSystem(const Child &child,
+                    const std::string &resDir,
                     ArticulatedSystemOption options);
 
   ArticulatedSystem(const std::string &filePathOrURDFScript,
-                    const std::string &resDir="",
+                    const std::string &resDir = "",
                     const std::vector<std::string> &jointOrder = std::vector<std::string>(),
+                    ArticulatedSystemOption options = ArticulatedSystemOption());
+
+  ArticulatedSystem(const RaiSimTinyXmlWrapper &c,
+                    const std::string &resDir,
+                    const std::unordered_map<std::string, RaiSimTinyXmlWrapper>& defaultNode,
+                    const std::unordered_map<std::string, std::pair<std::string, Vec<3>>>& mesh,
+                    const mjcf::MjcfCompilerSetting& setting,
                     ArticulatedSystemOption options = ArticulatedSystemOption());
 
   ~ArticulatedSystem();
@@ -283,29 +287,33 @@ class ArticulatedSystem : public Object {
 
   /**
    * @param[out] quaternion orientation of base*/
-  void getBaseOrientation(raisim::Vec<4>& quaternion) const;
+  void getBaseOrientation(raisim::Vec<4> &quaternion) const;
 
   /**
    * @param[out] rotataionMatrix orientation of base*/
-  void getBaseOrientation(raisim::Mat<3,3>& rotataionMatrix) const { rotataionMatrix = rot_WB[0]; }
+  void getBaseOrientation(raisim::Mat<3, 3> &rotataionMatrix) const { rotataionMatrix = rot_WB[0]; }
 
   /**
    * @return orientation of base*/
-  const raisim::Mat<3,3>& getBaseOrientation() const { return rot_WB[0]; }
+  const raisim::Mat<3, 3> &getBaseOrientation() const { return rot_WB[0]; }
 
   /**
    * @param[out] position position of base*/
-  void getBasePosition(raisim::Vec<3>& position) const {
-    RSFATAL_IF(jointType[0]!=Joint::Type::FLOATING, "This method is only for floating base")
-    position[0] = gc_[0]; position[1] = gc_[1]; position[2] = gc_[2];
+  void getBasePosition(raisim::Vec<3> &position) const {
+    RSFATAL_IF(jointType[0] != Joint::Type::FLOATING, "This method is only for floating base")
+    position[0] = gc_[0];
+    position[1] = gc_[1];
+    position[2] = gc_[2];
   }
 
   /**
    * @return position of base*/
   raisim::Vec<3> getBasePosition() const {
-    RSFATAL_IF(jointType[0]!=Joint::Type::FLOATING, "This method is only for floating base")
+    RSFATAL_IF(jointType[0] != Joint::Type::FLOATING, "This method is only for floating base")
     raisim::Vec<3> position;
-    position[0] = gc_[0]; position[1] = gc_[1]; position[2] = gc_[2];
+    position[0] = gc_[0];
+    position[1] = gc_[1];
+    position[2] = gc_[2];
     return position;
   }
 
@@ -317,11 +325,19 @@ class ArticulatedSystem : public Object {
   /**
    * set gc of each joint in order
    * @param[in] jointState generalized coordinate */
-  void setGeneralizedCoordinate(const Eigen::VectorXd &jointState) { gc_ = jointState; updateKinematics(); cleanContacts(); }
+  void setGeneralizedCoordinate(const Eigen::VectorXd &jointState) {
+    gc_ = jointState;
+    updateKinematics();
+    cleanContacts();
+  }
   /**
    * set gc of each joint in order
    * @param[in] jointState generalized coordinate */
-  void setGeneralizedCoordinate(const raisim::VecDyn &jointState) { gc_ = jointState; updateKinematics(); cleanContacts(); }
+  void setGeneralizedCoordinate(const raisim::VecDyn &jointState) {
+    gc_ = jointState;
+    updateKinematics();
+    cleanContacts();
+  }
 
   /**
    * set the generalized velocity
@@ -363,13 +379,19 @@ class ArticulatedSystem : public Object {
    * get both the generalized coordinate and the generalized velocity
    * @param[out] genco the generalized coordinate
    * @param[out] genvel the generalized velocity */
-  void getState(Eigen::VectorXd &genco, Eigen::VectorXd &genvel) const { genco = gc_.e(); genvel = gv_.e();}
+  void getState(Eigen::VectorXd &genco, Eigen::VectorXd &genvel) const {
+    genco = gc_.e();
+    genvel = gv_.e();
+  }
 
   /**
    * get both the generalized coordinate and the generalized velocity
    * @param[out] genco the generalized coordinate
    * @param[out] genvel the generalized velocity */
-  void getState(VecDyn &genco, VecDyn &genvel) const { genco = gc_; genvel = gv_;}
+  void getState(VecDyn &genco, VecDyn &genvel) const {
+    genco = gc_;
+    genvel = gv_;
+  }
 
   /**
    * set both the generalized coordinate and the generalized velocity. This updates the kinematics and removes previously computed contact points
@@ -393,7 +415,7 @@ class ArticulatedSystem : public Object {
   VecDyn getGeneralizedForce() const {
     VecDyn genForce(dof);
     genForce = tauFF_;
-    if(controlMode_ == ControlMode::PD_PLUS_FEEDFORWARD_TORQUE) {
+    if (controlMode_ == ControlMode::PD_PLUS_FEEDFORWARD_TORQUE) {
       vecvecCwiseMulThenAdd(kp_, posErr_, genForce);
       vecvecCwiseMulThenSub(kd_, gv_, genForce);
       vecvecCwiseMulThenAdd(kd_, uref_, genForce);
@@ -422,14 +444,19 @@ class ArticulatedSystem : public Object {
   const MatDyn &getInverseMassMatrix() const { return Minv_; }
 
   /**
-   * get the center of mass of the whole system
-   * @return the center of mass */
-  const Vec<3> &getCompositeCOM() const { return composite_com_W[0]; }
+   * get the center of mass of a composite body containing body i and all its children
+   * @return the center of mass of the composite body */
+  const std::vector<raisim::Vec<3>> &getCompositeCOM() const { return composite_com_W; }
 
   /**
-   * get the current composite inertia of the whole system. This value assumes all joints are fixed
-   * @return the inertia of the coposite system */
-  const Mat<3, 3> &getCompositeInertia() const { return compositeInertia_W[0]; }
+   * get the current composite inertia of a composite body containing body i and all its children
+   * @return the inertia of the composite system */
+  const std::vector<raisim::Mat<3, 3>> &getCompositeInertia() const { return compositeInertia_W; }
+
+  /**
+   * get the current composite mass of a composite body containing body i and all its children
+   * @return get the composite mass */
+  const std::vector<double> &getCompositeMass() const { return compositeMass; }
 
   /**
    * linear momentum of the whole system
@@ -438,7 +465,7 @@ class ArticulatedSystem : public Object {
     Vec<3> linearMomentum;
     linearMomentum.setZero();
 
-    for(size_t i = 0; i < nbody; i++) {
+    for (size_t i = 0; i < nbody; i++) {
       Vec<3> com_vel;
       ArticulatedSystem::getVelocity(i, comPos_B[i], com_vel);
       vecScalarMul(mass[i], com_vel);
@@ -470,7 +497,7 @@ class ArticulatedSystem : public Object {
   /**
    * @param[in] referencePoint the reference point about which the angular momentum is computed
    * @param[in] angularMomentum angular momentum about the reference point*/
-  void getAngularMomentum(const Vec<3>& referencePoint, Vec<3> &angularMomentum) const;
+  void getAngularMomentum(const Vec<3> &referencePoint, Vec<3> &angularMomentum) const;
 
   /**
    * bodies here means moving bodies. Fixed bodies are optimized out*/
@@ -484,7 +511,7 @@ class ArticulatedSystem : public Object {
    * getMovableJointNames. Note! the order doesn't correspond to dof since there are
    * joints with multiple dof's
    * @return movable joint names in the joint order. */
-  const std::vector<std::string>& getMovableJointNames() const {return movableJointNames; };
+  const std::vector<std::string> &getMovableJointNames() const { return movableJointNames; };
 
   /**
    * @param[in] bodyIdx The body which contains the point, can be retrieved by getBodyIdx()
@@ -504,8 +531,8 @@ class ArticulatedSystem : public Object {
    * Refer to Object/ArticulatedSystem/Kinematics/Frame in the manual for details
    * @param[in] idx index of the frame
    * @return the coordinate frame of the given index */
-  CoordinateFrame &getFrameByIdx(size_t idx) {return frameOfInterest_[idx];}
-  const CoordinateFrame &getFrameByIdx(size_t idx) const {return frameOfInterest_[idx];}
+  CoordinateFrame &getFrameByIdx(size_t idx) { return frameOfInterest_[idx]; }
+  const CoordinateFrame &getFrameByIdx(size_t idx) const { return frameOfInterest_[idx]; }
 
   /**
    * Refer to Object/ArticulatedSystem/Kinematics/Frame in the manual for details
@@ -544,46 +571,50 @@ class ArticulatedSystem : public Object {
   /**
    * @param[in] frameName the frame name (defined in the urdf)
    * @param[out] point_W the position of the frame expressed in the world frame */
-  void getFramePosition(const std::string& frameName, Vec<3> &point_W) const {
-    getFramePosition(getFrameIdxByName(frameName), point_W); }
+  void getFramePosition(const std::string &frameName, Vec<3> &point_W) const {
+    getFramePosition(getFrameIdxByName(frameName), point_W);
+  }
 
   /**
    * @param[in] frameName the frame name (defined in the urdf)
    * @param[out] orientation_W the orientation of the frame relative to the world frame */
-  void getFrameOrientation(const std::string& frameName, Mat<3, 3> &orientation_W) const {
-    getFrameOrientation(getFrameIdxByName(frameName), orientation_W); }
+  void getFrameOrientation(const std::string &frameName, Mat<3, 3> &orientation_W) const {
+    getFrameOrientation(getFrameIdxByName(frameName), orientation_W);
+  }
 
   /**
    * @param[in] frameName the frame name (defined in the urdf)
    * @param[out] vel_W the linear velocity of the frame expressed in the world frame */
-  void getFrameVelocity(const std::string& frameName, Vec<3> &vel_W) const {
-    getFrameVelocity(getFrameIdxByName(frameName), vel_W); }
+  void getFrameVelocity(const std::string &frameName, Vec<3> &vel_W) const {
+    getFrameVelocity(getFrameIdxByName(frameName), vel_W);
+  }
 
   /**
    * @param[in] frameName the frame name (defined in the urdf)
    * @param[out] angVel_W the angular velocity of the frame relative to the world frame */
-  void getFrameAngularVelocity(const std::string& frameName, Vec<3> &angVel_W) const {
-    getFrameAngularVelocity(getFrameIdxByName(frameName), angVel_W); }
+  void getFrameAngularVelocity(const std::string &frameName, Vec<3> &angVel_W) const {
+    getFrameAngularVelocity(getFrameIdxByName(frameName), angVel_W);
+  }
 
   /**
    * @param[in] frame custom frame defined by the user
    * @param[out] point_W the position of the frame relative to the world frame */
-  void getFramePosition(const CoordinateFrame& frame, Vec<3> &point_W) const;
+  void getFramePosition(const CoordinateFrame &frame, Vec<3> &point_W) const;
 
   /**
    * @param[in] frame custom frame defined by the user
    * @param[out] orientation_W the orientation of the frame relative to the world frame */
-  void getFrameOrientation(const CoordinateFrame& frame, Mat<3, 3> &orientation_W) const;
+  void getFrameOrientation(const CoordinateFrame &frame, Mat<3, 3> &orientation_W) const;
 
   /**
    * @param[in] frame custom frame defined by the user
    * @param[out] vel_W the linear velocity of the frame expressed to the world frame */
-  void getFrameVelocity(const CoordinateFrame& frame, Vec<3> &vel_W) const;
+  void getFrameVelocity(const CoordinateFrame &frame, Vec<3> &vel_W) const;
 
   /**
    * @param[in] frame custom frame defined by the user
    * @param[out] angVel_W the angular velocity of the frame expressed to the world frame */
-  void getFrameAngularVelocity(const CoordinateFrame& frame, Vec<3> &angVel_W) const;
+  void getFrameAngularVelocity(const CoordinateFrame &frame, Vec<3> &angVel_W) const;
 
   /**
    * @param[in] bodyIdx the body index. Note that body index and the joint index are the same because every body has one parent joint. It can be retrieved by getBodyIdx()
@@ -613,7 +644,7 @@ class ArticulatedSystem : public Object {
 
   /**
    * @param[in] bodyIdx the body index. Note that body index and the joint index are the same because every body has one parent joint. It can be retrieved by getBodyIdx()
-   * @param[out] jaco the rotational Jacobian. \omega = J * u. \omgea is the angular velocity expressed in the world frame and u is the generalized velocity */
+   * @param[out] jaco the rotational Jacobian. omega = J * u. omgea is the angular velocity expressed in the world frame and u is the generalized velocity */
   void getSparseRotationalJacobian(size_t bodyIdx, SparseJacobian &jaco) const;
 
   /**
@@ -661,7 +692,7 @@ class ArticulatedSystem : public Object {
    * @param[in] frameIdx the frame index. it can be retrieved by getFrameIdxByName()
    * @param[out] jaco the dense positional Jacobian */
   void getDenseFrameJacobian(size_t frameIdx, Eigen::MatrixXd &jaco) const {
-    auto& frame = getFrameByIdx(frameIdx);
+    auto &frame = getFrameByIdx(frameIdx);
     Vec<3> position_W;
     getFramePosition(frameIdx, position_W);
     getDenseJacobian(frame.parentId, position_W, jaco);
@@ -671,15 +702,16 @@ class ArticulatedSystem : public Object {
    * This method only fills out non-zero elements. Make sure that the jaco is setZero() once in the initialization!
    * @param[in] frameName the frame name. (defined in the URDF)
    * @param[out] jaco the dense positional Jacobian */
-  void getDenseFrameJacobian(const std::string& frameName, Eigen::MatrixXd &jaco) const {
-    getDenseFrameJacobian(getFrameIdxByName(frameName), jaco); }
+  void getDenseFrameJacobian(const std::string &frameName, Eigen::MatrixXd &jaco) const {
+    getDenseFrameJacobian(getFrameIdxByName(frameName), jaco);
+  }
 
   /**
    * This method only fills out non-zero elements. Make sure that the jaco is setZero() once in the initialization!
    * @param[in] frameIdx the frame index. it can be retrieved by getFrameIdxByName()
    * @param[out] jaco the dense rotational Jacobian */
   void getDenseFrameRotationalJacobian(size_t frameIdx, Eigen::MatrixXd &jaco) const {
-    auto& frame = getFrameByIdx(frameIdx);
+    auto &frame = getFrameByIdx(frameIdx);
     getDenseRotationalJacobian(frame.parentId, jaco);
   }
 
@@ -687,8 +719,9 @@ class ArticulatedSystem : public Object {
    * This method only fills out non-zero elements. Make sure that the jaco is setZero() once in the initialization!
    * @param[in] frameName the frame name. (defined in the URDF)
    * @param[out] jaco the dense rotational Jacobian */
-  void getDenseFrameRotationalJacobian(const std::string& frameName, Eigen::MatrixXd &jaco) const {
-    getDenseFrameRotationalJacobian(getFrameIdxByName(frameName), jaco); }
+  void getDenseFrameRotationalJacobian(const std::string &frameName, Eigen::MatrixXd &jaco) const {
+    getDenseFrameRotationalJacobian(getFrameIdxByName(frameName), jaco);
+  }
 
   /**
    * @param[in] jaco the Jacobian associated with the point of interest
@@ -733,7 +766,7 @@ class ArticulatedSystem : public Object {
    * The body position is the position of its parent joint (after its joint transformation)
    * @param[in] bodyIdx the body index. it can be retrieved by getBodyIdx()
    * @param[out] position the position of the body */
-  void getBodyPosition(size_t bodyIdx, Vec<3> &position) const {  position = jointPos_W[bodyIdx]; }
+  void getBodyPosition(size_t bodyIdx, Vec<3> &position) const { position = jointPos_W[bodyIdx]; }
 
   /**
    * The body orientation is the orientation of its parent joint (after its joint transformation)
@@ -753,8 +786,8 @@ class ArticulatedSystem : public Object {
 
   /**
    * @return a reference to joint orientation relative to its parent. */
-  std::vector<raisim::Mat<3,3>> &getJointOrientation_P() { return rot_JB; }
-  const std::vector<raisim::Mat<3,3>> &getJointOrientation_P() const { return rot_JB; }
+  std::vector<raisim::Mat<3, 3>> &getJointOrientation_P() { return rot_JB; }
+  const std::vector<raisim::Mat<3, 3>> &getJointOrientation_P() const { return rot_JB; }
 
   /**
    * @return a reference to joint axis relative to its parent, expressed in the parent frame. */
@@ -763,7 +796,7 @@ class ArticulatedSystem : public Object {
 
   /**
    * @return a reference to joint axis expressed in the world frame. */
-  const raisim::Vec<3>& getJointAxis(size_t idx) const { return jointAxis_W[idx]; }
+  const raisim::Vec<3> &getJointAxis(size_t idx) const { return jointAxis_W[idx]; }
 
   /**
    * You MUST call updateMassInfo() after you change the mass
@@ -794,12 +827,14 @@ class ArticulatedSystem : public Object {
   /**
    * @param name collision body name which is "LINK_NAME" + "/" + "COLLISION_NUMBER". For example, the first collision body of the link "base" is named as "base/0"
    * @return a reference to the collision bodies. Position and orientation can be set dynamically */
-  raisim::CollisionDefinition &getCollisionBody(const std::string& name) {
+  raisim::CollisionDefinition &getCollisionBody(const std::string &name) {
     return *std::find_if(collisionBodies.begin(), collisionBodies.end(),
-                      [name](const raisim::CollisionDefinition& ref){ return ref.name == name; }); }
-  const raisim::CollisionDefinition &getCollisionBody(const std::string& name) const {
+                         [name](const raisim::CollisionDefinition &ref) { return ref.name == name; });
+  }
+  const raisim::CollisionDefinition &getCollisionBody(const std::string &name) const {
     return *std::find_if(collisionBodies.begin(), collisionBodies.end(),
-                         [name](const raisim::CollisionDefinition& ref){ return ref.name == name; }); }
+                         [name](const raisim::CollisionDefinition &ref) { return ref.name == name; });
+  }
 
   /**
    * This method updates the precomputed composite mass. Call this method after you change link mass.
@@ -843,7 +878,7 @@ class ArticulatedSystem : public Object {
    * @param[in] bodyIdx the body index. it can be retrieved by getBodyIdx()
    * @param[in] force the applied force
    * @param[in] pos position at which the force is applied*/
-  void setExternalForce(size_t bodyIdx, const Vec<3>& pos, const Vec<3>& force) final {
+  void setExternalForce(size_t bodyIdx, const Vec<3> &pos, const Vec<3> &force) final {
     setExternalForce(bodyIdx, Frame::WORLD_FRAME, force, Frame::BODY_FRAME, pos);
   }
 
@@ -852,8 +887,8 @@ class ArticulatedSystem : public Object {
    * You have to apply the force for every time step if you want persistent force
    * @param[in] frame_name the name of the frame where you want to applied the force. The force is applied to the origin of the frame, on the body where the frame is attached to.
    * @param[in] force the applied force in the world frame*/
-  void setExternalForce(const std::string& frame_name, const Vec<3>& force) {
-    auto& frame = getFrameByName(frame_name);
+  void setExternalForce(const std::string &frame_name, const Vec<3> &force) {
+    auto &frame = getFrameByName(frame_name);
     setExternalForce(frame.parentId, Frame::WORLD_FRAME, force, Frame::BODY_FRAME, frame.position);
   }
 
@@ -884,8 +919,10 @@ class ArticulatedSystem : public Object {
    * @param[in] posTarget position target
    * @param[in] velTarget velocity target */
   void setPdTarget(const Eigen::VectorXd &posTarget, const Eigen::VectorXd &velTarget) {
-    RSFATAL_IF(size_t(posTarget.rows()) != gcDim,"position target should have the same dimension as the generalized coordinate")
-    RSFATAL_IF(size_t(velTarget.rows()) != dof, "the velocity target should have the same dimension as the degrees of freedom")
+    RSFATAL_IF(size_t(posTarget.rows()) != gcDim,
+               "position target should have the same dimension as the generalized coordinate")
+    RSFATAL_IF(size_t(velTarget.rows()) != dof,
+               "the velocity target should have the same dimension as the degrees of freedom")
     qref_ = posTarget;
     uref_ = velTarget;
   }
@@ -894,20 +931,24 @@ class ArticulatedSystem : public Object {
    * get PD targets.
    * @param[out] posTarget position target
    * @param[out] velTarget velocity target */
-   void getPdTarget(Eigen::VectorXd &posTarget, Eigen::VectorXd &velTarget) {
-     RSFATAL_IF(size_t(posTarget.rows()) != gcDim,"position target should have the same dimension as the generalized coordinate")
-     RSFATAL_IF(size_t(velTarget.rows()) != dof, "the velocity target should have the same dimension as the degrees of freedom")
-     posTarget = qref_.e();
-     velTarget = uref_.e();
-   }
+  void getPdTarget(Eigen::VectorXd &posTarget, Eigen::VectorXd &velTarget) {
+    RSFATAL_IF(size_t(posTarget.rows()) != gcDim,
+               "position target should have the same dimension as the generalized coordinate")
+    RSFATAL_IF(size_t(velTarget.rows()) != dof,
+               "the velocity target should have the same dimension as the degrees of freedom")
+    posTarget = qref_.e();
+    velTarget = uref_.e();
+  }
 
   /**
    * set PD targets.
    * @param[in] posTarget position target (dimension == getGeneralizedCoordinateDim())
    * @param[in] velTarget velocity target (dimension == getDOF()) */
   void setPdTarget(const raisim::VecDyn &posTarget, const raisim::VecDyn &velTarget) {
-    RSFATAL_IF(size_t(posTarget.rows()) != gcDim,"position target should have the same dimension as the generalized coordinate")
-    RSFATAL_IF(size_t(velTarget.rows()) != dof, "the velocity target should have the same dimension as the degrees of freedom")
+    RSFATAL_IF(size_t(posTarget.rows()) != gcDim,
+               "position target should have the same dimension as the generalized coordinate")
+    RSFATAL_IF(size_t(velTarget.rows()) != dof,
+               "the velocity target should have the same dimension as the degrees of freedom")
     qref_ = posTarget;
     uref_ = velTarget;
   }
@@ -918,7 +959,8 @@ class ArticulatedSystem : public Object {
   template<class T>
   void setPTarget(const T &posTarget) {
     setControlMode(ControlMode::PD_PLUS_FEEDFORWARD_TORQUE);
-    RSFATAL_IF(size_t(posTarget.rows()) != gcDim,"position target should have the same dimension as the generalized coordinate")
+    RSFATAL_IF(size_t(posTarget.rows()) != gcDim,
+               "position target should have the same dimension as the generalized coordinate")
     qref_ = posTarget;
   }
 
@@ -927,7 +969,8 @@ class ArticulatedSystem : public Object {
    * @param[in] velTarget velocity target (dimension == getDOF()) */
   template<class T>
   void setDTarget(const T &velTarget) {
-    RSFATAL_IF(size_t(velTarget.rows()) != dof, "the velocity target should have the same dimension as the degrees of freedom")
+    RSFATAL_IF(size_t(velTarget.rows()) != dof,
+               "the velocity target should have the same dimension as the degrees of freedom")
     uref_ = velTarget;
   }
 
@@ -965,10 +1008,10 @@ class ArticulatedSystem : public Object {
    * @param[in] pgain position gain (dimension == getDOF())*/
   template<class T>
   void setPGains(const T &pgain) {
-    RSFATAL_IF(size_t(pgain.rows()) !=dof, "p gains should have the same dimension as the degrees of freedom")
+    RSFATAL_IF(size_t(pgain.rows()) != dof, "p gains should have the same dimension as the degrees of freedom")
     kp_ = pgain;
-    if(jointType[0] == Joint::FLOATING) {
-      for(size_t i=0; i < 6; i++)
+    if (jointType[0] == Joint::FLOATING) {
+      for (size_t i = 0; i < 6; i++)
         kp_[i] = 0;
     }
     dampedDiagonalTermUpdated_ = false;
@@ -981,8 +1024,8 @@ class ArticulatedSystem : public Object {
   void setDGains(const T &dgain) {
     RSFATAL_IF(size_t(dgain.rows()) != dof, "d gains should have the same dimension as the degrees of freedom")
     kd_ = dgain;
-    if(jointType[0] == Joint::FLOATING) {
-      for(size_t i=0; i < 6; i++)
+    if (jointType[0] == Joint::FLOATING) {
+      for (size_t i = 0; i < 6; i++)
         kd_[i] = 0;
     }
     dampedDiagonalTermUpdated_ = false;
@@ -1050,13 +1093,17 @@ class ArticulatedSystem : public Object {
    * @param[in] visObjIdx visual object index. Following the order specified by the vector getVisOb()
    * @param[out] rot orientation
    * @param[out] pos position */
-  void getVisObPose(size_t visObjIdx, Mat<3,3>& rot, Vec<3>& pos) const { getPose(visObj[visObjIdx], rot, pos); }
+  void getVisObPose(size_t visObjIdx, Mat<3, 3> &rot, Vec<3> &pos) const { getPose(visObj[visObjIdx], rot, pos); }
 
   /**
    * @param[in] visColObjIdx visual collision object index. Following the order specified by the vector getVisColOb()
    * @param[out] rot orientation
    * @param[out] pos position */
-  void getVisColObPose(size_t visColObjIdx, Mat<3,3>& rot, Vec<3>& pos) const { getPose(visColObj[visColObjIdx], rot, pos); }
+  void getVisColObPose(size_t visColObjIdx, Mat<3, 3> &rot, Vec<3> &pos) const {
+    getPose(visColObj[visColObjIdx],
+            rot,
+            pos);
+  }
 
   /**
    * @return the resource directory (for mesh files, textures, etc) */
@@ -1081,11 +1128,11 @@ class ArticulatedSystem : public Object {
   /**
    * if the object was instantiated with raw URDF string, it exports the robot description to an URDF file
    * @param[in] filePath Path where the file is generated */
-  void exportRobotDescriptionToURDF(const std::string& filePath) const {
+  void exportRobotDescriptionToURDF(const std::string &filePath) const {
     RSFATAL_IF(robotDef_.empty(), "This articulated system was created with an existing urdf file")
     std::ofstream urdfFile;
-    RSFATAL_IF(filePath.substr(filePath.size()-5, 5)!=".urdf", "Articulated System is only saved to a URDF format")
-    urdfFile.open (filePath);
+    RSFATAL_IF(filePath.substr(filePath.size() - 5, 5) != ".urdf", "Articulated System is only saved to a URDF format")
+    urdfFile.open(filePath);
     urdfFile << robotDef_;
     urdfFile.close();
   }
@@ -1093,11 +1140,13 @@ class ArticulatedSystem : public Object {
   /**
    * set the base position using an eigen vector
    * @param[in] pos position of the base */
-  void setBasePos_e(const Eigen::Vector3d& pos) {
-    if(jointType[0]==Joint::FIXED)
+  void setBasePos_e(const Eigen::Vector3d &pos) {
+    if (jointType[0] == Joint::FIXED)
       jointPos_W[0].e() = pos;
     else {
-      gc_[0] = pos[0]; gc_[1] = pos[1]; gc_[2] = pos[2];
+      gc_[0] = pos[0];
+      gc_[1] = pos[1];
+      gc_[2] = pos[2];
     }
     updateKinematics();
   }
@@ -1105,11 +1154,11 @@ class ArticulatedSystem : public Object {
   /**
    * set the base orientation using an eigen vector
    * @param[in] rot orientation of the base */
-  void setBaseOrientation_e(const Eigen::Matrix3d& rot) {
-    if(jointType[0]==Joint::FIXED)
+  void setBaseOrientation_e(const Eigen::Matrix3d &rot) {
+    if (jointType[0] == Joint::FIXED)
       rot_WB[0].e() = rot;
     else {
-      Mat<3,3> rotMat{};
+      Mat<3, 3> rotMat{};
       Vec<4> quat;
       rotMat.e() = rot;
       rotMatToQuat(rotMat, quat);
@@ -1121,27 +1170,28 @@ class ArticulatedSystem : public Object {
   /**
    * set the base position using an eigen vector
    * @param[in] pos position of the base */
-  void setBasePos(const Vec<3>& pos);
+  void setBasePos(const Vec<3> &pos);
   /**
    * set the base orientation using an eigen vector
    * @param[in] rot orientation of the base */
-  void setBaseOrientation(const Mat<3,3>& rot);
+  void setBaseOrientation(const Mat<3, 3> &rot);
 
   /**
    * set limits in actuation force. It can be also specified in the URDF file
    * @param[in] upper upper joint force/torque limit
    * @param[in] lower lower joint force/torque limit*/
-  void setActuationLimits(const Eigen::VectorXd& upper, const Eigen::VectorXd& lower) {
-    tauUpper_ = upper; tauLower_ = lower;
+  void setActuationLimits(const Eigen::VectorXd &upper, const Eigen::VectorXd &lower) {
+    tauUpper_ = upper;
+    tauLower_ = lower;
   }
 
   /**
    * @return the upper joint torque/force limit*/
-  const VecDyn& getActuationUpperLimits() const { return tauUpper_; }
+  const VecDyn &getActuationUpperLimits() const { return tauUpper_; }
 
   /**
    * @return the lower joint torque/force limit*/
-  const VecDyn& getActuationLowerLimits() const { return tauLower_; }
+  const VecDyn &getActuationLowerLimits() const { return tauLower_; }
 
   /**
    * change collision geom parameters.
@@ -1150,26 +1200,26 @@ class ArticulatedSystem : public Object {
    * For a sphere, {raidus}.
    * For a cylinder and a capsule, {radius, length}
    * For a box, {x-dim, y-dim, z-dim} */
-  void setCollisionObjectShapeParameters(size_t id, const std::vector<double>& params);
+  void setCollisionObjectShapeParameters(size_t id, const std::vector<double> &params);
 
   /**
    * change collision geom offset from the joint position.
    * @param[in] id collision object id
    * @param[in] posOffset the position vector expressed in the joint frame */
-  void setCollisionObjectPositionOffset(size_t id, const Vec<3>& posOffset);
+  void setCollisionObjectPositionOffset(size_t id, const Vec<3> &posOffset);
 
   /**
    * change collision geom orientation offset from the joint frame.
    * @param[in] id collision object id
    * @param[in] oriOffset the orientation relative to the joint frame */
-  void setCollisionObjectOrientationOffset(size_t id, const Mat<3,3>& oriOffset);
+  void setCollisionObjectOrientationOffset(size_t id, const Mat<3, 3> &oriOffset);
 
   /**
    * rotor inertia is a term added to the diagonal of the mass matrix. This approximates the rotor inertia. Note that this
    * is not exactly equivalent in dynamics (due to gyroscopic effect). but it is a commonly used approximation.
    * It can also be expressed in the URDF file
    * @param[in] rotorInertia the rotor inertia */
-  void setRotorInertia(const VecDyn& rotorInertia) {
+  void setRotorInertia(const VecDyn &rotorInertia) {
     rotorInertia_ = rotorInertia;
   }
 
@@ -1178,7 +1228,7 @@ class ArticulatedSystem : public Object {
    * is not exactly equivalent in dynamics (due to gyroscopic effect). but it is a commonly used approximation.
    * It can also be expressed in the URDF file
    * @return the rotor inertia */
-  const VecDyn& getRotorInertia() const {
+  const VecDyn &getRotorInertia() const {
     return rotorInertia_;
   }
 
@@ -1198,7 +1248,7 @@ class ArticulatedSystem : public Object {
    * returns reference object of the joint
    * @param[in] name joint name
    * @return a JointRef to the joint. Check the example JointRefAndLinkRef*/
-  JointRef getJoint(const std::string& name) {
+  JointRef getJoint(const std::string &name) {
     auto index = getFrameIdxByName(name);
     return {index, this};
   }
@@ -1207,19 +1257,19 @@ class ArticulatedSystem : public Object {
    * returns reference object of the joint
    * @param[in] name the link name
    * @return a LinkRef to the link. Check the example JointRefAndLinkRef*/
-  LinkRef getLink(const std::string& name) {
-    return {size_t(std::find(bodyName.begin(), bodyName.end(), name)-bodyName.begin()), this};
+  LinkRef getLink(const std::string &name) {
+    return {size_t(std::find(bodyName.begin(), bodyName.end(), name) - bodyName.begin()), this};
   }
 
   /**
    * @return a mapping that converts body index to gv index */
-  const std::vector<size_t>& getMappingFromBodyIndexToGeneralizedVelocityIndex() const {
+  const std::vector<size_t> &getMappingFromBodyIndexToGeneralizedVelocityIndex() const {
     return bodyIdx2GvIdx;
   }
 
   /**
    * @return a mapping that converts body index to gv index */
-  const std::vector<size_t>& getMappingFromBodyIndexToGeneralizedCoordinateIndex() const {
+  const std::vector<size_t> &getMappingFromBodyIndexToGeneralizedCoordinateIndex() const {
     return bodyIdx2GcIdx;
   }
 
@@ -1252,7 +1302,7 @@ class ArticulatedSystem : public Object {
    * The following joint returns the joint/body Id
    * ``robot.getJointLimitViolations()[0]->jointId``.
    * @return get contact problems associated with violated joint limits */
-  const std::vector<contact::Single3DContactProblem*>& getJointLimitViolations() {
+  const std::vector<contact::Single3DContactProblem *> &getJointLimitViolations() {
     return jointLimitViolation_;
   }
 
@@ -1261,16 +1311,16 @@ class ArticulatedSystem : public Object {
    * For revolute and prisimatic joints, the joint limit is {lower, upper}
    * For spherical joint, the joint limit is {angle, NOT_USED}
    * @param[in] jointLimits joint limits*/
-   void setJointLimits(const std::vector<raisim::Vec<2>>& jointLimits) {
-     jointLimits_ = jointLimits;
-   }
+  void setJointLimits(const std::vector<raisim::Vec<2>> &jointLimits) {
+    jointLimits_ = jointLimits;
+  }
 
   /**
    * get the joint limits
    * For revolute and prisimatic joints, the joint limit is {lower, upper}
    * For spherical joint, the joint limit is {angle, NOT_USED}
    * @return jointLimits joint limits*/
-  const std::vector<raisim::Vec<2>>& getJointLimits() {
+  const std::vector<raisim::Vec<2>> &getJointLimits() {
     return jointLimits_;
   }
 
@@ -1295,13 +1345,13 @@ class ArticulatedSystem : public Object {
                     const std::vector<std::string> &jointOrder,
                     ArticulatedSystemOption options);
 
-  void getPose(const VisObject& vob, Mat<3, 3>& rot, Vec<3>& pos) const;
+  void getPose(const VisObject &vob, Mat<3, 3> &rot, Vec<3> &pos) const;
 
   void getSparseJacobian_internal(size_t bodyIdx, const Vec<3> &point_W, SparseJacobian &jaco);
 
   void updateCollision() final;
 
-  void computeMassMatrix(MatDyn &M)  noexcept;
+  void computeMassMatrix(MatDyn &M) noexcept;
 
   void computeNonlinearities(const Vec<3> &gravity, VecDyn &b);
 
@@ -1315,7 +1365,7 @@ class ArticulatedSystem : public Object {
   void preContactSolverUpdate2(const Vec<3> &gravity, double dt) final;
   void integrateWithoutContact(const Vec<3> &gravity, double dt);
 
-  void integrate(double dt, const Vec<3>& gravity) final;
+  void integrate(double dt, const Vec<3> &gravity) final;
 
   void addContactPointVel(size_t pointId, Vec<3> &vel) final;
 
@@ -1328,20 +1378,20 @@ class ArticulatedSystem : public Object {
   void updateTimeStepIfNecessary(double dt) final;
 
   /* adding spring element */
-  void addSpring(const SpringElement& spring) { springs_.push_back(spring); }
+  void addSpring(const SpringElement &spring) { springs_.push_back(spring); }
 
-  std::vector<SpringElement>& getSprings() { return springs_; }
-  const std::vector<SpringElement>& getSprings() const { return springs_; }
+  std::vector<SpringElement> &getSprings() { return springs_; }
+  const std::vector<SpringElement> &getSprings() const { return springs_; }
 
   inline void jacoSub(const raisim::SparseJacobian &jaco1, raisim::SparseJacobian &jaco, bool isFloatingBase);
 
-  void setConstraintForce(size_t bodyIdx, const Vec<3>& pos, const Vec<3>& force) final;
+  void setConstraintForce(size_t bodyIdx, const Vec<3> &pos, const Vec<3> &force) final;
 
  private:
 
   void init();
 
-  void integratePosition(VecDyn& gc, VecDyn& gvAvg, double dt);
+  void integratePosition(VecDyn &gc, VecDyn &gvAvg, double dt);
 
   void computeExpandedParentArray();
 
@@ -1351,12 +1401,19 @@ class ArticulatedSystem : public Object {
 
   void computeDampedMass(double dt);
 
-  void cleanContacts() { contactJaco_.clear(); getContacts().clear(); }
+  void cleanContacts() {
+    contactJaco_.clear();
+    getContacts().clear();
+  }
 
-  void rkIntegrate(const Vec<3>& gravity, double dt);
+  void rkIntegrate(const Vec<3> &gravity, double dt);
 
   void clearExternalForces();
 
+ public:
+  void articulatedBodyAlgorithm(const Eigen::Vector3d& gravity, Eigen::VectorXd& udot);
+
+ private:
   /// for computation
   /// Frames:: W: world, B: body, P: parent
 
@@ -1413,7 +1470,7 @@ class ArticulatedSystem : public Object {
 
   /// Contact variables
   std::vector<MatDyn> MinvJT_T;
-  VecDyn tauStar_, tau_, tauFF_; // tau_ is the actual torque applied to the joints. tauFF_ is the feedforward joint torque. these two can be differ if the control mode is not FORCE_AND_TORQUE
+  VecDyn tauStar_, tau_, tauFF_;
   VecDyn tauUpper_, tauLower_; // bounds
   std::vector<size_t> bodyIdx2GvIdx, bodyIdx2GcIdx;
 
@@ -1432,7 +1489,7 @@ class ArticulatedSystem : public Object {
   raisim::CollisionSet collisionBodies;
   std::vector<VisObject> visColObj, visObj;
   ArticulatedSystemOption options_;
-  std::vector<contact::Single3DContactProblem*> jointLimitViolation_;
+  std::vector<contact::Single3DContactProblem *> jointLimitViolation_;
 
  private:
   size_t nbody, dof = 0, gcDim = 0;
@@ -1462,6 +1519,15 @@ class ArticulatedSystem : public Object {
 
   IntegrationScheme desiredIntegrationScheme_ = IntegrationScheme::TRAPEZOID;
   IntegrationScheme integrationSchemeThisTime_;
+
+  /// ABA
+  std::vector<Eigen::Matrix<double, 6, 6>, AlignedAllocator<Eigen::Matrix<double, 6, 6>, 32>> XT, Ma, XMXT;
+  std::vector<Eigen::Matrix<double, 1, 6>, AlignedAllocator<Eigen::Matrix<double, 1, 6>, 32>> STMaXT, ST, SdotT, STMa;
+  std::vector<Eigen::Matrix<double, 6, 1>, AlignedAllocator<Eigen::Matrix<double, 6, 1>, 32>> Pa, V, acc, SdotUpXdotTV, XTAcc;
+  std::vector<Eigen::Matrix<double, 3, 3>, AlignedAllocator<Eigen::Matrix<double, 3, 3>, 32>> XdotT;
+  std::vector<Eigen::Matrix3d, AlignedAllocator<Eigen::Matrix3d, 32>> joint2Com_w_Skew;
+  Eigen::Matrix<double, 6, 6> MaInv_base;
+  std::vector<double> STMaSinv, STPa, udotExpectAccTerm;
 };
 
 }
