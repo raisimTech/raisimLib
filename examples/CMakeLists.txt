@@ -59,6 +59,11 @@ create_executable(compound src/server/compound.cpp)
 create_executable(kinova src/server/kinova.cpp)
 create_executable(cartPole src/server/cartPole.cpp)
 create_executable(springTest src/server/springTest.cpp)
+create_executable(trackedRobotAndTemplatedURDF src/server/trackedRobotAndTemplatedURDF.cpp)
 
 # xml reader
 create_executable(xmlRader src/xml/xmlReader.cpp)
+
+# mjcf files
+create_executable(mjcf_humanoid src/mjcf/humanoid.cpp)
+create_executable(mjcf_ant src/mjcf/ant.cpp)

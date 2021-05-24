@@ -55,7 +55,6 @@ ODE_API void ODE_NORETURN dError (int num, const char *msg, ...);
 ODE_API void ODE_NORETURN dDebug (int num, const char *msg, ...);
 ODE_API void dMessage (int num, const char *msg, ...);
 
-
 #ifdef __cplusplus
 }
 #endif

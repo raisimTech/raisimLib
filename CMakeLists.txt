@@ -10,14 +10,22 @@ include(GNUInstallDirs)
 option(RAISIM_EXAMPLE "Build example applications." TRUE)
 option(RAISIM_MATLAB "Build a matlab wrapper." FALSE)
 option(RAISIM_PY "Build a python wrapper." FALSE)
-option(RAISIM_DOC "Build a python wrapper." FALSE)
+option(RAISIM_DOC "Build a raisim documentation. You can find the latest doc in raisim.com." FALSE)
 
 if (UNIX AND NOT APPLE AND NOT ANDROID AND NOT WEBGL AND NOT WIN32)
     set(RAISIM_OS linux)  
     list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_SOURCE_DIR}/raisim/${RAISIM_OS})
 elseif(APPLE)
-    set(RAISIM_OS mac)
-    list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_SOURCE_DIR}/raisim/${RAISIM_OS})
+    execute_process(COMMAND sysctl -q hw.optional.arm64
+            OUTPUT_VARIABLE _sysctl_stdout
+            ERROR_VARIABLE _sysctl_stderr
+            RESULT_VARIABLE _sysctl_result
+            )
+    if(_sysctl_result EQUAL 0 AND _sysctl_stdout MATCHES "hw.optional.arm64: 1")
+        list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_SOURCE_DIR}/raisim/m1})
+    else()
+        list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_SOURCE_DIR}/raisim/mac})
+    endif()
 elseif(WIN32)
     set(RAISIM_OS win32)
     list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_SOURCE_DIR}/raisim/${RAISIM_OS}/mt_release)
@@ -80,5 +88,6 @@ endif()
 if(RAISIM_DOC)
     add_subdirectory(docs)
 endif()
+
 
 # EOF

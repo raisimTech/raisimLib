@@ -24,12 +24,12 @@ int main(int argc, char* argv[]) {
 
   /// kinova joint PD controller
   Eigen::VectorXd jointNominalConfig(kinova->getGeneralizedCoordinateDim()), jointVelocityTarget(kinova->getDOF());
-  jointNominalConfig << 0.0, 2.76, -1.57, 0.0, 2.0, 0.0, 0.0, 0.0, 0.0;
+  jointNominalConfig << 0.0, 2.76, -1.57, 0.0, 2.0, 0.0;
   jointVelocityTarget.setZero();
 
   Eigen::VectorXd jointPgain(kinova->getDOF()), jointDgain(kinova->getDOF());
-  jointPgain << 40.0, 40.0, 40.0, 15.0, 15.0, 15.0, 1.2, 1.2, 1.2;
-  jointDgain << 1.0, 1.0, 1.0, 0.5, 0.5, 0.5, 0.01, 0.01, 0.01;
+  jointPgain << 40.0, 40.0, 40.0, 15.0, 15.0, 15.0;
+  jointDgain << 1.0, 1.0, 1.0, 0.5, 0.5, 0.5;
 
   kinova->setGeneralizedCoordinate(jointNominalConfig);
   kinova->setGeneralizedForce(Eigen::VectorXd::Zero(kinova->getDOF()));

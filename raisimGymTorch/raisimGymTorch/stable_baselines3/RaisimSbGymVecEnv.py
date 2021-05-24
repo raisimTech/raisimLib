@@ -2,6 +2,7 @@
 # // This file is part of RaiSim//
 # // Copyright 2020, RaiSim Tech//
 # //----------------------------//
+from typing import Type, List
 
 import numpy as np
 import platform
@@ -111,6 +112,14 @@ class RaisimSbGymVecEnv(VecEnv):
 
     def render(self, mode='human'):
         pass
+
+    def env_is_wrapped(self, wrapper_class: Type[gym.Wrapper], indices: VecEnvIndices = None) -> List[bool]:
+        """Check if worker environments are wrapped with a given wrapper"""
+        target_envs = self._get_target_envs(indices)
+        # Import here to avoid a circular import
+        from stable_baselines3.common import env_util
+
+        return [env_util.is_wrapped(env_i, wrapper_class) for env_i in target_envs]
 
 
 class RunningMeanStd(object):

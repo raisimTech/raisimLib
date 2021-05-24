@@ -390,23 +390,38 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         )mydelimiter")
 
         .def("getCompositeCOM", [](raisim::ArticulatedSystem &self) {
-            Vec<3> vec = self.getCompositeCOM();
-            return convert_vec_to_np(vec);
+          py::list list;
+          for (auto pos : self.getCompositeCOM())
+            list.append(convert_vec_to_np(pos));
+
+          return list;
         }, R"mydelimiter(
-        Get the composite center of mass position (i.e. the center of mass of the whole system).
+        Get the center of mass position of the composite body (i.e. the byproduct of the composite rigid body algorithm).
 
         Returns:
-            np.array[float[3]]: center of mass position.
+            list of np.array[float[3]]: center of mass position of the composite bodies.
         )mydelimiter")
 
         .def("getCompositeInertia", [](raisim::ArticulatedSystem &self) {
-            Mat<3, 3> vec = self.getCompositeInertia();
-            return convert_mat_to_np(vec);
+          py::list list;
+          for (auto pos : self.getCompositeInertia())
+            list.append(convert_mat_to_np(pos));
+
+          return list;
         }, R"mydelimiter(
-        Get the composite moment of inertia of the whole system.
+        Get the composite moment of inertia of the composite body (i.e. the byproduct of the composite rigid body algorithm).
 
         Returns:
-            np.array[float[3, 3]]: moment inertia of the whole system.
+            list of np.array[float[3, 3]]: moment inertia of the composite bodies
+        )mydelimiter")
+
+        .def("getCompositeMass", [](raisim::ArticulatedSystem &self) {
+          return self.getCompositeMass();
+        }, R"mydelimiter(
+        Get the composite mass of the composite body (i.e. the byproduct of the composite rigid body algorithm)
+
+        Returns:
+            list of float64: mass of the composite bodies
         )mydelimiter")
 
         .def("getLinearMomentum", [](raisim::ArticulatedSystem &self) {

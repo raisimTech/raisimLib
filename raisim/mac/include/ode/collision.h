@@ -22,7 +22,7 @@
 
 #ifndef _ODE_COLLISION_H_
 #define _ODE_COLLISION_H_
-
+#include <cerrno>
 #include <ode/common.h>
 #include <ode/collision_space.h>
 #include <ode/contact.h>
