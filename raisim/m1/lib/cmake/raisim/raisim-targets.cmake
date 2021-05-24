@@ -61,7 +61,7 @@ set_target_properties(raisim::raisimZ PROPERTIES
 add_library(raisim::raisimPng SHARED IMPORTED)
 
 set_target_properties(raisim::raisimPng PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
+  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include;/Users/jeminhwangbo/workspace/raisimLib/raisim/m1/include/png"
   INTERFACE_LINK_LIBRARIES "raisim::raisimZ"
 )
 
