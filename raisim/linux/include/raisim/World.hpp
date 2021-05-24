@@ -129,9 +129,9 @@ class World {
                     CollisionGroup collisionMask = CollisionGroup(-1));
 
   /**
-   * @param XLength x dimension
-   * @param YLength y dimension
-   * @param ZLength z dimension
+   * @param xLength x dimension
+   * @param yLength y dimension
+   * @param zLength z dimension
    * @param mass mass
    * @param material material of the height map (which defines the contact dynamics)
    * @param collisionGroup read "Contact and Collision/ Collision Group and Mask"
@@ -197,7 +197,7 @@ class World {
    * @param collisionMask read "Contact and Collision/ Collision Group and Mask"
    * @return pointer to the created height map */
   HeightMap *addHeightMap(size_t xSamples,
-                          size_t ysamples,
+                          size_t ySamples,
                           double xSize,
                           double ySize,
                           double centerX,
@@ -275,7 +275,7 @@ class World {
    * @param jointOrder this can be used to redefine the joint order. A child cannot precede its parent. Leave it empty ({}) to use the joint order defined in the URDF file.
    * @param collisionGroup read "Contact and Collision/ Collision Group and Mask"
    * @param collisionMask read "Contact and Collision/ Collision Group and Mask"
-   * @param option Currently only support "doNotCollideWithParent"
+   * @param options Currently only support "doNotCollideWithParent"
    * @return pointer to the articulated system */
   ArticulatedSystem *addArticulatedSystem(const std::string &filePathOrURDFScript,
                                           const std::string &resPath = "",
@@ -291,7 +291,7 @@ class World {
    * @param jointOrder this can be used to redefine the joint order. A child cannot precede its parent. Leave it empty ({}) to use the joint order defined in the URDF file.
    * @param collisionGroup read "Contact and Collision/ Collision Group and Mask"
    * @param collisionMask read "Contact and Collision/ Collision Group and Mask"
-   * @param option Currently only support "doNotCollideWithParent"
+   * @param options Currently only support "doNotCollideWithParent"
    * @return pointer to the articulated system */
   ArticulatedSystem *addArticulatedSystem(const std::string &xmlFileTemplate,
                                           const std::unordered_map<std::string, std::string>& params,
@@ -307,7 +307,7 @@ class World {
    * @param resPath Path to the resource directory. Leave it empty ("") if it is the urdf file directory
    * @param collisionGroup read "Contact and Collision/ Collision Group and Mask"
    * @param collisionMask read "Contact and Collision/ Collision Group and Mask"
-   * @param option Currently only support "doNotCollideWithParent"
+   * @param options Currently only support "doNotCollideWithParent"
    * @return pointer to the articulated system */
   ArticulatedSystem *addArticulatedSystem(const Child& child,
                                           const std::string &resPath = "",
@@ -551,7 +551,7 @@ class World {
 
   /**
    * manually adjust the world time
-   * @param the world time */
+   * @param time the world time */
   void setWorldTime(double time) { worldTime_ = time; }
 
   /**
@@ -582,6 +582,10 @@ protected:
                           CollisionGroup collisionGroup,
                           CollisionGroup collisionMask);
   void loadRaiSimConfig(const std::string& configFile);
+  raisim::SingleBodyObject* addMjcfGeom(const RaiSimTinyXmlWrapper& geom,
+                                        const std::unordered_map<std::string, RaiSimTinyXmlWrapper>& defaults,
+                                        const std::unordered_map<std::string, std::pair<std::string, Vec<3>>>& mesh,
+                                        const std::string& name);
   void loadMjcf(const std::string& configFile);
   ArticulatedSystem* addArticulatedSystem(const RaiSimTinyXmlWrapper& node,
                                           const std::string &resPath,

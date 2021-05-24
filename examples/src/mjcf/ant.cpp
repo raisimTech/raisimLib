@@ -13,7 +13,7 @@ int main(int argc, char* argv[]) {
 #if WIN32
     timeBeginPeriod(1); // for sleep_for function. windows default clock speed is 1/64 second. This sets it to 1ms.
 #endif
-
+  RSWARN("Please copy-paste files in \"https://github.com/openai/gym/tree/master/gym/envs/mujoco/assets\" to the resource directory and run cmake again (which will copy the asset folder to the build folder)")
   raisim::World world(binaryPath.getDirectory()+"\\rsc\\mjcf\\ant.xml");
   raisim::RaisimServer server(&world);
   auto torso = static_cast<raisim::ArticulatedSystem*>(world.getObject("torso"));

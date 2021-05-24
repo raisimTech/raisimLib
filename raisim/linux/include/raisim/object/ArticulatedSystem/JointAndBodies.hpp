@@ -6,7 +6,6 @@
 #ifndef RAISIM_JOINTANDBODIES_HPP
 #define RAISIM_JOINTANDBODIES_HPP
 
-#include "ode/objects.h"
 #include "ode/ode.h"
 #include "raisim/math.hpp"
 #include "raisim/object/singleBodies/Mesh.hpp"
@@ -378,7 +377,7 @@ inline void getInertialAssumingUniformDensity(Shape::Type shape,
                                        Mat<3, 3> &inertia) {
   Mat<3, 3> inertiaP; // about the principle axes
   inertiaP.setZero();
-  double volume;
+  double volume = 0.;
 
   if (shape == Shape::Type::Sphere) {
     volume = shapeParam[0] * shapeParam[0] * shapeParam[0] * M_PI * 4. / 3.;

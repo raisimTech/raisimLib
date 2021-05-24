@@ -133,18 +133,50 @@ struct MjcfCompilerSetting {
 
 class LoadFromMjcf {
  public:
-  LoadFromMjcf(ArticulatedSystem &sys,
-               RaiSimTinyXmlWrapper &c,
-               const std::unordered_map<std::string, RaiSimTinyXmlWrapper> &defaultDefaultNode,
-               const std::unordered_map<std::string, std::pair<std::string, Vec < 3>> >& mesh,
-               const MjcfCompilerSetting& setting);
+  void load(ArticulatedSystem &sys,
+            RaiSimTinyXmlWrapper &c,
+            const std::unordered_map<std::string, RaiSimTinyXmlWrapper> &defaultDefaultNode,
+            const std::unordered_map<std::string, std::pair<std::string, Vec < 3>> >& mesh,
+            const MjcfCompilerSetting& setting);
+
+
+  template<typename T>
+  static bool readFromDefault(const std::unordered_map<std::string, RaiSimTinyXmlWrapper> &defaults,
+                              const std::string &className,
+                              const std::string &typeName,
+                              const std::string &attName,
+                              T &value) {
+    auto classNode = defaults.at(className).getChildrenMust(typeName)[0];
+    if(classNode.getAttributeIfExists(attName, value)) {
+      return true;
+    } else {
+      if(className == "default") {
+        return false;
+      } else {
+        std::string parent = defaults.at(className).template getAttributeMust<std::string>("parent");
+        return readFromDefault(defaults, parent, typeName, attName, value);
+      }
+    }
+  }
 
   template<typename T>
   static bool getParameter(const std::unordered_map<std::string, RaiSimTinyXmlWrapper> &defaults,
                            const RaiSimTinyXmlWrapper &node,
                            const std::string &typeName,
                            const std::string &attName,
-                           T &value);
+                           T &value) {
+    bool result;
+    std::string className;
+    if (node.getAttributeIfExists("class", className)) {
+      if (defaults.find(className) == defaults.end())
+        node.errorMessage("class " + className + " not found in the default tag");
+
+      result = readFromDefault(defaults,className,typeName,attName,value);
+    } else {
+      result = defaults.at(typeName).getAttributeIfExists(attName, value);
+    }
+    return result || node.getAttributeIfExists(attName, value);
+  }
 
   static void getPoseAndParam(const std::unordered_map<std::string, RaiSimTinyXmlWrapper> &defaults,
                               const RaiSimTinyXmlWrapper &node,

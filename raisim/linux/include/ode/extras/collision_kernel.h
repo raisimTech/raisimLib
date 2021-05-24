@@ -107,7 +107,6 @@ struct dxGeom : public dBase {
     dBodyID body;		// dynamics body associated with this object (if any)
     dxGeom *body_next;	// next geom in body's linked list of associated geoms
     dxPosR *final_posr;	// final position of the geom in world coordinates
-    dxPosR *offset_posr;	// offset from body in local coordinates
 
     // information used by spaces
     dxGeom *next;		// next geom in linked list of geoms

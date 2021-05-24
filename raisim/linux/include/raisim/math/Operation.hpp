@@ -39,9 +39,10 @@ class OpFunc##_op : public MatExpr<OpFunc##_op<T1, T2>> {                       
   inline OpFunc##_op(T1 const &u, T2 const &v) : _u(u), _v(v) {}                                    \
   inline double operator()(size_t i, size_t j) const { return OpFunc##_func(_u, _v, i, j); }        \
   inline double operator()(size_t i) const { return OpFunc##_func(_u, _v, i, 0); }                  \
-  inline constexpr static size_t size() { return T2::size(); }                                                  \
-  inline constexpr static size_t cols() { return T2::cols(); }                                                  \
-  inline constexpr static size_t rows() { return T2::rows(); }                                                  \
+  inline double operator[](size_t i) const { return OpFunc##_func(_u, _v, i, 0); }                  \
+  inline constexpr static size_t size() { return T2::size(); }                                      \
+  inline constexpr static size_t cols() { return T2::cols(); }                                      \
+  inline constexpr static size_t rows() { return T2::rows(); }                                      \
   RAIMATH_MATEXPR_OPERATORS                                                                         \
 };                                                                                                  \
 

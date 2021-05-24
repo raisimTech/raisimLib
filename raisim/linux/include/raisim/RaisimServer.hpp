@@ -203,7 +203,7 @@ class RaisimServer final {
   static constexpr int SEND_BUFFER_SIZE = 33554432;
   static constexpr int MAXIMUM_PACKET_SIZE = 1024;
   static constexpr int FOOTER_SIZE = sizeof(char);
-  static constexpr int RECEIVE_BUFFER_SIZE = 33554432;
+  static constexpr int RECEIVE_BUFFER_SIZE = 1024;
 
   enum ClientMessageType : int {
     REQUEST_OBJECT_POSITION = 0,
@@ -755,14 +755,12 @@ class RaisimServer final {
 
   /**
    * request for screenshot */
-  inline const std::vector<char>& getScreenShot(int& width, int& height) {
+  inline const std::vector<char>& getScreenShot() {
     serverRequest_.push_back(ServerRequestType::GET_SCREEN_SHOT);
     while(!screenShotReady_)
-      std::this_thread::sleep_for(std::chrono::milliseconds(1));
+      usleep(3000);
 
     screenShotReady_ = false;
-    width = screenShotWidth_;
-    height = screenShotHeight_;
     return screenShot_;
   }
 
@@ -831,10 +829,10 @@ class RaisimServer final {
       if(requestSize == 1) {
         data = get(data, &screenShotWidth_);
         data = get(data, &screenShotHeight_);
-        uint64_t dataSize = screenShotWidth_*screenShotHeight_*3;
-        if(screenShot_.size() != dataSize)
+        int dataSize = screenShotWidth_*screenShotHeight_*3;
+        if(screenShot_.size() != dataSize) {
           screenShot_.resize(dataSize);
-
+        }
         data = getN(data, &screenShot_[0], dataSize);
         screenShotReady_ = true;
       }
@@ -1175,7 +1173,7 @@ class RaisimServer final {
         // COM position
         if(as->getJointType(0) == Joint::FLOATING) {
           data_ = set(data_, int32_t(0));
-          data_ = setN(data_, as->getCompositeCOM().ptr(), 3);
+          data_ = setN(data_, as->getCompositeCOM()[0].ptr(), 3);
         } else
           data_ = set(data_, int32_t(1));
 

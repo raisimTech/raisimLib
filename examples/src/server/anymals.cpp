@@ -48,14 +48,6 @@ int main(int argc, char* argv[]) {
   raisim::RaisimServer server(&world);
   server.launchServer();
   server.focusOn(anymalC);
-  int width, height;
-  auto& image = server.getScreenShot(width, height);
-  for(int i=0; i<width; i++) {
-    for(int j=0; j<height; j++) {
-      std::cout << image[height*i+j]+image[height*i+j+1]+image[height*i+j+2];
-    }
-    std::cout<<"\n";
-  }
 
   for (int i=0; i<200000000; i++) {
     std::this_thread::sleep_for(std::chrono::microseconds(1000));

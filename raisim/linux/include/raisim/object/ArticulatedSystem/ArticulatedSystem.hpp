@@ -217,15 +217,13 @@ class ArticulatedSystem : public Object {
     }
 
     const raisim::Vec<3> &getPositionInParentFrame() const {
-      if (isMovable_)
-        return system_->getJointPos_P()[gvIndx_];
-      else RSFATAL("This is a fixed joint. You cannot change the position of a fixed joint.")
+      RSFATAL_IF(!isMovable_, "This is a fixed joint. You cannot change the position of a fixed joint.")
+      return system_->getJointPos_P()[gvIndx_];
     }
 
     const raisim::Vec<3> &getJointAxis() const {
-      if (isMovable_)
-        return system_->getJointAxis_P()[gvIndx_];
-      else RSFATAL("This is a fixed joint. You cannot change the position of a fixed joint.")
+      RSFATAL_IF(!isMovable_, "This is a fixed joint. You cannot change the position of a fixed joint.")
+      return system_->getJointAxis_P()[gvIndx_];
     }
 
     const Joint::Type getType() const {
@@ -446,14 +444,19 @@ class ArticulatedSystem : public Object {
   const MatDyn &getInverseMassMatrix() const { return Minv_; }
 
   /**
-   * get the center of mass of the whole system
-   * @return the center of mass */
-  const Vec<3> &getCompositeCOM() const { return composite_com_W[0]; }
+   * get the center of mass of a composite body containing body i and all its children
+   * @return the center of mass of the composite body */
+  const std::vector<raisim::Vec<3>> &getCompositeCOM() const { return composite_com_W; }
 
   /**
-   * get the current composite inertia of the whole system. This value assumes all joints are fixed
-   * @return the inertia of the coposite system */
-  const Mat<3, 3> &getCompositeInertia() const { return compositeInertia_W[0]; }
+   * get the current composite inertia of a composite body containing body i and all its children
+   * @return the inertia of the composite system */
+  const std::vector<raisim::Mat<3, 3>> &getCompositeInertia() const { return compositeInertia_W; }
+
+  /**
+   * get the current composite mass of a composite body containing body i and all its children
+   * @return get the composite mass */
+  const std::vector<double> &getCompositeMass() const { return compositeMass; }
 
   /**
    * linear momentum of the whole system
@@ -1407,8 +1410,10 @@ class ArticulatedSystem : public Object {
 
   void clearExternalForces();
 
-  void articulatedBodyAlgorithm();
+ public:
+  void articulatedBodyAlgorithm(const Eigen::Vector3d& gravity, Eigen::VectorXd& udot);
 
+ private:
   /// for computation
   /// Frames:: W: world, B: body, P: parent
 
@@ -1514,6 +1519,15 @@ class ArticulatedSystem : public Object {
 
   IntegrationScheme desiredIntegrationScheme_ = IntegrationScheme::TRAPEZOID;
   IntegrationScheme integrationSchemeThisTime_;
+
+  /// ABA
+  std::vector<Eigen::Matrix<double, 6, 6>, AlignedAllocator<Eigen::Matrix<double, 6, 6>, 32>> XT, Ma, XMXT;
+  std::vector<Eigen::Matrix<double, 1, 6>, AlignedAllocator<Eigen::Matrix<double, 1, 6>, 32>> STMaXT, ST, SdotT, STMa;
+  std::vector<Eigen::Matrix<double, 6, 1>, AlignedAllocator<Eigen::Matrix<double, 6, 1>, 32>> Pa, V, acc, SdotUpXdotTV, XTAcc;
+  std::vector<Eigen::Matrix<double, 3, 3>, AlignedAllocator<Eigen::Matrix<double, 3, 3>, 32>> XdotT;
+  std::vector<Eigen::Matrix3d, AlignedAllocator<Eigen::Matrix3d, 32>> joint2Com_w_Skew;
+  Eigen::Matrix<double, 6, 6> MaInv_base;
+  std::vector<double> STMaSinv, STPa, udotExpectAccTerm;
 };
 
 }

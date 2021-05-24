@@ -169,16 +169,23 @@ Here is an example joint with the raisim tags
     </joint>
 
 **Rotor_inertia** in Raisim approximately simulates the rotor inertia of the motor (but missing the resulting gyroscopic effect, which is often neglegible).
+
 It is added to the diagonal elements of the mass matrix.
 It is common way to include the inertial effect of the rotor.
 You can also override it in C++ using :code:`setRotorInertia()`.
 
-In RaiSim, each body of an articulated system has a set of collision bodies and visual objects. 
+And two preprocessor features (that are also available in the raisim world configuration file) are available for the URDF template.
 
-Collision bodies contain a collision object of one of the following shapes: *mesh*, *sphere*, *box*, *cylinder*, *capsule*. 
+* You can specify a variable in a form of "@@Robot_Height". The value of this variable can be specified at the run timeusing ''std::unordered_map'' and the corresponding factory method in ''raisim::World::.
 
+* You can specify an equation instead of a variable. For example, {@@Robot_Height*@@Robot_Width*2}.
+
+The preprocessor example can be found in ``examples/src/server/trackedRobotAndTemplatedURDF.cpp`` and the corresponding URDF template in ``rsc/templatedTrackedRobot/trackedTemplate.urdf``.
+
+
+In RaiSim, each body of an articulated system has a set of collision bodies and visual objects.
+Collision bodies contain a collision object of one of the following shapes: *mesh*, *sphere*, *box*, *cylinder*, *capsule*.
 Visual objects just store specifications for visualization and the actual visualzation happens in a visualizer (e.g., `raisimOgre <https://github.com/leggedrobotics/raisimOgre>`_)
-
 For details, check the `URDF protocol <http://wiki.ros.org/urdf/XML>`_.
 
 Kinematics
