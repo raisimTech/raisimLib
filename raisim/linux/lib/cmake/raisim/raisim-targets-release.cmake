@@ -18,12 +18,12 @@ list(APPEND _IMPORT_CHECK_FILES_FOR_raisim::raisimZ "${_IMPORT_PREFIX}/lib/libra
 # Import target "raisim::raisimPng" for configuration "RELEASE"
 set_property(TARGET raisim::raisimPng APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
 set_target_properties(raisim::raisimPng PROPERTIES
-  IMPORTED_LOCATION_RELEASE "/home/jemin/workspace/raisimLib/raisim/linux/lib/libraisimPng.so"
+  IMPORTED_LOCATION_RELEASE "/home/jemin/workspace/raisimlib/raisim/linux/lib/libraisimPng.so"
   IMPORTED_SONAME_RELEASE "libraisimPng.so"
   )
 
 list(APPEND _IMPORT_CHECK_TARGETS raisim::raisimPng )
-list(APPEND _IMPORT_CHECK_FILES_FOR_raisim::raisimPng "/home/jemin/workspace/raisimLib/raisim/linux/lib/libraisimPng.so" )
+list(APPEND _IMPORT_CHECK_FILES_FOR_raisim::raisimPng "/home/jemin/workspace/raisimlib/raisim/linux/lib/libraisimPng.so" )
 
 # Import target "raisim::raisimMine" for configuration "RELEASE"
 set_property(TARGET raisim::raisimMine APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)

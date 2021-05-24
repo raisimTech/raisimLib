@@ -81,7 +81,7 @@ class World {
 
   /**
    * export the world to an xml config file, which can be loaded using a constructor
-   * @param licenseFile path to the license file */
+   * @param activationKey path to the license file */
   static void setActivationKey(const std::string& activationKey) { activationKey_ = activationKey; }
 
   /*!
@@ -103,8 +103,8 @@ class World {
 
   ~World();
 
-  /**
-   * @param set the time step */
+  /** set the time step
+   * @param dt the time step */
   void setTimeStep(double dt) {
     timeStep_ = dt;
     solver_.setTimestep(dt);

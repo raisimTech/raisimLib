@@ -644,7 +644,7 @@ class ArticulatedSystem : public Object {
 
   /**
    * @param[in] bodyIdx the body index. Note that body index and the joint index are the same because every body has one parent joint. It can be retrieved by getBodyIdx()
-   * @param[out] jaco the rotational Jacobian. \omega = J * u. \omgea is the angular velocity expressed in the world frame and u is the generalized velocity */
+   * @param[out] jaco the rotational Jacobian. omega = J * u. omgea is the angular velocity expressed in the world frame and u is the generalized velocity */
   void getSparseRotationalJacobian(size_t bodyIdx, SparseJacobian &jaco) const;
 
   /**
