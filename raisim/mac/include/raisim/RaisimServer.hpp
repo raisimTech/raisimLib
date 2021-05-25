@@ -753,24 +753,24 @@ class RaisimServer final {
     serverRequest_.push_back(ServerRequestType::STOP_RECORD_VIDEO);
   }
 
-  /**
+  /** NOT WORKING YET
    * request for screenshot */
-  inline const std::vector<char>& getScreenShot() {
-    serverRequest_.push_back(ServerRequestType::GET_SCREEN_SHOT);
-    while(!screenShotReady_)
-      usleep(3000);
+//  inline const std::vector<char>& getScreenShot() {
+//    serverRequest_.push_back(ServerRequestType::GET_SCREEN_SHOT);
+//    while(!screenShotReady_)
+//      usleep(3000);
+//
+//    screenShotReady_ = false;
+//    return screenShot_;
+//  }
 
-    screenShotReady_ = false;
-    return screenShot_;
-  }
-
-  /**
+  /** NOT WORKING YET
    * change the screen size */
-  inline void setScreenSize(int width, int height) {
-    serverRequest_.push_back(ServerRequestType::SET_SCREEN_SIZE);
-    screenShotWidth_ = width;
-    screenShotHeight_ = height;
-  }
+//  inline void setScreenSize(int width, int height) {
+//    serverRequest_.push_back(ServerRequestType::SET_SCREEN_SIZE);
+//    screenShotWidth_ = width;
+//    screenShotHeight_ = height;
+//  }
 
  private:
   inline bool waitForReadEvent(int timeout) {
