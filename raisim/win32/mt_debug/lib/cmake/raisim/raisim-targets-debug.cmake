@@ -18,12 +18,12 @@ list(APPEND _IMPORT_CHECK_FILES_FOR_raisim::raisimZ "${_IMPORT_PREFIX}/lib/raisi
 # Import target "raisim::raisimPng" for configuration "Debug"
 set_property(TARGET raisim::raisimPng APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
 set_target_properties(raisim::raisimPng PROPERTIES
-  IMPORTED_IMPLIB_DEBUG "C:/Users/jemin/Documents/git/raisimlib/raisim/win32/mt_debug/arch/raisimPng.lib"
-  IMPORTED_LOCATION_DEBUG "C:/Users/jemin/Documents/git/raisimlib/raisim/win32/mt_debug/bin/raisimPng.dll"
+  IMPORTED_IMPLIB_DEBUG "${_IMPORT_PREFIX}/lib/raisimPng.lib"
+  IMPORTED_LOCATION_DEBUG "${_IMPORT_PREFIX}/bin/raisimPng.dll"
   )
 
 list(APPEND _IMPORT_CHECK_TARGETS raisim::raisimPng )
-list(APPEND _IMPORT_CHECK_FILES_FOR_raisim::raisimPng "C:/Users/jemin/Documents/git/raisimlib/raisim/win32/mt_debug/arch/raisimPng.lib" "C:/Users/jemin/Documents/git/raisimlib/raisim/win32/mt_debug/bin/raisimPng.dll" )
+list(APPEND _IMPORT_CHECK_FILES_FOR_raisim::raisimPng "${_IMPORT_PREFIX}/lib/raisimPng.lib" "${_IMPORT_PREFIX}/bin/raisimPng.dll" )
 
 # Import target "raisim::raisimMine" for configuration "Debug"
 set_property(TARGET raisim::raisimMine APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)

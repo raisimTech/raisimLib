@@ -15,13 +15,14 @@ namespace raisim {
 template<class T>
 class Transpose : public MatExpr<Transpose<T>> {
  public:
+  typedef Transpose<T> SelfType;
   explicit Transpose(T const &u) : _u(u) {}
   const T &_u;
   inline double operator()(size_t i, size_t j) const { return _u(j,i); }
   inline double operator[] (size_t i) const { return _u(i/T::n, i%T::n); }
-  inline size_t size() const { return _u.size(); }
-  inline size_t cols() const { return _u.rows(); }
-  inline size_t rows() const { return _u.cols(); }
+  static inline constexpr size_t size() { return T::size(); }
+  static inline constexpr size_t cols() { return T::rows(); }
+  static inline constexpr size_t rows() { return T::cols(); }
 };
 
 using ScalarType = double;
@@ -31,6 +32,7 @@ class Mat : public MatExpr<Mat<n, m>> {
  public:
   typedef Eigen::Map<Eigen::Matrix<ScalarType, n, m> > EigenMat;
   typedef Eigen::Map<const Eigen::Matrix<ScalarType, n, m> > ConstEigenMat;
+  typedef Mat<n,m> SelfType;
 
   union {
     std::aligned_storage<n*m*sizeof(ScalarType), 32> alignment_only;
@@ -38,9 +40,9 @@ class Mat : public MatExpr<Mat<n, m>> {
   };
 
   Mat() = default;
-  constexpr inline size_t size() const { return n * m; }
-  constexpr inline size_t rows() const { return n; }
-  constexpr inline size_t cols() const { return m; }
+  static constexpr inline size_t size() { return n * m; }
+  static constexpr inline size_t rows() { return n; }
+  static constexpr inline size_t cols() { return m; }
 
   /// Constructors
   Mat(std::initializer_list<ScalarType> init) { ScalarType* ele = &v[0]; for (auto it=init.begin(); it!=init.end(); ++it) *ele++ = *it; }
@@ -54,12 +56,6 @@ class Mat : public MatExpr<Mat<n, m>> {
 
   template<class T2>
   inline Mat<n,m>& operator = (const MatExpr<T2>& expr) {
-    for (size_t j = 0; j < cols(); ++j) for (size_t i = 0; i < rows(); ++i) v[i + j * n] = expr(i,j);
-    return *this;
-  }
-
-  template<class T>
-  inline Mat<n,m>& operator = (const T& expr) {
     for (size_t j = 0; j < cols(); ++j) for (size_t i = 0; i < rows(); ++i) v[i + j * n] = expr(i,j);
     return *this;
   }
@@ -120,7 +116,8 @@ class Mat : public MatExpr<Mat<n, m>> {
     return zero;
   }
 
-  Transpose<Mat<n,m>> transpose() { return Transpose<Mat<n,m>>(*this); }
+  inline Transpose<Mat<n,m>> transpose() { return Transpose<Mat<n,m>>(*this); }
+  inline const Transpose<Mat<n,m>> transpose() const { return Transpose<Mat<n,m>>(*this); }
 
   inline RowRef<Mat<n, m>, m> row(size_t r) { return RowRef<Mat<n,m>, m>(*this, r); }
   inline const RowRef<Mat<n, m>, m> row(size_t r) const { return RowRef<Mat<n,m>, m>(*this, r); }
@@ -135,6 +132,66 @@ class Mat : public MatExpr<Mat<n, m>> {
   template<size_t sizeRow, size_t sizeCol>
   inline BlockRef<Mat<n, m>, sizeRow, sizeCol> segment(size_t startRow, size_t startCol) const {
     return BlockRef<Mat<n, m>, sizeRow, sizeCol>(*this, startRow, startCol); }
+
+  template<size_t sizeRow>
+  inline BlockRef<Mat<n, m>, sizeRow, 1> head() {
+    static_assert(m==1, "head method is only for vectors");
+    return BlockRef<Mat<n, m>, sizeRow, 1>(*this, 0, 0); }
+
+  template<size_t sizeRow>
+  inline BlockRef<Mat<n, m>, sizeRow, 1> head() const {
+    static_assert(m==1, "head method is only for vectors");
+    return BlockRef<Mat<n, m>, sizeRow, 1>(*this, 0, 0); }
+
+  template<size_t sizeRow>
+  inline BlockRef<Mat<n, m>, sizeRow, 1> tail() {
+    static_assert(m==1, "tail method is only for vectors");
+    return BlockRef<Mat<n, m>, sizeRow, 1>(*this, n-sizeRow, 0); }
+
+  template<size_t sizeRow>
+  inline BlockRef<Mat<n, m>, sizeRow, 1> tail() const {
+    static_assert(m==1, "tail method is only for vectors");
+    return BlockRef<Mat<n, m>, sizeRow, 1>(*this, n-sizeRow, 0); }
+
+  template<size_t sizeRow, size_t sizeCol>
+  inline BlockRef<Mat<n, m>, sizeRow, sizeCol> topLeftCorner() const {
+    return BlockRef<Mat<n, m>, sizeRow, sizeCol>(*this, 0, 0); }
+
+  template<size_t sizeRow, size_t sizeCol>
+  inline BlockRef<Mat<n, m>, sizeRow, sizeCol> topLeftCorner() {
+    return BlockRef<Mat<n, m>, sizeRow, sizeCol>(*this, 0, 0); }
+
+  template<size_t sizeRow, size_t sizeCol>
+  inline BlockRef<Mat<n, m>, sizeRow, sizeCol> topRightCorner() const {
+    return BlockRef<Mat<n, m>, sizeRow, sizeCol>(*this, size_t(0), m-sizeCol); }
+
+  template<size_t sizeRow, size_t sizeCol>
+  inline BlockRef<Mat<n, m>, sizeRow, sizeCol> topRightCorner() {
+    return BlockRef<Mat<n, m>, sizeRow, sizeCol>(*this, size_t(0), m-sizeCol); }
+
+  template<size_t sizeRow, size_t sizeCol>
+  inline BlockRef<Mat<n, m>, sizeRow, sizeCol> bottomRightCorner() const {
+    return BlockRef<Mat<n, m>, sizeRow, sizeCol>(*this, size_t(n-sizeRow), size_t(m-sizeCol)); }
+
+  template<size_t sizeRow, size_t sizeCol>
+  inline BlockRef<Mat<n, m>, sizeRow, sizeCol> bottomRightCorner() {
+    return BlockRef<Mat<n, m>, sizeRow, sizeCol>(*this, size_t(n-sizeRow), size_t(m-sizeCol)); }
+
+  template<size_t sizeRow, size_t sizeCol>
+  inline BlockRef<Mat<n, m>, sizeRow, sizeCol> bottomLeftCorner() const {
+    return BlockRef<Mat<n, m>, sizeRow, sizeCol>(*this, size_t(n-sizeRow), size_t(0)); }
+
+  template<size_t sizeRow, size_t sizeCol>
+  inline BlockRef<Mat<n, m>, sizeRow, sizeCol> bottomLeftCorner() {
+    return BlockRef<Mat<n, m>, sizeRow, sizeCol>(*this, size_t(n-sizeRow), size_t(0)); }
+
+  template<size_t sizeRow, size_t sizeCol, size_t startRow, size_t startCol>
+  inline BlockRef<Mat<n, m>, sizeRow, sizeCol> block() const {
+    return BlockRef<Mat<n, m>, sizeRow, sizeCol>(*this, size_t(startRow), size_t(startCol)); }
+
+  template<size_t sizeRow, size_t sizeCol, size_t startRow, size_t startCol>
+  inline BlockRef<Mat<n, m>, sizeRow, sizeCol> block() {
+    return BlockRef<Mat<n, m>, sizeRow, sizeCol>(*this, size_t(startRow), size_t(startCol)); }
 };
 
 }
