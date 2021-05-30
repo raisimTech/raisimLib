@@ -30,6 +30,7 @@ int main(int argc, char* argv[]) {
   auto visCylinder = server.addVisualCylinder("v_cylinder", 1, 1, 0, 1, 0, 1);
   auto visCapsule = server.addVisualCapsule("v_capsule", 1, 0.5, 0, 0, 1, 1);
   auto anymalB = server.addVisualArticulatedSystem("v_anymal", binaryPath.getDirectory() + "\\rsc\\anymal\\urdf\\anymal.urdf");
+  anymalB->color = {0.5,0.0,0.0,0.5};
 
   visSphere->setPosition(2,0,0);
   visCylinder->setPosition(0,2,0);
@@ -37,7 +38,6 @@ int main(int argc, char* argv[]) {
   Eigen::VectorXd gc(19);
   gc << 0, 0, 3.54, 1.0, 0.0, 0.0, 0.0, 0.03, 0.4, -0.8, -0.03, 0.4, -0.8, 0.03, -0.4, 0.8, -0.03, -0.4, 0.8;
   anymalB->setGeneralizedCoordinate(gc);
-  anymalB->color = {0.5,0.0,0.0,0.5};
   auto lines = server.addVisualPolyLine("lines");
   lines->color = {0,0,1,1};
 
