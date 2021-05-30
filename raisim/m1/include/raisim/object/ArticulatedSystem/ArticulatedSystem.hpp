@@ -208,7 +208,6 @@ class ArticulatedSystem : public Object {
         coordinate[2] = system_->getGeneralizedCoordinate()[gcIndx_ + 2];
         coordinate[3] = system_->getGeneralizedCoordinate()[gcIndx_ + 3];
       }
-
       coordinate[0] = system_->getGeneralizedCoordinate()[gcIndx_];
     }
 
@@ -253,9 +252,6 @@ class ArticulatedSystem : public Object {
   friend class raisim::mjcf::LoadFromMjcf;
 
  public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  typedef Eigen::Map<Eigen::Matrix<double, -1, 1> > EigenVec;
-  typedef Eigen::Map<Eigen::Matrix<double, -1, -1> > EigenMat;
 
   ArticulatedSystem() = default;
 
@@ -1410,8 +1406,10 @@ class ArticulatedSystem : public Object {
 
   void clearExternalForces();
 
+  /// to be removed. just for testing purposes
  public:
   void articulatedBodyAlgorithm(const Eigen::Vector3d& gravity, Eigen::VectorXd& udot);
+  const std::vector<MatDyn>& getMinvJT() { return MinvJT_T; }
 
  private:
   /// for computation
@@ -1522,14 +1520,16 @@ class ArticulatedSystem : public Object {
 
   /// ABA
   std::vector<Eigen::Matrix<double, 6, 6>, AlignedAllocator<Eigen::Matrix<double, 6, 6>, 32>> XT, Ma, XMXT;
-  std::vector<Eigen::Matrix<double, 1, 6>, AlignedAllocator<Eigen::Matrix<double, 1, 6>, 32>> STMaXT, ST, SdotT, STMa;
-  std::vector<Eigen::Matrix<double, 6, 1>, AlignedAllocator<Eigen::Matrix<double, 6, 1>, 32>> Pa, V, acc, SdotUpXdotTV, XTAcc;
-  std::vector<Eigen::Matrix<double, 3, 3>, AlignedAllocator<Eigen::Matrix<double, 3, 3>, 32>> XdotT;
-  std::vector<Eigen::Matrix3d, AlignedAllocator<Eigen::Matrix3d, 32>> joint2Com_w_Skew;
-  Eigen::Matrix<double, 6, 6> MaInv_base;
-  std::vector<double> STMaSinv, STPa, udotExpectAccTerm;
-};
+  Mat<6, 6> MaInv_base;
+  std::vector<Eigen::Matrix<double, 1, 6>, AlignedAllocator<Eigen::Matrix<double, 1, 6>, 32>> STMaXT, ST, SdotT, STMa, STMaSinvSTMaXT;
+  std::vector<Eigen::Matrix<double, 3, 6>, AlignedAllocator<Eigen::Matrix<double, 3, 6>, 32>> STMaXT3, ST3, SdotT3, STMa3, STMaSinvSTMaXT3;
+  std::vector<Eigen::Matrix<double, 6, 1>, AlignedAllocator<Eigen::Matrix<double, 6, 1>, 32>> Pa, V, acc, SdotUpXdotTV;
+  std::vector<Eigen::Matrix<double, 3, 3>, AlignedAllocator<Eigen::Matrix<double, 3, 3>, 32>> STMaSinv3, STMaS3, joint2Com_w_Skew;
+  std::vector<Eigen::Matrix<double, 3, 1>, AlignedAllocator<Eigen::Matrix<double, 3, 1>, 32>> udotExpectAccTerm3;
+  std::vector<double, AlignedAllocator<double, 64>> STMaSinv, udotExpectAccTerm;
+  std::vector<Eigen::Matrix<double, 3, 6>, AlignedAllocator<Eigen::Matrix<double, 3, 6>, 32>>  XcT;
 
+};
 }
 
 #endif //RAISIM_ARTICULATEDSYSTEM_HPP

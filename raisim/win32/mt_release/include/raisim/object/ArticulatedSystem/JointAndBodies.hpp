@@ -6,7 +6,6 @@
 #ifndef RAISIM_JOINTANDBODIES_HPP
 #define RAISIM_JOINTANDBODIES_HPP
 
-#include "ode/objects.h"
 #include "ode/ode.h"
 #include "raisim/math.hpp"
 #include "raisim/object/singleBodies/Mesh.hpp"
@@ -31,8 +30,27 @@ enum Type :
   Mesh,
   Capsule,
   Cone, // cone is not currently supported
+  Ground,
   NotShape
 };
+
+inline Shape::Type stringToShape(const std::string &shape) {
+  if (shape == "mesh") {
+    return Shape::Type::Mesh;
+  } else if (shape == "sphere") {
+    return Shape::Type::Sphere;
+  } else if (shape == "capsule") {
+    return Shape::Type::Capsule;
+  } else if (shape == "cylinder") {
+    return Shape::Type::Cylinder;
+  } else if (shape == "box") {
+    return Shape::Type::Box;
+  } else if (shape == "plane") {
+    return Shape::Type::Ground;
+  }
+  return Shape::Type::NotShape;
+}
+
 }
 
 /* collision definition that is stored in Articulated System.
@@ -174,6 +192,8 @@ class Joint {
 
   Joint() {
     rot.setIdentity();
+    limit.setZero();
+    springMount.setZero();
   }
 
   /* if upper and lower bounds of the limit are the same, the limit is ignored */
@@ -318,6 +338,7 @@ struct CollisionBody {
   std::string materialName; /// collision property
   std::string collisionVisualizationMaterial; /// collision property
   std::string colMeshFileName;
+  CollisionGroup group = 1, mask = -1;
 
   /* col_shape: choices, Box, Cylinder, Sphere, mesh, Capsule
    * col_shapeParam: params associated with shape,
@@ -345,7 +366,57 @@ struct CollisionBody {
       shape(col_shape), scale(col_meshScale), shapeParam(col_shapeParam), offset(col_origin),
       rot(col_rotMat), name(col_name), materialName(col_material),
       collisionVisualizationMaterial(col_visualizedMaterial), colMeshFileName(col_meshFileName) {}
+
 };
+
+inline void getInertialAssumingUniformDensity(Shape::Type shape,
+                                       const std::vector<double> &shapeParam,
+                                       const Mat<3,3>& rot,
+                                       double density,
+                                       double &mass,
+                                       Mat<3, 3> &inertia) {
+  Mat<3, 3> inertiaP; // about the principle axes
+  inertiaP.setZero();
+  double volume = 0.;
+
+  if (shape == Shape::Type::Sphere) {
+    volume = shapeParam[0] * shapeParam[0] * shapeParam[0] * M_PI * 4. / 3.;
+  } else if (shape == Shape::Type::Box) {
+    volume = shapeParam[0] * shapeParam[1] * shapeParam[2];
+  } else if (shape == Shape::Type::Capsule) {
+    volume = shapeParam[0] * shapeParam[0] * shapeParam[0] * M_PI * 4. / 3.
+        + M_PI * shapeParam[0] * shapeParam[0] * shapeParam[1];
+  } else if (shape == Shape::Type::Cylinder) {
+    volume = M_PI * shapeParam[0] * shapeParam[0] * shapeParam[1];
+  }
+
+  mass = volume * density;
+
+  if (shape == Shape::Type::Sphere) {
+    double diagonal = 2. / 5. * mass * shapeParam[0] * shapeParam[0];
+    inertiaP[0] = diagonal;
+    inertiaP[4] = diagonal;
+    inertiaP[8] = diagonal;
+  } else if (shape == Shape::Type::Box) {
+    inertiaP[0] = mass / 12.0 * (shapeParam[1] * shapeParam[1] + shapeParam[2] * shapeParam[2]);
+    inertiaP[4] = mass / 12.0 * (shapeParam[0] * shapeParam[0] + shapeParam[2] * shapeParam[2]);
+    inertiaP[8] = mass / 12.0 * (shapeParam[0] * shapeParam[0] + shapeParam[1] * shapeParam[1]);
+  } else if (shape == Shape::Type::Capsule) {
+    inertiaP[0] = mass / 12.0 * (3. * shapeParam[0] * shapeParam[0] + shapeParam[1] * shapeParam[1]);
+    inertiaP[4] = mass / 12.0 * (3. * shapeParam[0] * shapeParam[0] + shapeParam[1] * shapeParam[1]);
+    inertiaP[8] = mass / 2.0 * (shapeParam[0] * shapeParam[0]);
+  } else if (shape == Shape::Type::Cylinder) {
+    double sIner = 2. / 5. * mass * shapeParam[0] * shapeParam[0];
+    double sMass = density * shapeParam[0] * shapeParam[0] * shapeParam[0] * M_PI * 4. / 3.;
+    inertiaP[0] = mass / 12.0 * (3. * shapeParam[0] * shapeParam[0] + shapeParam[1] * shapeParam[1]) + sIner
+        + sMass * shapeParam[1] * shapeParam[1] / 4.;
+    inertiaP[4] = mass / 12.0 * (3. * shapeParam[0] * shapeParam[0] + shapeParam[1] * shapeParam[1]) + sIner
+        + sMass * shapeParam[1] * shapeParam[1] / 4.;
+    inertiaP[8] = mass / 2.0 * (shapeParam[0] * shapeParam[0]) + sIner;
+  }
+
+  inertia = rot * inertiaP * rot.transpose();
+}
 
 class Body {
   friend class ArticulatedSystem;
@@ -365,7 +436,6 @@ class Body {
   double &getMass() { return mass_; }
 
   void setInertia(std::initializer_list<double> inertia) {
-//    LOG_IF(INFO, inertia.size() != 6) << "Provide 6 elements for inertia matrix";
     inertia_[0] = *(inertia.begin());
     inertia_[1] = *(inertia.begin() + 1);
     inertia_[2] = *(inertia.begin() + 2);
@@ -379,8 +449,7 @@ class Body {
     inertia_[8] = *(inertia.begin() + 5);
   }
 
-  void setInertia(Vec<3> inertia) {
-//    LOG_IF(INFO, inertia.size() != 6) << "Provide 6 elements for inertia matrix";
+  void setInertia(const Vec<3> &inertia) {
     inertia_[0] = inertia[0];
     inertia_[1] = 0;
     inertia_[2] = 0;
@@ -394,8 +463,7 @@ class Body {
     inertia_[8] = inertia[2];
   }
 
-  void setInertia(Vec<6> inertia) {
-//    LOG_IF(INFO, inertia.size() != 6) << "Provide 6 elements for inertia matrix";
+  void setInertia(const Vec<6> &inertia) {
     inertia_[0] = inertia[0];
     inertia_[1] = inertia[1];
     inertia_[2] = inertia[2];
@@ -407,6 +475,20 @@ class Body {
     inertia_[6] = inertia[2];
     inertia_[7] = inertia[4];
     inertia_[8] = inertia[5];
+  }
+
+  void setInertiaMjcfOrder(const Vec<6> &inertia) {
+    inertia_[0] = inertia[0];
+    inertia_[4] = inertia[1];
+    inertia_[8] = inertia[2];
+
+    inertia_[1] = inertia[3];
+    inertia_[2] = inertia[4];
+    inertia_[5] = inertia[5];
+
+    inertia_[3] = inertia[3];
+    inertia_[6] = inertia[4];
+    inertia_[7] = inertia[5];
   }
 
   void setZeroInertial() {
@@ -429,15 +511,18 @@ class Body {
     visObj.clear();
   }
 
-  void addCollisionObject(Shape::Type shape,
-                          const std::vector<double> &param,
-                          const raisim::Vec<3> &origin,
-                          const raisim::Mat<3, 3> &rot,
-                          const raisim::Vec<3> &scale,
-                          const std::string &colName,
-                          const std::string &materialName, /// collision property
-                          const std::string &collisionVisualizedMaterial, /// collision property
-                          const std::string &meshFileName) {
+  void
+  addCollisionObject(Shape::Type shape,
+                     const std::vector<double> &param,
+                     const raisim::Vec<3> &origin,
+                     const raisim::Mat<3, 3> &rot,
+                     const raisim::Vec<3> &scale,
+                     const std::string &colName,
+                     const std::string &materialName, /// collision property
+                     const std::string &collisionVisualizedMaterial, /// collision property
+                     const std::string &meshFileName,
+                     CollisionGroup group = CollisionGroup(-1),
+                     CollisionGroup mask = CollisionGroup(-1)) {
     colObj.emplace_back(shape,
                         param,
                         origin,

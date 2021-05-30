@@ -217,7 +217,7 @@ class RaisimServer final {
     REQUEST_CONFIG_XML,
     REQUEST_INITIALIZE_VISUALS,
     REQUEST_VISUAL_POSITION,
-    REQUEST_SERVER_STATUS,
+    REQUEST_SERVER_STATUS
   };
 
   enum ServerMessageType : int {
@@ -228,7 +228,7 @@ class RaisimServer final {
     CONTACT_INFO_UPDATE = 4,
     CONFIG_XML = 5,
     VISUAL_INITILIZATION = 6,
-    VISUAL_POSITION_UPDATE = 7,
+    VISUAL_POSITION_UPDATE = 7
   };
 
   enum class ServerRequestType : int {
@@ -236,7 +236,9 @@ class RaisimServer final {
     START_RECORD_VIDEO = 1,
     STOP_RECORD_VIDEO = 2,
     FOCUS_ON_SPECIFIC_OBJECT = 3,
-    SET_CAMERA_TO = 4
+    SET_CAMERA_TO = 4,
+    GET_SCREEN_SHOT = 5,
+    SET_SCREEN_SIZE = 6
   };
 
   enum Status : int {
@@ -480,7 +482,6 @@ class RaisimServer final {
   inline void integrateWorldThreadSafe() {
     std::lock_guard<std::mutex> guard(serverMutex_);
     world_->integrate();
-    updateReady_ = true;
   }
 
   /**
@@ -507,20 +508,12 @@ class RaisimServer final {
   }
 
   /**
-   * currently not used */
-  inline void informClientForUpdate() { updateReady_ = true; }
-
-  /**
    * lock the visualization mutex so that the server cannot read from the world */
   inline void lockVisualizationServerMutex() { serverMutex_.lock(); }
 
   /**
    * unlock the visualization mutex so that the server can read from the world */
   inline void unlockVisualizationServerMutex() { serverMutex_.unlock(); }
-
-  // currently not used
-  inline bool isPauseRequested() { return pauseRequested_; }
-  inline bool isResumeRuested() { return resumeRequested_; }
 
   inline bool isTerminateRequested() { return terminateRequested_; }
 
@@ -541,6 +534,24 @@ class RaisimServer final {
     _visualArticulatedSystem[name]->color = raisim::Vec<4>{colorR, colorG, colorB, colorA};
     updateVisualConfig();
     return _visualArticulatedSystem[name];
+  }
+
+  /**
+   * @param[in] as ArticulatedSystemVisual to be removed
+   * remove a visualized articulated system */
+  inline void removeVisualArticulatedSystem(ArticulatedSystemVisual* as) {
+    auto it = _visualArticulatedSystem.begin();
+
+    // Search for an element with value 2
+    while(it != _visualArticulatedSystem.end()) {
+      if(it->second == as)
+        break;
+      it++;
+    }
+
+    // Erase the element pointed by iterator it
+    if (it != _visualArticulatedSystem.end())
+      _visualArticulatedSystem.erase(it);
   }
 
   /**
@@ -742,16 +753,34 @@ class RaisimServer final {
     serverRequest_.push_back(ServerRequestType::STOP_RECORD_VIDEO);
   }
 
+  /** NOT WORKING YET
+   * request for screenshot */
+//  inline const std::vector<char>& getScreenShot() {
+//    serverRequest_.push_back(ServerRequestType::GET_SCREEN_SHOT);
+//    while(!screenShotReady_)
+//      usleep(3000);
+//
+//    screenShotReady_ = false;
+//    return screenShot_;
+//  }
+
+  /** NOT WORKING YET
+   * change the screen size */
+//  inline void setScreenSize(int width, int height) {
+//    serverRequest_.push_back(ServerRequestType::SET_SCREEN_SIZE);
+//    screenShotWidth_ = width;
+//    screenShotHeight_ = height;
+//  }
+
  private:
   inline bool waitForReadEvent(int timeout) {
     fd_set sdset;
     struct timeval tv;
-
     tv.tv_sec = timeout;
     tv.tv_usec = 0;
     FD_ZERO(&sdset);
     FD_SET(server_fd, &sdset);
-    return select(server_fd + 1, &sdset, NULL, NULL, &tv) > 0;
+    return select(server_fd + 1, &sdset, nullptr, nullptr, &tv) > 0;
   }
 
  public:
@@ -795,6 +824,18 @@ class RaisimServer final {
     if (clientVersion == version_) {
       data = get(data, &type);
       data = get(data, &objectId_);
+      int requestSize;
+      data = get(data, &requestSize);
+      if(requestSize == 1) {
+        data = get(data, &screenShotWidth_);
+        data = get(data, &screenShotHeight_);
+        int dataSize = screenShotWidth_*screenShotHeight_*3;
+        if(screenShot_.size() != dataSize) {
+          screenShot_.resize(dataSize);
+        }
+        data = getN(data, &screenShot_[0], dataSize);
+        screenShotReady_ = true;
+      }
 
       data_ = set(data_, state_);
 
@@ -806,6 +847,7 @@ class RaisimServer final {
         switch (sr) {
           case ServerRequestType::NO_REQUEST:
           case ServerRequestType::STOP_RECORD_VIDEO:
+          case ServerRequestType::GET_SCREEN_SHOT:
             break;
 
           case ServerRequestType::START_RECORD_VIDEO:
@@ -819,6 +861,11 @@ class RaisimServer final {
 
           case ServerRequestType::FOCUS_ON_SPECIFIC_OBJECT:
             data_ = setString(data_, focusedObjectName_);
+            break;
+
+          case ServerRequestType::SET_SCREEN_SIZE:
+            data_ = set(data_, screenShotWidth_);
+            data_ = set(data_, screenShotHeight_);
             break;
         }
       }
@@ -852,15 +899,11 @@ class RaisimServer final {
             break;
 
           case REQUEST_INITIALIZE_VISUALS:
-            break;
-
           case REQUEST_VISUAL_POSITION:
             break;
 
           case REQUEST_SERVER_STATUS:
-            // Do nothing
             return false;
-            break;
         }
       }
       unlockVisualizationServerMutex();
@@ -888,7 +931,6 @@ class RaisimServer final {
   }
 
   inline void serializeWorld() {
-    // std::lock_guard<std::mutex> guard(serverMutex_);
     auto &objList = world_->getObjList();
 
     // set message type
@@ -1074,6 +1116,7 @@ class RaisimServer final {
       }
     }
 
+    // object information
     if(objectId_ > -1) {
       RSFATAL_IF(objectId_ >= world_->getObjList().size(), "The client is requesting non-existent object")
       auto *obSelected = world_->getObjList()[objectId_];
@@ -1126,6 +1169,14 @@ class RaisimServer final {
           data_ = set(data_, float(quat[2]));
           data_ = set(data_, float(quat[3]));
         }
+
+        // COM position
+        if(as->getJointType(0) == Joint::FLOATING) {
+          data_ = set(data_, int32_t(0));
+          data_ = setN(data_, as->getCompositeCOM()[0].ptr(), 3);
+        } else
+          data_ = set(data_, int32_t(1));
+
       } else {
         data_ = set(data_, int32_t(0));
         auto* sb = reinterpret_cast<SingleBodyObject*>(obSelected);
@@ -1154,13 +1205,9 @@ class RaisimServer final {
     } else {
       data_ = set(data_, int32_t(-1));
     }
-
-    updateReady_ = true;
   }
 
   inline void serializeObjects() {
-    // std::lock_guard<std::mutex> guard(serverMutex_);
-
     auto &objList = world_->getObjList();
 
     // set message type
@@ -1185,19 +1232,19 @@ class RaisimServer final {
       switch (ob->getObjectType()) {
         case SPHERE:
           data_ = setString(data_, dynamic_cast<SingleBodyObject *>(ob)->getAppearance());
-          data_ = set(data_, float(static_cast<Sphere *>(ob)->getRadius()));
+          data_ = set(data_, float(dynamic_cast<Sphere *>(ob)->getRadius()));
           break;
 
         case BOX:
           data_ = setString(data_, dynamic_cast<SingleBodyObject *>(ob)->getAppearance());
           for (int i = 0; i < 3; i++)
-            data_ = set(data_, float(static_cast<Box *>(ob)->getDim()[i]));
+            data_ = set(data_, float(dynamic_cast<Box *>(ob)->getDim()[i]));
           break;
 
         case CYLINDER:
           data_ = setString(data_, dynamic_cast<SingleBodyObject *>(ob)->getAppearance());
-          data_ = set(data_, float(static_cast<Cylinder *>(ob)->getRadius()));
-          data_ = set(data_, float(static_cast<Cylinder *>(ob)->getHeight()));
+          data_ = set(data_, float(dynamic_cast<Cylinder *>(ob)->getRadius()));
+          data_ = set(data_, float(dynamic_cast<Cylinder *>(ob)->getHeight()));
           break;
 
         case CONE:
@@ -1205,21 +1252,22 @@ class RaisimServer final {
 
         case CAPSULE:
           data_ = setString(data_, dynamic_cast<SingleBodyObject *>(ob)->getAppearance());
-          data_ = set(data_, float(static_cast<Capsule *>(ob)->getRadius()));
-          data_ = set(data_, float(static_cast<Capsule *>(ob)->getHeight()));
+          data_ = set(data_, float(dynamic_cast<Capsule *>(ob)->getRadius()));
+          data_ = set(data_, float(dynamic_cast<Capsule *>(ob)->getHeight()));
           break;
 
         case HALFSPACE:
           data_ = setString(data_, dynamic_cast<SingleBodyObject *>(ob)->getAppearance());
-          data_ = set(data_, float(static_cast<Ground *>(ob)->getHeight()));
+          data_ = set(data_, float(dynamic_cast<Ground *>(ob)->getHeight()));
           break;
 
         case COMPOUND:
           data_ = setString(data_, dynamic_cast<SingleBodyObject *>(ob)->getAppearance());
-          data_ = set(data_, (uint64_t) (static_cast<Compound *>(ob)->getObjList().size()));
+          data_ = set(data_, (uint64_t) (dynamic_cast<Compound *>(ob)->getObjList().size()));
 
-          for (auto &vob : static_cast<Compound *>(ob)->getObjList()) {
+          for (auto &vob : dynamic_cast<Compound *>(ob)->getObjList()) {
             data_ = set(data_, vob.objectType);
+            data_ = setString(data_, vob.appearance);
 
             switch (vob.objectType) {
               case BOX:
@@ -1242,25 +1290,25 @@ class RaisimServer final {
 
         case MESH:
           data_ = setString(data_, dynamic_cast<SingleBodyObject *>(ob)->getAppearance());
-          data_ = setString(data_, static_cast<Mesh *>(ob)->getMeshFileName());
-          data_ = set(data_, float(static_cast<Mesh *>(ob)->getScale()));
+          data_ = setString(data_, dynamic_cast<Mesh *>(ob)->getMeshFileName());
+          data_ = set(data_, float(dynamic_cast<Mesh *>(ob)->getScale()));
           break;
 
         case HEIGHTMAP:
           // misc data
           data_ = setString(data_, dynamic_cast<SingleBodyObject *>(ob)->getAppearance());
-          data_ = set(data_, float(static_cast<HeightMap *>(ob)->getCenterX()));
-          data_ = set(data_, float(static_cast<HeightMap *>(ob)->getCenterY()));
-          data_ = set(data_, float(static_cast<HeightMap *>(ob)->getXSize()));
-          data_ = set(data_, float(static_cast<HeightMap *>(ob)->getYSize()));
-          data_ = set(data_, (uint64_t) (static_cast<HeightMap *>(ob)->getXSamples()));
-          data_ = set(data_, (uint64_t) (static_cast<HeightMap *>(ob)->getYSamples()));
+          data_ = set(data_, float(dynamic_cast<HeightMap *>(ob)->getCenterX()));
+          data_ = set(data_, float(dynamic_cast<HeightMap *>(ob)->getCenterY()));
+          data_ = set(data_, float(dynamic_cast<HeightMap *>(ob)->getXSize()));
+          data_ = set(data_, float(dynamic_cast<HeightMap *>(ob)->getYSize()));
+          data_ = set(data_, (uint64_t) (dynamic_cast<HeightMap *>(ob)->getXSamples()));
+          data_ = set(data_, (uint64_t) (dynamic_cast<HeightMap *>(ob)->getYSamples()));
 
           // size of height map
-          data_ = set(data_, (uint64_t) (static_cast<HeightMap *>(ob)->getHeightVector().size()));
+          data_ = set(data_, (uint64_t) (dynamic_cast<HeightMap *>(ob)->getHeightVector().size()));
 
           // height values in float
-          for (auto h : static_cast<HeightMap *>(ob)->getHeightVector())
+          for (auto h : dynamic_cast<HeightMap *>(ob)->getHeightVector())
             data_ = set(data_, float(h));
 
           break;
@@ -1349,8 +1397,6 @@ class RaisimServer final {
   }
 
   inline void serializeToXML() {
-    // std::lock_guard<std::mutex> guard(serverMutex_);
-
     // check if world is initialized by config xml
     const std::string configFile = world_->getConfigFile();
 
@@ -1539,10 +1585,6 @@ class RaisimServer final {
           break;
 
         case Visuals::VisualCylinder:
-          data_ = set(data_, (float) vo->size[0]);
-          data_ = set(data_, (float) vo->size[1]);
-          break;
-
         case Visuals::VisualCapsule:
           data_ = set(data_, (float) vo->size[0]);
           data_ = set(data_, (float) vo->size[1]);
@@ -1563,7 +1605,7 @@ class RaisimServer final {
         for (auto &vob : *visOb) {
           data_ = set(data_, vob.shape);
           data_ = setString(data_, vob.material);
-          data_ = setN(data_, vob.color.ptr(), 4);
+          data_ = setN(data_, vas.second->color.ptr(), 4);
           data_ = set(data_, i);
           if (vob.shape == Shape::Mesh) {
             data_ = setString(data_, vob.fileName);
@@ -1604,7 +1646,6 @@ class RaisimServer final {
   sockaddr_in address;
   int addrlen;
   std::thread serverThread_;
-  bool updateReady_ = true;
 
   std::mutex serverMutex_;
 
@@ -1616,12 +1657,14 @@ class RaisimServer final {
   void updateVisualConfig() { visualConfiguration_++; }
 
   int raisimPort_ = 8080;
-  double lastWaitTime = 0.;
-
   Eigen::Vector3d position_, lookAt_;
 
+  std::vector<char> screenShot_;
+  int screenShotWidth_, screenShotHeight_;
+  bool screenShotReady_ = false;
+
   // version
-  constexpr static int version_ = 10003;
+  constexpr static int version_ = 10005;
 };
 
 }  // namespace raisim

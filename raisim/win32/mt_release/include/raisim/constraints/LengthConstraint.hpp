@@ -92,7 +92,7 @@ class LengthConstraint : public Constraints {
   /**
    * set stretch type of the wire
    * Check http://raisim.com/sections/StiffLengthConstraint.html
-   * @param the wire stretch type. Available types: STRETCH_RESISTANT_ONLY, COMPRESSION_RESISTANT_ONLY, BOTH */
+   * @param type the wire stretch type. Available types: STRETCH_RESISTANT_ONLY, COMPRESSION_RESISTANT_ONLY, BOTH */
   void setStretchType(StretchType type) { stretchType_ = type; }
 
   /**

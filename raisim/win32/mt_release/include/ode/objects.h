@@ -26,7 +26,6 @@
 #include <ode/common.h>
 #include <ode/mass.h>
 #include <ode/contact.h>
-#include <ode/threading.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -132,87 +131,6 @@ ODE_API void dWorldSetCFM (dWorldID, dReal cfm);
  * @return CFM value
  */
 ODE_API dReal dWorldGetCFM (dWorldID);
-
-
-#define dWORLDSTEP_THREADCOUNT_UNLIMITED	dTHREADING_THREAD_COUNT_UNLIMITED
-
-/**
- * @brief Set maximum threads to be used for island stepping
- *
- * The actual number of threads that is going to be used will be the minimum
- * of this limit and number of threads in the threading pool. By default 
- * there is no limit (@c dWORLDSTEP_THREADCOUNT_UNLIMITED).
- *
- * @warning
- * WARNING! Running island stepping in multiple threads requires allocating 
- * individual stepping memory buffer for each of those threads. The size of buffers
- * allocated is the size needed to handle the largest island in the world.
- *
- * Note: Setting a limit for island stepping does not affect threading at lower
- * levels in stepper functions. The sub-calls scheduled from them can be executed
- * in as many threads as there are available in the pool.
- *
- * @param w The world affected
- * @param count Thread count limit value for island stepping
- * @ingroup world
- * @see dWorldGetStepIslandsProcessingMaxThreadCount
- */
-ODE_API void dWorldSetStepIslandsProcessingMaxThreadCount(dWorldID w, unsigned count);
-/**
- * @brief Get maximum threads that are allowed to be used for island stepping.
- *
- * Please read commentaries to @c dWorldSetStepIslandsProcessingMaxThreadCount for 
- * important information regarding the value returned.
- *
- * @param w The world queried
- * @returns Current thread count limit value for island stepping
- * @ingroup world
- * @see dWorldSetStepIslandsProcessingMaxThreadCount
- */
-ODE_API unsigned dWorldGetStepIslandsProcessingMaxThreadCount(dWorldID w);
-
-/**
- * @brief Set the world to use shared working memory along with another world.
- *
- * The worlds allocate working memory internally for simulation stepping. This
- * memory is cached among the calls to @c dWordStep and @c dWorldQuickStep. 
- * Similarly, several worlds can be set up to share this memory caches thus 
- * reducing overall memory usage by cost of making worlds inappropriate for 
- * simultaneous simulation in multiple threads.
- *
- * If null value is passed for @a from_world parameter the world is detached from 
- * sharing and returns to defaults for working memory, reservation policy and 
- * memory manager as if just created. This can also be used to enable use of shared 
- * memory for a world that has already had working memory allocated privately.
- * Normally using shared memory after a world has its private working memory allocated
- * is prohibited.
- *
- * Allocation policy used can only increase world's internal reserved memory size
- * and never decreases it. @c dWorldCleanupWorkingMemory can be used to release 
- * working memory for a world in case if number of objects/joint decreases 
- * significantly in it.
- *
- * With sharing working memory worlds also automatically share memory reservation 
- * policy and memory manager. Thus, these parameters need to be customized for
- * initial world to be used as sharing source only.
- *
- * If worlds share working memory they must also use compatible threading implementations
- * (i.e. it is illegal for one world to perform stepping with self-threaded implementation
- * when the other world is assigned a multi-threaded implementation). 
- * For more information read section about threading approaches in ODE.
- *
- * Failure result status means a memory allocation failure.
- *
- * @param w The world to use the shared memory with.
- * @param from_world Null or the world the shared memory is to be used from.
- * @returns 1 for success and 0 for failure.
- *
- * @ingroup world
- * @see dWorldCleanupWorkingMemory
- * @see dWorldSetStepMemoryReservationPolicy
- * @see dWorldSetStepMemoryManager
- */
-ODE_API int dWorldUseSharedWorkingMemory(dWorldID w, dWorldID from_world/*=NULL*/);
 
 /**
  * @brief Release internal working memory allocated for world
@@ -346,22 +264,6 @@ typedef struct
 * @see dWorldUseSharedWorkingMemory
 */
 ODE_API int dWorldSetStepMemoryManager(dWorldID w, const dWorldStepMemoryFunctionsInfo *memfuncs);
-
-/**
- * @brief Assign threading implementation to be used for [quick]stepping the world.
- *
- * @warning It is not recommended to assign the same threading implementation to
- * different worlds if they are going to be called in parallel. In particular this
- * makes resources preallocation for threaded calls to lose its sense. 
- * Built-in threading implementation is likely to crash if misused this way.
- * 
- * @param w The world to change threading implementation for.
- * @param functions_info Pointer to threading functions structure
- * @param threading_impl ID of threading implementation object
- * 
- * @ingroup world
- */
-ODE_API void dWorldSetStepThreadingImplementation(dWorldID w, const dThreadingFunctionsInfo *functions_info, dThreadingImplementationID threading_impl);
 
 /**
  * @brief Step the world.

@@ -753,24 +753,24 @@ class RaisimServer final {
     serverRequest_.push_back(ServerRequestType::STOP_RECORD_VIDEO);
   }
 
-  /**
+  /** NOT WORKING YET
    * request for screenshot */
-  inline const std::vector<char>& getScreenShot() {
-    serverRequest_.push_back(ServerRequestType::GET_SCREEN_SHOT);
-    while(!screenShotReady_)
-      usleep(3000);
+//  inline const std::vector<char>& getScreenShot() {
+//    serverRequest_.push_back(ServerRequestType::GET_SCREEN_SHOT);
+//    while(!screenShotReady_)
+//      usleep(3000);
+//
+//    screenShotReady_ = false;
+//    return screenShot_;
+//  }
 
-    screenShotReady_ = false;
-    return screenShot_;
-  }
-
-  /**
+  /** NOT WORKING YET
    * change the screen size */
-  inline void setScreenSize(int width, int height) {
-    serverRequest_.push_back(ServerRequestType::SET_SCREEN_SIZE);
-    screenShotWidth_ = width;
-    screenShotHeight_ = height;
-  }
+//  inline void setScreenSize(int width, int height) {
+//    serverRequest_.push_back(ServerRequestType::SET_SCREEN_SIZE);
+//    screenShotWidth_ = width;
+//    screenShotHeight_ = height;
+//  }
 
  private:
   inline bool waitForReadEvent(int timeout) {
@@ -1605,7 +1605,7 @@ class RaisimServer final {
         for (auto &vob : *visOb) {
           data_ = set(data_, vob.shape);
           data_ = setString(data_, vob.material);
-          data_ = setN(data_, vob.color.ptr(), 4);
+          data_ = setN(data_, vas.second->color.ptr(), 4);
           data_ = set(data_, i);
           if (vob.shape == Shape::Mesh) {
             data_ = setString(data_, vob.fileName);
