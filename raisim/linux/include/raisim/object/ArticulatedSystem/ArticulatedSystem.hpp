@@ -259,10 +259,10 @@ class ArticulatedSystem : public Object {
                     const std::string &resDir,
                     ArticulatedSystemOption options);
 
-  ArticulatedSystem(const std::string &filePathOrURDFScript,
-                    const std::string &resDir = "",
-                    const std::vector<std::string> &jointOrder = std::vector<std::string>(),
-                    ArticulatedSystemOption options = ArticulatedSystemOption());
+  explicit ArticulatedSystem(const std::string &filePathOrURDFScript,
+                             const std::string &resDir = "",
+                             const std::vector<std::string> &jointOrder = std::vector<std::string>(),
+                             ArticulatedSystemOption options = ArticulatedSystemOption());
 
   ArticulatedSystem(const RaiSimTinyXmlWrapper &c,
                     const std::string &resDir,
@@ -1355,6 +1355,7 @@ class ArticulatedSystem : public Object {
 
   /* computing JM^-1J^T exploiting sparsity */
   void getFullDelassusAndTauStar(double dt);
+  void getFullDelassusAndTauStarFast(double dt);
 
   /* This computes Delassus matrix necessary for contact force computation */
   void preContactSolverUpdate1(const Vec<3> &gravity, double dt) final;
@@ -1410,6 +1411,7 @@ class ArticulatedSystem : public Object {
  public:
   void articulatedBodyAlgorithm(const Eigen::Vector3d& gravity, Eigen::VectorXd& udot);
   const std::vector<MatDyn>& getMinvJT() { return MinvJT_T; }
+  const contact::PerObjectContactList& getPerObCon() { return perObjectContact_; }
 
  private:
   /// for computation
@@ -1519,16 +1521,37 @@ class ArticulatedSystem : public Object {
   IntegrationScheme integrationSchemeThisTime_;
 
   /// ABA
-  std::vector<Eigen::Matrix<double, 6, 6>, AlignedAllocator<Eigen::Matrix<double, 6, 6>, 32>> XT, Ma, XMXT;
   Mat<6, 6> MaInv_base;
-  std::vector<Eigen::Matrix<double, 1, 6>, AlignedAllocator<Eigen::Matrix<double, 1, 6>, 32>> STMaXT, ST, SdotT, STMa, STMaSinvSTMaXT;
-  std::vector<Eigen::Matrix<double, 3, 6>, AlignedAllocator<Eigen::Matrix<double, 3, 6>, 32>> STMaXT3, ST3, SdotT3, STMa3, STMaSinvSTMaXT3;
-  std::vector<Eigen::Matrix<double, 6, 1>, AlignedAllocator<Eigen::Matrix<double, 6, 1>, 32>> Pa, V, acc, SdotUpXdotTV;
-  std::vector<Eigen::Matrix<double, 3, 3>, AlignedAllocator<Eigen::Matrix<double, 3, 3>, 32>> STMaSinv3, STMaS3, joint2Com_w_Skew;
-  std::vector<Eigen::Matrix<double, 3, 1>, AlignedAllocator<Eigen::Matrix<double, 3, 1>, 32>> udotExpectAccTerm3;
-  std::vector<double, AlignedAllocator<double, 64>> STMaSinv, udotExpectAccTerm;
-  std::vector<Eigen::Matrix<double, 3, 6>, AlignedAllocator<Eigen::Matrix<double, 3, 6>, 32>>  XcT;
+  std::vector<Eigen::Matrix<double, 3, 3>, AlignedAllocator<Eigen::Matrix<double, 3, 3>, 32>> joint2Com_w_Skew;
+  Eigen::Matrix<double, 3, 6> XcTtemp;
+  struct AbaData {
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    Eigen::Matrix<double, 6, 6> XT;
+    Eigen::Matrix<double, 3, 6>  XcT;
+    Eigen::Matrix<double, 1, 6> STMaSinvSTMaXT;
+    Eigen::Matrix<double, 1, 6> ST;
+    Eigen::Matrix<double, 6, 1> acc;
+    Eigen::Matrix<double, 6, 1> SdotUpXdotTV;
+    double STMaSinv;
+    double udotExpectAccTerm;
+    Eigen::Matrix<double, 6, 6> XMXT;
+    Eigen::Matrix<double, 1, 6> STMaXT;
+    Eigen::Matrix<double, 1, 6> SdotT;
+    Eigen::Matrix<double, 1, 6> STMa;
 
+    Eigen::Matrix<double, 6, 6> Ma;
+    Eigen::Matrix<double, 6, 1> Pa;
+  };
+
+  struct AbaData3 {
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    Eigen::Matrix<double, 3, 6> STMaXT3, ST3, SdotT3, STMa3, STMaSinvSTMaXT3;
+    Eigen::Matrix<double, 3, 3> STMaSinv3, STMaS3;
+    Eigen::Matrix<double, 3, 1> udotExpectAccTerm3;
+  };
+
+  std::vector<AbaData, AlignedAllocator<AbaData, 32>> ad_;
+  std::vector<AbaData3, AlignedAllocator<AbaData3, 32>> ad3_;
 };
 }
 
