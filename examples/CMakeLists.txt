@@ -36,7 +36,7 @@ function(create_executable app_name file_name)
 endfunction()
 
 # benchmark examples
-create_executable(anymal_speed_test src/benchmark/anymal.cpp)
+create_executable(speed_test src/benchmark/speed_test.cpp)
 
 # server examples
 create_executable(primitives src/server/primitives.cpp)

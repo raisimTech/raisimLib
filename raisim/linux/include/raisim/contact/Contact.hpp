@@ -9,19 +9,19 @@
 
 #include <raisim/configure.hpp>
 #include "raisim/helper.hpp"
+#include <raisim/Materials.hpp>
 
 namespace raisim {
 
-typedef std::vector<std::pair<std::vector <raisim::Mat<3, 3>, AlignedAllocator<raisim::Mat<3, 3>, 32>>, raisim::Vec<3>>, AlignedAllocator<std::pair<std::vector <raisim::Mat<3, 3>, AlignedAllocator<raisim::Mat<3, 3>, 32>>, raisim::Vec<3>>, 32>> DelassusType;
-
 class World;
-
-namespace contact {
+class Object;
 
 class Contact {
  public:
 
   friend class raisim::World;
+
+  Contact() = default;
 
   explicit Contact(Vec<3> &position,
                    Vec<3> &normal,
@@ -33,16 +33,15 @@ class Contact {
                    size_t pairContactIndexInPairObject,
                    size_t localBodyIndex,
                    double depth)
-    : position_(position), normal_(normal),
-      depth_(depth),
-      contactIndexInObject_(contactIndexInObject),
-      pairObjectIndex_(pairObjectIndex),
-      pairContactIndexInPairObject_(pairContactIndexInPairObject),
-      contactProblemIndex_(contactProblemIndex),
-      localBodyIndex_(localBodyIndex),
-      objectA_(objectA),
-      pairObjectBodyType_(pairObjectBodyType)
-  {
+      : position_(position), normal_(normal),
+        depth_(depth),
+        contactIndexInObject_(contactIndexInObject),
+        pairObjectIndex_(pairObjectIndex),
+        pairContactIndexInPairObject_(pairContactIndexInPairObject),
+        contactProblemIndex_(contactProblemIndex),
+        localBodyIndex_(localBodyIndex),
+        objectA_(objectA),
+        pairObjectBodyType_(pairObjectBodyType) {
     computeFrame();
   }
 
@@ -64,15 +63,15 @@ class Contact {
     const double yNormInv = 1. / yAxis.norm();
     const double zNormInv = 1. / zAxis.norm();
 
-    frame_[0] = xAxis[0] *xNormInv;
-    frame_[1] = yAxis[0] *yNormInv;
-    frame_[2] = zAxis[0] *zNormInv;
-    frame_[3] = xAxis[1] *xNormInv;
-    frame_[4] = yAxis[1] *yNormInv;
-    frame_[5] = zAxis[1] *zNormInv;
-    frame_[6] = xAxis[2] *xNormInv;
-    frame_[7] = yAxis[2] *yNormInv;
-    frame_[8] = zAxis[2] *zNormInv;
+    frame_[0] = xAxis[0] * xNormInv;
+    frame_[1] = yAxis[0] * yNormInv;
+    frame_[2] = zAxis[0] * zNormInv;
+    frame_[3] = xAxis[1] * xNormInv;
+    frame_[4] = yAxis[1] * yNormInv;
+    frame_[5] = zAxis[1] * zNormInv;
+    frame_[6] = xAxis[2] * xNormInv;
+    frame_[7] = yAxis[2] * yNormInv;
+    frame_[8] = zAxis[2] * zNormInv;
   }
 
   const Vec<3> &getPosition() const {
@@ -103,8 +102,8 @@ class Contact {
     return pairContactIndexInPairObject_;
   }
 
-  Vec<3> *getImpulse() const {
-    return impulse_;
+  const Vec<3> &getImpulse() const {
+    return *impulse_;
   }
 
   bool isObjectA() const {
@@ -115,16 +114,8 @@ class Contact {
     return pairObjectBodyType_;
   }
 
-  void setImpulse(Vec<3> *impulse) {
-    impulse_ = impulse;
-  }
-
-  void setInvInertia(Mat<3, 3> *appIinv) {
-    appInertiaInv_ = appIinv;
-  }
-
-  const Mat<3, 3> *getInvInertia() const {
-    return appInertiaInv_;
+  Mat<3, 3> &getInvInertia() {
+    return Minv_;
   }
 
   size_t getlocalBodyIndex() const {
@@ -150,16 +141,21 @@ class Contact {
   void setSkip() {
     skip_ = true;
   }
-  double& getImpactVel() {
+
+  double &getImpactVel() {
     return impactVel_;
   }
 
+  void setImpulse(Vec<3> *im) {
+    impulse_ = im;
+  }
+
  private:
-  Mat<3, 3> frame_;              // contactFrame of A
+  Mat<3, 3> frame_;             // contactFrame of A
   Vec<3> position_;             // position of A = position of B
   Vec<3> normal_;               // normal of A (normal of B = - normalA)
+  Mat<3, 3> Minv_;               // inverse apparent inertia matrix
   Vec<3> *impulse_;
-  Mat<3, 3> *appInertiaInv_;
   double impactVel_;
   double depth_;
   size_t contactIndexInObject_;
@@ -174,7 +170,6 @@ class Contact {
 
 };
 
-} // contact
 } // raisim
 
 #endif //RAISIM_CONTACT_HPP

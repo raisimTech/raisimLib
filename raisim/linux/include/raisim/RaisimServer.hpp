@@ -904,6 +904,9 @@ class RaisimServer final {
 
           case REQUEST_SERVER_STATUS:
             return false;
+
+          default:
+            break;
         }
       }
       unlockVisualizationServerMutex();
@@ -1283,6 +1286,9 @@ class RaisimServer final {
               case SPHERE:
                 data_ = set(data_, vob.objectParam[0]);
                 break;
+
+              default:
+                break;
             }
           }
 
@@ -1314,6 +1320,7 @@ class RaisimServer final {
           break;
 
         case ARTICULATED_SYSTEM:
+        {
           std::string resDir =
               static_cast<ArticulatedSystem *>(ob)->getResourceDir();
           data_ = setString(data_, resDir);
@@ -1344,6 +1351,10 @@ class RaisimServer final {
               }
             }
           }
+        }
+          break;
+
+        case UNRECOGNIZED:
           break;
       }
     }
@@ -1381,11 +1392,11 @@ class RaisimServer final {
         data_ = set(data_, contactPos[2]);
 
         // contact forces
-        auto *impulseB = contact.getImpulse();
+        auto impulseB = contact.getImpulse();
         auto contactFrame = contact.getContactFrame();
 
         Vec<3> impulseW;
-        raisim::matTransposevecmul(contactFrame, *impulseB, impulseW);
+        raisim::matTransposevecmul(contactFrame, impulseB, impulseW);
         impulseW /= world_->getTimeStep();
         data_ = set(data_, impulseW[0]);
         data_ = set(data_, impulseW[1]);
@@ -1588,6 +1599,9 @@ class RaisimServer final {
         case Visuals::VisualCapsule:
           data_ = set(data_, (float) vo->size[0]);
           data_ = set(data_, (float) vo->size[1]);
+          break;
+
+        default:
           break;
       }
     }

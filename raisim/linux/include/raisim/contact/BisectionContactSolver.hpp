@@ -15,7 +15,7 @@
 #include <Eigen/Dense>
 #include <raisim/Materials.hpp>
 #include "raisim/math.hpp"
-#include "raisim/object/Object.hpp"
+#include "raisim/contact/Contact.hpp"
 
 namespace raisim {
 
@@ -24,6 +24,7 @@ class Object;
 namespace contact {
 
 namespace rank {
+constexpr int ILLDEFINED_CONTACT = 0;
 constexpr int RANK1_CONTACT = 1;
 constexpr int RANK2_CONTACT = 2;
 constexpr int RANK3_CONTACT = 3;
@@ -38,15 +39,15 @@ class Single3DContactProblem {
   Single3DContactProblem() = default;
   void checkRank();
 
-  raisim::Vec<3> imp_i, tau_i, position_W;
+  raisim::Vec<3> imp_i;
   raisim::Mat<3, 3> MappInv_i;
-  raisim::Mat<3, 3> MappInvWODel_i;
   raisim::Mat<3, 3> Mapp_i;
   raisim::Mat<2, 2> Mapp_iInv22, Mapp_i22;
-  Mat<3,2> basisMat;
+  union {
+    Mat<3,2> basisMat;
+    Vec<3> axis;
+  };
   raisim::Mat<3, 2> MappInv_red;
-  std::vector<raisim::Mat<3, 3>> MappInv_j;
-  std::vector<Vec<3> *> imp_j;
   double mu, n2_mu, muinv, negMuSquared, coeffRes, bounceThres, bouceVel=0., Mapp_iInv11, impact_vel=0., depth=0., tempE=0.;
   Object *obA = nullptr, *obB = nullptr;
   int rank = 3;
@@ -55,7 +56,7 @@ class Single3DContactProblem {
     size_t jointId;
   };
   size_t pointIdB;
-  bool atLeastOneWithoutDel = false;
+  raisim::Vec<3> position_W;
 };
 
 typedef std::vector<contact::Single3DContactProblem, AlignedAllocator<contact::Single3DContactProblem, 32>>

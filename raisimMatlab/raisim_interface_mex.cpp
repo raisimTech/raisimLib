@@ -138,6 +138,12 @@ void quit() {
     as->X(vec);                                                              \
   }
 
+#define RETURN_VEC(RETURN) \
+    plhs[0] = mxCreateDoubleMatrix(RETURN.rows(), RETURN.cols(), mxREAL); \
+    memcpy(mxGetPr(plhs[0]), RETURN.ptr(),                                \
+           sizeof(double) * RETURN.rows() * RETURN.cols());               \
+    return;
+
 #define GETTER(X)                                                     \
   else if (!strcmp(MAKE_STR(X), cmd)) {                               \
     GET_AS                                                            \
@@ -308,6 +314,14 @@ void mexFunction(
     world_->integrate();
   }
 
+  else if (!strcmp("getNonlinearities", cmd)) {
+    CHECK_INPUT_SIZE(1)
+    CHECK_OUTPUT_SIZE(1)
+    GET_EIGEN_VEC_WITH_CHECK(0, 3)
+    GET_AS
+    RETURN_VEC(as->getNonlinearities(vec))
+  }
+
   WORLD_NOARG(integrate1)
   WORLD_NOARG(integrate2)
 
@@ -321,7 +335,6 @@ void mexFunction(
 
   GETTER(getGeneralizedCoordinate)
   GETTER(getGeneralizedVelocity)
-  GETTER(getNonlinearities)
   GETTER(getMassMatrix)
 
   FRAME_GETTER(getFramePosition, raisim::Vec3)
@@ -363,7 +376,7 @@ void mexFunction(
 
     for (auto& contact : obj->getContacts())
       if (contact.getlocalBodyIndex() == bodyIdx) {
-        raisim::matvecmul(contact.getContactFrame(), *contact.getImpulse(), impulse);
+        raisim::matvecmul(contact.getContactFrame(), contact.getImpulse(), impulse);
         if(!contact.isObjectA())
           impulse *= -1.;
         impulse /= world_->getTimeStep();

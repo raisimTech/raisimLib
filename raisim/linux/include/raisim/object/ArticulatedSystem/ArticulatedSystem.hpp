@@ -21,6 +21,7 @@
 #include "JointAndBodies.hpp"
 #include "raisim/object/singleBodies/SingleBodyObject.hpp"
 #include "raisim/object/singleBodies/Mesh.hpp"
+#include "raisim/contact/BisectionContactSolver.hpp"
 
 namespace raisim {
 
@@ -252,6 +253,7 @@ class ArticulatedSystem : public Object {
   friend class raisim::mjcf::LoadFromMjcf;
 
  public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
   ArticulatedSystem() = default;
 
@@ -259,10 +261,10 @@ class ArticulatedSystem : public Object {
                     const std::string &resDir,
                     ArticulatedSystemOption options);
 
-  ArticulatedSystem(const std::string &filePathOrURDFScript,
-                    const std::string &resDir = "",
-                    const std::vector<std::string> &jointOrder = std::vector<std::string>(),
-                    ArticulatedSystemOption options = ArticulatedSystemOption());
+  explicit ArticulatedSystem(const std::string &filePathOrURDFScript,
+                             const std::string &resDir = "",
+                             const std::vector<std::string> &jointOrder = std::vector<std::string>(),
+                             ArticulatedSystemOption options = ArticulatedSystemOption());
 
   ArticulatedSystem(const RaiSimTinyXmlWrapper &c,
                     const std::string &resDir,
@@ -427,17 +429,20 @@ class ArticulatedSystem : public Object {
   /**
    * get the mass matrix
    * @return the mass matrix. Check Object/ArticulatedSystem section in the manual */
-  const MatDyn &getMassMatrix() const { return M_; }
+  const MatDyn &getMassMatrix() { computeMassMatrix(M_); return M_; }
 
   /**
    * get the coriolis and the gravitational term
+   * @param[in] gravity gravitational acceleration. You should get this value from the world.getGravity();
    * @return the coriolis and the gravitational term. Check Object/ArticulatedSystem section in the manual */
-  const VecDyn &getNonlinearities() const { return h_; }
+  const VecDyn &getNonlinearities(const Vec<3>& gravity) { computeNonlinearities(gravity, h_); return h_; }
 
   /**
-   * get the inverse mass matrix. Note that this is actually damped inverse. It contains the effect of damping and the spring effects
+   * get the inverse mass matrix. Note that this is actually damped inverse.
+   * It contains the effect of damping and the spring effects due to the implicit integration.
+   * YOU MUST CALL getMassMatrix FIRST BEFORE CALLING THIS METHOD.
    * @return the inverse mass matrix. Check Object/ArticulatedSystem section in the manual */
-  const MatDyn &getInverseMassMatrix() const { return Minv_; }
+  const MatDyn &getInverseMassMatrix() { computeSparseInverse(M_, Minv_); return Minv_; }
 
   /**
    * get the center of mass of a composite body containing body i and all its children
@@ -479,11 +484,11 @@ class ArticulatedSystem : public Object {
   /**
    * @param[in] gravity gravitational acceleration
    * @return the sum of potential/kinetic energy given the gravitational acceleration*/
-  double getEnergy(const Vec<3> &gravity) const;
+  double getEnergy(const Vec<3> &gravity);
 
   /**
    * @return the kinetic energy. */
-  double getKineticEnergy() const;
+  double getKineticEnergy();
 
   /**
    * @param[in] gravity gravitational acceleration
@@ -1298,8 +1303,11 @@ class ArticulatedSystem : public Object {
    * The following joint returns the joint/body Id
    * ``robot.getJointLimitViolations()[0]->jointId``.
    * @return get contact problems associated with violated joint limits */
-  const std::vector<contact::Single3DContactProblem *> &getJointLimitViolations() {
-    return jointLimitViolation_;
+  std::vector<contact::Single3DContactProblem const *> getJointLimitViolations(const contact::ContactProblems & problemListFromWorld) {
+    std::vector<contact::Single3DContactProblem const *> vec;
+    for(auto v: jointLimitViolation_)
+      vec.push_back(&problemListFromWorld[v]);
+    return vec;
   }
 
   /**
@@ -1353,12 +1361,9 @@ class ArticulatedSystem : public Object {
 
   void destroyCollisionBodies(dSpaceID id) final;
 
-  /* computing JM^-1J^T exploiting sparsity */
-  void getFullDelassusAndTauStar(double dt);
-
   /* This computes Delassus matrix necessary for contact force computation */
   void preContactSolverUpdate1(const Vec<3> &gravity, double dt) final;
-  void preContactSolverUpdate2(const Vec<3> &gravity, double dt) final;
+  void preContactSolverUpdate2(const Vec<3> &gravity, double dt, contact::ContactProblems& problems) final;
   void integrateWithoutContact(const Vec<3> &gravity, double dt);
 
   void integrate(double dt, const Vec<3> &gravity) final;
@@ -1391,8 +1396,6 @@ class ArticulatedSystem : public Object {
 
   void computeExpandedParentArray();
 
-  void appendJointLimits(contact::ContactProblems &problem) final;
-
   double enforceJointLimits(contact::Single3DContactProblem &problem) final;
 
   void computeDampedMass(double dt);
@@ -1408,8 +1411,12 @@ class ArticulatedSystem : public Object {
 
   /// to be removed. just for testing purposes
  public:
-  void articulatedBodyAlgorithm(const Eigen::Vector3d& gravity, Eigen::VectorXd& udot);
+  void articulatedBodyAlgorithm(const Vec<3> &gravity, double dt);
   const std::vector<MatDyn>& getMinvJT() { return MinvJT_T; }
+  const std::vector<VecDyn>& getj_MinvJT_T1D() { return j_MinvJT_T1D; }
+  const raisim::VecDyn& getUdot() { return udot_; }
+  void getFullDelassusAndTauStar(double dt);
+  void appendJointLimits(contact::ContactProblems &problem) final;
 
  private:
   /// for computation
@@ -1463,17 +1470,17 @@ class ArticulatedSystem : public Object {
   std::vector<size_t> lambda;
 
   /// State variables
-  VecDyn gc_, gcOld_, gv_, gvOld_, gvAvg_, h_, gvERP_, gvTemp_, gvPreimpact_, gcRK_[4], gvRK_[4], slopeRK_[4];
+  VecDyn gc_, gcOld_, gv_, udot_, gvOld_, gvAvg_, h_, gvERP_, gvTemp_, gvPreimpact_, gcRK_[4], gvRK_[4], slopeRK_[4];
   MatDyn M_, Minv_, lT_;
 
   /// Contact variables
   std::vector<MatDyn> MinvJT_T;
+  std::vector<VecDyn> j_MinvJT_T1D;
   VecDyn tauStar_, tau_, tauFF_;
   VecDyn tauUpper_, tauLower_; // bounds
   std::vector<size_t> bodyIdx2GvIdx, bodyIdx2GcIdx;
 
   std::vector<SparseJacobian> J_;
-
   std::vector<CoordinateFrame> frameOfInterest_;
 
  protected:
@@ -1487,7 +1494,6 @@ class ArticulatedSystem : public Object {
   raisim::CollisionSet collisionBodies;
   std::vector<VisObject> visColObj, visObj;
   ArticulatedSystemOption options_;
-  std::vector<contact::Single3DContactProblem *> jointLimitViolation_;
 
  private:
   size_t nbody, dof = 0, gcDim = 0;
@@ -1517,18 +1523,41 @@ class ArticulatedSystem : public Object {
 
   IntegrationScheme desiredIntegrationScheme_ = IntegrationScheme::TRAPEZOID;
   IntegrationScheme integrationSchemeThisTime_;
+  std::vector<size_t> jointLimitViolation_;
 
   /// ABA
-  std::vector<Eigen::Matrix<double, 6, 6>, AlignedAllocator<Eigen::Matrix<double, 6, 6>, 32>> XT, Ma, XMXT;
   Mat<6, 6> MaInv_base;
-  std::vector<Eigen::Matrix<double, 1, 6>, AlignedAllocator<Eigen::Matrix<double, 1, 6>, 32>> STMaXT, ST, SdotT, STMa, STMaSinvSTMaXT;
-  std::vector<Eigen::Matrix<double, 3, 6>, AlignedAllocator<Eigen::Matrix<double, 3, 6>, 32>> STMaXT3, ST3, SdotT3, STMa3, STMaSinvSTMaXT3;
-  std::vector<Eigen::Matrix<double, 6, 1>, AlignedAllocator<Eigen::Matrix<double, 6, 1>, 32>> Pa, V, acc, SdotUpXdotTV;
-  std::vector<Eigen::Matrix<double, 3, 3>, AlignedAllocator<Eigen::Matrix<double, 3, 3>, 32>> STMaSinv3, STMaS3, joint2Com_w_Skew;
-  std::vector<Eigen::Matrix<double, 3, 1>, AlignedAllocator<Eigen::Matrix<double, 3, 1>, 32>> udotExpectAccTerm3;
-  std::vector<double, AlignedAllocator<double, 64>> STMaSinv, udotExpectAccTerm;
-  std::vector<Eigen::Matrix<double, 3, 6>, AlignedAllocator<Eigen::Matrix<double, 3, 6>, 32>>  XcT;
+  std::vector<Eigen::Matrix<double, 3, 3>, AlignedAllocator<Eigen::Matrix<double, 3, 3>, 32>> joint2Com_w_Skew;
 
+  struct AbaData {
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    Eigen::Matrix<double, 6, 6> XT;
+    Eigen::Matrix<double, 3, 6>  XcT;
+    Eigen::Matrix<double, 1, 6>  XcT1D;
+    Eigen::Matrix<double, 1, 6> STMaSinvSTMaXT;
+    Eigen::Matrix<double, 1, 6> ST;
+    Eigen::Matrix<double, 6, 1> acc;
+    Eigen::Matrix<double, 6, 1> SdotUpXdotTV;
+    double STMaSinv;
+    double udotExpectAccTerm;
+    Eigen::Matrix<double, 6, 6> XMXT;
+    Eigen::Matrix<double, 1, 6> STMaXT;
+    Eigen::Matrix<double, 1, 6> SdotT;
+    Eigen::Matrix<double, 1, 6> STMa;
+
+    Eigen::Matrix<double, 6, 6> Ma;
+    Eigen::Matrix<double, 6, 1> Pa;
+  };
+
+  struct AbaData3 {
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    Eigen::Matrix<double, 3, 6> STMaXT3, ST3, SdotT3, STMa3, STMaSinvSTMaXT3;
+    Eigen::Matrix<double, 3, 3> STMaSinv3, STMaS3;
+    Eigen::Matrix<double, 3, 1> udotExpectAccTerm3;
+  };
+
+  std::vector<AbaData, AlignedAllocator<AbaData, 32>> ad_;
+  std::vector<AbaData3, AlignedAllocator<AbaData3, 32>> ad3_;
 };
 }
 

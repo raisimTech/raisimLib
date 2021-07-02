@@ -67,7 +67,7 @@ class CMakeBuild(build_ext):
 
 setup(
     name='raisim_gym_torch',
-    version='0.0.0',
+    version='1.1.0',
     author='Jemin Hwangbo',
     license="proprietary",
     packages=find_packages(),
