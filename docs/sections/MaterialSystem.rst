@@ -145,3 +145,18 @@ Alternatively, you can specify the material dynamically as following
     anymal->getCollisionBody("LF_FOOT/0").setMaterial("ice");
 
 "LF_FOOT/0" means the first collision body of the link "LF_FOOT".
+
+To get the name of the assigned material, you can call
+
+.. code-block:: C++
+
+    ANYmal->getCollisionBody("LF_FOOT/0").getMaterial();
+
+To get contact properties when it collides with another material, you can use the following line
+
+.. code-block:: C++
+
+    world.getMaterialPairProp(ANYmal->getCollisionBody("LF_FOOT/0").getMaterial(),
+                              ground->getCollisionObject().getMaterial());
+
+

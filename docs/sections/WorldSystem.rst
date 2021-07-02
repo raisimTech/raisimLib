@@ -210,6 +210,12 @@ Save world to an XML file
 ``raisim::World::exportToXml()`` lets you save the world to an XML file.
 `EXAMPLES <https://github.com/raisimTech/raisimLib/blob/master/examples/src/server/newtonsCradle.cpp>`_
 
+MuJoCo mjcf file loader
+=============================================
+RaiSim partially supports mjcf file.
+There are inherent differences between the two simulators and inevitably some features are not supported.
+But you can load simple mjcf files (e.g., ones provided by OpenAI).
+
 Changing Simulation Parameters
 ================================
 
