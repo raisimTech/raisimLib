@@ -74,6 +74,6 @@ All simulation tests were performed on a single core of 3950X, which is not exce
 
 The computational speed of **4** becomes very significant when there are more than 10 coupled contact points.
 Therefore, it is important to check if there are unnecessary contact points.
-There computational cost is highly dependent on their nature of coupling.
-If they are not coupled at all, the computational cost of **4** is O(n).
-If they are highly coupled, the computational cost becomes NP hard, which means that it takes VERY long time.
+There computational cost of **4** is highly dependent on their nature of coupling.
+If they are not coupled at all, the computational cost is O(n).
+If they are highly coupled, the computational cost becomes NP hard, which means that it is no longer a polynomial relationship.
