@@ -61,6 +61,7 @@ As shown above, we can simulate a 60-dof system at 114 kHz.
 
 If you have a big system like the 60-dof chain, the collision detection will take most of the time.
 The model used above does not have a collision body.
+So it is important to model only important collision bodies.
 
 The new simulation scheme is on average faster than the old scheme.
 However, **3** in the old scheme is faster because the computation of the inverse mass matrix helps the computation of **3**.
@@ -68,7 +69,7 @@ Our O(n) algorithm is very close to the old scheme even without the inverse mass
 Consequently, the old scheme might be faster if there are many contact points.
 
 For the ANYmal robot without collision, the new scheme runs at 318 kHz.
-This is nearly 50% faster than our competition (http://www.mujoco.org/performance.html).
+This is nearly 50% faster than our competition (231Hz claimed by the MuJoCo developer, http://www.mujoco.org/performance.html).
 This is also much faster than the old version which runs at 272 Hz.
 All simulation tests were performed on a single core of 3950X, which is not excellent at single-thread performance.
 

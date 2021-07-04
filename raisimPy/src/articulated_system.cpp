@@ -82,7 +82,12 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
                 self.posOffset = pos;
             })
         .def_readwrite("localIdx", &raisim::CollisionDefinition::localIdx)
-        .def_readwrite("name", &raisim::CollisionDefinition::name);
+        .def_property("name",
+                      [](raisim::CollisionDefinition &self) {  // getter
+                        return self.colObj->name;
+                      }, [](raisim::CollisionDefinition &self, py::str name) {  // setter
+              self.colObj->name = name;
+            });
 
 
     /*********/

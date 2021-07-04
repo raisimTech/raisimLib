@@ -7,7 +7,8 @@ How does it work?
 
 You need an activation key to use RaiSim.
 After you submit **RaiSim License Request Form** `here <https://docs.google.com/forms/d/e/1FAIpQLSc1FjnRj4BV9xSTgrrRH-GMDsio_Um4DmD0Yt12MLNAFKm12Q/viewform?usp=sf_link>`_, we will review your request and send you an activation key.
-Please check examples to see how to use the activation key.
+Please check the included examples to see how to use the activation key.
+The Installation section provides you with further information.
 Send an email to info.raisim@gmail.com for any inquiries.
 
 Following license types are available

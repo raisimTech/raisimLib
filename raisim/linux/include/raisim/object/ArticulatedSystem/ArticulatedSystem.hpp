@@ -91,7 +91,7 @@ class ArticulatedSystem : public Object {
 
       for (auto &col: system_->getCollisionBodies()) {
         if (col.localIdx == localId_) {
-          colDef_.insert({col.name, &col});
+          colDef_.insert({col.colObj->name, &col});
         }
       }
 
@@ -830,11 +830,11 @@ class ArticulatedSystem : public Object {
    * @return a reference to the collision bodies. Position and orientation can be set dynamically */
   raisim::CollisionDefinition &getCollisionBody(const std::string &name) {
     return *std::find_if(collisionBodies.begin(), collisionBodies.end(),
-                         [name](const raisim::CollisionDefinition &ref) { return ref.name == name; });
+                         [name](const raisim::CollisionDefinition &ref) { return ref.colObj->name == name; });
   }
   const raisim::CollisionDefinition &getCollisionBody(const std::string &name) const {
     return *std::find_if(collisionBodies.begin(), collisionBodies.end(),
-                         [name](const raisim::CollisionDefinition &ref) { return ref.name == name; });
+                         [name](const raisim::CollisionDefinition &ref) { return ref.colObj->name == name; });
   }
 
   /**

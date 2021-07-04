@@ -10,6 +10,7 @@
 #include <raisim/configure.hpp>
 #include "raisim/helper.hpp"
 #include <raisim/Materials.hpp>
+#include <ode/objects.h>
 
 namespace raisim {
 
@@ -32,7 +33,9 @@ class Contact {
                    BodyType pairObjectBodyType,
                    size_t pairContactIndexInPairObject,
                    size_t localBodyIndex,
-                   double depth)
+                   double depth,
+                   dGeomID colA,
+                   dGeomID colB)
       : position_(position), normal_(normal),
         depth_(depth),
         contactIndexInObject_(contactIndexInObject),
@@ -41,7 +44,9 @@ class Contact {
         contactProblemIndex_(contactProblemIndex),
         localBodyIndex_(localBodyIndex),
         objectA_(objectA),
-        pairObjectBodyType_(pairObjectBodyType) {
+        pairObjectBodyType_(pairObjectBodyType),
+        colA_(colA),
+        colB_(colB) {
     computeFrame();
   }
 
@@ -150,6 +155,14 @@ class Contact {
     impulse_ = im;
   }
 
+  dGeomID getCollisionBodyA() {
+    return colA_;
+  }
+
+  dGeomID getCollisionBodyB() {
+    return colB_;
+  }
+
  private:
   Mat<3, 3> frame_;             // contactFrame of A
   Vec<3> position_;             // position of A = position of B
@@ -167,6 +180,7 @@ class Contact {
   bool skip_ = false;
   bool objectA_;                                  // true (A) / false (B)
   BodyType pairObjectBodyType_;
+  dGeomID colA_, colB_;
 
 };
 

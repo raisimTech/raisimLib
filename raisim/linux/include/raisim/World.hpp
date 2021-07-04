@@ -571,10 +571,12 @@ class World {
   std::vector<std::unique_ptr<LengthConstraint>>& getWires () { return wire_; }
 
   /**
-   * get the material pair properties
+   * get the material pair properties. The order of materials does not matter.
+   * @param[in] first material name
+   * @param[in] second material name
    * @return material pair properties
    */
-  const MaterialPairProperties& getMaterialPairProperties (const std::string mat1, const std::string mat2) {
+  const MaterialPairProperties& getMaterialPairProperties (const std::string& mat1, const std::string& mat2) const {
     return mat_.getMaterialPairProp(mat1, mat2); }
 
 protected:

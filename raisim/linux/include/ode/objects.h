@@ -158,7 +158,8 @@ struct dxGeom : public dBase {
   dxGeom **tome_ex;	// extra linked list backpointer (for higher level structures)
   dxSpace *parent_space;// the space this geom is contained in, 0 if none
   dReal aabb[6];	// cached AABB for this space
-  unsigned long category_bits, collide_bits;
+  unsigned long collisionGroup, collisionMask;
+  std::string name;
 
   dxGeom (dSpaceID _space, int is_placeable);
   virtual ~dxGeom();
