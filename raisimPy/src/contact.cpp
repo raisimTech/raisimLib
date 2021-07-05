@@ -47,33 +47,6 @@ void init_contact(py::module &m) {
     /* Contact class */
     /*****************/
     py::class_<raisim::Contact>(contact_module, "Contact", "Raisim Contact.")
-        .def(py::init([](py::array_t<double> position, py::array_t<double> normal, bool objectA,
-            size_t contact_problem_index, size_t contact_index_in_object, size_t pair_object_index,
-            BodyType pair_object_body_type, size_t pair_contact_index_in_pair_object, size_t local_body_index,
-            double depth)
-            {
-                // convert the arrays to Vec<3>
-                raisim::Vec<3> pos = convert_np_to_vec<3>(position);
-                raisim::Vec<3> norm = convert_np_to_vec<3>(normal);
-
-                // instantiate the class
-                return new raisim::Contact(pos, norm, objectA, contact_problem_index, contact_index_in_object,
-                    pair_object_index, pair_object_body_type, pair_contact_index_in_pair_object, local_body_index,
-                    depth);
-            }),
-            "Instantiate the contact class.\n\n"
-	        "Args:\n"
-	        "    position (np.array[float[3]]): position vector.\n"
-	        "    normal (np.array[float[3]]): normal vector.\n"
-	        "    objectA (bool): True if object A.\n"
-	        "    contact_problem_index (int): contact problem index.\n"
-	        "    contact_index_in_object (int): contact index in object (an object can be in contact at multiple points).\n"
-	        "    pair_object_index (int): pair object index.\n"
-	        "    pair_object_index (BodyType): pair object body type between {STATIC, KINEMATIC, DYNAMIC}.\n"
-            "    pair_contact_index_in_pair_object (int): pair contact index in pair object.\n"
-            "    local_body_index (int): local body index."
-            "    depth (float): depth of the contact.")
-
 
         .def("get_position", [](raisim::Contact &self) {
             Vec<3> position = self.getPosition();

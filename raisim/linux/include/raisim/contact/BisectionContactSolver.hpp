@@ -31,7 +31,10 @@ constexpr int RANK3_CONTACT = 3;
 constexpr int STIFF_LENGTH_CONSTRAINT = 4;
 constexpr int JOINT_LIMITS = 5;
 constexpr int COMPLIANT_LENGTH_CONSTRAINT = 6;
-}
+constexpr int RANK1_PIN_CONSTRAINT = 7;
+constexpr int RANK2_PIN_CONSTRAINT = 8;
+constexpr int RANK3_PIN_CONSTRAINT = 9;
+};
 
 class Single3DContactProblem {
  public:
@@ -63,9 +66,7 @@ typedef std::vector<contact::Single3DContactProblem, AlignedAllocator<contact::S
     ContactProblems;
 
 class BisectionContactSolver {
-
  public:
-
   struct SolverConfiguration {
     double alpha_init = 1.0;
     double alpha_low = 1.0;
@@ -85,7 +86,6 @@ class BisectionContactSolver {
 
   void setTimestep(double dt) {
     dt_ = dt;
-    dtinv_ = 1/dt;
   }
 
   void setOrder(bool order) { order_ = order; }
@@ -101,7 +101,6 @@ class BisectionContactSolver {
   int loopCounter_ = 0;
   bool order_ = true;
   double dt_ = 0.01;
-  double dtinv_ = 100.0;
   SolverConfiguration config_;
   std::vector<double> error_;
   static constexpr double impDebugThreshold=1e4;

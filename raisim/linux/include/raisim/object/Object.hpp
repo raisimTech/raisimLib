@@ -124,7 +124,7 @@ class Object {
   virtual void updateGenVelWithImpulse(size_t pointId, const Vec<3>& imp) = 0;
   virtual void appendJointLimits(std::vector<contact::Single3DContactProblem, AlignedAllocator<contact::Single3DContactProblem, 32>>& problem) {};
   virtual double enforceJointLimits(contact::Single3DContactProblem& problem) { return 0; };
-
+  virtual void appendConstraints(contact::ContactProblems& problems) {};
   std::vector<Contact> contacts_;
   size_t contactSize_ = 0;
 

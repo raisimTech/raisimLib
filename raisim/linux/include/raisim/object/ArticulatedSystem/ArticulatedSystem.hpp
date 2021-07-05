@@ -22,6 +22,7 @@
 #include "raisim/object/singleBodies/SingleBodyObject.hpp"
 #include "raisim/object/singleBodies/Mesh.hpp"
 #include "raisim/contact/BisectionContactSolver.hpp"
+#include "raisim/constraints/PinConstraint.hpp"
 
 namespace raisim {
 
@@ -226,7 +227,7 @@ class ArticulatedSystem : public Object {
       return system_->getJointAxis_P()[gvIndx_];
     }
 
-    const Joint::Type getType() const {
+    Joint::Type getType() const {
       return system_->getJointType(gvIndx_);
     }
 
@@ -539,7 +540,7 @@ class ArticulatedSystem : public Object {
    * Refer to Object/ArticulatedSystem/Kinematics/Frame in the manual for details
    * The frame can be retrieved as as->getFrames[index]. This way is more efficient than above methods that use the frame name
    * @param[in] nm name of the frame
-   * @return the index of the coordinate frame of the given index. */
+   * @return the index of the coordinate frame of the given index. Returns size_t(-1) if it doesn't exist */
   size_t getFrameIdxByName(const std::string &nm) const;
 
   /**
@@ -621,6 +622,12 @@ class ArticulatedSystem : public Object {
    * @param[in] bodyIdx the body index. Note that body index and the joint index are the same because every body has one parent joint. It can be retrieved by getBodyIdx()
    * @param[out] pos_w the position of the joint (after its own joint transformation) */
   void getPosition(size_t bodyIdx, Vec<3> &pos_w) const final { pos_w = jointPos_W[bodyIdx]; }
+
+  /**
+   * @param[in] bodyIdx the body index. Note that body index and the joint index are the same because every body has one parent joint. It can be retrieved by getBodyIdx()
+   * @param[in] pos_W the position in the world coordinate
+   * @param[out] pos_B the position in the body frame */
+  void getPositionInBodyCoordinate(size_t bodyIdx, const Vec<3>& pos_W, Vec<3>& pos_B);
 
   /**
    * @param[in] bodyIdx the body index. Note that body index and the joint index are the same because every body has one parent joint. It can be retrieved by getBodyIdx()
@@ -738,7 +745,7 @@ class ArticulatedSystem : public Object {
   /**
    * returns the index of the body
    * @param[in] nm name of the body. The body name is the name of the movable link of the body
-   * @return the index of the body */
+   * @return the index of the body. Returns size_t(-1) if the body doesn't exist. */
   size_t getBodyIdx(const std::string &nm) const;
 
   /**
@@ -1341,6 +1348,8 @@ class ArticulatedSystem : public Object {
     externalForceAndTorqueJaco_.resize(0);
   }
 
+  void addConstraints(const std::vector<PinConstraintDefinition>& pinDef);
+
  protected:
 
   ArticulatedSystem(const std::string &filePath,
@@ -1408,6 +1417,8 @@ class ArticulatedSystem : public Object {
   void rkIntegrate(const Vec<3> &gravity, double dt);
 
   void clearExternalForces();
+
+  void appendConstraints(contact::ContactProblems& problems) final;
 
   /// to be removed. just for testing purposes
  public:
@@ -1521,9 +1532,15 @@ class ArticulatedSystem : public Object {
   std::vector<std::vector<float>> meshVertices_;
   std::vector<std::vector<dTriIndex>> meshIdx_;
 
+  // integration scheme
   IntegrationScheme desiredIntegrationScheme_ = IntegrationScheme::TRAPEZOID;
   IntegrationScheme integrationSchemeThisTime_;
+
+  // joint violations
   std::vector<size_t> jointLimitViolation_;
+
+  // constraints
+  std::vector<PinConstraint> pinConstraints_;
 
   /// ABA
   Mat<6, 6> MaInv_base;

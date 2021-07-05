@@ -67,3 +67,4 @@ create_executable(xmlRader src/xml/xmlReader.cpp)
 # mjcf files
 create_executable(mjcf_humanoid src/mjcf/humanoid.cpp)
 create_executable(mjcf_ant src/mjcf/ant.cpp)
+create_executable(mjcf_cassie src/mjcf/cassie.cpp)
