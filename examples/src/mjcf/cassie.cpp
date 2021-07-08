@@ -15,15 +15,13 @@ int main(int argc, char* argv[]) {
 #endif
   raisim::World world(binaryPath.getDirectory()+"\\rsc\\cassie\\cassie.xml");
   raisim::RaisimServer server(&world);
-  auto torso = static_cast<raisim::ArticulatedSystem*>(world.getObject("torso"));
+  auto torso = static_cast<raisim::ArticulatedSystem*>(world.getObject("cassie-pelvis"));
   torso->setBasePos({0,0,1.5});
 
   server.launchServer();
   for (int i=0; i<10000000; i++) {
     world.integrate();
-    std::this_thread::sleep_for(std::chrono::milliseconds(size_t(1000 * world.getTimeStep())));
+    std::this_thread::sleep_for(std::chrono::milliseconds(size_t(100000 * world.getTimeStep())));
   }
-
-  server.stopRecordingVideo();
   server.killServer();
 }

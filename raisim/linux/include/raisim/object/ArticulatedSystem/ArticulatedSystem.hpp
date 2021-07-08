@@ -446,9 +446,25 @@ class ArticulatedSystem : public Object {
   const MatDyn &getInverseMassMatrix() { computeSparseInverse(M_, Minv_); return Minv_; }
 
   /**
-   * get the center of mass of a composite body containing body i and all its children
+   * get the center of mass of a composite body containing body i and all its children.
+   * This only works if you have called getMassMatrix() with the current state
    * @return the center of mass of the composite body */
   const std::vector<raisim::Vec<3>> &getCompositeCOM() const { return composite_com_W; }
+
+  /**
+   * get the center of mass of the whole system
+   * @return the center of mass of the system */
+  Vec<3> getCOM() const {
+    Vec<3> com = {0,0,0};
+    double massTotal = 0;
+    for(size_t i=0; i<nbody; i++) {
+      massTotal += mass[i];
+      com += mass[i] * comPos_W[i];
+    }
+
+    com *= 1./massTotal;
+    return com;
+  }
 
   /**
    * get the current composite inertia of a composite body containing body i and all its children
@@ -625,7 +641,7 @@ class ArticulatedSystem : public Object {
 
   /**
    * @param[in] bodyIdx the body index. Note that body index and the joint index are the same because every body has one parent joint. It can be retrieved by getBodyIdx()
-   * @param[in] pos_W the position in the world coordinate
+   * @param[in] pos_W the position in the world coordinate. This position does not have to be physically on the body.
    * @param[out] pos_B the position in the body frame */
   void getPositionInBodyCoordinate(size_t bodyIdx, const Vec<3>& pos_W, Vec<3>& pos_B);
 
