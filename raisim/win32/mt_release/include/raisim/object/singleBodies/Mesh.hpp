@@ -11,7 +11,7 @@
 
 namespace raisim {
 
-class Mesh : public SingleBodyObject {
+class Mesh final : public SingleBodyObject {
 
  public:
 

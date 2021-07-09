@@ -12,7 +12,7 @@
 
 namespace raisim {
 
-class HeightMap : public SingleBodyObject {
+class HeightMap final : public SingleBodyObject {
 
  public:
 

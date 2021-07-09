@@ -1093,7 +1093,7 @@
     <axis xyz="1 0 0"/>
     <parent link="mtorso"/>
     <child link="utorso"/>
-    <dynamics damping="0.1" friction="0"/>
+    <dynamics damping="0.0" friction="0"/>
     <limit effort="300" lower="-0.523599" upper="0.523599" velocity="12"/>
     <safety_controller k_position="100" k_velocity="100" soft_lower_limit="-10.5236" soft_upper_limit="10.5236"/>
   </joint>
@@ -1102,7 +1102,7 @@
     <axis xyz="0 1 0"/>
     <parent link="ltorso"/>
     <child link="mtorso"/>
-    <dynamics damping="0.1" friction="0"/>
+    <dynamics damping="0.0" friction="0"/>
     <limit effort="445" lower="-0.219388" upper="0.538783" velocity="9"/>
     <safety_controller k_position="100" k_velocity="100" soft_lower_limit="-10.2194" soft_upper_limit="10.5388"/>
   </joint>
@@ -1111,7 +1111,7 @@
     <axis xyz="0 0 1"/>
     <parent link="pelvis"/>
     <child link="ltorso"/>
-    <dynamics damping="0.1" friction="0"/>
+    <dynamics damping="0.0" friction="0"/>
     <limit effort="106" lower="-0.663225" upper="0.663225" velocity="12"/>
     <safety_controller k_position="100" k_velocity="100" soft_lower_limit="-10.6632" soft_upper_limit="10.6632"/>
   </joint>
@@ -1120,7 +1120,7 @@
     <axis xyz="-1.0 -0.0 -0.0"/>
     <parent link="l_uarm"/>
     <child link="l_larm"/>
-    <dynamics damping="0.1" friction="0"/>
+    <dynamics damping="0.0" friction="0"/>
     <limit effort="112" lower="0" upper="2.35619" velocity="12"/>
     <safety_controller k_position="100" k_velocity="100" soft_lower_limit="-10" soft_upper_limit="12.3562"/>
   </joint>
@@ -1129,7 +1129,7 @@
     <axis xyz="-0.0 -1.0 -0.0"/>
     <parent link="l_scap"/>
     <child link="l_uarm"/>
-    <dynamics damping="0.1" friction="0"/>
+    <dynamics damping="0.0" friction="0"/>
     <limit effort="63" lower="0" upper="3.14159" velocity="12"/>
     <safety_controller k_position="100" k_velocity="100" soft_lower_limit="-10" soft_upper_limit="13.1416"/>
   </joint>
@@ -1138,7 +1138,7 @@
     <axis xyz="-1.0 -0.0 -0.0"/>
     <parent link="l_clav"/>
     <child link="l_scap"/>
-    <dynamics damping="0.1" friction="0"/>
+    <dynamics damping="0.0" friction="0"/>
     <limit effort="99" lower="-1.5708" upper="1.5708" velocity="12"/>
     <safety_controller k_position="100" k_velocity="100" soft_lower_limit="-11.5708" soft_upper_limit="11.5708"/>
   </joint>
@@ -1147,7 +1147,7 @@
     <axis xyz="0 0 1"/>
     <parent link="utorso"/>
     <child link="l_clav"/>
-    <dynamics damping="0.1" friction="0"/>
+    <dynamics damping="0.0" friction="0"/>
     <limit effort="87" lower="-1.5708" upper="0.785398" velocity="12"/>
     <safety_controller k_position="100" k_velocity="100" soft_lower_limit="-11.5708" soft_upper_limit="10.7854"/>
   </joint>
@@ -1156,7 +1156,7 @@
     <axis xyz="1 0 0"/>
     <parent link="l_ufarm"/>
     <child link="l_lfarm"/>
-    <dynamics damping="0.1" friction="0"/>
+    <dynamics damping="0.0" friction="0"/>
     <limit effort="25" lower="-1.7628" upper="1.7628" velocity="10"/>
     <safety_controller k_position="100" k_velocity="100" soft_lower_limit="-11.7628" soft_upper_limit="11.7628"/>
   </joint>
@@ -1165,7 +1165,7 @@
     <axis xyz="-0.0 -1.0 -0.0"/>
     <parent link="l_larm"/>
     <child link="l_ufarm"/>
-    <dynamics damping="0.1" friction="0"/>
+    <dynamics damping="0.0" friction="0"/>
     <limit effort="25" lower="-3.011" upper="3.011" velocity="10"/>
     <safety_controller k_position="100" k_velocity="100" soft_lower_limit="-13.011" soft_upper_limit="13.011"/>
   </joint>
@@ -1174,7 +1174,7 @@
     <axis xyz="0 1 0"/>
     <parent link="l_lfarm"/>
     <child link="l_hand"/>
-    <dynamics damping="0.1" friction="0"/>
+    <dynamics damping="0.0" friction="0"/>
     <limit effort="25" lower="-2.9671" upper="2.9671" velocity="10"/>
     <safety_controller k_position="100" k_velocity="100" soft_lower_limit="-12.9671" soft_upper_limit="12.9671"/>
   </joint>
@@ -1183,7 +1183,7 @@
     <axis xyz="1 0 0"/>
     <parent link="l_talus"/>
     <child link="l_foot"/>
-    <dynamics damping="0.1" friction="0"/>
+    <dynamics damping="0.0" friction="0"/>
     <limit effort="360" lower="-0.8" upper="0.8" velocity="12"/>
     <safety_controller k_position="100" k_velocity="100" soft_lower_limit="-10.8" soft_upper_limit="10.8"/>
   </joint>
@@ -1192,7 +1192,7 @@
     <axis xyz="0 1 0"/>
     <parent link="l_lleg"/>
     <child link="l_talus"/>
-    <dynamics damping="0.1" friction="0"/>
+    <dynamics damping="0.0" friction="0"/>
     <limit effort="740" lower="-1" upper="0.7" velocity="12"/>
     <safety_controller k_position="100" k_velocity="100" soft_lower_limit="-11" soft_upper_limit="10.7"/>
   </joint>
@@ -1201,7 +1201,7 @@
     <axis xyz="1 0 0"/>
     <parent link="l_uglut"/>
     <child link="l_lglut"/>
-    <dynamics damping="0.1" friction="0"/>
+    <dynamics damping="0.0" friction="0"/>
     <limit effort="530" lower="-0.523599" upper="0.523599" velocity="12"/>
     <safety_controller k_position="100" k_velocity="100" soft_lower_limit="-10.5236" soft_upper_limit="10.5236"/>
   </joint>
@@ -1210,7 +1210,7 @@
     <axis xyz="0 1 0"/>
     <parent link="l_lglut"/>
     <child link="l_uleg"/>
-    <dynamics damping="0.1" friction="0"/>
+    <dynamics damping="0.0" friction="0"/>
     <limit effort="840" lower="-1.61234" upper="0.65764" velocity="12"/>
     <safety_controller k_position="100" k_velocity="100" soft_lower_limit="-11.6123" soft_upper_limit="10.6576"/>
   </joint>
@@ -1219,7 +1219,7 @@
     <axis xyz="0 0 1"/>
     <parent link="pelvis"/>
     <child link="l_uglut"/>
-    <dynamics damping="0.1" friction="0"/>
+    <dynamics damping="0.0" friction="0"/>
     <limit effort="275" lower="-0.174358" upper="0.786794" velocity="12"/>
     <safety_controller k_position="100" k_velocity="100" soft_lower_limit="-10.1744" soft_upper_limit="10.7868"/>
   </joint>
@@ -1228,7 +1228,7 @@
     <axis xyz="0 1 0"/>
     <parent link="l_uleg"/>
     <child link="l_lleg"/>
-    <dynamics damping="0.1" friction="0"/>
+    <dynamics damping="0.0" friction="0"/>
     <limit effort="890" lower="0" upper="2.35637" velocity="12"/>
     <safety_controller k_position="100" k_velocity="100" soft_lower_limit="-10" soft_upper_limit="12.3564"/>
   </joint>
@@ -1237,7 +1237,7 @@
     <axis xyz="0 1 0"/>
     <parent link="utorso"/>
     <child link="head"/>
-    <dynamics damping="0.1" friction="0"/>
+    <dynamics damping="0.0" friction="0"/>
     <limit effort="25" lower="-0.602139" upper="1.14319" velocity="6.28"/>
     <safety_controller k_position="100" k_velocity="100" soft_lower_limit="-10.6021" soft_upper_limit="11.1432"/>
   </joint>
@@ -1246,7 +1246,7 @@
     <axis xyz="1 0 0"/>
     <parent link="r_uarm"/>
     <child link="r_larm"/>
-    <dynamics damping="0.1" friction="0"/>
+    <dynamics damping="0.0" friction="0"/>
     <limit effort="112" lower="-2.35619" upper="0" velocity="12"/>
     <safety_controller k_position="100" k_velocity="100" soft_lower_limit="-12.3562" soft_upper_limit="10"/>
   </joint>
@@ -1255,7 +1255,7 @@
     <axis xyz="0 1 0"/>
     <parent link="r_scap"/>
     <child link="r_uarm"/>
-    <dynamics damping="0.1" friction="0"/>
+    <dynamics damping="0.0" friction="0"/>
     <limit effort="63" lower="0" upper="3.14159" velocity="12"/>
     <safety_controller k_position="100" k_velocity="100" soft_lower_limit="-10" soft_upper_limit="13.1416"/>
   </joint>
@@ -1264,7 +1264,7 @@
     <axis xyz="1 0 0"/>
     <parent link="r_clav"/>
     <child link="r_scap"/>
-    <dynamics damping="0.1" friction="0"/>
+    <dynamics damping="0.0" friction="0"/>
     <limit effort="99" lower="-1.5708" upper="1.5708" velocity="12"/>
     <safety_controller k_position="100" k_velocity="100" soft_lower_limit="-11.5708" soft_upper_limit="11.5708"/>
   </joint>
@@ -1273,7 +1273,7 @@
     <axis xyz="0 0 1"/>
     <parent link="utorso"/>
     <child link="r_clav"/>
-    <dynamics damping="0.1" friction="0"/>
+    <dynamics damping="0.0" friction="0"/>
     <limit effort="87" lower="-0.785398" upper="1.5708" velocity="12"/>
     <safety_controller k_position="100" k_velocity="100" soft_lower_limit="-10.7854" soft_upper_limit="11.5708"/>
   </joint>
@@ -1282,7 +1282,7 @@
     <axis xyz="1 0 0"/>
     <parent link="r_ufarm"/>
     <child link="r_lfarm"/>
-    <dynamics damping="0.1" friction="0"/>
+    <dynamics damping="0.0" friction="0"/>
     <limit effort="25" lower="-1.7628" upper="1.7628" velocity="10"/>
     <safety_controller k_position="100" k_velocity="100" soft_lower_limit="-11.7628" soft_upper_limit="11.7628"/>
   </joint>
@@ -1291,7 +1291,7 @@
     <axis xyz="0 1 0"/>
     <parent link="r_larm"/>
     <child link="r_ufarm"/>
-    <dynamics damping="0.1" friction="0"/>
+    <dynamics damping="0.0" friction="0"/>
     <limit effort="25" lower="-3.011" upper="3.011" velocity="10"/>
     <safety_controller k_position="100" k_velocity="100" soft_lower_limit="-13.011" soft_upper_limit="13.011"/>
   </joint>
@@ -1300,7 +1300,7 @@
     <axis xyz="0 1 0"/>
     <parent link="r_lfarm"/>
     <child link="r_hand"/>
-    <dynamics damping="0.1" friction="0"/>
+    <dynamics damping="0.0" friction="0"/>
     <limit effort="25" lower="-2.9671" upper="2.9671" velocity="10"/>
     <safety_controller k_position="100" k_velocity="100" soft_lower_limit="-12.9671" soft_upper_limit="12.9671"/>
   </joint>
@@ -1309,7 +1309,7 @@
     <axis xyz="1 0 0"/>
     <parent link="r_talus"/>
     <child link="r_foot"/>
-    <dynamics damping="0.1" friction="0"/>
+    <dynamics damping="0.0" friction="0"/>
     <limit effort="360" lower="-0.8" upper="0.8" velocity="12"/>
     <safety_controller k_position="100" k_velocity="100" soft_lower_limit="-10.8" soft_upper_limit="10.8"/>
   </joint>
@@ -1318,7 +1318,7 @@
     <axis xyz="0 1 0"/>
     <parent link="r_lleg"/>
     <child link="r_talus"/>
-    <dynamics damping="0.1" friction="0"/>
+    <dynamics damping="0.0" friction="0"/>
     <limit effort="740" lower="-1" upper="0.7" velocity="12"/>
     <safety_controller k_position="100" k_velocity="100" soft_lower_limit="-11" soft_upper_limit="10.7"/>
   </joint>
@@ -1327,7 +1327,7 @@
     <axis xyz="1 0 0"/>
     <parent link="r_uglut"/>
     <child link="r_lglut"/>
-    <dynamics damping="0.1" friction="0"/>
+    <dynamics damping="0.0" friction="0"/>
     <limit effort="530" lower="-0.523599" upper="0.523599" velocity="12"/>
     <safety_controller k_position="100" k_velocity="100" soft_lower_limit="-10.5236" soft_upper_limit="10.5236"/>
   </joint>
@@ -1336,7 +1336,7 @@
     <axis xyz="0 1 0"/>
     <parent link="r_lglut"/>
     <child link="r_uleg"/>
-    <dynamics damping="0.1" friction="0"/>
+    <dynamics damping="0.0" friction="0"/>
     <limit effort="840" lower="-1.61234" upper="0.65764" velocity="12"/>
     <safety_controller k_position="100" k_velocity="100" soft_lower_limit="-11.6123" soft_upper_limit="10.6576"/>
   </joint>
@@ -1345,7 +1345,7 @@
     <axis xyz="0 0 1"/>
     <parent link="pelvis"/>
     <child link="r_uglut"/>
-    <dynamics damping="0.1" friction="0"/>
+    <dynamics damping="0.0" friction="0"/>
     <limit effort="275" lower="-0.786794" upper="0.174358" velocity="12"/>
     <safety_controller k_position="100" k_velocity="100" soft_lower_limit="-10.7868" soft_upper_limit="10.1744"/>
   </joint>
@@ -1354,7 +1354,7 @@
     <axis xyz="0 1 0"/>
     <parent link="r_uleg"/>
     <child link="r_lleg"/>
-    <dynamics damping="0.1" friction="0"/>
+    <dynamics damping="0.0" friction="0"/>
     <limit effort="890" lower="0" upper="2.35637" velocity="12"/>
     <safety_controller k_position="100" k_velocity="100" soft_lower_limit="-10" soft_upper_limit="12.3564"/>
   </joint>

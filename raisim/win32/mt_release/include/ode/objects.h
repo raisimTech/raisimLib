@@ -26,10 +26,201 @@
 #include <ode/common.h>
 #include <ode/mass.h>
 #include <ode/contact.h>
+#include <ode/memory.h>
+#include <ode/array.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <set>
+#include <string>
+
+
+
+enum {
+  dxBodyFlagFiniteRotation =        1,  // use finite rotations
+  dxBodyFlagFiniteRotationAxis =    2,  // use finite rotations only along axis
+  dxBodyDisabled =                  4,  // body is disabled
+  dxBodyNoGravity =                 8,  // body is not influenced by gravity
+  dxBodyAutoDisable =               16, // enable auto-disable on body
+  dxBodyLinearDamping =             32, // use linear damping
+  dxBodyAngularDamping =            64, // use angular damping
+  dxBodyMaxAngularSpeed =           128,// use maximum angular speed
+  dxBodyGyroscopic =                256 // use gyroscopic term
+};
+
+
+// base class that does correct object allocation / deallocation
+
+struct dBase {
+  void *operator new (size_t size) { return dAlloc (size); }
+  void *operator new (size_t, void *p) { return p; }
+  void operator delete (void *ptr, size_t size) { dFree (ptr,size); }
+  void *operator new[] (size_t size) { return dAlloc (size); }
+  void operator delete[] (void *ptr, size_t size) { dFree (ptr,size); }
+};
+
+
+
+
+// base class for bodies and joints
+
+struct dObject : public dBase {
+  dxWorld *world;		// world this object is in
+  dObject *next;		// next object of this type in list
+  dObject **tome;		// pointer to previous object's next ptr
+  int tag;			// used by dynamics algorithms
+  void *userdata;		// user settable data
+
+  explicit dObject(dxWorld *w): world(w), next(NULL), tome(NULL), tag(0), userdata(NULL) {}
+  virtual ~dObject();
+};
+
+
+// auto disable parameters
+struct dxAutoDisable {
+  dReal idle_time;		// time the body needs to be idle to auto-disable it
+  int idle_steps;		// steps the body needs to be idle to auto-disable it
+  unsigned int average_samples;     // size of the average_lvel and average_avel buffers
+  dReal linear_average_threshold;   // linear (squared) average velocity threshold
+  dReal angular_average_threshold;  // angular (squared) average velocity threshold
+
+  dxAutoDisable() {}
+  explicit dxAutoDisable(void *);
+};
+
+
+// damping parameters
+struct dxDampingParameters {
+  dReal linear_scale;  // multiply the linear velocity by (1 - scale)
+  dReal angular_scale; // multiply the angular velocity by (1 - scale)
+  dReal linear_threshold;   // linear (squared) average speed threshold
+  dReal angular_threshold;  // angular (squared) average speed threshold
+
+  dxDampingParameters() {}
+  explicit dxDampingParameters(void *);
+};
+
+
+// quick-step parameters
+struct dxQuickStepParameters {
+  int num_iterations;		// number of SOR iterations to perform
+  dReal w;			// the SOR over-relaxation parameter
+
+  dxQuickStepParameters() {}
+  explicit dxQuickStepParameters(void *);
+};
+
+
+// contact generation parameters
+struct dxContactParameters {
+  dReal max_vel;		// maximum correcting velocity
+  dReal min_depth;		// thickness of 'surface layer'
+
+  dxContactParameters() {}
+  explicit dxContactParameters(void *);
+};
+
+// position vector and rotation matrix for geometry objects that are not
+// connected to bodies.
+struct dxPosR {
+  dVector3 pos;
+  dMatrix3 R;
+};
+
+enum {
+  GEOM_DIRTY	= 1,    // geom is 'dirty', i.e. position unknown
+  GEOM_POSR_BAD = 2,    // geom's final posr is not valid
+  GEOM_AABB_BAD	= 4,    // geom's AABB is not valid
+  GEOM_PLACEABLE = 8,   // geom is placeable
+  GEOM_ENABLED = 16,    // geom is enabled
+  GEOM_ZERO_SIZED = 32, // geom is zero sized
+
+  GEOM_ENABLE_TEST_MASK = GEOM_ENABLED | GEOM_ZERO_SIZED,
+  GEOM_ENABLE_TEST_VALUE = GEOM_ENABLED,
+
+  // Ray specific
+  RAY_FIRSTCONTACT = 0x10000,
+  RAY_BACKFACECULL = 0x20000,
+  RAY_CLOSEST_HIT  = 0x40000
+};
+
+struct dxGeom : public dBase {
+  int type;		// geom type number, set by subclass constructor
+  int gflags;		// flags used by geom and space
+  size_t objId, localObjIdx = 0; // rai specific parameters
+  std::string material;
+  void *data;		// user-defined data pointer
+  dBodyID body;		// dynamics body associated with this object (if any)
+  dxPosR *final_posr;	// final position of the geom in world coordinates
+  std::set<dxGeom*> neverCollideWith;
+  // information used by spaces
+  dxGeom *next;		// next geom in linked list of geoms
+  dxGeom **tome;	// linked list backpointer
+  dxGeom *next_ex;	// next geom in extra linked list of geoms (for higher level structures)
+  dxGeom **tome_ex;	// extra linked list backpointer (for higher level structures)
+  dxSpace *parent_space;// the space this geom is contained in, 0 if none
+  dReal aabb[6];	// cached AABB for this space
+  unsigned long collisionGroup, collisionMask;
+  std::string name;
+
+  dxGeom (dSpaceID _space, int is_placeable);
+  virtual ~dxGeom();
+
+  // Set or clear GEOM_ZERO_SIZED flag
+  void updateZeroSizedFlag(bool is_zero_sized) { gflags = is_zero_sized ? (gflags | GEOM_ZERO_SIZED) : (gflags & ~GEOM_ZERO_SIZED); }
+  // Get parent space TLS kind
+  unsigned getParentSpaceTLSKind() const;
+
+  const dVector3 &buildUpdatedPosition()
+  {
+    return final_posr->pos;
+  }
+
+  const dMatrix3 &buildUpdatedRotation()
+  {
+    return final_posr->R;
+  }
+
+  bool checkControlValueSizeValidity(void *dataValue, int *dataSize, int iRequiresSize) { return (*dataSize == iRequiresSize && dataValue != 0) ? true : !(*dataSize = iRequiresSize); } // Here it is the intent to return true for 0 required size in any case
+  virtual bool controlGeometry(int controlClass, int controlCode, void *dataValue, int *dataSize);
+
+  virtual void computeAABB()=0;
+  // compute the AABB for this object and put it in aabb. this function
+  // always performs a fresh computation, it does not inspect the
+  // GEOM_AABB_BAD flag.
+
+  virtual int AABBTest (dxGeom *o, dReal aabb[6]);
+  // test whether the given AABB object intersects with this object, return
+  // 1=yes, 0=no. this is used as an early-exit test in the space collision
+  // functions. the default implementation returns 1, which is the correct
+  // behavior if no more detailed implementation can be provided.
+
+  // utility functions
+
+  // compute the AABB only if it is not current. this function manipulates
+  // the GEOM_AABB_BAD flag.
+
+  void recomputeAABB() {
+    if (gflags & GEOM_AABB_BAD) {
+      // our aabb functions assume final_posr is up to date
+      computeAABB();
+      gflags &= ~GEOM_AABB_BAD;
+    }
+  }
+
+  inline void markAABBBad();
+
+  // add and remove this geom from a linked list maintained by a space.
+
+  void spaceAdd (dxGeom **first_ptr) {
+    next = *first_ptr;
+    tome = first_ptr;
+    if (*first_ptr) (*first_ptr)->tome = &next;
+    *first_ptr = this;
+  }
+  void spaceRemove() {
+    if (next) next->tome = tome;
+    *tome = next;
+  }
+};
 
 /**
  * @defgroup world World
@@ -135,13 +326,13 @@ ODE_API dReal dWorldGetCFM (dWorldID);
 /**
  * @brief Release internal working memory allocated for world
  *
- * The worlds allocate working memory internally for simulation stepping. This 
+ * The worlds allocate working memory internally for simulation stepping. This
  * function can be used to free world's internal memory cache in case if number of
- * objects/joints in the world decreases significantly. By default, internal 
- * allocation policy is used to only increase cache size as necessary and never 
+ * objects/joints in the world decreases significantly. By default, internal
+ * allocation policy is used to only increase cache size as necessary and never
  * decrease it.
  *
- * If a world shares its working memory with other worlds the cache deletion 
+ * If a world shares its working memory with other worlds the cache deletion
  * affects all the linked worlds. However the shared status itself remains intact.
  *
  * The function call does affect neither memory reservation policy nor memory manager.
@@ -168,8 +359,8 @@ ODE_API void dWorldCleanupWorkingMemory(dWorldID w);
  * @c reserve_factor is a quotient that is multiplied by required memory size
  *  to allocate extra reserve whenever reallocation is needed.
  *
- * @c reserve_minimum is a minimum size that is checked against whenever reallocation 
- * is needed to allocate expected working memory minimum at once without extra 
+ * @c reserve_minimum is a minimum size that is checked against whenever reallocation
+ * is needed to allocate expected working memory minimum at once without extra
  * reallocations as number of bodies/joints grows.
  *
  * @ingroup world
@@ -192,7 +383,7 @@ typedef struct
  * are used.
  *
  * Passing @a policyinfo argument as NULL results in reservation policy being
- * reset to defaults as if the world has been just created. The content of 
+ * reset to defaults as if the world has been just created. The content of
  * @a policyinfo structure is copied internally and does not need to remain valid
  * after the call returns.
  *
@@ -230,7 +421,7 @@ ODE_API int dWorldSetStepMemoryReservationPolicy(dWorldID w, const dWorldStepRes
 * @ingroup init
 * @see dWorldSetStepMemoryManager
 */
-typedef struct 
+typedef struct
 {
   unsigned struct_size;
   void *(*alloc_block)(dsizeint block_size);
@@ -247,12 +438,12 @@ typedef struct
 * based memory manager is used.
 *
 * Passing @a memfuncs argument as NULL results in memory manager being
-* reset to default one as if the world has been just created. The content of 
+* reset to default one as if the world has been just created. The content of
 * @a memfuncs structure is copied internally and does not need to remain valid
 * after the call returns.
 *
 * If the world uses working memory sharing, changing memory manager
-* affects all the worlds linked together. 
+* affects all the worlds linked together.
 *
 * Failure result status means a memory allocation failure.
 *
@@ -447,7 +638,7 @@ ODE_API dReal dWorldGetContactSurfaceLayer (dWorldID);
  * A body is considered to be idle when the magnitudes of both its
  * linear average velocity and angular average velocity are below given thresholds.
  * The sample size for the average defaults to one and can be disabled by setting
- * to zero with 
+ * to zero with
  *
  * Thus, every body has six auto-disable parameters: an enabled flag, a idle step
  * count, an idle time, linear/angular average velocity thresholds, and the
@@ -572,7 +763,7 @@ ODE_API void dWorldSetAutoDisableFlag (dWorldID, int do_auto_disable);
  * joint constraints are processed by the stepper (moving the body), then
  * the damping is applied.
  *
- * @note The damping happens right after the moved callback is called; this way 
+ * @note The damping happens right after the moved callback is called; this way
  * it still possible use the exact velocities the body has acquired during the
  * step. You can even use the callback to create your own customized damping.
  */
@@ -791,7 +982,7 @@ ODE_API void  dBodySetAutoDisableDefaults (dBodyID);
 /**
  * @brief Retrieves the world attached to te given body.
  * @remarks
- * 
+ *
  * @ingroup bodies
  */
 ODE_API dWorldID dBodyGetWorld (dBodyID);
@@ -1267,7 +1458,7 @@ ODE_API void dBodySetMovedCallback(dBodyID b, void (*callback)(dBodyID));
 
 /**
  * @brief Return the first geom associated with the body.
- * 
+ *
  * You can traverse through the geoms by repeatedly calling
  * dBodyGetNextGeom().
  *
@@ -1867,12 +2058,12 @@ ODE_API void dJointSetHinge2Anchor (dJointID, dReal x, dReal y, dReal z);
  * @brief set both axes (optionally)
  *
  * This can change both axes at once avoiding transitions via invalid states
- * while changing axes one by one and having the first changed axis coincide 
+ * while changing axes one by one and having the first changed axis coincide
  * with the other axis existing direction.
  *
- * At least one of the axes must be not NULL. If NULL is passed, the corresponding 
+ * At least one of the axes must be not NULL. If NULL is passed, the corresponding
  * axis retains its existing value.
- * 
+ *
  * @ingroup joints
  */
 ODE_API void dJointSetHinge2Axes (dJointID j, const dReal *axis1/*=[dSA__MAX],=NULL*/, const dReal *axis2/*=[dSA__MAX],=NULL*/);
@@ -1881,7 +2072,7 @@ ODE_API void dJointSetHinge2Axes (dJointID j, const dReal *axis1/*=[dSA__MAX],=N
  * @brief set axis
  *
  * Deprecated. Use @fn dJointSetHinge2Axes instead.
- * 
+ *
  * @ingroup joints
  * @see dJointSetHinge2Axes
  */
@@ -1891,7 +2082,7 @@ ODE_API_DEPRECATED ODE_API void dJointSetHinge2Axis1 (dJointID j, dReal x, dReal
  * @brief set axis
  *
  * Deprecated. Use @fn dJointSetHinge2Axes instead.
- * 
+ *
  * @ingroup joints
  * @see dJointSetHinge2Axes
  */
@@ -1924,12 +2115,12 @@ ODE_API void dJointSetUniversalAnchor (dJointID, dReal x, dReal y, dReal z);
 ODE_API void dJointSetUniversalAxis1 (dJointID, dReal x, dReal y, dReal z);
 
 /**
- * @brief Set the Universal axis1 as if the 2 bodies were already at 
+ * @brief Set the Universal axis1 as if the 2 bodies were already at
  *        offset1 and offset2 appart with respect to axis1 and axis2.
  * @ingroup joints
  *
- * This function initialize the axis1 and the relative orientation of 
- * each body as if body1 was rotated around the new axis1 by the offset1 
+ * This function initialize the axis1 and the relative orientation of
+ * each body as if body1 was rotated around the new axis1 by the offset1
  * value and as if body2 was rotated around the axis2 by offset2. \br
  * Ex:
 * <PRE>
@@ -1955,8 +2146,8 @@ ODE_API void dJointSetUniversalAxis1 (dJointID, dReal x, dReal y, dReal z);
  *
  * @note Any previous offsets are erased.
  *
- * @warning Calling dJointSetUniversalAnchor, dJointSetUnivesalAxis1, 
- *          dJointSetUniversalAxis2, dJointSetUniversalAxis2Offset 
+ * @warning Calling dJointSetUniversalAnchor, dJointSetUnivesalAxis1,
+ *          dJointSetUniversalAxis2, dJointSetUniversalAxis2Offset
  *          will reset the "zero" angle position.
  */
 ODE_API void dJointSetUniversalAxis1Offset (dJointID, dReal x, dReal y, dReal z,
@@ -1969,12 +2160,12 @@ ODE_API void dJointSetUniversalAxis1Offset (dJointID, dReal x, dReal y, dReal z,
 ODE_API void dJointSetUniversalAxis2 (dJointID, dReal x, dReal y, dReal z);
 
 /**
- * @brief Set the Universal axis2 as if the 2 bodies were already at 
+ * @brief Set the Universal axis2 as if the 2 bodies were already at
  *        offset1 and offset2 appart with respect to axis1 and axis2.
  * @ingroup joints
  *
- * This function initialize the axis2 and the relative orientation of 
- * each body as if body1 was rotated around the axis1 by the offset1 
+ * This function initialize the axis2 and the relative orientation of
+ * each body as if body1 was rotated around the axis1 by the offset1
  * value and as if body2 was rotated around the new axis2 by offset2. \br
  * Ex:
  * <PRE>
@@ -2000,8 +2191,8 @@ ODE_API void dJointSetUniversalAxis2 (dJointID, dReal x, dReal y, dReal z);
  *
  * @note Any previous offsets are erased.
  *
- * @warning Calling dJointSetUniversalAnchor, dJointSetUnivesalAxis1, 
- *          dJointSetUniversalAxis2, dJointSetUniversalAxis2Offset 
+ * @warning Calling dJointSetUniversalAnchor, dJointSetUnivesalAxis1,
+ *          dJointSetUniversalAxis2, dJointSetUniversalAxis2Offset
  *          will reset the "zero" angle position.
  */
 
@@ -2053,7 +2244,7 @@ ODE_API void dJointSetPRParam (dJointID, int parameter, dReal value);
 /**
  * @brief Applies the torque about the rotoide axis of the PR joint
  *
- * That is, it applies a torque with specified magnitude in the direction 
+ * That is, it applies a torque with specified magnitude in the direction
  * of the rotoide axis, to body 1, and with the same magnitude but in opposite
  * direction to body 2. This function is just a wrapper for dBodyAddTorque()}
  * @ingroup joints
@@ -2589,7 +2780,7 @@ ODE_API dReal dJointGetUniversalAngle2Rate (dJointID);
 
 /**
  * @brief Get the joint anchor point, in world coordinates.
- * @return the point on body 1. If the joint is perfectly satisfied, 
+ * @return the point on body 1. If the joint is perfectly satisfied,
  * this will be the same as the point on body 2.
  * @ingroup joints
  */
@@ -2651,8 +2842,8 @@ ODE_API void dJointGetPRAxis2 (dJointID, dVector3 result);
  */
 ODE_API dReal dJointGetPRParam (dJointID, int parameter);
 
-    
-    
+
+
 /**
  * @brief Get the joint anchor point, in world coordinates.
  * @return the point on body 1. If the joint is perfectly satisfied,
@@ -2947,7 +3138,7 @@ ODE_API void dJointGetTransmissionContactPoint1(dJointID, dVector3 result);
  * @ingroup joints
  */
 ODE_API void dJointGetTransmissionContactPoint2(dJointID, dVector3 result);
- 
+
 /**
  * @brief set the first axis for the Transmission joint
  * @remarks This is the axis around which the first body is allowed to
@@ -2968,7 +3159,7 @@ ODE_API void dJointSetTransmissionAxis1(dJointID, dReal x, dReal y, dReal z);
  * @ingroup joints
  */
 ODE_API void dJointGetTransmissionAxis1(dJointID, dVector3 result);
- 
+
 /**
  * @brief set second axis for the Transmission joint
  * @remarks This is the axis around which the second body is allowed
@@ -2990,7 +3181,7 @@ ODE_API void dJointSetTransmissionAxis2(dJointID, dReal x, dReal y, dReal z);
  * @ingroup joints
  */
 ODE_API void dJointGetTransmissionAxis2(dJointID, dVector3 result);
- 
+
 /**
  * @brief set the first anchor for the Transmission joint
  * @remarks This is the point of attachment of the wheel on the
@@ -3004,7 +3195,7 @@ ODE_API void dJointSetTransmissionAnchor1(dJointID, dReal x, dReal y, dReal z);
  * @ingroup joints
  */
 ODE_API void dJointGetTransmissionAnchor1(dJointID, dVector3 result);
- 
+
 /**
  * @brief set the second anchor for the Transmission joint
  * @remarks This is the point of attachment of the wheel on the
@@ -3290,9 +3481,5 @@ ODE_API int dAreConnected (dBodyID, dBodyID);
  */
 ODE_API int dAreConnectedExcluding (dBodyID body1, dBodyID body2, int joint_type);
 
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

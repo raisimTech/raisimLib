@@ -1,0 +1,246 @@
+<robot name="2DrobotArm">
+    <link name="world"/>
+
+    <link name="link1">
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 -0.12"/>
+            <geometry>
+                <sphere radius="0.1"/>
+            </geometry>
+        </visual>
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 -0.12"/>
+            <mass value="1"/>
+            <inertia ixx="0.002" ixy="0.0" ixz="0" iyy="0.002" iyz="0" izz="0.002"/>
+        </inertial>
+    </link>
+
+    <joint name="worldTolink1" type="fixed">
+        <parent link="world"/>
+        <child link="link1"/>
+        <origin xyz="0 0 10"/>
+    </joint>
+
+    <link name="link2">
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 -0.12"/>
+            <geometry>
+                <sphere radius="0.1"/>
+            </geometry>
+        </visual>
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 -0.12"/>
+            <mass value="1"/>
+            <inertia ixx="0.002" ixy="0.0" ixz="0" iyy="0.002" iyz="0" izz="0.002"/>
+        </inertial>
+    </link>
+
+    <joint name="link1Tolink2" type="spherical">
+        <parent link="link1"/>
+        <child link="link2"/>
+        <origin xyz="0 0 -0.24"/>
+        <axis xyz="0 1 0"/>
+        <dynamics rotor_inertia="0.0001" spring_mount="0.70710678118 0 0.70710678118 0" stiffness="500.0" damping="3."/>
+    </joint>
+
+    <link name="link3">
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 -0.12"/>
+            <geometry>
+                <sphere radius="0.1"/>
+            </geometry>
+        </visual>
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 -0.12"/>
+            <mass value="1"/>
+            <inertia ixx="0.002" ixy="0.0" ixz="0" iyy="0.002" iyz="0" izz="0.002"/>
+        </inertial>
+    </link>
+
+    <joint name="link2Tolink3" type="spherical">
+        <parent link="link2"/>
+        <child link="link3"/>
+        <origin xyz="0 0 -0.24"/>
+        <axis xyz="0 1 0"/>
+        <dynamics spring_mount="0.70710678118 0.70710678118 0 0" stiffness="500.0" damping="3."/>
+    </joint>
+
+    <link name="link4">
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 -0.12"/>
+            <geometry>
+                <sphere radius="0.1"/>
+            </geometry>
+        </visual>
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 -0.12"/>
+            <mass value="1"/>
+            <inertia ixx="0.002" ixy="0.0" ixz="0" iyy="0.002" iyz="0" izz="0.002"/>
+        </inertial>
+    </link>
+
+    <joint name="link3Tolink4" type="spherical">
+        <parent link="link3"/>
+        <child link="link4"/>
+        <origin xyz="0 0 -0.24"/>
+        <axis xyz="0 1 0"/>
+        <dynamics spring_mount="0.70710678118 0 0.70710678118 0" stiffness="500.0" damping="3."/>
+    </joint>
+
+
+    <link name="link5">
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 -0.12"/>
+            <geometry>
+                <sphere radius="0.1"/>
+            </geometry>
+        </visual>
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 -0.12"/>
+            <mass value="1"/>
+            <inertia ixx="0.002" ixy="0.0" ixz="0" iyy="0.002" iyz="0" izz="0.002"/>
+        </inertial>
+    </link>
+
+    <joint name="link4Tolink5" type="spherical">
+        <parent link="link4"/>
+        <child link="link5"/>
+        <origin xyz="0 0 -0.24"/>
+        <axis xyz="0 1 0"/>
+        <dynamics spring_mount="0.70710678118 0 0.70710678118 0" stiffness="500.0" damping="3."/>
+    </joint>
+
+
+    <joint name="link5Tolink6" type="spherical">
+        <parent link="link5"/>
+        <child link="link6"/>
+        <origin xyz="0 0 -0.24"/>
+        <axis xyz="0 1 0"/>
+        <dynamics spring_mount="0.70710678118 0 0.70710678118 0" stiffness="500.0" damping="3."/>
+    </joint>
+
+    <joint name="link6Tolink7" type="spherical">
+        <parent link="link6"/>
+        <child link="link7"/>
+        <origin xyz="0 0 -0.24"/>
+        <axis xyz="0 1 0"/>
+        <dynamics spring_mount="0.70710678118 0 0.70710678118 0" stiffness="500.0" damping="3."/>
+    </joint>
+
+    <joint name="link7Tolink8" type="spherical">
+        <parent link="link7"/>
+        <child link="link8"/>
+        <origin xyz="0 0 -0.24"/>
+        <axis xyz="0 1 0"/>
+        <dynamics spring_mount="0.70710678118 0 0.70710678118 0" stiffness="500.0" damping="3."/>
+    </joint>
+
+    <joint name="link8Tolink9" type="spherical">
+        <parent link="link8"/>
+        <child link="link9"/>
+        <origin xyz="0 0 -0.24"/>
+        <axis xyz="0 1 0"/>
+        <dynamics spring_mount="0.70710678118 0 0.70710678118 0" stiffness="500.0" damping="3."/>
+    </joint>
+
+    <joint name="link9Tolink10" type="spherical">
+        <parent link="link9"/>
+        <child link="link10"/>
+        <origin xyz="0 0 -0.24"/>
+        <axis xyz="0 1 0"/>
+        <dynamics spring_mount="0.70710678118 0 0.70710678118 0" stiffness="500.0" damping="3."/>
+    </joint>
+
+    <joint name="link10Tolink11" type="spherical">
+        <parent link="link10"/>
+        <child link="link11"/>
+        <origin xyz="0 0 -0.24"/>
+        <axis xyz="0 1 0"/>
+        <dynamics spring_mount="0.70710678118 0 0.70710678118 0" stiffness="500.0" damping="3."/>
+    </joint>
+
+    <link name="link6">
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 -0.12"/>
+            <geometry>
+                <sphere radius="0.1"/>
+            </geometry>
+        </visual>
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 -0.12"/>
+            <mass value="1"/>
+            <inertia ixx="0.002" ixy="0.0" ixz="0" iyy="0.002" iyz="0" izz="0.002"/>
+        </inertial>
+    </link>
+
+    <link name="link7">
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 -0.12"/>
+            <geometry>
+                <sphere radius="0.1"/>
+            </geometry>
+        </visual>
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 -0.12"/>
+            <mass value="1"/>
+            <inertia ixx="0.002" ixy="0.0" ixz="0" iyy="0.002" iyz="0" izz="0.002"/>
+        </inertial>
+    </link>
+
+    <link name="link8">
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 -0.12"/>
+            <geometry>
+                <sphere radius="0.1"/>
+            </geometry>
+        </visual>
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 -0.12"/>
+            <mass value="1"/>
+            <inertia ixx="0.002" ixy="0.0" ixz="0" iyy="0.002" iyz="0" izz="0.002"/>
+        </inertial>
+    </link>
+
+    <link name="link9">
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 -0.12"/>
+            <geometry>
+                <sphere radius="0.1"/>
+            </geometry>
+        </visual>
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 -0.12"/>
+            <mass value="1"/>
+            <inertia ixx="0.002" ixy="0.0" ixz="0" iyy="0.002" iyz="0" izz="0.002"/>
+        </inertial>
+    </link>
+
+    <link name="link10">
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 -0.12"/>
+            <geometry>
+                <sphere radius="0.1"/>
+            </geometry>
+        </visual>
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 -0.12"/>
+            <mass value="1"/>
+            <inertia ixx="0.002" ixy="0.0" ixz="0" iyy="0.002" iyz="0" izz="0.002"/>
+        </inertial>
+    </link>
+
+    <link name="link11">
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 -0.12"/>
+            <geometry>
+                <sphere radius="0.1"/>
+            </geometry>
+        </visual>
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 -0.12"/>
+            <mass value="1"/>
+            <inertia ixx="0.002" ixy="0.0" ixz="0" iyy="0.002" iyz="0" izz="0.002"/>
+        </inertial>
+    </link>
+
+</robot>
