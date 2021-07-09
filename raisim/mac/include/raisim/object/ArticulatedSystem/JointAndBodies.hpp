@@ -61,8 +61,9 @@ struct CollisionDefinition {
       rotOffset(rotOffsetI),
       posOffset(posOffsetI),
       localIdx(localIdxI),
-      colObj(colObjI),
-      name(std::move(nameI)) {}
+      colObj(colObjI){
+    colObj->name = nameI;
+  }
 
  public:
   friend class raisim::ArticulatedSystem;
@@ -85,10 +86,7 @@ struct CollisionDefinition {
 
   raisim::Mat<3, 3> rotOffset;
   raisim::Vec<3> posOffset;
-  std::string name;
   size_t localIdx;
-
- protected:
   dGeomID colObj;
 };
 
