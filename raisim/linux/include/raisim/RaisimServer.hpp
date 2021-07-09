@@ -1176,7 +1176,7 @@ class RaisimServer final {
         // COM position
         if(as->getJointType(0) == Joint::FLOATING) {
           data_ = set(data_, int32_t(0));
-          data_ = setN(data_, as->getCompositeCOM()[0].ptr(), 3);
+          data_ = setN(data_, as->getCOM().ptr(), 3);
         } else
           data_ = set(data_, int32_t(1));
 
