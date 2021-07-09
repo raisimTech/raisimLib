@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 project (raisim_wrapper VERSION ${RAISIM_VERSION})
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 # find the various packages
 find_package(Eigen3 REQUIRED)

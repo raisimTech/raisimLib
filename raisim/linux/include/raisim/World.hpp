@@ -612,8 +612,6 @@ protected:
   // list
   std::vector<Object *> objectList_;
   contact::ContactProblems contactProblems_;
-  std::vector<size_t> colIdxToObjIdx_;
-  std::vector<size_t> colIdxToLocalObjIdx_;
 
   // constraints
   std::vector<std::unique_ptr<LengthConstraint>> wire_;
