@@ -73,9 +73,12 @@ struct PolyLine {
 };
 
 struct ArticulatedSystemVisual {
-  ArticulatedSystemVisual(const std::string &urdfFile) : obj(new ArticulatedSystem(urdfFile)) {
+  ArticulatedSystemVisual(const std::string &urdfFile) : world(new World()) {
+    obj = world->addArticulatedSystem(urdfFile);
     color.setZero();
   }
+
+  ~ArticulatedSystemVisual() = default;
 
   /**
    * @param[in] r red value (max 1)
@@ -95,7 +98,8 @@ struct ArticulatedSystemVisual {
   }
 
   raisim::Vec<4> color;
-  std::unique_ptr<ArticulatedSystem> obj;
+  std::unique_ptr<World> world;
+  ArticulatedSystem* obj;
 };
 
 struct Visuals {
@@ -904,6 +908,9 @@ class RaisimServer final {
 
           case REQUEST_SERVER_STATUS:
             return false;
+
+          default:
+            break;
         }
       }
       unlockVisualizationServerMutex();
@@ -1033,7 +1040,7 @@ class RaisimServer final {
 
     // ArticulatedSystemVisuals
     for (auto &vis : _visualArticulatedSystem) {
-      auto *ob = vis.second->obj.get();
+      auto *ob = vis.second->obj;
       data_ = setN(data_, vis.second->color.ptr(), 4);
       data_ = set(data_, (uint64_t) ob->getVisOb().size() + ob->getVisColOb().size());
 
@@ -1173,7 +1180,7 @@ class RaisimServer final {
         // COM position
         if(as->getJointType(0) == Joint::FLOATING) {
           data_ = set(data_, int32_t(0));
-          data_ = setN(data_, as->getCompositeCOM()[0].ptr(), 3);
+          data_ = setN(data_, as->getCOM().ptr(), 3);
         } else
           data_ = set(data_, int32_t(1));
 
@@ -1283,6 +1290,9 @@ class RaisimServer final {
               case SPHERE:
                 data_ = set(data_, vob.objectParam[0]);
                 break;
+
+              default:
+                break;
             }
           }
 
@@ -1314,6 +1324,7 @@ class RaisimServer final {
           break;
 
         case ARTICULATED_SYSTEM:
+        {
           std::string resDir =
               static_cast<ArticulatedSystem *>(ob)->getResourceDir();
           data_ = setString(data_, resDir);
@@ -1344,6 +1355,10 @@ class RaisimServer final {
               }
             }
           }
+        }
+          break;
+
+        case UNRECOGNIZED:
           break;
       }
     }
@@ -1381,11 +1396,11 @@ class RaisimServer final {
         data_ = set(data_, contactPos[2]);
 
         // contact forces
-        auto *impulseB = contact.getImpulse();
+        auto impulseB = contact.getImpulse();
         auto contactFrame = contact.getContactFrame();
 
         Vec<3> impulseW;
-        raisim::matTransposevecmul(contactFrame, *impulseB, impulseW);
+        raisim::matTransposevecmul(contactFrame, impulseB, impulseW);
         impulseW /= world_->getTimeStep();
         data_ = set(data_, impulseW[0]);
         data_ = set(data_, impulseW[1]);
@@ -1589,11 +1604,14 @@ class RaisimServer final {
           data_ = set(data_, (float) vo->size[0]);
           data_ = set(data_, (float) vo->size[1]);
           break;
+
+        default:
+          break;
       }
     }
 
     for (auto &vas : _visualArticulatedSystem) {
-      auto *ob = vas.second->obj.get();
+      auto *ob = vas.second->obj;
       data_ = setString(data_, vas.first);
       std::string resDir = static_cast<ArticulatedSystem *>(ob)->getResourceDir();
       data_ = setString(data_, resDir);

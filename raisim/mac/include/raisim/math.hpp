@@ -600,6 +600,11 @@ class SparseJacobian1D {
 };
 
 struct Transformation {
+  Transformation () {
+    rot.setIdentity();
+    pos.setZero();
+  }
+
   Mat<3,3> rot;
   Vec<3> pos;
 };
