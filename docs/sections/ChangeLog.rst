@@ -4,7 +4,9 @@ Change Log
 Here we only describe the changes to the RaiSim library.
 Other peripheral codes are not tracked here.
 
-**v1.1**: There have been huge changes in this version.
+**v1.1**
+========================================
+There have been huge changes in this version.
 The biggest change is in the articulated system (AS) solver.
 Please read the "Performance" section of this documentation if you are interested.
 Note that the new AS solver is analytically equivalent to the old solver.
