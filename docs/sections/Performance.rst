@@ -72,6 +72,8 @@ For the ANYmal robot without collision, the new scheme runs at 318 kHz.
 This is nearly 50% faster than our competition (231Hz claimed by the MuJoCo developer, http://www.mujoco.org/performance.html).
 This is also much faster than the old version which runs at 272 Hz.
 All simulation tests were performed on a single core of 3950X, which is not excellent at single-thread performance.
+The current best single-thread cpu (for RaiSim at least) is Apple's M1.
+The ANYmal simulation without contacts runs at 380 kHz on M1.
 
 The computational speed of **4** becomes very significant when there are more than 10 coupled contact points.
 Therefore, it is important to check if there are unnecessary contact points.
