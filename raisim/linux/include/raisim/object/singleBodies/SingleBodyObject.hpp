@@ -4,8 +4,8 @@
 //----------------------------//
 
 
-#ifndef RAISIM_RAICONTACTOBJECT_HPP
-#define RAISIM_RAICONTACTOBJECT_HPP
+#ifndef RAISIM_SINGLEBODYOBJECT_HPP
+#define RAISIM_SINGLEBODYOBJECT_HPP
 
 #include "Eigen/Geometry"
 #include "raisim/object/Object.hpp"
@@ -264,7 +264,7 @@ class SingleBodyObject : public Object {
   void getVelocity(size_t localIdx, Vec<3>& vel_w) const final { vel_w = linVel_; }
 
   void preContactSolverUpdate1(const Vec<3> &gravity, double dt) final;
-  void preContactSolverUpdate2(const Vec<3> &gravity, double dt) final;
+  void preContactSolverUpdate2(const Vec<3> &gravity, double dt, contact::ContactProblems& problems) final;
   void integrate(double dt, const Vec<3>& gravity) final;
   void getContactPointVel(size_t pointId, Vec<3> &vel) const final;
 
@@ -300,6 +300,7 @@ class SingleBodyObject : public Object {
   void updateTimeStep(double dt) final {};
   void updateTimeStepIfNecessary(double dt) final {};
   void updateOrientation();
+
 
   dGeomID collisionObject_;
 
@@ -365,4 +366,4 @@ class SingleBodyObject : public Object {
 
 } // rai_simulator
 
-#endif //RAISIM_RAICONTACTOBJECT_HPP
+#endif //RAISIM_SINGLEBODYOBJECT_HPP

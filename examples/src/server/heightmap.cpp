@@ -16,6 +16,7 @@ int main(int argc, char* argv[]) {
 
   /// create raisim world
   raisim::World world;
+  world.setTimeStep(0.002);
 
   /// create objects
   raisim::TerrainProperties terrainProperties;
@@ -50,7 +51,7 @@ int main(int argc, char* argv[]) {
       anymals.push_back(world.addArticulatedSystem(
           binaryPath.getDirectory() + "\\rsc\\anymal\\urdf\\anymal.urdf"));
       anymals.back()->setGeneralizedCoordinate(
-          {double(2 * i), double(j), 2.5, 1.0, 0.0, 0.0, 0.0, 0.03, 0.4, -0.8,
+          {double(2 * i)-1, double(j), 2.5, 1.0, 0.0, 0.0, 0.0, 0.03, 0.4, -0.8,
            -0.03, 0.4, -0.8, 0.03, -0.4, 0.8, -0.03, -0.4, 0.8});
       anymals.back()->setGeneralizedForce(
           Eigen::VectorXd::Zero(anymals.back()->getDOF()));
@@ -65,37 +66,9 @@ int main(int argc, char* argv[]) {
   raisim::RaisimServer server(&world);
   server.launchServer();
 
-  while (1) {
-    server.lockVisualizationServerMutex();
-    for (size_t i = 0; i < N; i++) {
-      for (size_t j = 0; j < N; j++) {
-        anymals.push_back(world.addArticulatedSystem(
-            binaryPath.getDirectory() + "\\rsc\\anymal\\urdf\\anymal.urdf"));
-        anymals.back()->setGeneralizedCoordinate(
-            {double(2 * i), double(j), 2.5, 1.0, 0.0, 0.0, 0.0, 0.03, 0.4, -0.8,
-             -0.03, 0.4, -0.8, 0.03, -0.4, 0.8, -0.03, -0.4, 0.8});
-        anymals.back()->setGeneralizedForce(
-            Eigen::VectorXd::Zero(anymals.back()->getDOF()));
-        anymals.back()->setControlMode(
-            raisim::ControlMode::PD_PLUS_FEEDFORWARD_TORQUE);
-        anymals.back()->setPdGains(jointPgain, jointDgain);
-        anymals.back()->setName("anymal" + std::to_string(j + i * N));
-      }
-    }
-    hm = world.addHeightMap(0.0, 0.0, terrainProperties);
-    server.unlockVisualizationServerMutex();
-
-    raisim::MSLEEP(2000);
+  for (int i=0; i<1000000; i++) {
+    std::this_thread::sleep_for(std::chrono::microseconds(1000));
     server.integrateWorldThreadSafe();
-
-
-    server.lockVisualizationServerMutex();
-    for(auto any: anymals){
-      world.removeObject(any);
-    }
-    anymals.resize(0);
-    world.removeObject(hm);
-    server.unlockVisualizationServerMutex();
   }
 
   server.killServer();

@@ -352,14 +352,6 @@ ODE_PURE_INLINE dReal dMax(dReal x, dReal y) { return x <= y ? y : x; }
 
 /* internal object types (all prefixed with `dx') */
 
-struct dxWorld;     /* dynamics world */
-struct dxSpace;     /* collision space */
-struct dxBody;      /* rigid body (dynamics object) */
-struct dxGeom;      /* geometry (collision object) */
-struct dxJoint;     /* joint */
-struct dxJointGroup;/* joint group */
-
-
 typedef struct dxWorld *dWorldID;
 typedef struct dxSpace *dSpaceID;
 typedef struct dxBody *dBodyID;

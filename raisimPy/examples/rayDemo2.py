@@ -42,7 +42,6 @@ for i in range(scanSize1):
         scans.append(server.addVisualBox("box" + str(i) + "/" + str(j), 0.3, 0.3, 0.3, 1, 0, 0))
 
 for i in range(10000000000):
-    time.sleep(0.001)
     server.integrateWorldThreadSafe()
     lidarPos = robot.getFramePosition("imu_joint")
     lidarOri = robot.getFrameOrientation("imu_joint")

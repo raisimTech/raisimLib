@@ -65,12 +65,13 @@ world.integrate1()
 # mass matrix
 mass_matrix = anymal.getMassMatrix()
 # non-linear term (gravity+coriolis)
-non_linearities = anymal.getNonlinearities()
+non_linearities = anymal.getNonlinearities([0,0,-9.81])
 # Jacobians
 jaco_foot_lh_linear = anymal.getDenseFrameJacobian("LF_ADAPTER_TO_FOOT")
 jaco_foot_lh_angular = anymal.getDenseFrameRotationalJacobian("LF_ADAPTER_TO_FOOT")
 
-for i in range(5000):
+for i in range(500000):
+    time.sleep(0.001)
     world.integrate()
 
 server.killServer()

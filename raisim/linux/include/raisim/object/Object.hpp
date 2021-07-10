@@ -9,9 +9,9 @@
 
 #include <memory>
 #include <vector>
+#include <raisim/contact/BisectionContactSolver.hpp>
 #include "raisim/math.hpp"
-#include "raisim/contact/PerObjectContactList.hpp"
-#include "raisim/contact/BisectionContactSolver.hpp"
+#include "raisim/contact/Contact.hpp"
 #include "raisim/Materials.hpp"
 #include "raisim/configure.hpp"
 
@@ -37,7 +37,7 @@ class Object {
 
  public:
   void clearPerObjectContact();
-  void addContactToPerObjectContact(contact::Contact &contact);
+  void addContactToPerObjectContact(Contact &contact);
   void setIndexInWorld(size_t indexInWorld_);
 
   /**
@@ -49,12 +49,12 @@ class Object {
   /**
    * get a vector of all contacts on the object.
    * @return contacts on the body */
-  const std::vector<contact::Contact> &getContacts() const;
-  std::vector<contact::Contact> &getContacts();
+  const std::vector<Contact> &getContacts() const;
+  std::vector<Contact> &getContacts();
 
   virtual void updateCollision() = 0;
   virtual void preContactSolverUpdate1(const Vec<3> &gravity, double dt) = 0;
-  virtual void preContactSolverUpdate2(const Vec<3> &gravity, double dt) = 0;
+  virtual void preContactSolverUpdate2(const Vec<3> &gravity, double dt, contact::ContactProblems& problems) = 0;
   virtual void integrate(double dt, const Vec<3>& gravity) = 0;
 
   /// apply forces at the Center of Mass
@@ -108,16 +108,14 @@ class Object {
   const std::string& getName() const { return name_; }
 
   // external force visualization
-  const std::vector<raisim::Vec<3>>& getExternalForce() const { return externalForceViz_; }
-  const std::vector<raisim::Vec<3>>& getExternalForcePosition() const { return externalForceVizPos_; }
-  const std::vector<raisim::Vec<3>>& getExternalTorque() const { return externalTorqueViz_; }
-  const std::vector<raisim::Vec<3>>& getExternalTorquePosition() const { return externalTorqueVizPos_; }
+  const std::vector<Vec<3>>& getExternalForce() const { return externalForceViz_; }
+  const std::vector<Vec<3>>& getExternalForcePosition() const { return externalForceVizPos_; }
+  const std::vector<Vec<3>>& getExternalTorque() const { return externalTorqueViz_; }
+  const std::vector<Vec<3>>& getExternalTorquePosition() const { return externalTorqueVizPos_; }
   virtual void clearExternalForcesAndTorques() = 0;
 
  protected:
-  DelassusType &getDelassusAndTauStar();
   double &getImpactVel(size_t idx);
-  contact::PerObjectContactList &getPerObjectContact();
   virtual void destroyCollisionBodies(dSpaceID id) = 0;
   virtual void addContactPointVel(size_t pointId, Vec<3>& vel) = 0;
   virtual void subContactPointVel(size_t pointId, Vec<3>& vel) = 0;
@@ -126,23 +124,22 @@ class Object {
   virtual void updateGenVelWithImpulse(size_t pointId, const Vec<3>& imp) = 0;
   virtual void appendJointLimits(std::vector<contact::Single3DContactProblem, AlignedAllocator<contact::Single3DContactProblem, 32>>& problem) {};
   virtual double enforceJointLimits(contact::Single3DContactProblem& problem) { return 0; };
-
-  contact::PerObjectContactList perObjectContact_;
+  virtual void appendConstraints(contact::ContactProblems& problems) {};
+  std::vector<Contact> contacts_;
   size_t contactSize_ = 0;
 
   size_t indexInWorld_;
   BodyType bodyType_ = BodyType::DYNAMIC;
-  bool useDel_ = true;
   std::string name_;
 
   // external force/torque visualization
   std::vector<bool> isExternalForces_;
-  std::vector<raisim::Vec<3>> externalForceAndTorque_;
-  std::vector<raisim::Vec<3>> externalForceAndTorquePos_;
-  std::vector<raisim::Vec<3>> externalForceViz_;
-  std::vector<raisim::Vec<3>> externalForceVizPos_;
-  std::vector<raisim::Vec<3>> externalTorqueViz_;
-  std::vector<raisim::Vec<3>> externalTorqueVizPos_;
+  std::vector<Vec<3>> externalForceAndTorque_;
+  std::vector<Vec<3>> externalForceAndTorquePos_;
+  std::vector<Vec<3>> externalForceViz_;
+  std::vector<Vec<3>> externalForceVizPos_;
+  std::vector<Vec<3>> externalTorqueViz_;
+  std::vector<Vec<3>> externalTorqueVizPos_;
   std::vector<SparseJacobian> constraintJaco_;
   std::vector<Vec<3>> constraintForce_;
 };

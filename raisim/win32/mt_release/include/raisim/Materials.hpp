@@ -47,7 +47,7 @@ class MaterialManager {
                            double restitution,
                            double resThreshold);
 
-  const MaterialPairProperties &getMaterialPairProp(const std::string &mat1, const std::string &mat2);
+  const MaterialPairProperties &getMaterialPairProp(const std::string &mat1, const std::string &mat2) const;
 
   void setDefaultMaterialProperties (double friction, double restitution, double resThreshold);
 

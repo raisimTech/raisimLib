@@ -165,7 +165,7 @@ class LoadFromMjcf {
                            const std::string &typeName,
                            const std::string &attName,
                            T &value) {
-    bool result;
+    bool result = false;
     std::string className;
     if (node.getAttributeIfExists("class", className)) {
       if (defaults.find(className) == defaults.end())
@@ -175,7 +175,7 @@ class LoadFromMjcf {
     } else {
       result = defaults.at(typeName).getAttributeIfExists(attName, value);
     }
-    return result || node.getAttributeIfExists(attName, value);
+    return node.getAttributeIfExists(attName, value) || result;
   }
 
   static void getPoseAndParam(const std::unordered_map<std::string, RaiSimTinyXmlWrapper> &defaults,

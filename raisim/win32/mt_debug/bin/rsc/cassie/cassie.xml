@@ -21,7 +21,7 @@
     </default>
     <default class='collision'>
       <!-- User parameter for geoms is used to identify collision types -->
-      <geom material='collision' contype='1' user='2'/>
+      <geom material='collision' contype='1' conaffinity='8' user='2'/>
       <default class='collision-left'>
         <geom contype='2' conaffinity='4'/>
       </default>
@@ -69,7 +69,7 @@
   </asset>
 
   <worldbody>
-    <geom name='floor' pos='0 0 0' size='5 5 .125' type='plane' material='plane' condim='3' conaffinity='15'/>
+    <geom name='floor' pos='0 0 0' size='5 5 .125' type='plane' material='plane' condim='3' contype='-1' conaffinity='-1'/>
 
     <light mode='trackcom' pos='0 0 5' dir='0 0 -1'/>
     <light directional='true' pos='0 0 3' dir='0 0 -1' diffuse='0.2 0.2 0.2' specular='0 0 0'/>

@@ -36,7 +36,7 @@ function(create_executable app_name file_name)
 endfunction()
 
 # benchmark examples
-create_executable(anymal_speed_test src/benchmark/anymal.cpp)
+create_executable(speed_test src/benchmark/speed_test.cpp)
 
 # server examples
 create_executable(primitives src/server/primitives.cpp)
@@ -67,3 +67,4 @@ create_executable(xmlRader src/xml/xmlReader.cpp)
 # mjcf files
 create_executable(mjcf_humanoid src/mjcf/humanoid.cpp)
 create_executable(mjcf_ant src/mjcf/ant.cpp)
+create_executable(mjcf_cassie src/mjcf/cassie.cpp)

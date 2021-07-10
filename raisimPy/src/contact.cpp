@@ -29,7 +29,7 @@
 #include "raisim/math.hpp"   // contains the definitions of Vec, Mat, etc.
 #include "raisim/contact/Contact.hpp"
 #include "raisim/contact/BisectionContactSolver.hpp"
-#include "raisim/contact/PerObjectContactList.hpp"
+#include "raisim/contact/Contact.hpp"
 
 #include "converter.hpp"  // contains code that allows to convert between the Vec, Mat to numpy arrays.
 
@@ -46,36 +46,9 @@ void init_contact(py::module &m) {
     /*****************/
     /* Contact class */
     /*****************/
-    py::class_<raisim::contact::Contact>(contact_module, "Contact", "Raisim Contact.")
-        .def(py::init([](py::array_t<double> position, py::array_t<double> normal, bool objectA,
-            size_t contact_problem_index, size_t contact_index_in_object, size_t pair_object_index,
-            BodyType pair_object_body_type, size_t pair_contact_index_in_pair_object, size_t local_body_index,
-            double depth)
-            {
-                // convert the arrays to Vec<3>
-                raisim::Vec<3> pos = convert_np_to_vec<3>(position);
-                raisim::Vec<3> norm = convert_np_to_vec<3>(normal);
+    py::class_<raisim::Contact>(contact_module, "Contact", "Raisim Contact.")
 
-                // instantiate the class
-                return new raisim::contact::Contact(pos, norm, objectA, contact_problem_index, contact_index_in_object,
-                    pair_object_index, pair_object_body_type, pair_contact_index_in_pair_object, local_body_index,
-                    depth);
-            }),
-            "Instantiate the contact class.\n\n"
-	        "Args:\n"
-	        "    position (np.array[float[3]]): position vector.\n"
-	        "    normal (np.array[float[3]]): normal vector.\n"
-	        "    objectA (bool): True if object A.\n"
-	        "    contact_problem_index (int): contact problem index.\n"
-	        "    contact_index_in_object (int): contact index in object (an object can be in contact at multiple points).\n"
-	        "    pair_object_index (int): pair object index.\n"
-	        "    pair_object_index (BodyType): pair object body type between {STATIC, KINEMATIC, DYNAMIC}.\n"
-            "    pair_contact_index_in_pair_object (int): pair contact index in pair object.\n"
-            "    local_body_index (int): local body index."
-            "    depth (float): depth of the contact.")
-
-
-        .def("get_position", [](raisim::contact::Contact &self) {
+        .def("get_position", [](raisim::Contact &self) {
             Vec<3> position = self.getPosition();
             return convert_vec_to_np(position);
         }, R"mydelimiter(
@@ -86,7 +59,7 @@ void init_contact(py::module &m) {
 	    )mydelimiter")
 
 
-        .def("getNormal", [](raisim::contact::Contact &self) {
+        .def("getNormal", [](raisim::Contact &self) {
             Vec<3> normal = self.getNormal();
             return convert_vec_to_np(normal);
         }, R"mydelimiter(
@@ -97,7 +70,7 @@ void init_contact(py::module &m) {
 	    )mydelimiter")
 
 
-        .def("getContactFrame", [](raisim::contact::Contact &self) {
+        .def("getContactFrame", [](raisim::Contact &self) {
             Mat<3, 3> frame = self.getContactFrame();
             return convert_mat_to_np(frame);
         }, R"mydelimiter(
@@ -108,7 +81,7 @@ void init_contact(py::module &m) {
 	    )mydelimiter")
 
 
-	    .def("getIndexContactProblem", &raisim::contact::Contact::getIndexContactProblem, R"mydelimiter(
+	    .def("getIndexContactProblem", &raisim::Contact::getIndexContactProblem, R"mydelimiter(
 	    Get the index contact problem.
 
 	    Returns:
@@ -116,7 +89,7 @@ void init_contact(py::module &m) {
 	    )mydelimiter")
 
 
-	    .def("getPairObjectIndex", &raisim::contact::Contact::getPairObjectIndex, R"mydelimiter(
+	    .def("getPairObjectIndex", &raisim::Contact::getPairObjectIndex, R"mydelimiter(
 	    Get the pair object index.
 
 	    Returns:
@@ -124,7 +97,7 @@ void init_contact(py::module &m) {
 	    )mydelimiter")
 
 
-	    .def("getPairContactIndexInPairObject", &raisim::contact::Contact::getPairContactIndexInPairObject, R"mydelimiter(
+	    .def("getPairContactIndexInPairObject", &raisim::Contact::getPairContactIndexInPairObject, R"mydelimiter(
 	    Get the pair contact index in pair objects.
 
 	    Returns:
@@ -132,9 +105,9 @@ void init_contact(py::module &m) {
 	    )mydelimiter")
 
 
-	    .def("getImpulse", [](raisim::contact::Contact &self) {
-            Vec<3> *impulse = self.getImpulse();
-            return convert_vec_to_np(*impulse);
+	    .def("getImpulse", [](raisim::Contact &self) {
+            Vec<3> impulse = self.getImpulse();
+            return convert_vec_to_np(impulse);
         }, R"mydelimiter(
 	    Get the impulse.
 
@@ -143,7 +116,7 @@ void init_contact(py::module &m) {
 	    )mydelimiter")
 
 
-	    .def("isObjectA", &raisim::contact::Contact::isObjectA, R"mydelimiter(
+	    .def("isObjectA", &raisim::Contact::isObjectA, R"mydelimiter(
 	    Check if it is object A.
 
 	    Returns:
@@ -151,7 +124,7 @@ void init_contact(py::module &m) {
 	    )mydelimiter")
 
 
-	    .def("getPairObjectBodyType", &raisim::contact::Contact::getPairObjectBodyType, R"mydelimiter(
+	    .def("getPairObjectBodyType", &raisim::Contact::getPairObjectBodyType, R"mydelimiter(
 	    Get the pair object body type.
 
 	    Returns:
@@ -159,7 +132,7 @@ void init_contact(py::module &m) {
 	    )mydelimiter")
 
 
-	    .def("setImpulse", [](raisim::contact::Contact &self, py::array_t<double> impulse) {
+	    .def("setImpulse", [](raisim::Contact &self, py::array_t<double> impulse) {
 	        Vec<3> impulse_ = convert_np_to_vec<3>(impulse);
             self.setImpulse(&impulse_);
         }, R"mydelimiter(
@@ -170,9 +143,9 @@ void init_contact(py::module &m) {
 	    )mydelimiter",
 	    py::arg("impulse"))
 
-	    .def("getInvInertia", [](raisim::contact::Contact &self) {
-	        const Mat<3, 3> *I_ = self.getInvInertia();
-	        return convert_mat_to_np(*I_);
+	    .def("getInvInertia", [](raisim::Contact &self) {
+	        const Mat<3, 3> I_ = self.getInvInertia();
+	        return convert_mat_to_np(I_);
         }, R"mydelimiter(
 	    Get the inverse inertia matrix.
 
@@ -181,7 +154,7 @@ void init_contact(py::module &m) {
 	    )mydelimiter")
 
 
-	    .def("getlocalBodyIndex", &raisim::contact::Contact::getlocalBodyIndex, R"mydelimiter(
+	    .def("getlocalBodyIndex", &raisim::Contact::getlocalBodyIndex, R"mydelimiter(
 	    Get local body index.
 
 	    Returns:
@@ -189,7 +162,7 @@ void init_contact(py::module &m) {
 	    )mydelimiter")
 
 
-        .def("getDepth", &raisim::contact::Contact::getDepth, R"mydelimiter(
+        .def("getDepth", &raisim::Contact::getDepth, R"mydelimiter(
 	    Get the depth.
 
 	    Returns:
@@ -197,7 +170,7 @@ void init_contact(py::module &m) {
 	    )mydelimiter")
 
 
-        .def("isSelfCollision", &raisim::contact::Contact::isSelfCollision, R"mydelimiter(
+        .def("isSelfCollision", &raisim::Contact::isSelfCollision, R"mydelimiter(
 	    Return True if self-collision is enabled.
 
 	    Returns:
@@ -205,25 +178,13 @@ void init_contact(py::module &m) {
 	    )mydelimiter")
 
 
-	    .def("setSelfCollision", &raisim::contact::Contact::setSelfCollision, "Enable self-collision.")
+	    .def("setSelfCollision", &raisim::Contact::setSelfCollision, "Enable self-collision.")
 
 
-        .def("skip", &raisim::contact::Contact::skip, R"mydelimiter(
+        .def("skip", &raisim::Contact::skip, R"mydelimiter(
 	    Return True if we contact is skipped.
 
 	    Returns:
 	        bool: True if the contact is skipped.
 	    )mydelimiter");
-
-    /************************/
-    /* PerObjectContactList */
-    /************************/
-    py::class_<raisim::contact::PerObjectContactList>(contact_module, "PerObjectContactList",
-        "Raisim PerObjectContactList, where each object has a list of Contacts.")
-        .def(py::init<>(), "Initialize the per object contact list.")
-        .def("getNumContacts", &raisim::contact::PerObjectContactList::getNumContacts)
-        .def("getContactAt", &raisim::contact::PerObjectContactList::getContactAt, py::arg("index"))
-        .def("getContacts", py::overload_cast<>(&raisim::contact::PerObjectContactList::getContacts))
-        .def("getContacts", py::overload_cast<>(&raisim::contact::PerObjectContactList::getContacts, py::const_))
-        .def("getImpactVel", &raisim::contact::PerObjectContactList::getImpactVel);
 }

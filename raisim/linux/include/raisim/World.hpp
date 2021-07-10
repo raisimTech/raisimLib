@@ -76,9 +76,6 @@ class World {
 
  public:
 
-  typedef std::vector<contact::Single3DContactProblem, AlignedAllocator<contact::Single3DContactProblem, 32>>
-      ContactProblems;
-
   /**
    * export the world to an xml config file, which can be loaded using a constructor
    * @param activationKey path to the license file */
@@ -494,7 +491,7 @@ class World {
    *    1) calls "preContactSolverUpdate2()" of each body
    *    2) run collision solver
    *    3) calls "integrate" method of each object */
-  const ContactProblems *getContactProblem() const { return &contactProblems_; }
+  const contact::ContactProblems *getContactProblem() const { return &contactProblems_; }
 
   void setGravity(const Vec<3> &gravity);
 
@@ -573,6 +570,15 @@ class World {
    */
   std::vector<std::unique_ptr<LengthConstraint>>& getWires () { return wire_; }
 
+  /**
+   * get the material pair properties. The order of materials does not matter.
+   * @param[in] first material name
+   * @param[in] second material name
+   * @return material pair properties
+   */
+  const MaterialPairProperties& getMaterialPairProperties (const std::string& mat1, const std::string& mat2) const {
+    return mat_.getMaterialPairProp(mat1, mat2); }
+
 protected:
   void init();
   void contactProblemUpdate(Object *objectA);
@@ -584,8 +590,7 @@ protected:
   void loadRaiSimConfig(const std::string& configFile);
   raisim::SingleBodyObject* addMjcfGeom(const RaiSimTinyXmlWrapper& geom,
                                         const std::unordered_map<std::string, RaiSimTinyXmlWrapper>& defaults,
-                                        const std::unordered_map<std::string, std::pair<std::string, Vec<3>>>& mesh,
-                                        const std::string& name);
+                                        const std::unordered_map<std::string, std::pair<std::string, Vec<3>>>& mesh);
   void loadMjcf(const std::string& configFile);
   ArticulatedSystem* addArticulatedSystem(const RaiSimTinyXmlWrapper& node,
                                           const std::string &resPath,
@@ -606,9 +611,7 @@ protected:
 
   // list
   std::vector<Object *> objectList_;
-  ContactProblems contactProblems_;
-  std::vector<size_t> colIdxToObjIdx_;
-  std::vector<size_t> colIdxToLocalObjIdx_;
+  contact::ContactProblems contactProblems_;
 
   // constraints
   std::vector<std::unique_ptr<LengthConstraint>> wire_;

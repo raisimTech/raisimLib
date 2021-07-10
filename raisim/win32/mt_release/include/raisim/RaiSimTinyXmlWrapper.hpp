@@ -79,7 +79,7 @@ public:
     return children;
   }
 
-  const std::vector<RaiSimTinyXmlWrapper> getChildren() const {
+  std::vector<RaiSimTinyXmlWrapper> getChildren() const {
     RSFATAL_IF(!node_, "You have accessed a dummy node")
     std::vector<RaiSimTinyXmlWrapper> children;
     for (TiXmlElement *oc = node_->FirstChildElement(); oc != NULL;

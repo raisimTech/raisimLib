@@ -26,10 +26,7 @@
 #include <ode/common.h>
 #include <ode/collision_space.h>
 #include <ode/contact.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <ode/objects.h>
 
 /**
  * @defgroup collide Collision Detection
@@ -1520,9 +1517,5 @@ ODE_API void dSetColliderOverride (int i, int j, dColliderFn *fn);
 
 
 /* ************************************************************************ */
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

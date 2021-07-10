@@ -33,9 +33,6 @@
 
 #include "converter.hpp"  // contains code that allows to convert between the Vec, Mat to numpy arrays.
 
-#include "ode/collision.h"
-#include "ode/ode.h"
-#include "ode/extras/collision_kernel.h"
 // Important note: for the above include ("ode/src/collision_kernel.h"), you have to add a `extras` folder in the
 // `$LOCAL_BUILD/include/ode/` which should contain the following header files:
 // array.h, collision_kernel.h, common.h, error.h, objects.h, odeou.h, odetls.h, threading_base.h, and typedefs.h.
@@ -70,26 +67,6 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
     /***********************/
     py::class_<raisim::CollisionDefinition>(m, "CollisionDefinition", "Raisim CollisionDefinition struct.")
 
-        .def(py::init([](py::array_t<double> rot_offset, py::array_t<double> pos_offset, size_t local_idx,
-                dGeomID collision_object, std::string name) {
-            // convert from np to Mat and Vec
-            raisim::Mat<3,3> rot = convert_np_to_mat<3,3>(rot_offset);
-            raisim::Vec<3> pos = convert_np_to_vec<3>(pos_offset);
-
-            // construct
-            return new raisim::CollisionDefinition(rot, pos, local_idx, collision_object, name);
-        }),  R"mydelimiter(
-        Instantiate the Collision Definition class.
-
-        Args:
-            rot_offset (np.array[float[3,3]]): rotation offset matrix.
-            pos_offset (np.array[float[3]]): position offset.
-            local_idx (int): local index.
-            collision_object (dGeomID): collision object.
-            name (str): name of the collision definition.
-        )mydelimiter",
-        py::arg("rot_offset"), py::arg("pos_offset"), py::arg("local_idx"), py::arg("collision_object"), py::arg("name"))
-
         .def_property("rotOffset",
             [](raisim::CollisionDefinition &self) {  // getter
                 return convert_mat_to_np(self.rotOffset);
@@ -105,7 +82,12 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
                 self.posOffset = pos;
             })
         .def_readwrite("localIdx", &raisim::CollisionDefinition::localIdx)
-        .def_readwrite("name", &raisim::CollisionDefinition::name);
+        .def_property("name",
+                      [](raisim::CollisionDefinition &self) {  // getter
+                        return self.colObj->name;
+                      }, [](raisim::CollisionDefinition &self, py::str name) {  // setter
+              self.colObj->name = name;
+            });
 
 
     /*********/
@@ -358,9 +340,10 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         )mydelimiter")
 
 
-        .def("getNonlinearities", [](raisim::ArticulatedSystem &self) {
-            VecDyn vec = self.getNonlinearities();
-            return convert_vecdyn_to_np(vec);
+        .def("getNonlinearities", [](raisim::ArticulatedSystem &self, py::array_t<double> gravity) {
+          Vec<3> g = convert_np_to_vec<3>(gravity);
+          VecDyn vec = self.getNonlinearities(g);
+          return convert_vecdyn_to_np(vec);
         }, R"mydelimiter(
         Get the non linearity terms that are present in the dynamic equation of motion:
 

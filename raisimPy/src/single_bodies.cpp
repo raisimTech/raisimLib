@@ -36,9 +36,9 @@
 #include "raisim/object/singleBodies/SingleBodyObject.hpp"
 #include "raisim/object/singleBodies/Sphere.hpp"
 
-#include "ode/collision.h"
-#include "ode/ode.h"
-#include "ode/extras/collision_kernel.h"
+//#include "ode/collision.h"
+//#include "ode/ode.h"
+//#include "ode/extras/collision_kernel.h"
 // Important note: for the above include ("ode/src/collision_kernel.h"), you have to add a `extras` folder in the
 // `$LOCAL_BUILD/include/ode/` which should contain the following header files:
 // array.h, collision_kernel.h, common.h, error.h, objects.h, odeou.h, odetls.h, threading_base.h, and typedefs.h.
@@ -368,20 +368,6 @@ void init_single_bodies(py::module &m) {
 	            GyroscopicMode.NO_GYROSCOPIC_FORCE])
 	    )mydelimiter",
 	    py::arg("mode"))
-
-
-        .def("preContactSolverUpdate1", [](raisim::SingleBodyObject &self, py::array_t<double> gravity, double dt) {
-	        // convert np.array[3] to Vec<3>
-	        Vec<3> vec = convert_np_to_vec<3>(gravity);
-	        self.preContactSolverUpdate1(vec, dt);
-	    }, py::arg("gravity"), py::arg("dt"))
-
-
-	    .def("preContactSolverUpdate2", [](raisim::SingleBodyObject &self, py::array_t<double> gravity, double dt) {
-	        // convert np.array[3] to Vec<3>
-	        Vec<3> vec = convert_np_to_vec<3>(gravity);
-	        self.preContactSolverUpdate2(vec, dt);
-	    }, py::arg("gravity"), py::arg("dt"))
 
         .def("getContactPointVel", [](raisim::SingleBodyObject &self, size_t point_id) {
 	        Vec<3> vel;

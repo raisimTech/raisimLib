@@ -30,10 +30,6 @@
 #include "raisim/object/terrain/Ground.hpp"
 #include "raisim/object/terrain/HeightMap.hpp"
 
-#include "ode/collision.h"
-#include "ode/ode.h"
-#include "ode/extras/collision_kernel.h"
-
 #include "converter.hpp"  // contains code that allows to convert between the Vec, Mat to numpy arrays.
 
 // Important note: for the above include ("ode/src/collision_kernel.h"), you have to add a `extras` folder in the

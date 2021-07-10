@@ -32,12 +32,13 @@ for i in range(0, 100):
 
 counter = 0
 
-for i in range(500000):
+for i in range(500):
     counter = counter + 1
     visBox.setColor(1, 1, (counter % 255 + 1) / 256., 1)
     visSphere.setColor(1, (counter % 255 + 1) / 256., 1, 1)
     lines.setColor(1 - (counter % 255 + 1) / 256., 1, (counter % 255 + 1) / 256., 1)
     visBox.setBoxSize((counter % 255 + 1) / 256. + 0.01, 1, 1)
+    world.integrate()
     time.sleep(world.getTimeStep())
 
 server.killServer()

@@ -48,6 +48,8 @@ The geometric model is created using the Full-body musculoskeletal model in Raja
    sections/License
    sections/Acknowledgement
    sections/Support
+   sections/Performance
+   sections/ChangeLog
 
 .. toctree::
    :maxdepth: 1
@@ -58,6 +60,7 @@ The geometric model is created using the Full-body musculoskeletal model in Raja
    sections/ConventionsAndNotations
    sections/LoggingSystem
    sections/WorldSystem
+   sections/WorldConfigurationFile
    sections/RaisimServer
    sections/Object
    sections/Contact
