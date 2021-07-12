@@ -73,8 +73,7 @@ struct PolyLine {
 };
 
 struct ArticulatedSystemVisual {
-  ArticulatedSystemVisual(const std::string &urdfFile) : world(new World()) {
-    obj = world->addArticulatedSystem(urdfFile);
+  ArticulatedSystemVisual(const std::string &urdfFile) : obj (urdfFile) {
     color.setZero();
   }
 
@@ -94,12 +93,11 @@ struct ArticulatedSystemVisual {
    * @param[in] gc the generalized coordinate (max 1)
    * set the configuration of the visualized articulated system */
   void setGeneralizedCoordinate(const Eigen::VectorXd& gc) {
-    obj->setGeneralizedCoordinate(gc);
+    obj.setGeneralizedCoordinate(gc);
   }
 
   raisim::Vec<4> color;
-  std::unique_ptr<World> world;
-  ArticulatedSystem* obj;
+  ArticulatedSystem obj;
 };
 
 struct Visuals {
@@ -556,6 +554,8 @@ class RaisimServer final {
     // Erase the element pointed by iterator it
     if (it != _visualArticulatedSystem.end())
       _visualArticulatedSystem.erase(it);
+
+    delete as;
   }
 
   /**
@@ -1040,7 +1040,7 @@ class RaisimServer final {
 
     // ArticulatedSystemVisuals
     for (auto &vis : _visualArticulatedSystem) {
-      auto *ob = vis.second->obj;
+      auto *ob = &vis.second->obj;
       data_ = setN(data_, vis.second->color.ptr(), 4);
       data_ = set(data_, (uint64_t) ob->getVisOb().size() + ob->getVisColOb().size());
 
@@ -1611,7 +1611,7 @@ class RaisimServer final {
     }
 
     for (auto &vas : _visualArticulatedSystem) {
-      auto *ob = vas.second->obj;
+      auto *ob = &vas.second->obj;
       data_ = setString(data_, vas.first);
       std::string resDir = static_cast<ArticulatedSystem *>(ob)->getResourceDir();
       data_ = setString(data_, resDir);

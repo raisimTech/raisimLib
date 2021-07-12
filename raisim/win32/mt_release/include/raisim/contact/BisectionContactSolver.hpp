@@ -42,7 +42,7 @@ class Single3DContactProblem {
   Single3DContactProblem() = default;
   void checkRank();
 
-  raisim::Vec<3> imp_i;
+  raisim::Vec<3> imp_i, velInit;
   raisim::Mat<3, 3> MappInv_i;
   raisim::Mat<3, 3> Mapp_i;
   raisim::Mat<2, 2> Mapp_iInv22, Mapp_i22;
