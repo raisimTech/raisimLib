@@ -1,5 +1,6 @@
 # RAISIM, A PHYSICS ENGINE FOR ROBOTICS AND AI RESEARCH (v1.10)
 
+Click to watch the video
 
 [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/CN0ah5-OWik/0.jpg)](https://www.youtube.com/watch?v=CN0ah5-OWik)
 
