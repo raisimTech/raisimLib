@@ -112,7 +112,7 @@ class LoadFromURDF2 {
 
  public:
   LoadFromURDF2(ArticulatedSystem &system,
-                std::string filePath,
+                const std::string& filePath,
                 std::vector<std::string> jointOrder,
                 bool isItAFilePath);
  private:
@@ -129,6 +129,7 @@ namespace mjcf {
 
 struct MjcfCompilerSetting {
   std::string angle;
+  std::string eulerseq;
 };
 
 class LoadFromMjcf {
@@ -184,12 +185,13 @@ class LoadFromMjcf {
                               const std::string &typeName,
                               std::vector<double> &param,
                               Mat<3, 3> &rot,
-                              Vec<3> &pos);
+                              Vec<3> &pos,
+                              const MjcfCompilerSetting& setting);
 
   static void getMjcfSizeParam(const RaiSimTinyXmlWrapper &g, Shape::Type type, std::vector<double> &param);
   static void getMjcfPos(const RaiSimTinyXmlWrapper &g, Vec<3> &pos);
   static void posFromFromTo(const RaiSimTinyXmlWrapper &g, Vec<3> &pos);
-  static void getMjcfOrientation(const RaiSimTinyXmlWrapper &g, Mat<3, 3> &rot);
+  static void getMjcfOrientation(const RaiSimTinyXmlWrapper &g, Mat<3, 3> &rot, const std::string& eulerseq, const std::string& anglerep);
   static bool getColorFromMaterial(const std::unordered_map<std::string, RaiSimTinyXmlWrapper> &defaults,
                                    const std::string &c,
                                    std::string& color);
