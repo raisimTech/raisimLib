@@ -28,15 +28,15 @@ configure_file(${DOXYFILE_IN} ${DOXYFILE_OUT} @ONLY)
 
 file(MAKE_DIRECTORY ${DOXYGEN_OUTPUT_DIR})
 
-add_custom_command(OUTPUT ${DOXYGEN_INDEX_FILE}
+add_custom_target(doxygen_output ALL
         DEPENDS ${RAISIM_PUBLIC_HEADERS}
         COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYFILE_OUT}
         MAIN_DEPENDENCY ${DOXYFILE_OUT} ${DOXYFILE_IN}
         COMMENT "Generating docs")
 
 add_custom_target(Sphinx ALL
-        DEPENDS ${RAISIM_PUBLIC_HEADERS}
-        COMMAND ${SPHINX_EXECUTABLE} -b html
+        DEPENDS ${RAISIM_PUBLIC_HEADERS} doxygen_output
+        COMMAND ${SPHINX_EXECUTABLE} -b html -E -a
         # Tell Breathe where to find the Doxygen output
         -Dbreathe_projects.raisim=${DOXYGEN_OUTPUT_DIR}/xml
         ${SPHINX_SOURCE} ${SPHINX_BUILD}
