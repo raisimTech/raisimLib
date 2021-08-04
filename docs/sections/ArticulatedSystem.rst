@@ -211,13 +211,13 @@ A frame can be locally stored as an index in the user code. For e.g.,
   int main() {
     raisim::World world;
     auto anymal = world.addArticulatedSystem(PATH_TO_URDF);
-    auto footFrameIndex = world.getFrameIdxByName("foot_joint"); // the URDF has a joint named "foot_joint"
+    auto footFrameIndex = anymal->getFrameIdxByName("foot_joint"); // the URDF has a joint named "foot_joint"
     raisim::Vec<3> footPosition, footVelocity, footAngularVelocity;
     raisim::Mat<3,3> footOrientation;
-    anymal.getFramePosition(footFrameIndex, footPosition);
-    anymal.getFrameOrientation(footFrameIndex, footOrientation);
-    anymal.getFrameVelocity(footFrameIndex, footVelocity);
-    anymal.getFrameAngularVelocity(footFrameIndex, footAngularVelocity);
+    anymal->getFramePosition(footFrameIndex, footPosition);
+    anymal->getFrameOrientation(footFrameIndex, footOrientation);
+    anymal->getFrameVelocity(footFrameIndex, footVelocity);
+    anymal->getFrameAngularVelocity(footFrameIndex, footAngularVelocity);
   }
 
 You can also store a Frame reference. 

@@ -52,15 +52,15 @@ System Requirements
 =====================
 - **Linux**
 
-    * We recommend ubuntu 16.04, 18.04 and 20.04 but RaiSim might work on other distributions
+    * We recommend ubuntu 16.04, 18.04 and 20.04 but RaiSim might work on other distributions. Works only on a X86 CPU with an AVX2 instruction set.
 
 - **Windows 10**
 
-    * Visual Studio 2019
+    * Visual Studio 2019. X86 CPU only.
 
 - **Mac**
 
-    * Latest version. (But probably work on most versions if the cpu supports AVX2)
+    * Latest version. Requires the AVX2 instruction set. Works on both M1 (Apple ARM) and X86.
 
 Example code
 ===================
