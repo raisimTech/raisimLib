@@ -114,6 +114,16 @@ void init_world(py::module &m) {
       .def("launchServer", &raisim::RaisimServer::launchServer)
       .def("killServer", &raisim::RaisimServer::killServer)
       .def("integrateWorldThreadSafe", &raisim::RaisimServer::integrateWorldThreadSafe)
+
+      .def("startRecordingVideo", &raisim::RaisimServer::startRecordingVideo, R"mydelimiter(
+          Start recording RaisimUnity visualization. RaisimUnity only supports video recording in linux.
+          Args:
+            videoName: name of the video file
+	    )mydelimiter",
+           py::arg("videoName"))
+
+      .def("stopRecordingVideo", &raisim::RaisimServer::stopRecordingVideo)
+
       .def("focusOn", [](raisim::RaisimServer& self, raisim::Object& object) {
           // convert the arrays to Vec<3>
           // return the stiff wire instance.
