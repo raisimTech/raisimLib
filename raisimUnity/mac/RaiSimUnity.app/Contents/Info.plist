@@ -7,7 +7,7 @@
     <key>CFBundleExecutable</key>
     <string>RaiSimUnity</string>
     <key>CFBundleGetInfoString</key>
-    <string>Unity Player version 2020.1.17f1 (9957aee8edc2). (c) 2020 Unity Technologies ApS. All rights reserved.</string>
+    <string>Unity Player version 2021.1.16f1 (5fa502fca597). (c) 2021 Unity Technologies ApS. All rights reserved.</string>
     <key>CFBundleIconFile</key>
     <string>PlayerIcon.icns</string>
     <key>CFBundleIdentifier</key>
@@ -29,7 +29,7 @@
     <key>LSApplicationCategoryType</key>
     <string>public.app-category.games</string>
     <key>LSMinimumSystemVersion</key>
-    <string>10.12.0</string>
+    <string>10.13.0</string>
     <key>NSAppTransportSecurity</key>
     <dict>
       <key>NSAllowsArbitraryLoads</key>
@@ -40,6 +40,6 @@
     <key>NSPrincipalClass</key>
     <string>PlayerApplication</string>
     <key>UnityBuildNumber</key>
-    <string>9957aee8edc2</string>
+    <string>5fa502fca597</string>
   </dict>
 </plist>

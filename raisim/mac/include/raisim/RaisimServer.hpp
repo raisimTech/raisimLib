@@ -5,7 +5,6 @@
 
 #ifndef RAISIM_RAISIMSERVER_HPP
 #define RAISIM_RAISIMSERVER_HPP
-#include <chrono>
 
 #if defined __linux__ || __APPLE__
 #include <arpa/inet.h>
@@ -41,6 +40,8 @@
 #include <mutex>
 #include <string>
 #include <thread>
+#include <future>
+#include <chrono>
 
 #include "raisim/World.hpp"
 #include "raisim/helper.hpp"
@@ -80,17 +81,17 @@ struct ArticulatedSystemVisual {
   ~ArticulatedSystemVisual() = default;
 
   /**
-   * @param[in] r red value (max 1)
-   * @param[in] g green value (max 1)
-   * @param[in] b blue value (max 1)
-   * @param[in] a alpha value (max 1)
+   * @param[in] r red value (max=1)
+   * @param[in] g green value (max=1)
+   * @param[in] b blue value (max=1)
+   * @param[in] a alpha value (max=1)
    * set color. if the alpha value is 0, it uses the original color defined in the mesh file */
   void setColor(double r, double g, double b, double a) {
     color = {r,g,b,a};
   }
 
   /**
-   * @param[in] gc the generalized coordinate (max 1)
+   * @param[in] gc the generalized coordinate
    * set the configuration of the visualized articulated system */
   void setGeneralizedCoordinate(const Eigen::VectorXd& gc) {
     obj.setGeneralizedCoordinate(gc);
@@ -259,14 +260,14 @@ class RaisimServer final {
   }
 
   ~RaisimServer() {
-    for (auto &vis : _visualObjects)
-      delete vis.second;
-
-    for (auto &vis : _polyLines)
-      delete vis.second;
-
-    for (auto &vis : _visualArticulatedSystem)
-      delete vis.second;
+//    for (auto &vis : _visualObjects)
+//      delete vis.second;
+//
+//    for (auto &vis : _polyLines)
+//      delete vis.second;
+//
+//    for (auto &vis : _visualArticulatedSystem)
+//      delete vis.second;
   }
 
  private:
@@ -474,7 +475,11 @@ class RaisimServer final {
    * start spinning. */
   inline void launchServer(int port = 8080) {
     raisimPort_ = port;
-    serverThread_ = std::thread(&raisim::RaisimServer::loop, this);
+
+    threadResult_ = std::async(std::launch::async, [this] {
+      serverThread_ = std::thread(&raisim::RaisimServer::loop, this);
+      return true;
+    });
   }
 
   /**
@@ -504,8 +509,7 @@ class RaisimServer final {
    * stop spinning the server and disconnect the client */
   inline void killServer() {
     terminateRequested_ = true;
-    if (serverThread_.joinable())
-      serverThread_.join();
+    serverThread_.join();
     terminateRequested_ = false;
   }
 
@@ -1664,6 +1668,7 @@ class RaisimServer final {
   sockaddr_in address;
   int addrlen;
   std::thread serverThread_;
+  std::future<bool> threadResult_;
 
   std::mutex serverMutex_;
 
