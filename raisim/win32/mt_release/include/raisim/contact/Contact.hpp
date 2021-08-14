@@ -51,6 +51,8 @@ class Contact {
         colA_(colA),
         colB_(colB) { }
 
+  ~Contact() = default;
+
   static inline void computeFrame(const Vec<3>& zAxis, Mat<3,3>& frame) {
 
     // set contact frame
