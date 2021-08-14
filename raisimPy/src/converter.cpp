@@ -175,9 +175,8 @@ raisim::Transformation convert_np_to_transformation(const py::array_t<double> &a
 
 /// \brief: convert from Eigen::Quaterniond to np.array[float[4]]
 py::array_t<double> convert_quaternion_to_np(const Eigen::Quaterniond &quaternion) {
-
     // create vector of size 4
-    py::array_t<double> array({4});
+    py::array_t<double> array(4);
 
     // fill quaternion
     *array.mutable_data(0) = quaternion.w();
