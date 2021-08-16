@@ -4,13 +4,20 @@ Material System
 
 **In RaiSim, all material properties are associated with a material pair.**
 
-Currently, there are three material properties used in RaiSim.
+Currently, there are five material properties used in RaiSim.
 
-* Coefficient of friction (:math:`\mu\ge 0`): This defines how much friction is applied between the two materials
-* Coefficient of restitution (:math:`c_r\ge 0`): How bouncy the material pair is
-* Restitution Threshold (:math:`c_{th}\ge 0`): If the impact velocity is smaller than this number, objects do not bounce off
+* **Coefficient of friction** (:math:`\mu\ge 0`): This defines how much friction is applied between the two materials
+* **Coefficient of restitution** (:math:`c_r\ge 0`): How bouncy the material pair is
+* **Restitution Threshold** (:math:`r_{th}\ge 0`): If the impact velocity is smaller than this number, objects do not bounce off
+* **Coefficient of static friction** (:math:`\mu_{s}\ge \mu`): If specified, it defines how much friction is applied when the relative velocity between the contact points is very small. By default, it is the same as the coefficient of friction.
+* **Velocity threshold for static friction** (:math:`v_s \ge 0`): Must be specified if the coefficient of static friction is specified. If the relative velocity is bigger than this value, than static friction is not used. Otherwise, the effective coefficient of friction is interpolated between the two coefficients.
 
 The bounce velocity is computed as :math:`c_{th}(v_i-c_{th})`, where :math:`v_i` is the impact velocity.
+The following graphs describe the effect of the material properties.
+
+.. image:: ../image/materials.png
+
+Examples can be found in the `restitution example <https://github.com/raisimTech/raisimLib/blob/master/examples/src/server/material.cpp>`_ and `static friction example <https://github.com/raisimTech/raisimLib/blob/master/examples/src/server/materialStaticFriction.cpp>`_.
 
 A material name is set when the material is created.
 For example,
@@ -29,7 +36,7 @@ Material properties over a pair can be defined as following
 
   world.setMaterialPairProp("steel", "glass", 0.7, 0.1, 0.15);
 
-The first two arguments are the two material names and the following three are the coefficient of friction, coeffcient of restitution, and restitution threshold.
+The first two arguments are the two material names and the following three are the coefficient of friction, coefficient of restitution, and restitution threshold.
 The order of the material names does not matter.
 
 Example - Single Bodies

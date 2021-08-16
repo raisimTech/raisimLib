@@ -198,8 +198,8 @@ class LoadFromMjcf {
 
  private:
   static void processBody(Child &child,
-                          const Mat<3, 3> &parentBodyRot,
-                          const Vec<3> &parentBodyPos,
+                          Mat<3, 3> &parentBodyRot,
+                          Vec<3> &parentBodyPos,
                           const std::string &defaultName,
                           bool isRoot,
                           RaiSimTinyXmlWrapper &c,

@@ -447,6 +447,7 @@ class ArticulatedSystem : public Object {
 
   /**
    * get the center of mass of a composite body containing body i and all its children.
+   * if you want the COM of the whole robot, just take the first element
    * This only works if you have called getMassMatrix() with the current state
    * @return the center of mass of the composite body */
   const std::vector<raisim::Vec<3>> &getCompositeCOM() const { return composite_com_W; }

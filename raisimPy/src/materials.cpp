@@ -44,13 +44,22 @@ void init_materials(py::module &m) {
     py::class_<raisim::MaterialPairProperties>(m, "MaterialPairProperties", "Raisim Material Pair Properties (friction and restitution).")
         .def(py::init<>(), "Initialize the material pair properties.")
         .def(py::init<double, double, double>(),
+             "Initialize the material pair properties.\n\n"
+             "Args:\n"
+             "    friction (float): coefficient of friction.\n"
+             "    restitution (float): coefficient of restitution.\n"
+             "    threshold (float): restitution threshold.",
+             py::arg("friction"), py::arg("restitution"), py::arg("restitution_threshold"))
+
+        .def(py::init<double, double, double, double, double>(),
         "Initialize the material pair properties.\n\n"
         "Args:\n"
         "    friction (float): coefficient of friction.\n"
         "    restitution (float): coefficient of restitution.\n"
-        "    threshold (float): restitution threshold.",
-        py::arg("friction"), py::arg("restitution"), py::arg("threshold"));
-
+        "    threshold (float): restitution threshold.\n"
+        "    static_friction (float): coefficient of static friction.\n"
+        "    static_friction_velocity_threshold (float): If the relative velocity of two contact points is bigger than this value, then the dynamic coefficient of friction is applied. Otherwise, the coefficient of friction is interpolated between the static and dynamic one proportional to the relative velocity.\n",
+        py::arg("friction"), py::arg("restitution"), py::arg("restitution_threshold"), py::arg("static_friction"), py::arg("static_friction_velocity_threshold"));
 
     /*******************/
     /* MaterialManager */
@@ -62,7 +71,9 @@ void init_materials(py::module &m) {
         "Args:\n"
         "    xml_file (float): xml file.",
         py::arg("xml_file"))
-        .def("setMaterialPairProp", &raisim::MaterialManager::setMaterialPairProp, R"mydelimiter(
+
+        .def("setMaterialPairProp",
+             py::overload_cast<const std::string &, const std::string &, double, double, double, double, double>(&raisim::MaterialManager::setMaterialPairProp), R"mydelimiter(
         Set the material pair properties (friction and restitution).
 
         Args:
@@ -70,9 +81,28 @@ void init_materials(py::module &m) {
             material2 (str): second material.
             friction (float): coefficient of friction.
             restitution (float): coefficient of restitution.
-            threshold (float): restitution threshold.
+            restitution_threshold (float): restitution threshold.
+            static friction (float): coefficient of static friction
+            static friction velocity threshold (float): If the relative velocity of two contact points is bigger than this value, then the dynamic coefficient of friction is applied. Otherwise, the coefficient of friction is interpolated between the static and dynamic one proportional to the relative velocity.
+
         )mydelimiter",
-        py::arg("material1"), py::arg("material2"), py::arg("friction"), py::arg("restitution"), py::arg("threshold"))
+        py::arg("material1"), py::arg("material2"), py::arg("friction"), py::arg("restitution"), py::arg("restitution_threshold"), py::arg("static_friction"), py::arg("static_friction_velocity_threshold"))
+
+        .def("setMaterialPairProp",
+             py::overload_cast<const std::string &, const std::string &, double, double, double>(&raisim::MaterialManager::setMaterialPairProp), R"mydelimiter(
+        Set the material pair properties (friction and restitution).
+
+        Args:
+            material1 (str): first material.
+            material2 (str): second material.
+            friction (float): coefficient of friction.
+            restitution (float): coefficient of restitution.
+            restitution_threshold (float): restitution threshold.
+
+             )mydelimiter",
+             py::arg("material1"), py::arg("material2"), py::arg("friction"), py::arg("restitution"), py::arg("restitution_threshold"))
+
+
         .def("getMaterialPairProp", &raisim::MaterialManager::getMaterialPairProp, R"mydelimiter(
         Get the material pair properties (friction and restitution).
 
@@ -91,7 +121,9 @@ void init_materials(py::module &m) {
             friction (float): coefficient of friction.
             restitution (float): coefficient of restitution.
             threshold (float): restitution threshold.
+            static friction (float): coefficient of static friction.
+            static friction velocity threshold (float): If the relative velocity of two contact points is bigger than this value, then the dynamic coefficient of friction is applied. Otherwise, the coefficient of friction is interpolated between the static and dynamic one proportional to the relative velocity.
         )mydelimiter",
-        py::arg("friction"), py::arg("restitution"), py::arg("threshold"));
+        py::arg("friction"), py::arg("restitution"), py::arg("restitution_threshold"), py::arg("static_friction"), py::arg("static_friction_velocity_threshold"));
 
 }

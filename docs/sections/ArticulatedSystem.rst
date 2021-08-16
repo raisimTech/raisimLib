@@ -173,6 +173,8 @@ Here is an example joint with the raisim tags
 It is added to the diagonal elements of the mass matrix.
 It is common way to include the inertial effect of the rotor.
 You can also override it in C++ using :code:`setRotorInertia()`.
+Since RaiSim does not know the gear ratio, you have to multiply the rotor inertia by the square of the gear ratio yourself.
+In other words, the value is the reflected rotor inertia observed at the joint.
 
 And two preprocessor features (that are also available in the raisim world configuration file) are available for the URDF template.
 
@@ -211,13 +213,13 @@ A frame can be locally stored as an index in the user code. For e.g.,
   int main() {
     raisim::World world;
     auto anymal = world.addArticulatedSystem(PATH_TO_URDF);
-    auto footFrameIndex = world.getFrameIdxByName("foot_joint"); // the URDF has a joint named "foot_joint"
+    auto footFrameIndex = anymal->getFrameIdxByName("foot_joint"); // the URDF has a joint named "foot_joint"
     raisim::Vec<3> footPosition, footVelocity, footAngularVelocity;
     raisim::Mat<3,3> footOrientation;
-    anymal.getFramePosition(footFrameIndex, footPosition);
-    anymal.getFrameOrientation(footFrameIndex, footOrientation);
-    anymal.getFrameVelocity(footFrameIndex, footVelocity);
-    anymal.getFrameAngularVelocity(footFrameIndex, footAngularVelocity);
+    anymal->getFramePosition(footFrameIndex, footPosition);
+    anymal->getFrameOrientation(footFrameIndex, footOrientation);
+    anymal->getFrameVelocity(footFrameIndex, footVelocity);
+    anymal->getFrameAngularVelocity(footFrameIndex, footAngularVelocity);
   }
 
 You can also store a Frame reference. 
@@ -272,7 +274,7 @@ The total kinetic energy of the system is computed as :math:`\frac{1}{2}\boldsym
 This quantity can be obtained by :code:`getKineticEnergy()`.
 
 The total potential energy due to the gravity is a sum of :math:`mgh` for all bodies.
-This quantity can be obtained by :code:`getEnergy()`.
+This quantity can be obtained by :code:`getPotentialEnergy()`.
 Note that the gravity has to be specified since only the world has the gravity vector.
 
 The equation of motion of an articulated system is shown below:

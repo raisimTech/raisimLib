@@ -1,10 +1,33 @@
 error logs 
-System.Exception: RsUnityRemote: UpdateObjectPosition
-ReadData timeout!
-  at raisimUnity.TcpHelper.ReadData () [0x00031] in <cf3fa0b59e4c41a89e1ed0658b45d395>:0 
-  at raisimUnity.RsUnityRemote.ReadAndCheckServer (raisimUnity.ClientMessageType type) [0x00123] in <cf3fa0b59e4c41a89e1ed0658b45d395>:0 
-  at raisimUnity.RsUnityRemote.Update () [0x002c5] in <cf3fa0b59e4c41a89e1ed0658b45d395>:0 
-  at raisimUnity.RsuException..ctor (System.Exception ex, System.String message) [0x00037] in <cf3fa0b59e4c41a89e1ed0658b45d395>:0 
-  at raisimUnity.RsUnityRemote.Update () [0x0030e] in <cf3fa0b59e4c41a89e1ed0658b45d395>:0 
+System.Exception: RsUnityRemote: InitializeObjects
+Cannot create mesh: Error loading unmanaged library from path: /Users/jeminhwangbo/workspace/raisimLib/raisimUnity/mac/RaiSimUnity.app/Contents/Plugins/libassimp.bundle
+
+dlopen(/Users/jeminhwangbo/workspace/raisimLib/raisimUnity/mac/RaiSimUnity.app/Contents/Plugins/libassimp.bundle, 2): no suitable image found.  Did find:
+	/Users/jeminhwangbo/workspace/raisimLib/raisimUnity/mac/RaiSimUnity.app/Contents/Plugins/libassimp.bundle: mach-o, but wrong architecture
+	/Users/jeminhwangbo/workspace/raisimLib/raisimUnity/mac/RaiSimUnity.app/Contents/PlugIns/libassimp.bundle: mach-o, but wrong architecture
+Error loading unmanaged library from path: /Users/jeminhwangbo/workspace/raisimLib/raisimUnity/mac/RaiSimUnity.app/Contents/Plugins/libassimp.bundle
+
+dlopen(/Users/jeminhwangbo/workspace/raisimLib/raisimUnity/mac/RaiSimUnity.app/Contents/Plugins/libassimp.bundle, 2): no suitable image found.  Did find:
+	/Users/jeminhwangbo/workspace/raisimLib/raisimUnity/mac/RaiSimUnity.app/Contents/Plugins/libassimp.bundle: mach-o, but wrong architecture
+	/Users/jeminhwangbo/workspace/raisimLib/raisimUnity/mac/RaiSimUnity.app/Contents/PlugIns/libassimp.bundle: mach-o, but wrong architecture
+  at Assimp.Unmanaged.UnmanagedLibrary+UnmanagedMacLibraryImplementation.NativeLoadLibrary (System.String path) [0x00040] in <d40f2b0ad6814d4c8094142d8473733f>:0 
+  at Assimp.Unmanaged.UnmanagedLibrary+UnmanagedLibraryImplementation.LoadLibrary (System.String path) [0x00008] in <d40f2b0ad6814d4c8094142d8473733f>:0 
+  at Assimp.Unmanaged.UnmanagedLibrary.LoadLibrary (System.String libPath) [0x0002d] in <d40f2b0ad6814d4c8094142d8473733f>:0 
+  at Assimp.Unmanaged.UnmanagedLibrary.LoadLibrary () [0x00012] in <d40f2b0ad6814d4c8094142d8473733f>:0 
+  at Assimp.Unmanaged.UnmanagedLibrary.LoadIfNotLoaded () [0x00023] in <d40f2b0ad6814d4c8094142d8473733f>:0 
+  at Assimp.Unmanaged.AssimpLibrary.CreatePropertyStore () [0x00000] in <d40f2b0ad6814d4c8094142d8473733f>:0 
+  at Assimp.AssimpContext.CreateConfigs () [0x00006] in <d40f2b0ad6814d4c8094142d8473733f>:0 
+  at Assimp.AssimpContext.PrepareImport () [0x00000] in <d40f2b0ad6814d4c8094142d8473733f>:0 
+  at Assimp.AssimpContext.ImportFile (System.String file, Assimp.PostProcessSteps postProcessFlags) [0x00044] in <d40f2b0ad6814d4c8094142d8473733f>:0 
+  at Assimp.AssimpContext.ImportFile (System.String file) [0x00000] in <d40f2b0ad6814d4c8094142d8473733f>:0 
+  at UnityMeshImporter.MeshImporter.Load (System.String meshPath, System.Single scaleX, System.Single scaleY, System.Single scaleZ) [0x00027] in <c9edc4028594446d81a979a573be3327>:0 
+  at raisimUnity.ObjectController.CreateMesh (UnityEngine.GameObject root, System.String meshFile, System.Single sx, System.Single sy, System.Single sz) [0x00047] in <5a5914d8aad544da93c69cd92304c90a>:0 
+  at raisimUnity.RsUnityRemote.addArticulatedSystem (System.String objectIndex) [0x0012a] in <5a5914d8aad544da93c69cd92304c90a>:0 
+  at raisimUnity.RsuException..ctor (System.Exception ex, System.String message) [0x00037] in <5a5914d8aad544da93c69cd92304c90a>:0 
+  at raisimUnity.RsUnityRemote.addArticulatedSystem (System.String objectIndex) [0x00164] in <5a5914d8aad544da93c69cd92304c90a>:0 
+  at raisimUnity.RsUnityRemote.PartiallyInitializeObjects () [0x00071] in <5a5914d8aad544da93c69cd92304c90a>:0 
+  at raisimUnity.RsUnityRemote.Update () [0x000a6] in <5a5914d8aad544da93c69cd92304c90a>:0 
+  at raisimUnity.RsuException..ctor (System.Exception ex, System.String message) [0x00037] in <5a5914d8aad544da93c69cd92304c90a>:0 
+  at raisimUnity.RsUnityRemote.Update () [0x002b6] in <5a5914d8aad544da93c69cd92304c90a>:0 
  
 

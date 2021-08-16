@@ -31,8 +31,9 @@ for i in range(0, 100):
     lines.addPoint(np.array([math.sin(i * 0.1), math.cos(i * 0.1), i * 0.01]))
 
 counter = 0
+server.startRecordingVideo("visualObjectDemo.mp4")
 
-for i in range(500):
+for i in range(1000):
     counter = counter + 1
     visBox.setColor(1, 1, (counter % 255 + 1) / 256., 1)
     visSphere.setColor(1, (counter % 255 + 1) / 256., 1, 1)
@@ -41,4 +42,5 @@ for i in range(500):
     world.integrate()
     time.sleep(world.getTimeStep())
 
+server.stopRecordingVideo()
 server.killServer()

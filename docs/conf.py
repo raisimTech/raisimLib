@@ -3,7 +3,8 @@ import subprocess, os
 extensions = [
     "breathe",
     'sphinx.ext.autosectionlabel',
-    'sphinx_tabs.tabs'
+    'sphinx_tabs.tabs',
+    'sphinx_panels'
 ]
 
 html_theme = "sphinx_rtd_theme"

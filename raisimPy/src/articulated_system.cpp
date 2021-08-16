@@ -1422,7 +1422,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
 	    )mydelimiter")
 
 
-	    .def("getVisualObjectPose", [](raisim::ArticulatedSystem &self, size_t body_idx) {
+	    .def("getVisualObjectPosition", [](raisim::ArticulatedSystem &self, size_t body_idx) {
 	        Vec<3> pos;
             Mat<3,3> rot;
             self.getVisObPose(body_idx, rot, pos);
@@ -1431,39 +1431,38 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
             rotMatToQuat(rot, quat);
 
             auto position = convert_vec_to_np(pos);
-            auto orientation = convert_vec_to_np(quat);
-            return position, orientation;
+            return position;
 	    }, R"mydelimiter(
-	    Get the visual object pose (where the orientation is expressed as a quaternion).
+	    Get the visual object position.
 
 	    Args:
 	        body_idx (int): body index.
 
 	    Returns:
 	        np.array[float[3]]: visual object position.
+	    )mydelimiter")
+
+	    .def("getVisualObjectOrientation", [](raisim::ArticulatedSystem &self, size_t body_idx) {
+	      Vec<3> pos;
+	      Mat<3,3> rot;
+	      self.getVisObPose(body_idx, rot, pos);
+	      Vec<4> quat;
+	      rotMatToQuat(rot, quat);
+
+	      auto orientation = convert_vec_to_np(quat);
+	      return orientation;
+	      }, R"mydelimiter(
+	    Get the visual object orientation in quaternion.
+
+	    Args:
+	        body_idx (int): body index.
+
+	    Returns:
 	        np.array[float[4]]: visual object orientation (expressed as a quaternion [w,x,y,z]).
-	    )mydelimiter")
-
-	    .def("getVisualObjectPose1", [](raisim::ArticulatedSystem &self, size_t body_idx) {
-	        Vec<3> pos;
-            Mat<3,3> rot;
-            self.getVisObPose(body_idx, rot, pos);
-            auto position = convert_vec_to_np(pos);
-            auto orientation = convert_mat_to_np(rot);
-            return position, orientation;
-	    }, R"mydelimiter(
-	    Get the visual object pose (where the orientation is expressed as a rotation matrix).
-
-	    Args:
-	        body_idx (int): body index.
-
-	    Returns:
-	        np.array[float[3]]: visual object position.
-	        np.array[float[3,3]]: visual object orientation (expressed as a rotation matrix).
-	    )mydelimiter")
+	      )mydelimiter")
 
 
-	    .def("getVisColObPose", [](raisim::ArticulatedSystem &self, size_t body_idx) {
+	    .def("getVisColObPosition", [](raisim::ArticulatedSystem &self, size_t body_idx) {
 	        Vec<3> pos;
             Mat<3,3> rot;
             self.getVisColObPose(body_idx, rot, pos);
@@ -1472,36 +1471,36 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
             rotMatToQuat(rot, quat);
 
             auto position = convert_vec_to_np(pos);
-            auto orientation = convert_vec_to_np(quat);
-            return position, orientation;
+            return position;
 	    }, R"mydelimiter(
-	    Get the visual collision object pose (where the orientation is expressed as a quaternion).
+	    Get the visual collision object position.
 
 	    Args:
 	        body_idx (int): body index.
 
 	    Returns:
 	        np.array[float[3]]: visual object position.
+	    )mydelimiter")
+
+	    .def("getVisColObOrientation", [](raisim::ArticulatedSystem &self, size_t body_idx) {
+	      Vec<3> pos;
+	      Mat<3,3> rot;
+	      self.getVisColObPose(body_idx, rot, pos);
+
+	      Vec<4> quat;
+	      rotMatToQuat(rot, quat);
+
+	      auto orientation = convert_vec_to_np(quat);
+	      return orientation;
+	      }, R"mydelimiter(
+	    Get the visual collision object orientation in a quaternion.
+
+	    Args:
+	        body_idx (int): body index.
+
+	    Returns:
 	        np.array[float[4]]: visual object orientation (expressed as a quaternion [w,x,y,z]).
-	    )mydelimiter")
-
-	    .def("getVisColObPose1", [](raisim::ArticulatedSystem &self, size_t body_idx) {
-	        Vec<3> pos;
-            Mat<3,3> rot;
-            self.getVisColObPose(body_idx, rot, pos);
-            auto position = convert_vec_to_np(pos);
-            auto orientation = convert_mat_to_np(rot);
-            return position, orientation;
-	    }, R"mydelimiter(
-	    Get the visual collision object pose (where the orientation is expressed as a rotation matrix).
-
-	    Args:
-	        body_idx (int): body index.
-
-	    Returns:
-	        np.array[float[3]]: visual object position.
-	        np.array[float[3,3]]: visual object orientation (expressed as a rotation matrix).
-	    )mydelimiter")
+	      )mydelimiter")
 
 
         .def("getResourceDir", &raisim::ArticulatedSystem::getResourceDir, R"mydelimiter(
