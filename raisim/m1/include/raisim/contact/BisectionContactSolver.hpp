@@ -60,6 +60,7 @@ class Single3DContactProblem {
   };
   size_t pointIdB;
   raisim::Vec<3> position_W;
+  double mu_static, mu_static_vel_thresh, mu_static_vel_thresh_inv;
 };
 
 typedef std::vector<contact::Single3DContactProblem, AlignedAllocator<contact::Single3DContactProblem, 32>>

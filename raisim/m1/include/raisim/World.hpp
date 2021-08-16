@@ -514,6 +514,23 @@ class World {
                            double resThreshold);
 
   /**
+   * Add a new material pair property. In RaiSim, material property is defined by the pair.
+   * @param mat1 name of the first material (the order of mat1 and mat2 is not important)
+   * @param mat2 name of the first material
+   * @param friction the dynamic coefficient of friction
+   * @param restitution the coefficient of restitution
+   * @param resThreshold the minimum impact velocity to make the object bounce
+   * @param staticFriction the static coefficient of friction
+   * @param staticFrictionThresholdVelocity if the relative velocity of two points is bigger than this value, then the dynamic coefficient of friction is applied. Otherwise, the coefficient of friction is interpolated between the static and dynamic one proportional to the relative velocity.*/
+  void setMaterialPairProp(const std::string &mat1,
+                           const std::string &mat2,
+                           double friction,
+                           double restitution,
+                           double resThreshold,
+                           double staticFriction,
+                           double staticFrictionThresholdVelocity);
+
+  /**
    * this default material property is used if a material pair property is not defined for the specific collision
    * @param friction the coefficient of friction
    * @param restitution the coefficient of restitution
@@ -521,6 +538,19 @@ class World {
   void setDefaultMaterial(double friction,
                           double restitution,
                           double resThreshold);
+
+  /**
+   * this default material property is used if a material pair property is not defined for the specific collision
+   * @param friction the coefficient of friction
+   * @param restitution the coefficient of restitution
+   * @param resThreshold the minimum impact velocity to make the object bounce
+   * @param staticFriction the static coefficient of friction
+   * @param staticFrictionThresholdVelocity if the relative velocity of two points is bigger than this value, then the dynamic coefficient of friction is applied. Otherwise, the coefficient of friction is interpolated between the static and dynamic one proportional to the relative velocity.*/
+  void setDefaultMaterial(double friction,
+                          double restitution,
+                          double resThreshold,
+                          double staticFriction,
+                          double staticFrictionThresholdVelocity);
 
   /**
    * @return gravitational acceleration of the world */
@@ -572,8 +602,8 @@ class World {
 
   /**
    * get the material pair properties. The order of materials does not matter.
-   * @param[in] first material name
-   * @param[in] second material name
+   * @param[in] mat1 material name
+   * @param[in] mat2 material name
    * @return material pair properties
    */
   const MaterialPairProperties& getMaterialPairProperties (const std::string& mat1, const std::string& mat2) const {
