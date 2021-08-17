@@ -44,6 +44,7 @@ int main(int argc, char* argv[]) {
   /// launch raisim server
   raisim::RaisimServer server(&world);
   server.launchServer();
+  server.setCameraPositionAndLookAt({5,0,2}, {0,0,2});
 
   while (1) {
     raisim::MSLEEP(2);
