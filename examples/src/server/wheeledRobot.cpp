@@ -39,7 +39,7 @@ int main(int argc, char* argv[]) {
   server.launchServer();
   server.focusOn(robot);
 
-  for (int i=0; i<20000; i++) {
+  for (int i=0; i<20000000; i++) {
     std::this_thread::sleep_for(std::chrono::microseconds(10000));
     server.integrateWorldThreadSafe();
   }
