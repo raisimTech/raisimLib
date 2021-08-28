@@ -797,7 +797,7 @@ class RaisimServer final {
    * @param[in] lookAt the forward direction of the camera (the up direction is always z-axis)
    * set the camera to a specified position */
   void setCameraPositionAndLookAt(const Eigen::Vector3d &pos, const Eigen::Vector3d &lookAt) {
-    serverRequest_.push_back(ServerRequestType::STOP_RECORD_VIDEO);
+    serverRequest_.push_back(ServerRequestType::SET_CAMERA_TO);
     position_ = pos;
     lookAt_ = lookAt;
   }
