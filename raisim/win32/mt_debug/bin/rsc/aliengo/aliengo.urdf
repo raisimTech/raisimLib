@@ -60,7 +60,6 @@
       <geometry>
         <mesh filename="meshes/trunk.dae" scale="1 1 1"/>
       </geometry>
-      <material name="orange"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -96,7 +95,6 @@
       <geometry>
         <box size="0.001 0.001 0.001"/>
       </geometry>
-      <material name="red"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -118,7 +116,6 @@
       <geometry>
         <mesh filename="meshes/hip.dae" scale="1 1 1"/>
       </geometry>
-      <material name="orange"/>
     </visual>
     <collision>
       <origin rpy="1.57079632679 0 0" xyz="0 -0.083 0"/>
@@ -159,7 +156,6 @@
       <geometry>
         <mesh filename="meshes/thigh_mirror.dae" scale="1 1 1"/>
       </geometry>
-      <material name="orange"/>
     </visual>
     <collision>
       <origin rpy="0 1.57079632679 0" xyz="0 0 -0.125"/>
@@ -186,7 +182,6 @@
       <geometry>
         <mesh filename="meshes/calf.dae" scale="1 1 1"/>
       </geometry>
-      <material name="orange"/>
     </visual>
     <collision>
       <origin rpy="0 1.57079632679 0" xyz="0 0 -0.125"/>
@@ -211,7 +206,6 @@
       <geometry>
         <sphere radius="0.0165"/>
       </geometry>
-      <material name="green"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -267,7 +261,6 @@
       <geometry>
         <mesh filename="meshes/hip.dae" scale="1 1 1"/>
       </geometry>
-      <material name="orange"/>
     </visual>
     <collision>
       <origin rpy="1.57079632679 0 0" xyz="0 0.083 0"/>
@@ -308,7 +301,6 @@
       <geometry>
         <mesh filename="meshes/thigh.dae" scale="1 1 1"/>
       </geometry>
-      <material name="orange"/>
     </visual>
     <collision>
       <origin rpy="0 1.57079632679 0" xyz="0 0 -0.125"/>
@@ -335,7 +327,6 @@
       <geometry>
         <mesh filename="meshes/calf.dae" scale="1 1 1"/>
       </geometry>
-      <material name="orange"/>
     </visual>
     <collision>
       <origin rpy="0 1.57079632679 0" xyz="0 0 -0.125"/>
@@ -360,7 +351,6 @@
       <geometry>
         <sphere radius="0.0165"/>
       </geometry>
-      <material name="green"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -416,7 +406,6 @@
       <geometry>
         <mesh filename="meshes/hip.dae" scale="1 1 1"/>
       </geometry>
-      <material name="orange"/>
     </visual>
     <collision>
       <origin rpy="1.57079632679 0 0" xyz="0 -0.083 0"/>
@@ -457,7 +446,6 @@
       <geometry>
         <mesh filename="meshes/thigh_mirror.dae" scale="1 1 1"/>
       </geometry>
-      <material name="orange"/>
     </visual>
     <collision>
       <origin rpy="0 1.57079632679 0" xyz="0 0 -0.125"/>
@@ -484,7 +472,6 @@
       <geometry>
         <mesh filename="meshes/calf.dae" scale="1 1 1"/>
       </geometry>
-      <material name="orange"/>
     </visual>
     <collision>
       <origin rpy="0 1.57079632679 0" xyz="0 0 -0.125"/>
@@ -509,7 +496,6 @@
       <geometry>
         <sphere radius="0.0165"/>
       </geometry>
-      <material name="green"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -565,7 +551,6 @@
       <geometry>
         <mesh filename="meshes/hip.dae" scale="1 1 1"/>
       </geometry>
-      <material name="orange"/>
     </visual>
     <collision>
       <origin rpy="1.57079632679 0 0" xyz="0 0.083 0"/>
@@ -606,7 +591,6 @@
       <geometry>
         <mesh filename="meshes/thigh.dae" scale="1 1 1"/>
       </geometry>
-      <material name="orange"/>
     </visual>
     <collision>
       <origin rpy="0 1.57079632679 0" xyz="0 0 -0.125"/>
@@ -633,7 +617,6 @@
       <geometry>
         <mesh filename="meshes/calf.dae" scale="1 1 1"/>
       </geometry>
-      <material name="orange"/>
     </visual>
     <collision>
       <origin rpy="0 1.57079632679 0" xyz="0 0 -0.125"/>
@@ -658,7 +641,6 @@
       <geometry>
         <sphere radius="0.0165"/>
       </geometry>
-      <material name="green"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>

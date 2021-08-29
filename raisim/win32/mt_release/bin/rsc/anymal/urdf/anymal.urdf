@@ -49,7 +49,6 @@
             <geometry>
                 <mesh filename="../meshes/anymal_base.dae" scale="0.001 0.001 0.001"/>
             </geometry>
-            <material name="anymal_material"/>
         </visual>
         <!-- Main Body -->
         <collision>
@@ -85,7 +84,6 @@
             <geometry>
                 <mesh filename="../meshes/anymal_hip_l.dae" scale="0.001 0.001 0.001"/>
             </geometry>
-            <material name="anymal_material"/>
         </visual>
         <inertial>
             <origin rpy="0 0 0" xyz="0.064516258147 -0.003787101702 -0.000152184388"/>
@@ -110,7 +108,6 @@
             <geometry>
                 <mesh filename="../meshes/anymal_thigh_l.dae" scale="0.001 0.001 0.001"/>
             </geometry>
-            <material name="anymal_material"/>
         </visual>
         <collision>
             <!-- KFE actuator -->
@@ -142,7 +139,6 @@
             <geometry>
                 <mesh filename="../meshes/anymal_shank_l.dae" scale="0.001 0.001 0.001"/>
             </geometry>
-            <material name="anymal_material"/>
         </visual>
         <inertial>
             <origin rpy="0 0 0" xyz="0.030816858139 -0.004617229294 0.000893125713"/>
@@ -173,7 +169,6 @@
             <geometry>
                 <mesh filename="../meshes/anymal_foot.dae" scale="0.001 0.001 0.001"/>
             </geometry>
-            <material name="anymal_material"/>
         </visual>
         <collision>
             <origin rpy="0 0 0" xyz="0 0 -0.160625"/>
@@ -215,7 +210,6 @@
             <geometry>
                 <mesh filename="../meshes/anymal_hip_r.dae" scale="0.001 0.001 0.001"/>
             </geometry>
-            <material name="anymal_material"/>
         </visual>
         <inertial>
             <origin rpy="0 0 0" xyz="0.064516258147 0.003787101702 -0.000152184388"/>
@@ -240,7 +234,6 @@
             <geometry>
                 <mesh filename="../meshes/anymal_thigh_r.dae" scale="0.001 0.001 0.001"/>
             </geometry>
-            <material name="anymal_material"/>
         </visual>
         <collision>
             <!-- KFE actuator -->
@@ -272,7 +265,6 @@
             <geometry>
                 <mesh filename="../meshes/anymal_shank_r.dae" scale="0.001 0.001 0.001"/>
             </geometry>
-            <material name="anymal_material"/>
         </visual>
         <inertial>
             <origin rpy="0 0 0" xyz="0.030816858139 0.004617229294 0.000893125713"/>
@@ -303,7 +295,6 @@
             <geometry>
                 <mesh filename="../meshes/anymal_foot.dae" scale="0.001 0.001 0.001"/>
             </geometry>
-            <material name="anymal_material"/>
         </visual>
         <collision>
             <origin rpy="0 0 0" xyz="0 0 -0.160625"/>
@@ -346,7 +337,6 @@
             <geometry>
                 <mesh filename="../meshes/anymal_hip_r.dae" scale="0.001 0.001 0.001"/>
             </geometry>
-            <material name="anymal_material"/>
         </visual>
         <inertial>
             <origin rpy="0 0 0" xyz="-0.064516258147 -0.003787101702 -0.000152184388"/>
@@ -371,7 +361,6 @@
             <geometry>
                 <mesh filename="../meshes/anymal_thigh_r.dae" scale="0.001 0.001 0.001"/>
             </geometry>
-            <material name="anymal_material"/>
         </visual>
         <collision>
             <!-- KFE actuator -->
@@ -403,7 +392,6 @@
             <geometry>
                 <mesh filename="../meshes/anymal_shank_r.dae" scale="0.001 0.001 0.001"/>
             </geometry>
-            <material name="anymal_material"/>
         </visual>
         <inertial>
             <origin rpy="0 0 0" xyz="-0.030816858139 -0.004617229294 0.000893125713"/>
@@ -434,7 +422,6 @@
             <geometry>
                 <mesh filename="../meshes/anymal_foot.dae" scale="0.001 0.001 0.001"/>
             </geometry>
-            <material name="anymal_material"/>
         </visual>
         <collision>
             <origin rpy="0 0 0" xyz="0 0 -0.160625"/>
@@ -476,7 +463,6 @@
             <geometry>
                 <mesh filename="../meshes/anymal_hip_l.dae" scale="0.001 0.001 0.001"/>
             </geometry>
-            <material name="anymal_material"/>
         </visual>
         <inertial>
             <origin rpy="0 0 0" xyz="-0.064516258147 0.003787101702 -0.000152184388"/>
@@ -501,7 +487,6 @@
             <geometry>
                 <mesh filename="../meshes/anymal_thigh_l.dae" scale="0.001 0.001 0.001"/>
             </geometry>
-            <material name="anymal_material"/>
         </visual>
         <collision>
             <!-- KFE actuator -->
@@ -533,7 +518,6 @@
             <geometry>
                 <mesh filename="../meshes/anymal_shank_l.dae" scale="0.001 0.001 0.001"/>
             </geometry>
-            <material name="anymal_material"/>
         </visual>
         <inertial>
             <origin rpy="0 0 0" xyz="-0.030816858139 0.004617229294 0.000893125713"/>
@@ -564,7 +548,6 @@
             <geometry>
                 <mesh filename="../meshes/anymal_foot.dae" scale="0.001 0.001 0.001"/>
             </geometry>
-            <material name="anymal_material"/>
         </visual>
         <collision>
             <origin rpy="0 0 0" xyz="0 0 -0.160625"/>
