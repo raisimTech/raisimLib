@@ -825,7 +825,7 @@ class ArticulatedSystem : public Object {
 
   /**
    * You MUST call updateMassInfo() after you change the mass
-   * @return a reference to mass of each joint.*/
+   * @return a reference to mass of each body.*/
   std::vector<double> &getMass() { return mass; }
   const std::vector<double> &getMass() const { return mass; }
 
@@ -872,11 +872,13 @@ class ArticulatedSystem : public Object {
   double getMass(size_t bodyIdx) const final { return mass[bodyIdx]; }
 
   /**
-   * set body mass. It is indexed for each body, no each link */
+   * set body mass. It is indexed for each body, not for individual link. Check this link
+   * (https://raisim.com/sections/ArticulatedSystem.html#introduction)
+   * to understand the difference between a link and a body */
   void setMass(size_t bodyIdx, double value) { mass[bodyIdx] = value; }
 
   /**
-   * @return the total mass of the system*/
+   * @return the total mass of the system.*/
   double getTotalMass() const { return compositeMass[0]; }
 
   /**
