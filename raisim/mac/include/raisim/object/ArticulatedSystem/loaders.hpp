@@ -20,10 +20,10 @@ namespace urdf {
 
 struct UrdfMaterial {
   UrdfMaterial() {
-    color = {0.7, 0.7, 0.7};
+    color = {0.7, 0.7, 0.7, 1.};
   }
   std::string name;
-  Vec<3> color;
+  Vec<4> color;
 };
 
 inline Shape::Type charToGeom(const std::string &txt) {
@@ -46,6 +46,7 @@ struct UrdfBody {
     origin.setZero();
     rot.setIdentity();
     scale = {1., 1., 1.};
+    color = {0.7, 0.7, 0.7, -1.0};
   };
 
   Shape::Type shape;
@@ -54,6 +55,7 @@ struct UrdfBody {
   Mat<3, 3> rot;
   Vec<3> scale;
   std::vector<double> param;
+  raisim::Vec<4> color;
   std::string mat;
   std::string collision_mat;
   std::string name;
