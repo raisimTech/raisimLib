@@ -38,7 +38,6 @@
       <geometry>
         <mesh filename="trunk.dae" scale="1 1 1"/>
       </geometry>
-      <material name="orange"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0.01675"/>
@@ -66,7 +65,6 @@
       <geometry>
         <mesh filename="hip.dae" scale="1 1 1"/>
       </geometry>
-      <material name="grey"/>
     </visual>
     <collision>
       <origin rpy="1.57079632679 0 0" xyz="0 0.021 0"/>
@@ -108,7 +106,6 @@
       <geometry>
         <mesh filename="thigh_mirror.dae" scale="1 1 1"/>
       </geometry>
-      <material name="grey"/>
     </visual>
     <collision>
       <origin rpy="0 1.57079632679 0" xyz="0 0 -0.125"/>
@@ -136,7 +133,6 @@
       <geometry>
         <mesh filename="calf.dae" scale="1 1 1"/>
       </geometry>
-      <material name="silver"/>
     </visual>
     <collision>
       <origin rpy="0 1.57079632679 0" xyz="0 0 -0.125"/>
@@ -188,7 +184,6 @@
       <geometry>
         <mesh filename="hip.dae" scale="1 1 1"/>
       </geometry>
-      <material name="grey"/>
     </visual>
     <collision>
       <origin rpy="1.57079632679 0 0" xyz="0 -0.021 0"/>
@@ -230,7 +225,6 @@
       <geometry>
         <mesh filename="thigh.dae" scale="1 1 1"/>
       </geometry>
-      <material name="grey"/>
     </visual>
     <collision>
       <origin rpy="0 1.57079632679 0" xyz="0 0 -0.125"/>
@@ -258,7 +252,6 @@
       <geometry>
         <mesh filename="calf.dae" scale="1 1 1"/>
       </geometry>
-      <material name="silver"/>
     </visual>
     <collision>
       <origin rpy="0 1.57079632679 0" xyz="0 0 -0.125"/>
@@ -310,7 +303,6 @@
       <geometry>
         <mesh filename="hip.dae" scale="1 1 1"/>
       </geometry>
-      <material name="grey"/>
     </visual>
     <collision>
       <origin rpy="1.57079632679 0 0" xyz="0 0.021 0"/>
@@ -352,7 +344,6 @@
       <geometry>
         <mesh filename="thigh_mirror.dae" scale="1 1 1"/>
       </geometry>
-      <material name="grey"/>
     </visual>
     <collision>
       <origin rpy="0 1.57079632679 0" xyz="0 0 -0.125"/>
@@ -380,7 +371,6 @@
       <geometry>
         <mesh filename="calf.dae" scale="1 1 1"/>
       </geometry>
-      <material name="silver"/>
     </visual>
     <collision>
       <origin rpy="0 1.57079632679 0" xyz="0 0 -0.125"/>
@@ -432,7 +422,6 @@
       <geometry>
         <mesh filename="hip.dae" scale="1 1 1"/>
       </geometry>
-      <material name="grey"/>
     </visual>
     <collision>
       <origin rpy="1.57079632679 0 0" xyz="0 -0.021 0"/>
