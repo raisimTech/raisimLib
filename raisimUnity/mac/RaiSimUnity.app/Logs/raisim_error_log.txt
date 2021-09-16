@@ -1,1 +1,25 @@
 error logs 
+System.Exception: RsUnityRemote: UpdateObjectPosition
+Server is terminating
+  at raisimUnity.RsUnityRemote.ReadAndCheckServer (raisimUnity.ClientMessageType type) [0x001b7] in <85ed98f74e2342699b46673036967120>:0 
+  at raisimUnity.RsUnityRemote.Update () [0x002c6] in <85ed98f74e2342699b46673036967120>:0 
+  at raisimUnity.RsuException..ctor (System.Exception ex, System.String message) [0x00037] in <85ed98f74e2342699b46673036967120>:0 
+  at raisimUnity.RsUnityRemote.Update () [0x0030f] in <85ed98f74e2342699b46673036967120>:0 
+ 
+
+System.Exception: RsUnityRemote: UpdateObjectPosition
+Server is terminating
+  at raisimUnity.RsUnityRemote.ReadAndCheckServer (raisimUnity.ClientMessageType type) [0x001b7] in <85ed98f74e2342699b46673036967120>:0 
+  at raisimUnity.RsUnityRemote.Update () [0x002c6] in <85ed98f74e2342699b46673036967120>:0 
+  at raisimUnity.RsuException..ctor (System.Exception ex, System.String message) [0x00037] in <85ed98f74e2342699b46673036967120>:0 
+  at raisimUnity.RsUnityRemote.Update () [0x0030f] in <85ed98f74e2342699b46673036967120>:0 
+ 
+
+System.Exception: RsUnityRemote: InitializeObjects
+Server is terminating
+  at raisimUnity.RsUnityRemote.ReadAndCheckServer (raisimUnity.ClientMessageType type) [0x001b7] in <85ed98f74e2342699b46673036967120>:0 
+  at raisimUnity.RsUnityRemote.Update () [0x0004e] in <85ed98f74e2342699b46673036967120>:0 
+  at raisimUnity.RsuException..ctor (System.Exception ex, System.String message) [0x00037] in <85ed98f74e2342699b46673036967120>:0 
+  at raisimUnity.RsUnityRemote.Update () [0x002b6] in <85ed98f74e2342699b46673036967120>:0 
+ 
+
