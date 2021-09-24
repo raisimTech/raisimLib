@@ -136,6 +136,11 @@ class ENVIRONMENT : public RaisimGymEnv {
     return false;
   }
 
+  void curriculumUpdate() {
+
+  };
+
+
  private:
   int gcDim_, gvDim_, nJoints_;
   bool visualizable_ = false;
