@@ -192,6 +192,8 @@ class Joint {
     rot.setIdentity();
     limit.setZero();
     springMount.setZero();
+    pos_P.setZero();
+    axis = {0,0,1};
   }
 
   /* if upper and lower bounds of the limit are the same, the limit is ignored */
@@ -424,6 +426,7 @@ class Body {
   Body() {
     mass_ = 0;
     inertia_.setZero();
+    com_.setZero();
   }
 
   Body(double mass, const Mat<3, 3> &inertia, const Vec<3> &comPos) :
@@ -554,10 +557,6 @@ class Body {
 
   std::vector<CollisionBody> colObj;
   std::vector<VisObject> visObj;
-
-  Vec<3> combinedColPos;
-  Mat<3, 3> combinedColRotMat;
-
   double mass_;
   Mat<3, 3> inertia_;
   Vec<3> com_;

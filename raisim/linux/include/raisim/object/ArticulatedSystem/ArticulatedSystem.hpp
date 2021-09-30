@@ -1483,6 +1483,7 @@ class ArticulatedSystem : public Object {
   std::vector<raisim::Vec<3>> comPos_B;
   std::vector<raisim::Vec<2>> jointLimits_;
   Vec<3> fixedBasePos_;
+  Mat<3,3> fixedBaseOri_;
 
   std::vector<Joint::Type> jointType;
   std::vector<size_t> jointGcDim_;
