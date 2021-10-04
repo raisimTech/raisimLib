@@ -203,7 +203,7 @@ class Joint {
         const Vec<2> &joint_limit,
         Type joint_type,
         const std::string &joint_name) :
-      axis(joint_axis), pos_P(joint_pos_P), rot(joint_rot), limit(joint_limit), type(joint_type), name(joint_name) {}
+      axis(joint_axis), pos_P(joint_pos_P), rot(joint_rot), limit(joint_limit), type(joint_type), name(joint_name) { }
 
   void jointAxis(std::initializer_list<double> a) {
     axis[0] = *(a.begin());
@@ -267,6 +267,7 @@ class Joint {
   double stiffness = 0.;
   double rotor_inertia = 0.;
   Vec<4> springMount;
+  double jointRef = 0.;
   std::string name;
 };
 
@@ -615,6 +616,8 @@ class Child {
   void initVisuals(std::vector<VisObject> &collect);
 
   void consumeFixedBodies(std::vector<CoordinateFrame> &frameOfInterest);
+
+  void processJointRef();
 
   void addChild(const Child &childNode) {
     if (childNode.joint.type == Joint::Type::FIXED) {

@@ -16,12 +16,19 @@ int main(int argc, char* argv[]) {
   raisim::World world(binaryPath.getDirectory()+"\\rsc\\cassie\\cassie.xml");
   raisim::RaisimServer server(&world);
   auto torso = static_cast<raisim::ArticulatedSystem*>(world.getObject("cassie-pelvis"));
-  torso->setBasePos({0,0,1.5});
-
+  torso->setGeneralizedCoordinate({ 0,0,1,1,0,0,0,
+                                    0.0045, 0, 0.4973,                  //  left-hip-roll, left-hip-yaw, left-hip-pitch
+                                    0.9785, -0.0164, 0.01787, -0.2049,  //  left-achilles-rod(unactuated, U) Quaternion
+                                    -1.1997, 0, 1.4267, 0,               //  left-knee, left-shin(U), left-tarsus(U), left-heel-spring(U),
+                                    -1.5244, 1.5244, -1.5968,
+                                    -0.0045, 0, 0.4973,
+                                    0.9786, 0.00386, -0.01524, -0.2051,
+                                    -1.1997, 0, 1.4267, 0,
+                                    -1.5244, 1.5244, -1.5968});            //  left-foot-crank(U), left-planar-rod(U), left-foot
   server.launchServer();
   for (int i=0; i<10000000; i++) {
     world.integrate();
-    std::this_thread::sleep_for(std::chrono::milliseconds(size_t(10000 * world.getTimeStep())));
+    std::this_thread::sleep_for(std::chrono::milliseconds(size_t(1000 * world.getTimeStep())));
   }
   server.killServer();
 }
