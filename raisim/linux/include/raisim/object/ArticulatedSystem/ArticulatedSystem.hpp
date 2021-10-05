@@ -523,6 +523,10 @@ class ArticulatedSystem : public Object {
   void printOutBodyNamesInOrder() const;
 
   /**
+   * print out movable joint names in order */
+  void printOutMovableJointNamesInOrder() const;
+
+  /**
    * frames are attached to every joint coordinate */
   void printOutFrameNamesInOrder() const;
 
