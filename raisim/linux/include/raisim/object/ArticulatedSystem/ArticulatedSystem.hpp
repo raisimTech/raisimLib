@@ -1371,6 +1371,17 @@ class ArticulatedSystem : public Object {
     externalForceAndTorqueJaco_.resize(0);
   }
 
+
+  /**
+   * @param[in] spring Additional spring elements for joints */
+  void addSpring(const SpringElement &spring) { springs_.push_back(spring); }
+
+  /**
+   * @return springs Existing spring elements on joints */
+  std::vector<SpringElement> &getSprings() { return springs_; }
+  const std::vector<SpringElement> &getSprings() const { return springs_; }
+
+  // not recommended for users. only for developers
   void addConstraints(const std::vector<PinConstraintDefinition>& pinDef);
 
  protected:
@@ -1409,12 +1420,6 @@ class ArticulatedSystem : public Object {
   void updateTimeStep(double dt) final;
 
   void updateTimeStepIfNecessary(double dt) final;
-
-  /* adding spring element */
-  void addSpring(const SpringElement &spring) { springs_.push_back(spring); }
-
-  std::vector<SpringElement> &getSprings() { return springs_; }
-  const std::vector<SpringElement> &getSprings() const { return springs_; }
 
   inline void jacoSub(const raisim::SparseJacobian &jaco1, raisim::SparseJacobian &jaco, bool isFloatingBase);
 
