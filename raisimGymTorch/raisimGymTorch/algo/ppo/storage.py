@@ -58,7 +58,7 @@ class RolloutStorage:
             advantage = (delta + next_is_not_terminal * gamma * lam * advantage)
             self.returns[step] = advantage / scale_sum + self.values[step]
             scale_sum += next_value_factor
-            next_value_factor *= gamma
+            next_value_factor *= lam
 
         # Compute and normalize the advantages
         self.advantages = self.returns - self.values
