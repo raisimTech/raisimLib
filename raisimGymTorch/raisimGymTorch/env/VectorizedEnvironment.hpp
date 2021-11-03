@@ -20,7 +20,7 @@ class VectorizedEnvironment {
   explicit VectorizedEnvironment(std::string resourceDir, std::string cfg)
       : resourceDir_(resourceDir), cfgString_(cfg) {
     Yaml::Parse(cfg_, cfg);
-	raisim::World::setActivationKey(raisim::Path(resourceDir + "/activation.raisim").getString());
+    
     if(&cfg_["render"])
       render_ = cfg_["render"].template As<bool>();
     init();
