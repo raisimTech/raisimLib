@@ -118,8 +118,8 @@ for update in range(1000000):
         action = ppo.observe(obs)
         reward, dones = env.step(action)
         ppo.step(value_obs=obs, rews=reward, dones=dones)
-        done_sum = done_sum + sum(dones)
-        reward_ll_sum = reward_ll_sum + sum(reward)
+        done_sum = done_sum + np.sum(dones)
+        reward_ll_sum = reward_ll_sum + np.sum(reward)
 
     # take st step to get value obs
     obs = env.observe()
