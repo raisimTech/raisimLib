@@ -932,6 +932,18 @@ class ArticulatedSystem : public Object {
   void setExternalTorque(size_t bodyIdx, const Vec<3> &torque_in_world_frame) final;
 
   /**
+   * set external torque.
+   * The external torque is applied for a single time step only.
+   * You have to apply the force for every time step if you want persistent torque
+   * @param[in] bodyIdx the body index. it can be retrieved by getBodyIdx()
+   * @param[in] torque_in_body_frame the applied torque expressed in the body frame */
+  void setExternalTorqueInBodyFrame(size_t bodyIdx, const Vec<3> &torque_in_body_frame) {
+    Vec<3> torque_in_world_frame;
+    matvecmul(rot_WB[bodyIdx], torque_in_body_frame, torque_in_world_frame);
+    setExternalTorque(bodyIdx, torque_in_world_frame);
+  }
+
+  /**
    * returns the contact point velocity. The contactId is the order in the vector from Object::getContacts()
    * @param[in] contactId index of the contact vector which can be obtained by getContacts()
    * @param[out] vel the contact point velocity */

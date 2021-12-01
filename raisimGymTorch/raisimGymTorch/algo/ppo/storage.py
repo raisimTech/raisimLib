@@ -53,7 +53,7 @@ class RolloutStorage:
 
             next_is_not_terminal = 1.0 - self.dones[step].float()
             delta = self.rewards[step] + next_is_not_terminal * gamma * next_values - self.values[step]
-            advantage = (delta + next_is_not_terminal * gamma * lam * advantage)
+            advantage = delta + next_is_not_terminal * gamma * lam * advantage
             self.returns[step] = advantage + self.values[step]
 
         # Compute and normalize the advantages
