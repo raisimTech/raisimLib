@@ -45,7 +45,7 @@ class CMakeBuild(build_ext):
         if __CMAKE_PREFIX_PATH__ is not None:
             cmake_args.append('-DCMAKE_PREFIX_PATH=' + __CMAKE_PREFIX_PATH__)
 
-        cfg = 'Debug' if __DEBUG__ else 'RelWithDebInfo'
+        cfg = 'Debug' if __DEBUG__ else 'Release'
         build_args = ['--config', cfg]
 
         if platform.system() == "Windows":
