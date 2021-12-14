@@ -552,6 +552,29 @@ class ArticulatedSystem : public Object {
 
   /**
    * Refer to Object/ArticulatedSystem/Kinematics/Frame in the manual for details
+   * @param[in] name name of the urdf link that is a child of the joint
+   * @return the coordinate frame of the given link name */
+  CoordinateFrame &getFrameByLinkName(const std::string &name) {
+    return *std::find_if(frameOfInterest_.begin(), frameOfInterest_.end(),
+                        [name](const raisim::CoordinateFrame &ref) { return ref.bodyName == name; });
+  }
+  const CoordinateFrame &getFrameByLinkName(const std::string &name) const {
+    return *std::find_if(frameOfInterest_.begin(), frameOfInterest_.end(),
+                         [name](const raisim::CoordinateFrame &ref) { return ref.bodyName == name; });
+  }
+
+  /**
+   * Refer to Object/ArticulatedSystem/Kinematics/Frame in the manual for details
+   * @param[in] name name of the urdf link that is a child of the joint
+   * @return the coordinate frame index of the given link name */
+  size_t getFrameIdxByLinkName(const std::string &name) const {
+    return std::find_if(frameOfInterest_.begin(), frameOfInterest_.end(),
+                        [name](const raisim::CoordinateFrame &ref) { return ref.bodyName == name; })
+                        - frameOfInterest_.begin();
+  }
+
+  /**
+   * Refer to Object/ArticulatedSystem/Kinematics/Frame in the manual for details
    * @param[in] idx index of the frame
    * @return the coordinate frame of the given index */
   CoordinateFrame &getFrameByIdx(size_t idx) { return frameOfInterest_[idx]; }
@@ -576,9 +599,16 @@ class ArticulatedSystem : public Object {
    * @param[out] point_W the position of the frame expressed in the world frame */
   void getFramePosition(size_t frameId, Vec<3> &point_W) const;
 
+
   /**
    * @param[in] frameId the frame id which can be obtained by getFrameIdxByName()
-   * @param[out] orientation_W the position of the frame relative to the world frame */
+   * @param[in] localPos local position in the specified frame
+   * @param[out] point_W the position expressed in the world frame */
+  void getPositionInFrame(size_t frameId, const Vec<3> &localPos, Vec<3> &point_W) const;
+
+    /**
+     * @param[in] frameId the frame id which can be obtained by getFrameIdxByName()
+     * @param[out] orientation_W the position of the frame relative to the world frame */
   void getFrameOrientation(size_t frameId, Mat<3, 3> &orientation_W) const;
 
   /**
@@ -1395,6 +1425,7 @@ class ArticulatedSystem : public Object {
 
   // not recommended for users. only for developers
   void addConstraints(const std::vector<PinConstraintDefinition>& pinDef);
+  void initializeConstraints();
 
  protected:
 
@@ -1582,6 +1613,7 @@ class ArticulatedSystem : public Object {
 
   // constraints
   std::vector<PinConstraint> pinConstraints_;
+  std::vector<PinConstraintDefinition> pinDef_;
 
   /// ABA
   Mat<6, 6> MaInv_base;

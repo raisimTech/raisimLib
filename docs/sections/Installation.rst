@@ -26,6 +26,8 @@ RaiSim includes many open-source libraries. See the COPYING file for the full li
 RaiSim Install
 ===============
 
+Clone raisim from https://github.com/raisimTech/raisimlib.
+
 RaiSim is installed using cmake. The following options are available
 
 * ``RAISIM_EXAMPLE`` : Compile C++ RaiSim examples
