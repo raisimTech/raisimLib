@@ -192,6 +192,8 @@ class Joint {
     rot.setIdentity();
     limit.setZero();
     springMount.setZero();
+    pos_P.setZero();
+    axis = {0,0,1};
   }
 
   /* if upper and lower bounds of the limit are the same, the limit is ignored */
@@ -201,7 +203,7 @@ class Joint {
         const Vec<2> &joint_limit,
         Type joint_type,
         const std::string &joint_name) :
-      axis(joint_axis), pos_P(joint_pos_P), rot(joint_rot), limit(joint_limit), type(joint_type), name(joint_name) {}
+      axis(joint_axis), pos_P(joint_pos_P), rot(joint_rot), limit(joint_limit), type(joint_type), name(joint_name) { }
 
   void jointAxis(std::initializer_list<double> a) {
     axis[0] = *(a.begin());
@@ -260,11 +262,12 @@ class Joint {
   Mat<3, 3> rot;
   Vec<2> limit;
   Type type;
-  double effort = -1.;
+  double effort = 1e150;
   double damping = 0.0, friction = 0.0;
   double stiffness = 0.;
   double rotor_inertia = 0.;
   Vec<4> springMount;
+  double jointRef = 0.;
   std::string name;
 };
 
@@ -275,7 +278,7 @@ class CoordinateFrame {
   size_t parentId, currentBodyId;
   std::string name; // name of the joint
   std::string parentName; // name of the parent body
-  std::string bodyName; // name of the body attached to the joint
+  std::string bodyName; // name of the urdf link attached to the joint
   bool isChild =
       false; // child is the first body after movable joint. All fixed bodies attached to a child is not a child
   Joint::Type jointType; // type of the associated joint
@@ -424,6 +427,7 @@ class Body {
   Body() {
     mass_ = 0;
     inertia_.setZero();
+    com_.setZero();
   }
 
   Body(double mass, const Mat<3, 3> &inertia, const Vec<3> &comPos) :
@@ -554,10 +558,6 @@ class Body {
 
   std::vector<CollisionBody> colObj;
   std::vector<VisObject> visObj;
-
-  Vec<3> combinedColPos;
-  Mat<3, 3> combinedColRotMat;
-
   double mass_;
   Mat<3, 3> inertia_;
   Vec<3> com_;
@@ -616,6 +616,8 @@ class Child {
   void initVisuals(std::vector<VisObject> &collect);
 
   void consumeFixedBodies(std::vector<CoordinateFrame> &frameOfInterest);
+
+  void processJointRef();
 
   void addChild(const Child &childNode) {
     if (childNode.joint.type == Joint::Type::FIXED) {
