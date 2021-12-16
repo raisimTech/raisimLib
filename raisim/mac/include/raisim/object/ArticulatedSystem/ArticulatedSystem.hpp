@@ -523,6 +523,10 @@ class ArticulatedSystem : public Object {
   void printOutBodyNamesInOrder() const;
 
   /**
+   * print out movable joint names in order */
+  void printOutMovableJointNamesInOrder() const;
+
+  /**
    * frames are attached to every joint coordinate */
   void printOutFrameNamesInOrder() const;
 
@@ -545,6 +549,29 @@ class ArticulatedSystem : public Object {
    * @return the coordinate frame of the given name */
   CoordinateFrame &getFrameByName(const std::string &nm) { return frameOfInterest_[getFrameIdxByName(nm)]; }
   const CoordinateFrame &getFrameByName(const std::string &nm) const { return frameOfInterest_[getFrameIdxByName(nm)]; }
+
+  /**
+   * Refer to Object/ArticulatedSystem/Kinematics/Frame in the manual for details
+   * @param[in] name name of the urdf link that is a child of the joint
+   * @return the coordinate frame of the given link name */
+  CoordinateFrame &getFrameByLinkName(const std::string &name) {
+    return *std::find_if(frameOfInterest_.begin(), frameOfInterest_.end(),
+                        [name](const raisim::CoordinateFrame &ref) { return ref.bodyName == name; });
+  }
+  const CoordinateFrame &getFrameByLinkName(const std::string &name) const {
+    return *std::find_if(frameOfInterest_.begin(), frameOfInterest_.end(),
+                         [name](const raisim::CoordinateFrame &ref) { return ref.bodyName == name; });
+  }
+
+  /**
+   * Refer to Object/ArticulatedSystem/Kinematics/Frame in the manual for details
+   * @param[in] name name of the urdf link that is a child of the joint
+   * @return the coordinate frame index of the given link name */
+  size_t getFrameIdxByLinkName(const std::string &name) const {
+    return std::find_if(frameOfInterest_.begin(), frameOfInterest_.end(),
+                        [name](const raisim::CoordinateFrame &ref) { return ref.bodyName == name; })
+                        - frameOfInterest_.begin();
+  }
 
   /**
    * Refer to Object/ArticulatedSystem/Kinematics/Frame in the manual for details
@@ -572,9 +599,16 @@ class ArticulatedSystem : public Object {
    * @param[out] point_W the position of the frame expressed in the world frame */
   void getFramePosition(size_t frameId, Vec<3> &point_W) const;
 
+
   /**
    * @param[in] frameId the frame id which can be obtained by getFrameIdxByName()
-   * @param[out] orientation_W the position of the frame relative to the world frame */
+   * @param[in] localPos local position in the specified frame
+   * @param[out] point_W the position expressed in the world frame */
+  void getPositionInFrame(size_t frameId, const Vec<3> &localPos, Vec<3> &point_W) const;
+
+    /**
+     * @param[in] frameId the frame id which can be obtained by getFrameIdxByName()
+     * @param[out] orientation_W the position of the frame relative to the world frame */
   void getFrameOrientation(size_t frameId, Mat<3, 3> &orientation_W) const;
 
   /**
@@ -926,6 +960,18 @@ class ArticulatedSystem : public Object {
    * @param[in] bodyIdx the body index. it can be retrieved by getBodyIdx()
    * @param[in] torque_in_world_frame the applied torque expressed in the world frame */
   void setExternalTorque(size_t bodyIdx, const Vec<3> &torque_in_world_frame) final;
+
+  /**
+   * set external torque.
+   * The external torque is applied for a single time step only.
+   * You have to apply the force for every time step if you want persistent torque
+   * @param[in] bodyIdx the body index. it can be retrieved by getBodyIdx()
+   * @param[in] torque_in_body_frame the applied torque expressed in the body frame */
+  void setExternalTorqueInBodyFrame(size_t bodyIdx, const Vec<3> &torque_in_body_frame) {
+    Vec<3> torque_in_world_frame;
+    matvecmul(rot_WB[bodyIdx], torque_in_body_frame, torque_in_world_frame);
+    setExternalTorque(bodyIdx, torque_in_world_frame);
+  }
 
   /**
    * returns the contact point velocity. The contactId is the order in the vector from Object::getContacts()
@@ -1367,7 +1413,19 @@ class ArticulatedSystem : public Object {
     externalForceAndTorqueJaco_.resize(0);
   }
 
+
+  /**
+   * @param[in] spring Additional spring elements for joints */
+  void addSpring(const SpringElement &spring) { springs_.push_back(spring); }
+
+  /**
+   * @return springs Existing spring elements on joints */
+  std::vector<SpringElement> &getSprings() { return springs_; }
+  const std::vector<SpringElement> &getSprings() const { return springs_; }
+
+  // not recommended for users. only for developers
   void addConstraints(const std::vector<PinConstraintDefinition>& pinDef);
+  void initializeConstraints();
 
  protected:
 
@@ -1405,12 +1463,6 @@ class ArticulatedSystem : public Object {
   void updateTimeStep(double dt) final;
 
   void updateTimeStepIfNecessary(double dt) final;
-
-  /* adding spring element */
-  void addSpring(const SpringElement &spring) { springs_.push_back(spring); }
-
-  std::vector<SpringElement> &getSprings() { return springs_; }
-  const std::vector<SpringElement> &getSprings() const { return springs_; }
 
   inline void jacoSub(const raisim::SparseJacobian &jaco1, raisim::SparseJacobian &jaco, bool isFloatingBase);
 
@@ -1483,6 +1535,7 @@ class ArticulatedSystem : public Object {
   std::vector<raisim::Vec<3>> comPos_B;
   std::vector<raisim::Vec<2>> jointLimits_;
   Vec<3> fixedBasePos_;
+  Mat<3,3> fixedBaseOri_;
 
   std::vector<Joint::Type> jointType;
   std::vector<size_t> jointGcDim_;
@@ -1560,6 +1613,7 @@ class ArticulatedSystem : public Object {
 
   // constraints
   std::vector<PinConstraint> pinConstraints_;
+  std::vector<PinConstraintDefinition> pinDef_;
 
   /// ABA
   Mat<6, 6> MaInv_base;
