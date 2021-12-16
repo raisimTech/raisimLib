@@ -114,6 +114,7 @@ struct Visuals {
   VisualType type;
   std::string name;
   std::string material;
+  std::string meshFileName;
   bool glow = true;
   bool shadow = false;
 
@@ -531,11 +532,12 @@ class RaisimServer final {
    * @param[in] colorB the blue value of the color (max=1)
    * @param[in] colorA the alpha value of the color (max=1)
    * @return the articulated system visual pointer
-   * add a sphere without physics */
+   * add an articulated system without physics */
   inline ArticulatedSystemVisual *addVisualArticulatedSystem(const std::string &name,
                                                              const std::string &urdfFile,
                                                              double colorR = 0, double colorG = 0,
                                                              double colorB = 0, double colorA = 0) {
+    if (_visualArticulatedSystem.find(name) != _visualArticulatedSystem.end()) RSFATAL("Duplicated visual object name: " + name)
     _visualArticulatedSystem[name] = new ArticulatedSystemVisual(urdfFile);
     _visualArticulatedSystem[name]->color = raisim::Vec<4>{colorR, colorG, colorB, colorA};
     updateVisualConfig();
@@ -570,8 +572,8 @@ class RaisimServer final {
    * @param[in] colorB the blue value of the color (max=1)
    * @param[in] colorA the alpha value of the color (max=1)
    * @param[in] material visualization material
-   * @param[in] glow to glow or not
-   * @param[in] shadow to cast shadow or not
+   * @param[in] glow to glow or not (not supported)
+   * @param[in] shadow to cast shadow or not (not supported)
    * @return the sphere pointer
    * add a sphere without physics */
   inline Visuals *addVisualSphere(const std::string &name, double radius,
@@ -601,8 +603,8 @@ class RaisimServer final {
    * @param[in] colorB the blue value of the color (max=1)
    * @param[in] colorA the alpha value of the color (max=1)
    * @param[in] material visualization material
-   * @param[in] glow to glow or not
-   * @param[in] shadow to cast shadow or not
+   * @param[in] glow to glow or not (not supported)
+   * @param[in] shadow to cast shadow or not (not supported)
    * @return the box pointer
    * add a box without physics */
   inline Visuals *addVisualBox(const std::string &name, double xLength,
@@ -634,8 +636,8 @@ class RaisimServer final {
    * @param[in] colorB the blue value of the color (max=1)
    * @param[in] colorA the alpha value of the color (max=1)
    * @param[in] material visualization material
-   * @param[in] glow to glow or not
-   * @param[in] shadow to cast shadow or not
+   * @param[in] glow to glow or not (not supported)
+   * @param[in] shadow to cast shadow or not (not supported)
    * @return the cylinder pointer
    * add a cylinder without physics */
   inline Visuals *addVisualCylinder(const std::string &name, double radius,
@@ -666,8 +668,8 @@ class RaisimServer final {
    * @param[in] colorB the blue value of the color (max=1)
    * @param[in] colorA the alpha value of the color (max=1)
    * @param[in] material visualization material
-   * @param[in] glow to glow or not
-   * @param[in] shadow to cast shadow or not
+   * @param[in] glow to glow or not (not supported)
+   * @param[in] shadow to cast shadow or not (not supported)
    * @return the capsule pointer
    * add a capsule without physics */
   inline Visuals *addVisualCapsule(const std::string &name, double radius,
@@ -688,6 +690,68 @@ class RaisimServer final {
     _visualObjects[name]->shadow = shadow;
     return _visualObjects[name];
   }
+
+  /**
+   * @param[in] name the name of the visual mesh object
+   * @param[in] file file name of the mesh
+   * @param[in] scale scale of the mesh
+   * @param[in] colorR the red value of the color   (max=1)
+   * @param[in] colorG the green value of the color (max=1)
+   * @param[in] colorB the blue value of the color  (max=1)
+   * @param[in] colorA the alpha value of the color (max=1). Ignore color when negative
+   * @param[in] glow to glow or not (not supported)
+   * @param[in] shadow to cast shadow or not (not supported)
+   * @return the mesh visual pointer
+   * add a mesh without physics */
+  inline Visuals *addVisualMesh(const std::string &name,
+                                const std::string &file,
+                                const Vec<3> &scale = {1, 1, 1},
+                                double colorR = 0, double colorG = 0,
+                                double colorB = 0, double colorA = -1,
+                                bool glow = false, bool shadow = false) {
+    if (_visualObjects.find(name) != _visualObjects.end()) RSFATAL("Duplicated visual object name: " + name)
+    updateVisualConfig();
+    _visualObjects[name] = new Visuals();
+    _visualObjects[name]->type = Visuals::VisualType::VisualMesh;
+    _visualObjects[name]->name = name;
+    _visualObjects[name]->meshFileName = file;
+    _visualObjects[name]->size = scale;
+    _visualObjects[name]->color = {colorR, colorG, colorB, colorA};
+    _visualObjects[name]->glow = glow;
+    _visualObjects[name]->shadow = shadow;
+    return _visualObjects[name];
+  }
+
+// will be added soon
+//  /**
+//   * @param[in] name the name of the visual mesh object
+//   * @param[in] radius radius of the arrow
+//   * @param[in] height height of the arrow
+//   * @param[in] colorR the red value of the color   (max=1)
+//   * @param[in] colorG the green value of the color (max=1)
+//   * @param[in] colorB the blue value of the color  (max=1)
+//   * @param[in] colorA the alpha value of the color (max=1)
+//   * @param[in] glow to glow or not (not supported)
+//   * @param[in] shadow to cast shadow or not (not supported)
+//   * @return the visual pointer
+//   * add an arrow without physics */
+//  inline Visuals *addVisualArrow(const std::string &name,
+//                                 double radius, double height,
+//                                 double colorR = 0, double colorG = 0,
+//                                 double colorB = 0, double colorA = -1,
+//                                 bool glow = false, bool shadow = false) {
+//    if (_visualObjects.find(name) != _visualObjects.end()) RSFATAL("Duplicated visual object name: " + name)
+//    updateVisualConfig();
+//    _visualObjects[name] = new Visuals();
+//    _visualObjects[name]->type = Visuals::VisualType::VisualArrow;
+//    _visualObjects[name]->name = name;
+//    _visualObjects[name]->size[0] = radius;
+//    _visualObjects[name]->size[1] = height;
+//    _visualObjects[name]->color = {colorR, colorG, colorB, colorA};
+//    _visualObjects[name]->glow = glow;
+//    _visualObjects[name]->shadow = shadow;
+//    return _visualObjects[name];
+//  }
 
   /**
    * @param[in] name the name of the polyline
@@ -1603,8 +1667,14 @@ class RaisimServer final {
           for (int i = 0; i < 3; i++) data_ = set(data_, (float) vo->size[i]);
           break;
 
+        case Visuals::VisualMesh:
+          for (int i = 0; i < 3; i++) data_ = set(data_, (float) vo->size[i]);
+          data_ = setString(data_, vo->meshFileName);
+          break;
+
         case Visuals::VisualCylinder:
         case Visuals::VisualCapsule:
+        case Visuals::VisualArrow:
           data_ = set(data_, (float) vo->size[0]);
           data_ = set(data_, (float) vo->size[1]);
           break;
