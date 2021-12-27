@@ -90,7 +90,7 @@ FOREACH(subdir ${SUBDIRS})
     if(${RAISIM_OS} STREQUAL "m1")
         if(${RAISIM_ARCH} STREQUAL "arm64")
             message("building with correct lib")
-            target_compile_options(${subdir} PRIVATE -mcpu=lightning)
+            target_compile_options(${subdir} PRIVATE -mcpu=apple-m1)
         endif()
     endif()
 
