@@ -81,6 +81,9 @@ FOREACH(subdir ${SUBDIRS})
     target_include_directories(${subdir} PUBLIC ${EIGEN3_INCLUDE_DIRS} ${RAISIMGYM_ENV_DIR}/${subdir} ${CMAKE_CURRENT_SOURCE_DIR}/raisimGymTorch/env)
     target_compile_options(${subdir} PRIVATE -fPIC -O3 -g -mno-avx2)
     target_compile_definitions(${subdir} PRIVATE "-DRAISIMGYM_TORCH_ENV_NAME=${subdir}")
+    target_compile_definitions(${subdir} PRIVATE "$<$<CONFIG:Release>:EIGEN_NO_DEBUG>")
+    target_compile_definitions(${subdir} PRIVATE EIGEN_DONT_PARALLELIZE)
+
     message("raisim os ${RAISIM_OS}")
     message("raisim arch ${RAISIM_ARCH}")
 
