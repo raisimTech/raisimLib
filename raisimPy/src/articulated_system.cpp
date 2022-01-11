@@ -102,6 +102,15 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         .value("Cone", raisim::Shape::Type::Cone);
 
     /*******************/
+    /* Spring */
+    /*******************/
+    py::class_<raisim::ArticulatedSystem::SpringElement>(m, "SpringElement", "Spring element in an articulated system")
+        .def_readwrite("parentId", &raisim::CoordinateFrame::parentId)
+        .def_readwrite("parentName", &raisim::CoordinateFrame::parentName)
+        .def_readwrite("parentId", &raisim::CoordinateFrame::parentId);
+
+
+    /*******************/
     /* CoordinateFrame */
     /*******************/
     py::class_<raisim::CoordinateFrame>(m, "CoordinateFrame", "Raisim Coordinate Frame class.")
@@ -511,6 +520,13 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
             CoordinateFrame: the coordinate frame.
         )mydelimiter",
         py::arg("idx"))
+
+        .def("getSpring", &raisim::ArticulatedSystem::getSpring), R"mydelimiter(
+        Get the spring elements.
+
+        Returns:
+            springs: list of spring elements.
+        )mydelimiter")
 
         .def("getFrameIdxByName", &raisim::ArticulatedSystem::getFrameIdxByName, R"mydelimiter(
         Get the coordinate frame index from its name.
