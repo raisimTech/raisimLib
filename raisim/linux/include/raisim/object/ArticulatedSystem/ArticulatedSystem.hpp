@@ -76,7 +76,7 @@ class ArticulatedSystem : public Object {
 
   struct SpringElement {
     SpringElement() { q_ref.setZero(); }
-
+    
     void setSpringMount (const Eigen::Vector4d& qRef) { q_ref = qRef; }
     Eigen::Vector4d getSpringMount () { return q_ref.e(); }
 
@@ -1450,7 +1450,7 @@ class ArticulatedSystem : public Object {
   /**
    * @return springs Existing spring elements on joints */
   std::vector<SpringElement> &getSprings() { return springs_; }
-//  const std::vector<SpringElement> &getSprings() const { return springs_; }
+  const std::vector<SpringElement> &getSprings() const { return springs_; }
 
   /**
    *

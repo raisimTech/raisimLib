@@ -1,0 +1,5 @@
+To build raisim doc, you need the following python packages
+
+* breathe sphinx_tabs sphinx_panels
+
+You can get the latest doc from raisim.com
