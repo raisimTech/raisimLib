@@ -102,13 +102,12 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         .value("Cone", raisim::Shape::Type::Cone);
 
     /*******************/
-    /* Spring */
+    /* Spring          */
     /*******************/
     py::class_<raisim::ArticulatedSystem::SpringElement>(m, "SpringElement", "Spring element in an articulated system")
-        .def_readwrite("parentId", &raisim::CoordinateFrame::parentId)
-        .def_readwrite("parentName", &raisim::CoordinateFrame::parentName)
-        .def_readwrite("parentId", &raisim::CoordinateFrame::parentId);
-
+        .def_property("q_ref", &raisim::ArticulatedSystem::SpringElement::getSpringMount, &raisim::ArticulatedSystem::SpringElement::setSpringMount)
+        .def_readwrite("childBodyId", &raisim::ArticulatedSystem::SpringElement::childBodyId)
+        .def_readwrite("stiffness", &raisim::ArticulatedSystem::SpringElement::stiffness);
 
     /*******************/
     /* CoordinateFrame */
@@ -498,7 +497,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
          you have to use this with "void getPosition_W(size_t bodyIdx, const Vec<3> &point_B, Vec<3> &point_W)".
          If you want the orientation expressed in the world frame,
          you have to get the parent body orientation and pre-multiply it by the relative orientation*/
-        .def("getFrameByName", py::overload_cast<const std::string &>(&raisim::ArticulatedSystem::getFrameByName), R"mydelimiter(
+        .def("getFrameByName", py::overload_cast<const std::string &>(&raisim::ArticulatedSystem::getFrameByName), py::return_value_policy::reference, R"mydelimiter(
         Get the coordinate frame from its name.
 
         Args:
@@ -510,7 +509,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         py::arg("name"))
 
 
-        .def("getFrameByIdx", py::overload_cast<size_t>(&raisim::ArticulatedSystem::getFrameByIdx), R"mydelimiter(
+        .def("getFrameByIdx", py::overload_cast<size_t>(&raisim::ArticulatedSystem::getFrameByIdx), py::return_value_policy::reference, R"mydelimiter(
         Get the coordinate frame from its index.
 
         Args:
@@ -521,14 +520,14 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         )mydelimiter",
         py::arg("idx"))
 
-        .def("getSpring", &raisim::ArticulatedSystem::getSpring), R"mydelimiter(
+        .def("getSprings", py::overload_cast<>(&raisim::ArticulatedSystem::getSprings), py::return_value_policy::reference, R"mydelimiter(
         Get the spring elements.
 
         Returns:
             springs: list of spring elements.
         )mydelimiter")
 
-        .def("getFrameIdxByName", &raisim::ArticulatedSystem::getFrameIdxByName, R"mydelimiter(
+        .def("getFrameIdxByName", &raisim::ArticulatedSystem::getFrameIdxByName, py::return_value_policy::reference, R"mydelimiter(
         Get the coordinate frame index from its name.
 
         Args:
@@ -539,7 +538,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
         )mydelimiter",
         py::arg("name"))
 
-        .def("getFrames", py::overload_cast<>(&raisim::ArticulatedSystem::getFrames), R"mydelimiter(
+        .def("getFrames", py::overload_cast<>(&raisim::ArticulatedSystem::getFrames), py::return_value_policy::reference, R"mydelimiter(
         Get all the coordinate frames.
 
         Returns:
@@ -941,7 +940,7 @@ void init_articulated_system(py::module &m) { // py::module &main_module) {
 
 
 
-        .def("getMass", py::overload_cast<>(&raisim::ArticulatedSystem::getMass), R"mydelimiter(
+        .def("getMass", py::overload_cast<>(&raisim::ArticulatedSystem::getMass), py::return_value_policy::reference, R"mydelimiter(
         Return the body/link masses.
 
         Returns:
