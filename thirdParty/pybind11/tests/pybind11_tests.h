@@ -1,10 +1,12 @@
 #pragma once
+
 #include <pybind11/pybind11.h>
 #include <pybind11/eval.h>
 
 #if defined(_MSC_VER) && _MSC_VER < 1910
 // We get some really long type names here which causes MSVC 2015 to emit warnings
-#  pragma warning(disable: 4503) // warning C4503: decorated name length exceeded, name was truncated
+#    pragma warning(                                                                              \
+        disable : 4503) // warning C4503: decorated name length exceeded, name was truncated
 #endif
 
 namespace py = pybind11;
@@ -14,15 +16,14 @@ class test_initializer {
     using Initializer = void (*)(py::module_ &);
 
 public:
-    test_initializer(Initializer init);
+    explicit test_initializer(Initializer init);
     test_initializer(const char *submodule_name, Initializer init);
 };
 
-#define TEST_SUBMODULE(name, variable)                   \
-    void test_submodule_##name(py::module_ &);            \
-    test_initializer name(#name, test_submodule_##name); \
-    void test_submodule_##name(py::module_ &variable)
-
+#define TEST_SUBMODULE(name, variable)                                                            \
+    void test_submodule_##name(py::module_ &);                                                    \
+    test_initializer name(#name, test_submodule_##name);                                          \
+    void test_submodule_##name(py::module_ &(variable))
 
 /// Dummy type which is not exported anywhere -- something to trigger a conversion error
 struct UnregisteredType { };
@@ -31,7 +32,7 @@ struct UnregisteredType { };
 class UserType {
 public:
     UserType() = default;
-    UserType(int i) : i(i) { }
+    explicit UserType(int i) : i(i) { }
 
     int value() const { return i; }
     void set(int set) { i = set; }
@@ -64,7 +65,7 @@ PYBIND11_NAMESPACE_BEGIN(pybind11)
 PYBIND11_NAMESPACE_BEGIN(detail)
 template<> class type_caster<RValueCaster> {
 public:
-    PYBIND11_TYPE_CASTER(RValueCaster, _("RValueCaster"));
+    PYBIND11_TYPE_CASTER(RValueCaster, const_name("RValueCaster"));
     static handle cast(RValueCaster &&, return_value_policy, handle) { return py::str("rvalue").release(); }
     static handle cast(const RValueCaster &, return_value_policy, handle) { return py::str("lvalue").release(); }
 };

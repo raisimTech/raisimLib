@@ -15,12 +15,6 @@
 #include "Yaml.hpp"
 #include "Reward.hpp"
 
-#define __RSG_MAKE_STR(x) #x
-#define _RSG_MAKE_STR(x) __RSG_MAKE_STR(x)
-#define RSG_MAKE_STR(x) _RSG_MAKE_STR(x)
-
-#define READ_YAML(a, b, c) RSFATAL_IF(!&c, "Node "<<RSG_MAKE_STR(c)<<" doesn't exist") b = c.template As<a>();
-
 namespace raisim {
 
 using Dtype=float;

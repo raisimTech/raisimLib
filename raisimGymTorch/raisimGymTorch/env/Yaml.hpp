@@ -656,3 +656,9 @@ namespace Yaml
     void Serialize(const Node & root, std::string & string, const SerializeConfig & config = {2, 64, false, false});
 
 }
+
+#define __RSG_MAKE_STR(x) #x
+#define _RSG_MAKE_STR(x) __RSG_MAKE_STR(x)
+#define RSG_MAKE_STR(x) _RSG_MAKE_STR(x)
+
+#define READ_YAML(a, b, c) RSFATAL_IF(c.IsNone(), "Node "<<RSG_MAKE_STR(c)<<" doesn't exist") b = c.template As<a>();

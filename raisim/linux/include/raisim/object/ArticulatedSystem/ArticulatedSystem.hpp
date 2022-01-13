@@ -76,6 +76,9 @@ class ArticulatedSystem : public Object {
 
   struct SpringElement {
     SpringElement() { q_ref.setZero(); }
+    
+    void setSpringMount (const Eigen::Vector4d& qRef) { q_ref = qRef; }
+    Eigen::Vector4d getSpringMount () { return q_ref.e(); }
 
     /// the spring connects this body and its parent
     size_t childBodyId = 0;
@@ -703,8 +706,27 @@ class ArticulatedSystem : public Object {
 
   /**
    * @param[in] bodyIdx the body index. Note that body index and the joint index are the same because every body has one parent joint. It can be retrieved by getBodyIdx()
+   * @param[in] frame the frame in which the position of the point is expressed in
+   * @param[in] point the point expressed in the world frame. If you want to use a point expressed in the body frame, use getDenseFrameJacobian()
+   * @param[out] jaco the positional Jacobian. v = J * u. v is the linear velocity expressed in the world frame and u is the generalized velocity */
+  void getSparseJacobian(size_t bodyIdx, Frame frame, const Vec<3> &point, SparseJacobian &jaco) const;
+
+  /**
+   * @param[in] bodyIdx the body index. Note that body index and the joint index are the same because every body has one parent joint. It can be retrieved by getBodyIdx()
    * @param[out] jaco the rotational Jacobian. omega = J * u. omgea is the angular velocity expressed in the world frame and u is the generalized velocity */
   void getSparseRotationalJacobian(size_t bodyIdx, SparseJacobian &jaco) const;
+
+  /**
+   * @param[in] bodyIdx the body index. Note that body index and the joint index are the same because every body has one parent joint. It can be retrieved by getBodyIdx()
+   * @param[in] frame the frame in which the position of the point is expressed
+   * @param[in] point the position of the point of interest
+   * @param[out] jaco the time derivative of the positional Jacobian. a = dJ * u + J * du. a is the linear acceleration expressed in the world frame, u is the generalized velocity and d denotes the time derivative*/
+  void getTimeDerivativeOfSparseJacobian(size_t bodyIdx, Frame frame, const Vec<3> &point, SparseJacobian &jaco) const;
+
+  /**
+   * @param[in] bodyIdx the body index. Note that body index and the joint index are the same because every body has one parent joint. It can be retrieved by getBodyIdx()
+   * @param[out] jaco the rotational Jacobian. alpha = dJ * u + J * du. alpha is the angular acceleration expressed in the world frame, u is the generalized velocity and d denotes the time derivative*/
+  void getTimeDerivativeOfSparseRotationalJacobian(size_t bodyIdx, SparseJacobian &jaco) const;
 
   /**
    * @param[in] sparseJaco sparse Jacobian (either positional or rotational)
@@ -792,6 +814,14 @@ class ArticulatedSystem : public Object {
    * @param[in] posInBodyFrame the position of the point of interest expressed in the body frame
    * @param[out] pointVel the velocity of the point expressed in the world frame */
   void getVelocity(size_t bodyIdx, const Vec<3> &posInBodyFrame, Vec<3> &pointVel) const;
+
+  /**
+   * @param[in] bodyIdx the body index. it can be retrieved by getBodyIdx()
+   * @param[in] frameOfPos the frame in which the provided position is expressed
+   * @param[in] pos the position of the point of interest
+   * @param[in] frameOfVel the frame in which the computed velocity is expressed
+   * @param[out] pointVel the velocity of the point expressed in the world frame */
+  void getVelocity(size_t bodyIdx, Frame frameOfPos, const Vec<3> &pos, Frame frameOfVel, Vec<3> &pointVel) const;
 
   /**
    * returns the index of the body
@@ -1413,7 +1443,6 @@ class ArticulatedSystem : public Object {
     externalForceAndTorqueJaco_.resize(0);
   }
 
-
   /**
    * @param[in] spring Additional spring elements for joints */
   void addSpring(const SpringElement &spring) { springs_.push_back(spring); }
@@ -1422,6 +1451,12 @@ class ArticulatedSystem : public Object {
    * @return springs Existing spring elements on joints */
   std::vector<SpringElement> &getSprings() { return springs_; }
   const std::vector<SpringElement> &getSprings() const { return springs_; }
+
+  /**
+   *
+   * @return parent parent[i] is a parent body id of the i^th body
+   */
+  const std::vector<size_t>& getParentVector() const { return parent; }
 
   // not recommended for users. only for developers
   void addConstraints(const std::vector<PinConstraintDefinition>& pinDef);
