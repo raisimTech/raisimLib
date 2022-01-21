@@ -76,7 +76,7 @@ class ArticulatedSystem : public Object {
 
   struct SpringElement {
     SpringElement() { q_ref.setZero(); }
-    
+
     void setSpringMount (const Eigen::Vector4d& qRef) { q_ref = qRef; }
     Eigen::Vector4d getSpringMount () { return q_ref.e(); }
 
@@ -980,7 +980,8 @@ class ArticulatedSystem : public Object {
    * @param[in] force the applied force in the world frame*/
   void setExternalForce(const std::string &frame_name, const Vec<3> &force) {
     auto &frame = getFrameByName(frame_name);
-    setExternalForce(frame.parentId, Frame::WORLD_FRAME, force, Frame::BODY_FRAME, frame.position);
+    Vec<3> force_b; force_b = frame.orientation * force;
+    setExternalForce(frame.parentId, Frame::BODY_FRAME, force_b, Frame::BODY_FRAME, frame.position);
   }
 
   /**
@@ -1595,7 +1596,7 @@ class ArticulatedSystem : public Object {
   std::vector<MatDyn> MinvJT_T;
   std::vector<VecDyn> j_MinvJT_T1D;
   VecDyn tauStar_, tau_, tauFF_;
-  VecDyn tauUpper_, tauLower_; // bounds
+  VecDyn tauUpper_, tauLower_, velLimits_; // bounds
   std::vector<size_t> bodyIdx2GvIdx, bodyIdx2GcIdx;
 
   std::vector<SparseJacobian> J_;
