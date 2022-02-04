@@ -18,7 +18,7 @@ int main(int argc, char* argv[]) {
   world.setTimeStep(0.001);
 
   /// create objects
-  world.addGround();
+  world.addGround(0, "gnd");
   auto anymalB = world.addArticulatedSystem(binaryPath.getDirectory() + "\\rsc\\anymal\\urdf\\anymal.urdf");
   auto anymalC = world.addArticulatedSystem(binaryPath.getDirectory() + "\\rsc\\anymal_c\\urdf\\anymal.urdf");
 
@@ -43,6 +43,10 @@ int main(int argc, char* argv[]) {
   anymalB->setPdGains(jointPgain, jointDgain);
   anymalB->setPdTarget(jointNominalConfig, jointVelocityTarget);
   anymalB->setName("anymalB");
+
+  /// friction example. uncomment it to see the effect
+//  anymalB->getCollisionBody("LF_FOOT/0").setMaterial("LF_FOOT");
+//  world.setMaterialPairProp("gnd", "LF_FOOT", 0.01, 0, 0);
 
   /// launch raisim server
   raisim::RaisimServer server(&world);
