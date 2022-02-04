@@ -84,7 +84,8 @@ int main(int argc, char* argv[]) {
 
     if(fabs(gc[0])>35. || fabs(gc[1])>35.) {
       gc.segment<7>(0) << 0, 0, 2, 1, 0, 0, 0;
-      robot->setGeneralizedCoordinate(gc);
+      gv.setRandom();
+      robot->setState(gc, gv);
     }
   }
 
