@@ -21,7 +21,7 @@ int main(int argc, char* argv[]) {
   /// create objects
   auto box = world.addBox(1,1,1,1,"steel");
   auto ground = world.addGround(0, "brass");
-  box->setPosition(0,0,0.5);
+  box->setPosition(0,0,0.499);
 
   /// option 1: use cpp api to define the materials
 //  world.setMaterialPairProp("steel", "brass", 0.2, 0., 0., 0.95, 0.01);
