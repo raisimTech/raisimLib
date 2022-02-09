@@ -1494,6 +1494,10 @@ class ArticulatedSystem : public Object {
 
   void subContactPointVel(size_t pointId, Vec<3> &vel) final;
 
+  void addContactPointVel2(size_t pointId, Vec<3> &vel) final;
+
+  void subContactPointVel2(size_t pointId, Vec<3> &vel) final;
+
   void updateGenVelWithImpulse(size_t pointId, const Vec<3> &imp) final;
 
   void updateTimeStep(double dt) final;

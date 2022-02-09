@@ -38,6 +38,7 @@ int main(int argc, char* argv[]) {
       monkey->setPosition(-gap * (N / 2) + gap * row,
                           -gap * (N / 2) + gap * col,
                           2.0 + gap * (row * N + col));
+      monkey->setAppearance("blue");
     }
   }
 
