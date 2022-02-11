@@ -199,11 +199,11 @@ struct dxGeom : public dBase {
   // the GEOM_AABB_BAD flag.
 
   void recomputeAABB() {
-    if (gflags & GEOM_AABB_BAD) {
-      // our aabb functions assume final_posr is up to date
+//    if (gflags & GEOM_AABB_BAD) {
+//      // our aabb functions assume final_posr is up to date
       computeAABB();
-      gflags &= ~GEOM_AABB_BAD;
-    }
+//      gflags &= ~GEOM_AABB_BAD;
+//    }
   }
 
   inline void markAABBBad();
