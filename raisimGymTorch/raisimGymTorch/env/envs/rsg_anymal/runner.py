@@ -97,14 +97,15 @@ for update in range(1000000):
         env.start_video_recording(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + "policy_"+str(update)+'.mp4')
 
         for step in range(n_steps*2):
-            frame_start = time.time()
-            obs = env.observe(False)
-            action_ll = loaded_graph.architecture(torch.from_numpy(obs).cpu())
-            reward_ll, dones = env.step(action_ll.cpu().detach().numpy())
-            frame_end = time.time()
-            wait_time = cfg['environment']['control_dt'] - (frame_end-frame_start)
-            if wait_time > 0.:
-                time.sleep(wait_time)
+            with torch.no_grad():
+                frame_start = time.time()
+                obs = env.observe(False)
+                action_ll = loaded_graph.architecture(torch.from_numpy(obs).cpu())
+                reward_ll, dones = env.step(action_ll.cpu().detach().numpy())
+                frame_end = time.time()
+                wait_time = cfg['environment']['control_dt'] - (frame_end-frame_start)
+                if wait_time > 0.:
+                    time.sleep(wait_time)
 
         env.stop_video_recording()
         env.turn_off_visualization()
@@ -114,12 +115,13 @@ for update in range(1000000):
 
     # actual training
     for step in range(n_steps):
-        obs = env.observe()
-        action = ppo.observe(obs)
-        reward, dones = env.step(action)
-        ppo.step(value_obs=obs, rews=reward, dones=dones)
-        done_sum = done_sum + np.sum(dones)
-        reward_ll_sum = reward_ll_sum + np.sum(reward)
+        with torch.no_grad():
+            obs = env.observe()
+            action = ppo.observe(obs)
+            reward, dones = env.step(action)
+            ppo.step(value_obs=obs, rews=reward, dones=dones)
+            done_sum = done_sum + np.sum(dones)
+            reward_ll_sum = reward_ll_sum + np.sum(reward)
 
     # take st step to get value obs
     obs = env.observe()
