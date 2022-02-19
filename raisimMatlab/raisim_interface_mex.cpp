@@ -75,9 +75,9 @@ void quit() {
   mexUnlock();
 }
 
-#define CHECK_INPUT_SIZE(X) if(nrhs != X) mexErrMsgTxt("Expecting X inputs");
+#define CHECK_INPUT_SIZE(X) if(nrhs != X) printf("Expecting %d inputs. Received %d inputs", X, nrhs);
 
-#define CHECK_OUTPUT_SIZE(X) if(nlhs != X) mexErrMsgTxt("Expecting X outputs");
+#define CHECK_OUTPUT_SIZE(X) if(nlhs != X) printf("Expecting %d outputs. Received %d outputs", X, nlhs);
 
 // number of arguments, check names, etc
 #define ADD_CHECK(X) \
@@ -315,11 +315,10 @@ void mexFunction(
   }
 
   else if (!strcmp("getNonlinearities", cmd)) {
-    CHECK_INPUT_SIZE(1)
+    CHECK_INPUT_SIZE(2)
     CHECK_OUTPUT_SIZE(1)
-    GET_EIGEN_VEC_WITH_CHECK(0, 3)
     GET_AS
-    RETURN_VEC(as->getNonlinearities(vec))
+    RETURN_VEC(as->getNonlinearities(world_->getGravity()))
   }
 
   WORLD_NOARG(integrate1)
