@@ -6,7 +6,7 @@ RaisimGymTorch
 What is raisimGymTorch?
 ===========================
 
-.. image:: ../image/raisimGymTorchOverview.png
+.. image:: ../image/raisimGymTorch.png
   :width: 600
   :alt: RaiSimPy demo (robots.py)
 
