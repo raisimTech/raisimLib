@@ -107,10 +107,10 @@ class MultivariateGaussianDiagonalCovariance(nn.Module):
         self.fast_sampler.seed(seed)
         self.samples = np.zeros([size, dim], dtype=np.float32)
         self.logprob = np.zeros(size, dtype=np.float32)
-        self.std_np = self.std.detach().numpy()
+        self.std_np = self.std.detach().cpu().numpy()
 
     def update(self):
-        self.std_np = self.std.detach().numpy()
+        self.std_np = self.std.detach().cpu().numpy()
 
     def sample(self, logits):
         self.fast_sampler.sample(logits, self.std_np, self.samples, self.logprob)
