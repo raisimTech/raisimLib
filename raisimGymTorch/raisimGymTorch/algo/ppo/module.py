@@ -13,15 +13,16 @@ class Actor:
         self.architecture.to(device)
         self.distribution.to(device)
         self.device = device
+        self.action_mean = None
 
     def sample(self, obs):
-        logits = self.architecture.architecture(obs)
-        actions, log_prob = self.distribution.sample(logits)
+        self.action_mean = self.architecture.architecture(obs).cpu().numpy()
+        actions, log_prob = self.distribution.sample(self.action_mean)
         return actions, log_prob
 
     def evaluate(self, obs, actions):
-        action_mean = self.architecture.architecture(obs)
-        return self.distribution.evaluate(action_mean, actions)
+        self.action_mean = self.architecture.architecture(obs)
+        return self.distribution.evaluate(self.action_mean, actions)
 
     def parameters(self):
         return [*self.architecture.parameters(), *self.distribution.parameters()]
@@ -36,6 +37,9 @@ class Actor:
 
     def deterministic_parameters(self):
         return self.architecture.parameters()
+
+    def update(self):
+        self.distribution.update()
 
     @property
     def obs_shape(self):
@@ -103,9 +107,13 @@ class MultivariateGaussianDiagonalCovariance(nn.Module):
         self.fast_sampler.seed(seed)
         self.samples = np.zeros([size, dim], dtype=np.float32)
         self.logprob = np.zeros(size, dtype=np.float32)
+        self.std_np = self.std.detach().numpy()
+
+    def update(self):
+        self.std_np = self.std.detach().numpy()
 
     def sample(self, logits):
-        self.fast_sampler.sample(logits.cpu().numpy(), self.std.cpu().numpy(), self.samples, self.logprob)
+        self.fast_sampler.sample(logits, self.std_np, self.samples, self.logprob)
         return self.samples.copy(), self.logprob.copy()
 
     def evaluate(self, logits, outputs):

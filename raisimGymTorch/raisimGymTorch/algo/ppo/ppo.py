@@ -22,6 +22,8 @@ class PPO:
                  entropy_coef=0.0,
                  learning_rate=5e-4,
                  max_grad_norm=0.5,
+                 learning_rate_schedule='adaptive',
+                 desired_kl=0.01,
                  use_clipped_value_loss=True,
                  log_dir='run',
                  device='cpu',
@@ -61,6 +63,11 @@ class PPO:
         self.tot_timesteps = 0
         self.tot_time = 0
 
+        # ADAM
+        self.learning_rate = learning_rate
+        self.desired_kl = desired_kl
+        self.schedule = learning_rate_schedule
+
         # temps
         self.actions = None
         self.actions_log_prob = None
@@ -68,11 +75,12 @@ class PPO:
 
     def act(self, actor_obs):
         self.actor_obs = actor_obs
-        self.actions, self.actions_log_prob = self.actor.sample(torch.from_numpy(actor_obs).to(self.device))
+        with torch.inference_mode():
+            self.actions, self.actions_log_prob = self.actor.sample(torch.from_numpy(actor_obs).to(self.device))
         return self.actions
 
     def step(self, value_obs, rews, dones):
-        self.storage.add_transitions(self.actor_obs, value_obs, self.actions, rews, dones,
+        self.storage.add_transitions(self.actor_obs, value_obs, self.actions, self.actor.action_mean, self.actor.distribution.std_np, rews, dones,
                                      self.actions_log_prob)
 
     def update(self, actor_obs, value_obs, log_this_iteration, update):
@@ -89,20 +97,39 @@ class PPO:
     def log(self, variables):
         self.tot_timesteps += self.num_transitions_per_env * self.num_envs
         mean_std = self.actor.distribution.std.mean()
-
-        self.writer.add_scalar('Loss/value_function', variables['mean_value_loss'], variables['it'])
-        self.writer.add_scalar('Loss/surrogate', variables['mean_surrogate_loss'], variables['it'])
-        self.writer.add_scalar('Policy/mean_noise_std', mean_std.item(), variables['it'])
+        self.writer.add_scalar('PPO/value_function', variables['mean_value_loss'], variables['it'])
+        self.writer.add_scalar('PPO/surrogate', variables['mean_surrogate_loss'], variables['it'])
+        self.writer.add_scalar('PPO/mean_noise_std', mean_std.item(), variables['it'])
+        self.writer.add_scalar('PPO/learning_rate', self.learning_rate, variables['it'])
 
     def _train_step(self):
         mean_value_loss = 0
         mean_surrogate_loss = 0
         for epoch in range(self.num_learning_epochs):
-            for actor_obs_batch, critic_obs_batch, actions_batch, current_values_batch, advantages_batch, returns_batch, old_actions_log_prob_batch \
+            for actor_obs_batch, critic_obs_batch, actions_batch, old_sigma_batch, old_mu_batch, current_values_batch, advantages_batch, returns_batch, old_actions_log_prob_batch \
                     in self.batch_sampler(self.num_mini_batches):
 
                 actions_log_prob_batch, entropy_batch = self.actor.evaluate(actor_obs_batch, actions_batch)
                 value_batch = self.critic.evaluate(critic_obs_batch)
+
+                # Adjusting the learning rate using KL divergence
+                mu_batch = self.actor.action_mean
+                sigma_batch = self.actor.distribution.std
+
+                # KL
+                if self.desired_kl != None and self.schedule == 'adaptive':
+                    with torch.inference_mode():
+                        kl = torch.sum(
+                            torch.log(sigma_batch / old_sigma_batch + 1.e-5) + (torch.square(old_sigma_batch) + torch.square(old_mu_batch - mu_batch)) / (2.0 * torch.square(sigma_batch)) - 0.5, axis=-1)
+                        kl_mean = torch.mean(kl)
+
+                        if kl_mean > self.desired_kl * 2.0:
+                            self.learning_rate = max(1e-5, self.learning_rate / 1.2)
+                        elif kl_mean < self.desired_kl / 2.0 and kl_mean > 0.0:
+                            self.learning_rate = min(1e-2, self.learning_rate * 1.2)
+
+                        for param_group in self.optimizer.param_groups:
+                            param_group['lr'] = self.learning_rate
 
                 # Surrogate loss
                 ratio = torch.exp(actions_log_prob_batch - torch.squeeze(old_actions_log_prob_batch))
