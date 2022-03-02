@@ -9,7 +9,7 @@
 #include <vector>
 #include <memory>
 #include <unordered_map>
-#include <Eigen/Core>
+#include "Common.hpp"
 #include "raisim/World.hpp"
 #include "raisim/RaisimServer.hpp"
 #include "Yaml.hpp"
@@ -17,17 +17,14 @@
 
 namespace raisim {
 
-using Dtype=float;
-using EigenRowMajorMat=Eigen::Matrix<Dtype, -1, -1, Eigen::RowMajor>;
-using EigenVec=Eigen::Matrix<Dtype, -1, 1>;
-using EigenBoolVec=Eigen::Matrix<bool, -1, 1>;
 
 class RaisimGymEnv {
 
  public:
-  explicit RaisimGymEnv (std::string resourceDir, const Yaml::Node& cfg) : resourceDir_(std::move(resourceDir)), cfg_(cfg) { }
+  explicit RaisimGymEnv (std::string resourceDir, const Yaml::Node& cfg) :
+      resourceDir_(std::move(resourceDir)), cfg_(cfg) { }
 
-  virtual ~RaisimGymEnv() { close(); };
+  virtual ~RaisimGymEnv() { if(server_) server_->killServer(); };
 
   /////// implement these methods /////////
   virtual void init() = 0;
@@ -39,7 +36,7 @@ class RaisimGymEnv {
 
   /////// optional methods ///////
   virtual void curriculumUpdate() {};
-  virtual void close() { if(server_) server_->killServer(); };
+  virtual void close() {};
   virtual void setSeed(int seed) {};
   ////////////////////////////////
 
@@ -66,7 +63,6 @@ class RaisimGymEnv {
   std::unique_ptr<raisim::RaisimServer> server_;
   raisim::Reward rewards_;
 };
-
 }
 
 #endif //SRC_RAISIMGYMENV_HPP

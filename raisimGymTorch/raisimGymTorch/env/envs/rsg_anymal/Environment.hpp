@@ -16,7 +16,7 @@ class ENVIRONMENT : public RaisimGymEnv {
  public:
 
   explicit ENVIRONMENT(const std::string& resourceDir, const Yaml::Node& cfg, bool visualizable) :
-      RaisimGymEnv(resourceDir, cfg), visualizable_(visualizable) {
+      RaisimGymEnv(resourceDir, cfg), visualizable_(visualizable), normDist_(0, 1) {
 
     /// create world
     world_ = std::make_unique<raisim::World>();
@@ -136,10 +136,7 @@ class ENVIRONMENT : public RaisimGymEnv {
     return false;
   }
 
-  void curriculumUpdate() {
-
-  };
-
+  void curriculumUpdate() { };
 
  private:
   int gcDim_, gvDim_, nJoints_;
@@ -150,6 +147,12 @@ class ENVIRONMENT : public RaisimGymEnv {
   Eigen::VectorXd actionMean_, actionStd_, obDouble_;
   Eigen::Vector3d bodyLinearVel_, bodyAngularVel_;
   std::set<size_t> footIndices_;
+
+  /// these variables are not in use. They are placed to show you how to create a random number sampler.
+  std::normal_distribution<double> normDist_;
+  thread_local static std::mt19937 gen_;
 };
+thread_local std::mt19937 raisim::ENVIRONMENT::gen_;
+
 }
 

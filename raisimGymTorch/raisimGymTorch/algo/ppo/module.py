@@ -17,11 +17,11 @@ class Actor:
     def sample(self, obs):
         logits = self.architecture.architecture(obs)
         actions, log_prob = self.distribution.sample(logits)
-        return actions.cpu().detach(), log_prob.cpu().detach()
+        return actions, log_prob
 
     def evaluate(self, obs, actions):
         action_mean = self.architecture.architecture(obs)
-        return self.distribution.evaluate(obs, action_mean, actions)
+        return self.distribution.evaluate(action_mean, actions)
 
     def parameters(self):
         return [*self.architecture.parameters(), *self.distribution.parameters()]
@@ -94,26 +94,25 @@ class MLP(nn.Module):
 
 
 class MultivariateGaussianDiagonalCovariance(nn.Module):
-    def __init__(self, dim, init_std):
+    def __init__(self, dim, size, init_std, fast_sampler, seed=0):
         super(MultivariateGaussianDiagonalCovariance, self).__init__()
         self.dim = dim
         self.std = nn.Parameter(init_std * torch.ones(dim))
         self.distribution = None
+        self.fast_sampler = fast_sampler
+        self.fast_sampler.seed(seed)
+        self.samples = np.zeros([size, dim], dtype=np.float32)
+        self.logprob = np.zeros(size, dtype=np.float32)
 
     def sample(self, logits):
-        self.distribution = Normal(logits, self.std.reshape(self.dim))
+        self.fast_sampler.sample(logits.cpu().numpy(), self.std.cpu().numpy(), self.samples, self.logprob)
+        return self.samples.copy(), self.logprob.copy()
 
-        samples = self.distribution.sample()
-        log_prob = self.distribution.log_prob(samples).sum(dim=1)
-
-        return samples, log_prob
-
-    def evaluate(self, inputs, logits, outputs):
+    def evaluate(self, logits, outputs):
         distribution = Normal(logits, self.std.reshape(self.dim))
 
         actions_log_prob = distribution.log_prob(outputs).sum(dim=1)
         entropy = distribution.entropy().sum(dim=1)
-
         return actions_log_prob, entropy
 
     def entropy(self):
