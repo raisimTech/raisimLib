@@ -6,6 +6,8 @@
 #include "Environment.hpp"
 #include "VectorizedEnvironment.hpp"
 
+int THREAD_COUNT = 1;
+
 using namespace raisim;
 
 int main(int argc, char *argv[]) {

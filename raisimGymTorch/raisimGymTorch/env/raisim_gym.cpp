@@ -11,10 +11,7 @@
 
 namespace py = pybind11;
 using namespace raisim;
-
-namespace raisim {
-  int THREAD_COUNT = 1;
-}
+int THREAD_COUNT = 1;
 
 #ifndef ENVIRONMENT_NAME
   #define ENVIRONMENT_NAME RaisimGymEnv
