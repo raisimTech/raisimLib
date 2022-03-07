@@ -119,6 +119,10 @@ class Object {
   virtual void destroyCollisionBodies(dSpaceID id) = 0;
   virtual void addContactPointVel(size_t pointId, Vec<3>& vel) = 0;
   virtual void subContactPointVel(size_t pointId, Vec<3>& vel) = 0;
+
+  virtual void addContactPointVel2(size_t pointId, Vec<3>& vel) = 0;
+  virtual void subContactPointVel2(size_t pointId, Vec<3>& vel) = 0;
+
   virtual void updateTimeStep(double dt) = 0;
   virtual void updateTimeStepIfNecessary(double dt) = 0;
   virtual void updateGenVelWithImpulse(size_t pointId, const Vec<3>& imp) = 0;

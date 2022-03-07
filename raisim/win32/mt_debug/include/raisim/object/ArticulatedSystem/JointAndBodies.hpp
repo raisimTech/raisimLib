@@ -266,6 +266,7 @@ class Joint {
   double damping = 0.0, friction = 0.0;
   double stiffness = 0.;
   double rotor_inertia = 0.;
+  double velocity_limit = 0.;
   Vec<4> springMount;
   double jointRef = 0.;
   std::string name;
