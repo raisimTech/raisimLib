@@ -12,7 +12,7 @@
 
 namespace raisim {
 
-extern int THREAD_COUNT;
+int THREAD_COUNT;
 
 template<class ChildEnvironment>
 class VectorizedEnvironment {
@@ -166,7 +166,7 @@ class VectorizedEnvironment {
 
 #pragma omp parallel for schedule(auto)
     for(int i=0; i<num_envs_; i++)
-      ob.row(i) = (ob.row(i) - obMean_.transpose()).template cwiseQuotient((obVar_ + epsilon).cwiseSqrt().transpose());
+      ob.row(i) = (ob.row(i) - obMean_.transpose()).template cwiseQuotient<>((obVar_ + epsilon).cwiseSqrt().transpose());
   }
 
   inline void perAgentStep(int agentId,

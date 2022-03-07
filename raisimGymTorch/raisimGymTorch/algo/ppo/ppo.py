@@ -75,7 +75,7 @@ class PPO:
 
     def act(self, actor_obs):
         self.actor_obs = actor_obs
-        with torch.inference_mode():
+        with torch.no_grad():
             self.actions, self.actions_log_prob = self.actor.sample(torch.from_numpy(actor_obs).to(self.device))
         return self.actions
 
@@ -118,7 +118,7 @@ class PPO:
 
                 # KL
                 if self.desired_kl != None and self.schedule == 'adaptive':
-                    with torch.inference_mode():
+                    with torch.no_grad():
                         kl = torch.sum(
                             torch.log(sigma_batch / old_sigma_batch + 1.e-5) + (torch.square(old_sigma_batch) + torch.square(old_mu_batch - mu_batch)) / (2.0 * torch.square(sigma_batch)) - 0.5, axis=-1)
                         kl_mean = torch.mean(kl)
