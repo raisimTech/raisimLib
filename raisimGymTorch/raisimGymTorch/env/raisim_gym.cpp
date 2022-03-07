@@ -11,6 +11,7 @@
 
 namespace py = pybind11;
 using namespace raisim;
+int THREAD_COUNT = 1;
 
 #ifndef ENVIRONMENT_NAME
   #define ENVIRONMENT_NAME RaisimGymEnv
@@ -37,6 +38,8 @@ PYBIND11_MODULE(RAISIMGYM_TORCH_ENV_NAME, m) {
     .def("stopRecordingVideo", &VectorizedEnvironment<ENVIRONMENT>::stopRecordingVideo)
     .def("startRecordingVideo", &VectorizedEnvironment<ENVIRONMENT>::startRecordingVideo)
     .def("curriculumUpdate", &VectorizedEnvironment<ENVIRONMENT>::curriculumUpdate)
+    .def("getObStatistics", &VectorizedEnvironment<ENVIRONMENT>::getObStatistics)
+    .def("setObStatistics", &VectorizedEnvironment<ENVIRONMENT>::setObStatistics)
     .def(py::pickle(
         [](const VectorizedEnvironment<ENVIRONMENT> &p) { // __getstate__ --> Pickling to Python
             /* Return a tuple that fully encodes the state of the object */
@@ -53,4 +56,9 @@ PYBIND11_MODULE(RAISIMGYM_TORCH_ENV_NAME, m) {
             return p;
         }
     ));
+
+  py::class_<NormalSampler>(m, "NormalSampler")
+    .def(py::init<int>(), py::arg("dim"))
+    .def("seed", &NormalSampler::seed)
+    .def("sample", &NormalSampler::sample);
 }
