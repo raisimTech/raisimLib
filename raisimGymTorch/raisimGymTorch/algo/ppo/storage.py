@@ -56,7 +56,7 @@ class RolloutStorage:
         self.step = 0
 
     def compute_returns(self, last_values, critic, gamma, lam):
-        with torch.inference_mode():
+        with torch.no_grad():
             self.values = critic.predict(torch.from_numpy(self.critic_obs).to(self.device)).cpu().numpy()
 
         advantage = 0
