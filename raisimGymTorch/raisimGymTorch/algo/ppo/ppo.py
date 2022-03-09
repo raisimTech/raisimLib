@@ -88,7 +88,7 @@ class PPO:
 
         # Learning step
         self.storage.compute_returns(last_values.to(self.device), self.critic, self.gamma, self.lam)
-        mean_value_loss, mean_surrogate_loss, infos = self._train_step()
+        mean_value_loss, mean_surrogate_loss, infos = self._train_step(log_this_iteration)
         self.storage.clear()
 
         if log_this_iteration:
@@ -102,7 +102,7 @@ class PPO:
         self.writer.add_scalar('PPO/mean_noise_std', mean_std.item(), variables['it'])
         self.writer.add_scalar('PPO/learning_rate', self.learning_rate, variables['it'])
 
-    def _train_step(self):
+    def _train_step(self, log_this_iteration):
         mean_value_loss = 0
         mean_surrogate_loss = 0
         for epoch in range(self.num_learning_epochs):
@@ -156,11 +156,13 @@ class PPO:
                 nn.utils.clip_grad_norm_([*self.actor.parameters(), *self.critic.parameters()], self.max_grad_norm)
                 self.optimizer.step()
 
-                mean_value_loss += value_loss.item()
-                mean_surrogate_loss += surrogate_loss.item()
+                if log_this_iteration:
+                    mean_value_loss += value_loss.item()
+                    mean_surrogate_loss += surrogate_loss.item()
 
-        num_updates = self.num_learning_epochs * self.num_mini_batches
-        mean_value_loss /= num_updates
-        mean_surrogate_loss /= num_updates
+        if log_this_iteration:
+            num_updates = self.num_learning_epochs * self.num_mini_batches
+            mean_value_loss /= num_updates
+            mean_surrogate_loss /= num_updates
 
         return mean_value_loss, mean_surrogate_loss, locals()
