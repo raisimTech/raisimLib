@@ -789,6 +789,8 @@ ODE_API void dGeomGetOffsetQuaternion (dGeomID geom, dQuaternion result);
 ODE_API int dCollide (dGeomID o1, dGeomID o2, int flags, dContactGeom *contact,
 	      int skip);
 
+int dRayTest (dGeomID o1, dGeomID o2, int flags, dContactGeom *contact, int skip);
+
 /**
  * @brief Determines which pairs of geoms in a space may potentially intersect,
  * and calls the callback function for each candidate pair.

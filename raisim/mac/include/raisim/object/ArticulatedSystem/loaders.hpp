@@ -86,7 +86,7 @@ struct UrdfJoint {
     rot.setIdentity();
     springMountPos.setZero();
   }
-  std::string name = "", parent, child;
+  std::string name, parent, child;
   Joint::Type type;
   Vec<3> origin;
   Mat<3, 3> rot;
@@ -97,6 +97,7 @@ struct UrdfJoint {
   double stiffness = 0;
   double rotor_inertia = 0;
   double torque_limit = -1.;
+  double velocity_limit = 1e6;
   Vec<4> springMountPos;
 };
 

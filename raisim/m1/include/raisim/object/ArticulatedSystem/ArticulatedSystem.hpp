@@ -344,12 +344,12 @@ class ArticulatedSystem : public Object {
   /**
    * set the generalized velocity
    * @param[in] jointVel the generalized velocity*/
-  void setGeneralizedVelocity(const Eigen::VectorXd &jointVel) { gv_ = jointVel; }
+  void setGeneralizedVelocity(const Eigen::VectorXd &jointVel) { gv_ = jointVel; updateKinematics();}
 
   /**
    * set the generalized velocity
    * @param[in] jointVel the generalized velocity*/
-  void setGeneralizedVelocity(const raisim::VecDyn &jointVel) { gv_ = jointVel; }
+  void setGeneralizedVelocity(const raisim::VecDyn &jointVel) { gv_ = jointVel; updateKinematics();}
 
   /**
    * set the generalized coordinsate of each joint in order.
@@ -980,7 +980,8 @@ class ArticulatedSystem : public Object {
    * @param[in] force the applied force in the world frame*/
   void setExternalForce(const std::string &frame_name, const Vec<3> &force) {
     auto &frame = getFrameByName(frame_name);
-    setExternalForce(frame.parentId, Frame::WORLD_FRAME, force, Frame::BODY_FRAME, frame.position);
+    Vec<3> force_b; force_b = frame.orientation * force;
+    setExternalForce(frame.parentId, Frame::BODY_FRAME, force_b, Frame::BODY_FRAME, frame.position);
   }
 
   /**
@@ -1493,6 +1494,10 @@ class ArticulatedSystem : public Object {
 
   void subContactPointVel(size_t pointId, Vec<3> &vel) final;
 
+  void addContactPointVel2(size_t pointId, Vec<3> &vel) final;
+
+  void subContactPointVel2(size_t pointId, Vec<3> &vel) final;
+
   void updateGenVelWithImpulse(size_t pointId, const Vec<3> &imp) final;
 
   void updateTimeStep(double dt) final;
@@ -1595,7 +1600,7 @@ class ArticulatedSystem : public Object {
   std::vector<MatDyn> MinvJT_T;
   std::vector<VecDyn> j_MinvJT_T1D;
   VecDyn tauStar_, tau_, tauFF_;
-  VecDyn tauUpper_, tauLower_; // bounds
+  VecDyn tauUpper_, tauLower_, velLimits_; // bounds
   std::vector<size_t> bodyIdx2GvIdx, bodyIdx2GcIdx;
 
   std::vector<SparseJacobian> J_;
