@@ -2,36 +2,36 @@
 Sensors
 #############################
 **The implementations of sensor modules are highly experimental at this stage.**
+**This documentation is only for the internal alpha testers.**
 
 This module provides a way to specify sensor properties using a URDF-like format.
 We provide a few implementation examples for depth and RGB cameras.
 Please note that the API of this module will likely change in the future.
 
-At KAIST, we use RaiSim to interface with the real hardware.
+We use RaiSim to interface with the real hardware.
 This makes sense because we want to use the same code to control both the simulated and real robot.
 This sensor package is also designed for real robots as well.
 This might confuse some people but it makes the code simpler and shorter.
 
+
 How to attach a sensor to a link
 ----------------------------------
-
 Before further explanations, we clarify some terms that will be used throughout this documentations.
 **"sensor"** is a part which outputs a single type of information. For examples, RGB cameras, depth cameras, gyroscope, etc.
-**"sensor_set"** is a set of sensors contained in a single link. For examples, Intel Realsense(it contains imu+rgb+depth), IMU (gyro and accelerometer).
-sensor_set is a link.
-You can specify
+**"sensor_set"** is a set of sensors contained in a single link.
+For examples, Intel Realsense(it contains imu+rgb+depth), IMU (gyro and accelerometer).
+However, a sensor_set can contain only a single sensor.
 
-1. raisim: Top most node.
-    1. <attribute> ``version`` : Describes the version of RaiSim that created the configuration file. The file might be read by different version.
-    2. <child> (optional) ``material`` : For more information and examples, check out `here <https://raisim.com/sections/MaterialSystem.html>`_.
-        1. <child> (optional) ``default`` : If it doesn't exist, the default parameters are as described `here <https://raisim.com/sections/MaterialSystem.html>`_.
-            1. <attribute> ``friction`` [double]
-            2. <attribute> ``restitution`` [double]
-            3. <attribute> ``restitution_threshold`` [double]
-        2. <child> (optional, multiple) ``pair_prop``
-            1. <attribute> ``name1`` [string]
-            2. <attribute> ``name2`` [string]
-            3. <attribute> ``friction`` [double]
-            4. <attribute> ``restitution`` [double]
-            5. <attribute> ``restitution_threshold`` [double]
-    3. <child> (optional) ``gravity``
+Create a link for a sensor_set and give it a ``sensor`` attribute as
+
+.. code-block:: xml
+
+    <link name="realsense_d435" sensor="realsense435.xml"/>
+
+The "realsense435.xml" file specifies all necessary details of the sensor.
+It should be stored in the same directory as the URDF file.
+If it is not found, raisim will search the following directories in order: ``[urdf_dir]/sensor``, ``[urdf_dir]/sensors``, ``[urdf_dir]/..`` and ``[urdf_dir]/../sensors``.
+
+Any example of an sensor sml file can be found in ``rsc/anymal_c/sensors``.
+A more formal xml definitions will be uploaded once the module is expanded and tested enough.
+
