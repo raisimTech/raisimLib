@@ -23,6 +23,7 @@
 #include "raisim/object/singleBodies/Mesh.hpp"
 #include "raisim/contact/BisectionContactSolver.hpp"
 #include "raisim/constraints/PinConstraint.hpp"
+#include "raisim/Sensors.hpp"
 
 namespace raisim {
 
@@ -344,12 +345,12 @@ class ArticulatedSystem : public Object {
   /**
    * set the generalized velocity
    * @param[in] jointVel the generalized velocity*/
-  void setGeneralizedVelocity(const Eigen::VectorXd &jointVel) { gv_ = jointVel; updateKinematics();}
+  void setGeneralizedVelocity(const Eigen::VectorXd &jointVel) { gv_ = jointVel; }
 
   /**
    * set the generalized velocity
    * @param[in] jointVel the generalized velocity*/
-  void setGeneralizedVelocity(const raisim::VecDyn &jointVel) { gv_ = jointVel; updateKinematics();}
+  void setGeneralizedVelocity(const raisim::VecDyn &jointVel) { gv_ = jointVel; }
 
   /**
    * set the generalized coordinsate of each joint in order.
@@ -1459,6 +1460,18 @@ class ArticulatedSystem : public Object {
    */
   const std::vector<size_t>& getParentVector() const { return parent; }
 
+  /*
+   * @return sensor of the specified type
+   */
+  template<class T>
+  T* getSensor(const std::string& name) {
+    RSFATAL_IF(sensors_.find(name) == sensors_.end(), "Cannot find \""<<name<<"\"")
+    auto sensor = sensors_.find(name)->second;
+    RSFATAL_IF(sensor->getType() != T::getType(), "Type mismatch. "
+        << name << " has a type of " << toString(sensor->getType()) << " and the requested type is " << toString(T::getType()))
+    return reinterpret_cast<T*>(sensor.get());
+  }
+
   // not recommended for users. only for developers
   void addConstraints(const std::vector<PinConstraintDefinition>& pinDef);
   void initializeConstraints();
@@ -1688,6 +1701,9 @@ class ArticulatedSystem : public Object {
 
   std::vector<AbaData, AlignedAllocator<AbaData, 32>> ad_;
   std::vector<AbaData3, AlignedAllocator<AbaData3, 32>> ad3_;
+
+  /// sensors
+  std::unordered_map<std::string, std::shared_ptr<Sensor>> sensors_;
 };
 }
 
