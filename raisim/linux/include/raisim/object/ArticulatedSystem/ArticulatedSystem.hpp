@@ -345,12 +345,12 @@ class ArticulatedSystem : public Object {
   /**
    * set the generalized velocity
    * @param[in] jointVel the generalized velocity*/
-  void setGeneralizedVelocity(const Eigen::VectorXd &jointVel) { gv_ = jointVel; }
+  void setGeneralizedVelocity(const Eigen::VectorXd &jointVel) { gv_ = jointVel; updateKinematics();}
 
   /**
    * set the generalized velocity
    * @param[in] jointVel the generalized velocity*/
-  void setGeneralizedVelocity(const raisim::VecDyn &jointVel) { gv_ = jointVel; }
+  void setGeneralizedVelocity(const raisim::VecDyn &jointVel) { gv_ = jointVel; updateKinematics();}
 
   /**
    * set the generalized coordinsate of each joint in order.

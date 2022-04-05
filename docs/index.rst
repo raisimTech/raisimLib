@@ -69,6 +69,7 @@ The geometric model is created using the Full-body musculoskeletal model in Raja
    sections/HeightMap
    sections/Constraints
    sections/RayTest
+   sections/Sensors
 
 .. toctree::
    :maxdepth: 1
