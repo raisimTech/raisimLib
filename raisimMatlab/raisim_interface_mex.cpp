@@ -363,7 +363,6 @@ void mexFunction(
       CHECK_INPUT_SIZE(2)
       bodyIdx = 0;
     }
-
     raisim::Vec<3> impulse;
     raisim::Vec<3> position;
     std::vector<raisim::Vec<3>> impulseLists;
@@ -372,22 +371,20 @@ void mexFunction(
 
     // "vector<string>" convert to  matlab "cell" type
     impulse.setZero();
-
-    for (auto& contact : obj->getContacts())
-      if (contact.getlocalBodyIndex() == bodyIdx) {
+    for (auto& contact : obj->getContacts()) {
+      if (contact.getlocalBodyIndex() == bodyIdx && !contact.skip()) {
         raisim::matvecmul(contact.getContactFrame(), contact.getImpulse(), impulse);
-        if(!contact.isObjectA())
+        if (!contact.isObjectA())
           impulse *= -1.;
         impulse /= world_->getTimeStep();
         impulseLists.push_back(impulse);
         positionLists.push_back(contact.getPosition());
-        nameLists.push_back(world_->getObjList()[contact.getPairObjectIndex()]->getName());        
+        nameLists.push_back(world_->getObjList()[contact.getPairObjectIndex()]->getName());
       }
-
+    }
     plhs[0] = mxCreateDoubleMatrix(3, impulseLists.size(), mxREAL);
     plhs[1] = mxCreateDoubleMatrix(3, impulseLists.size(), mxREAL);
     plhs[2] = mxCreateCellMatrix(impulseLists.size(), 1);
-
     for (size_t k = 0; k < impulseLists.size(); k++) {
       memcpy(mxGetPr(plhs[0]) + k * 3, impulseLists[k].ptr(),
              sizeof(double) * 3);

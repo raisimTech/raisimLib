@@ -934,9 +934,11 @@ void init_world(py::module &m) {
             direction The direction of the ray.
             length The length of the ray.
             closestOnly Only stores the first collision.
+            objectId ignores collisions with an object with the same objectId and localId
+            localId ignores collisions with an object with the same objectId and localId
             collisionMask Collision mask to filter collisions. By default, it records collisions with all collision groups.
             @return A reference to the internal container which contains all ray collisions.
-        )mydelimiter", py::arg("start"), py::arg("direction"), py::arg("length"), py::arg("closestOnly") = true, py::arg("collisionMask") = raisim::CollisionGroup(-1))
+        )mydelimiter", py::arg("start"), py::arg("direction"), py::arg("length"), py::arg("closestOnly") = true, py::arg("objectId"), py::arg("localId"), py::arg("collisionMask") = raisim::CollisionGroup(-1))
       ;
 
   py::class_<RayCollisionItem>(m, "RayCollisionItem")
