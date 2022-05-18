@@ -448,12 +448,16 @@ class World {
    * @param[in] direction The direction of the ray.
    * @param[in] length The length of the ray.
    * @param[in] closestOnly Only stores the first collision.
+   * @param[in] objectId Collision with objects with both matching objectId and localId will be ignored. This can be useful if the sensor is attached to a robot.
+   * @param[in] localId Collision with objects with both matching objectId and localId will be ignored. This can be useful if the sensor is attached to a robot.
    * @param[in] collisionMask Collision mask to filter collisions. By default, it records collisions with all collision groups.
    * @return A reference to the internal container which contains all ray collisions. */
   const RayCollisionList& rayTest(const Eigen::Vector3d& start,
                                   const Eigen::Vector3d& direction,
                                   double length,
                                   bool closestOnly = true,
+                                  size_t objectId = size_t(-10),
+                                  size_t localId = size_t(-10),
                                   CollisionGroup collisionMask = CollisionGroup(-1));
 
   /**
