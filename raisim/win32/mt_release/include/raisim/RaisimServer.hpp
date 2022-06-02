@@ -615,7 +615,7 @@ class RaisimServer final {
                                bool glow = false, bool shadow = false) {
     if (_visualObjects.find(name) != _visualObjects.end()) RSFATAL("Duplicated visual object name: " + name)
     updateVisualConfig();
-    _visualObjects[name] = new Visuals();;
+    _visualObjects[name] = new Visuals();
     _visualObjects[name]->type = Visuals::VisualType::VisualBox;
     _visualObjects[name]->name = name;
     _visualObjects[name]->size[0] = xLength;

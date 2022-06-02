@@ -12,7 +12,6 @@
 #include <cstdlib>
 #include <iostream>
 #include <cmath>
-#include <Eigen/Dense>
 #include <raisim/Materials.hpp>
 #include "raisim/math.hpp"
 #include "raisim/contact/Contact.hpp"
