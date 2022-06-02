@@ -88,9 +88,9 @@ class DepthCamera final : public Sensor {
     } dataType = DataType::DEPTH_ARRAY;
 
     static DataType stringToDataType(const std::string& type) {
-      if(type == "coordinates" or type == "Coordinates")
+      if(type == "coordinates" || type == "Coordinates")
         return DataType::COORDINATE;
-      else if (type == "depth" or type == "Depth")
+      else if (type == "depth" || type == "Depth")
         return DataType::DEPTH_ARRAY;
       else return DataType::UNKNOWN;
     }
@@ -103,9 +103,9 @@ class DepthCamera final : public Sensor {
     } noiseType;
 
     static NoiseType stringToNoiseType(const std::string& type) {
-      if(type == "gaussian" or type == "Gaussian")
+      if(type == "gaussian" || type == "Gaussian")
         return NoiseType::GAUSSIAN;
-      else if (type == "uniform" or type == "Uniform")
+      else if (type == "uniform" || type == "Uniform")
         return NoiseType::UNIFORM;
       else
         return NoiseType::NO_NOISE;
@@ -183,9 +183,9 @@ class RGBCamera : public Sensor {
     } noiseType;
 
     static NoiseType stringToNoiseType(const std::string& type) {
-      if(type == "gaussian" or type == "Gaussian")
+      if(type == "gaussian" || type == "Gaussian")
         return NoiseType::GAUSSIAN;
-      else if (type == "uniform" or type == "Uniform")
+      else if (type == "uniform" || type == "Uniform")
         return NoiseType::UNIFORM;
       else
         return NoiseType::NO_NOISE;
