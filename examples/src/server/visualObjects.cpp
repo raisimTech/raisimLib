@@ -50,7 +50,10 @@ int main(int argc, char* argv[]) {
   for (int i=0; i<500000; i++) {
     counter++;
     visBox->color[2] = double((counter)%255+1)/256.;
-    visBox->setBoxSize(double((counter)%255+1)/256.+0.01, 1, 1);
+    visBox->setBoxSize(1, double((counter)%255+1)/256.+0.01, 1);
+    visCapsule->setCapsuleSize(double((counter)%255+1)/256.+0.01, 1);
+    visCylinder->setCapsuleSize(double((counter)%255+1)/256.+0.01, 1);
+
     visSphere->color[1] = double((counter)%255+1)/256.;
     raisim::MSLEEP(2);
 
