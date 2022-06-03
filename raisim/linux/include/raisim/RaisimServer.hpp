@@ -1433,7 +1433,7 @@ class RaisimServer final {
   bool screenShotReady_ = false;
 
   // version
-  constexpr static int version_ = 10005;
+  constexpr static int version_ = 10006;
 
   class Chart {
    public:
