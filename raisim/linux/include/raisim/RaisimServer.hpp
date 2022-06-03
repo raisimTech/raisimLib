@@ -954,31 +954,44 @@ class RaisimServer final {
         data_ = set(data_, (uint64_t) (dynamic_cast<ArticulatedSystem *>(ob)->getVisOb().size() +
                                       dynamic_cast<ArticulatedSystem *>(ob)->getVisColOb().size()));
 
-        for (uint64_t i = 0; i < 2; i++) {
-          std::vector<VisObject> *visOb;
-          if (i == 0)
-            visOb = &(dynamic_cast<ArticulatedSystem *>(ob)->getVisOb());
-          else
-            visOb = &(dynamic_cast<ArticulatedSystem *>(ob)->getVisColOb());
+        auto& visOb = dynamic_cast<ArticulatedSystem *>(ob)->getVisOb();
+        for (uint64_t k = 0; k < visOb.size(); k++) {
+          auto &vob = visOb[k];
+          std::string name = std::to_string(ob->getIndexInWorld()) +
+                             "/" + std::to_string(0) + "/" +
+                             std::to_string(k);
+          data_ = set(data_, name);
 
-          for (uint64_t k = 0; k < (*visOb).size(); k++) {
-            auto &vob = (*visOb)[k];
-            std::string name = std::to_string(ob->getIndexInWorld()) +
-                "/" + std::to_string(i) + "/" +
-                std::to_string(k);
-            data_ = set(data_, name);
+          Vec<3> pos, offsetInWorld;
+          Vec<4> quat;
+          Mat<3, 3> bodyRotation, rot;
+          ob->getPosition(vob.localIdx, pos);
+          ob->getOrientation(vob.localIdx, bodyRotation);
+          matvecmul(bodyRotation, vob.offset, offsetInWorld);
+          matmul(bodyRotation, vob.rot, rot);
+          raisim::rotMatToQuat(rot, quat);
+          pos = pos + offsetInWorld;
+          data_ = set(data_, pos, quat);
+        }
 
-            Vec<3> pos, offsetInWorld;
-            Vec<4> quat;
-            Mat<3, 3> bodyRotation, rot;
-            ob->getPosition(vob.localIdx, pos);
-            ob->getOrientation(vob.localIdx, bodyRotation);
-            matvecmul(bodyRotation, vob.offset, offsetInWorld);
-            matmul(bodyRotation, vob.rot, rot);
-            raisim::rotMatToQuat(rot, quat);
-            pos = pos + offsetInWorld;
-            data_ = set(data_, pos, quat);
-          }
+        auto& colOb = dynamic_cast<ArticulatedSystem *>(ob)->getCollisionBodies();
+        for (uint64_t k = 0; k < colOb.size(); k++) {
+          auto &vob = colOb[k];
+          std::string name = std::to_string(ob->getIndexInWorld()) +
+                             "/" + std::to_string(1) + "/" +
+                             std::to_string(k);
+          data_ = set(data_, name);
+
+          Vec<3> pos, offsetInWorld;
+          Vec<4> quat;
+          Mat<3, 3> bodyRotation, rot;
+          ob->getPosition(vob.localIdx, pos);
+          ob->getOrientation(vob.localIdx, bodyRotation);
+          matvecmul(bodyRotation, vob.posOffset, offsetInWorld);
+          matmul(bodyRotation, vob.rotOffset, rot);
+          raisim::rotMatToQuat(rot, quat);
+          pos = pos + offsetInWorld;
+          data_ = set(data_, pos, quat);
         }
       } else if (ob->getObjectType() == ObjectType::COMPOUND) {
         auto *com = dynamic_cast<Compound *>(ob);
