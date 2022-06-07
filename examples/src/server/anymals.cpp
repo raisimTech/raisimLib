@@ -18,7 +18,8 @@ int main(int argc, char* argv[]) {
   world.setTimeStep(0.001);
 
   /// create objects
-  world.addGround(0, "gnd");
+  auto ground = world.addGround(0, "gnd");
+  ground->setAppearance("wheat");
   auto anymalB = world.addArticulatedSystem(binaryPath.getDirectory() + "\\rsc\\anymal\\urdf\\anymal.urdf");
   auto anymalC = world.addArticulatedSystem(binaryPath.getDirectory() + "\\rsc\\anymal_c\\urdf\\anymal.urdf");
 
