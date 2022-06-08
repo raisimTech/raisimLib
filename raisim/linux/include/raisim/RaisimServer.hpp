@@ -17,6 +17,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <errno.h>
+#include <poll.h>
 #elif WIN32
 #undef UNICODE
 #define WIN32_LEAN_AND_MEAN
@@ -393,7 +394,7 @@ class RaisimServer final {
           connected_ = false;
         }
 
-        if (!processRequests())
+        if (connected_ && !processRequests())
           connected_ = false;
 
         if (state_ == STATUS_HIBERNATING)
@@ -817,12 +818,57 @@ class RaisimServer final {
   bool isConnected() const { return connected_; }
 
  private:
+
+
+#if defined __linux__ || __APPLE__
+  inline bool hasPendingData(int seconds) {
+    struct pollfd fds[2];
+    int ret;
+
+    // 표준 입력에 대한 이벤트를 감시하기 위한 준비를 합니다.
+    fds[0].fd = STDIN_FILENO;
+    fds[0].events = POLLOUT;
+    ret = poll(fds, 2, 10000);
+    if ( ret == 0) {
+      RSWARN("The client failed to respond in 20 seconds. Looking for a new client");
+      return false;
+    } else if( ret == -1 ) {
+      RSWARN("The client error. Failed to communicate.");
+      return false;
+    }
+    return true;
+  }
+#elif WIN32
+ inline bool hasPendingData(int seconds) {
+   fd_set fds ;
+   int n ;
+   struct timeval tv ;
+   FD_ZERO(&fds) ;
+   FD_SET(client_, &fds) ;
+   tv.tv_sec = 20 ;
+   tv.tv_usec = 100000 ;
+   n = select ( server_fd+1, &fds, NULL, NULL, &tv ) ;
+   if ( n == 0) {
+     RSWARN("The client failed to respond in 20 seconds. Looking for a new client");
+     return false;
+   } else if( n == -1 ) {
+     RSWARN("The client error. Failed to communicate.");
+     return false;
+   }
+   return true;
+ }
+#endif
+
   inline bool processRequests() {
     using namespace server;
-
     data_ = &send_buffer[0];
     ClientMessageType type;
-    int recv_size = recv(client_, &receive_buffer[0], MAXIMUM_PACKET_SIZE, 0);
+    int recv_size = 0;
+
+    if (hasPendingData(20))
+      recv_size = recv(client_, &receive_buffer[0], MAXIMUM_PACKET_SIZE, 0);
+    else
+      return false;
 
     if (recv_size <= 0)
       return false;
@@ -918,6 +964,8 @@ class RaisimServer final {
         }
       }
       unlockVisualizationServerMutex();
+    } else {
+      RSWARN("Version mismatch. Make sure you have the correct visualizer version")
     }
 
     bool eom = false;
@@ -952,7 +1000,7 @@ class RaisimServer final {
       // set gc
       if (ob->getObjectType() == ObjectType::ARTICULATED_SYSTEM) {
         data_ = set(data_, (uint64_t) (dynamic_cast<ArticulatedSystem *>(ob)->getVisOb().size() +
-                                      dynamic_cast<ArticulatedSystem *>(ob)->getVisColOb().size()));
+            dynamic_cast<ArticulatedSystem *>(ob)->getVisColOb().size()));
 
         auto& visOb = dynamic_cast<ArticulatedSystem *>(ob)->getVisOb();
         for (uint64_t k = 0; k < visOb.size(); k++) {
@@ -1248,7 +1296,7 @@ class RaisimServer final {
           break;
 
         case MESH:
-          data_ = set(data_, dynamic_cast<SingleBodyObject *>(ob)->getAppearance());
+          data_ = set(data_, dynamic_cast<Mesh *>(ob)->getAppearance());
           data_ = set(data_, dynamic_cast<Mesh *>(ob)->getMeshFileName());
           data_ = set(data_, float(dynamic_cast<Mesh *>(ob)->getScale()));
           break;
