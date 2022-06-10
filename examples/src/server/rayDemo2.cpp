@@ -33,6 +33,7 @@ int main(int argc, char* argv[]) {
   auto hm = world.addHeightMap(0.0, 0.0, terrainProperties);
   auto robot = world.addArticulatedSystem(binaryPath.getDirectory() + "/rsc/husky/husky.urdf");
   robot->setName("smb");
+  hm->setAppearance("soil2");
   Eigen::VectorXd gc(robot->getGeneralizedCoordinateDim()), gv(robot->getDOF()), damping(robot->getDOF());
   gc.setZero(); gv.setZero();
   gc.segment<7>(0) << 0, 0, 2, 1, 0, 0, 0;

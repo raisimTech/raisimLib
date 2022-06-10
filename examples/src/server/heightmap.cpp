@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
   jointPgain.tail(12).setConstant(200.0);
   jointDgain.tail(12).setConstant(10.0);
 
-  const size_t N = 4;
+  const size_t N = 1;
 
   for (size_t i = 0; i < N; i++) {
     for (size_t j = 0; j < N; j++) {
