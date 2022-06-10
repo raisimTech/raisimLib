@@ -17,6 +17,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <errno.h>
+#include <poll.h>
 #elif WIN32
 #undef UNICODE
 #define WIN32_LEAN_AND_MEAN
@@ -817,24 +818,46 @@ class RaisimServer final {
   bool isConnected() const { return connected_; }
 
  private:
+
+
+#if defined __linux__ || __APPLE__
   inline bool hasPendingData(int seconds) {
-    fd_set fds ;
-    int n ;
-    struct timeval tv ;
-    FD_ZERO(&fds) ;
-    FD_SET(client_, &fds) ;
-    tv.tv_sec = 20 ;
-    tv.tv_usec = 100000 ;
-    n = select ( server_fd+1, &fds, NULL, NULL, &tv ) ;
-    if ( n == 0) {
+    struct pollfd fds[2];
+    int ret;
+
+    // 표준 입력에 대한 이벤트를 감시하기 위한 준비를 합니다.
+    fds[0].fd = STDIN_FILENO;
+    fds[0].events = POLLOUT;
+    ret = poll(fds, 2, 10000);
+    if ( ret == 0) {
       RSWARN("The client failed to respond in 20 seconds. Looking for a new client");
       return false;
-    } else if( n == -1 ) {
+    } else if( ret == -1 ) {
       RSWARN("The client error. Failed to communicate.");
       return false;
     }
     return true;
   }
+#elif WIN32
+ inline bool hasPendingData(int seconds) {
+   fd_set fds ;
+   int n ;
+   struct timeval tv ;
+   FD_ZERO(&fds) ;
+   FD_SET(client_, &fds) ;
+   tv.tv_sec = 20 ;
+   tv.tv_usec = 100000 ;
+   n = select ( server_fd+1, &fds, NULL, NULL, &tv ) ;
+   if ( n == 0) {
+     RSWARN("The client failed to respond in 20 seconds. Looking for a new client");
+     return false;
+   } else if( n == -1 ) {
+     RSWARN("The client error. Failed to communicate.");
+     return false;
+   }
+   return true;
+ }
+#endif
 
   inline bool processRequests() {
     using namespace server;
@@ -979,31 +1002,44 @@ class RaisimServer final {
         data_ = set(data_, (uint64_t) (dynamic_cast<ArticulatedSystem *>(ob)->getVisOb().size() +
             dynamic_cast<ArticulatedSystem *>(ob)->getVisColOb().size()));
 
-        for (uint64_t i = 0; i < 2; i++) {
-          std::vector<VisObject> *visOb;
-          if (i == 0)
-            visOb = &(dynamic_cast<ArticulatedSystem *>(ob)->getVisOb());
-          else
-            visOb = &(dynamic_cast<ArticulatedSystem *>(ob)->getVisColOb());
+        auto& visOb = dynamic_cast<ArticulatedSystem *>(ob)->getVisOb();
+        for (uint64_t k = 0; k < visOb.size(); k++) {
+          auto &vob = visOb[k];
+          std::string name = std::to_string(ob->getIndexInWorld()) +
+                             "/" + std::to_string(0) + "/" +
+                             std::to_string(k);
+          data_ = set(data_, name);
 
-          for (uint64_t k = 0; k < (*visOb).size(); k++) {
-            auto &vob = (*visOb)[k];
-            std::string name = std::to_string(ob->getIndexInWorld()) +
-                "/" + std::to_string(i) + "/" +
-                std::to_string(k);
-            data_ = set(data_, name);
+          Vec<3> pos, offsetInWorld;
+          Vec<4> quat;
+          Mat<3, 3> bodyRotation, rot;
+          ob->getPosition(vob.localIdx, pos);
+          ob->getOrientation(vob.localIdx, bodyRotation);
+          matvecmul(bodyRotation, vob.offset, offsetInWorld);
+          matmul(bodyRotation, vob.rot, rot);
+          raisim::rotMatToQuat(rot, quat);
+          pos = pos + offsetInWorld;
+          data_ = set(data_, pos, quat);
+        }
 
-            Vec<3> pos, offsetInWorld;
-            Vec<4> quat;
-            Mat<3, 3> bodyRotation, rot;
-            ob->getPosition(vob.localIdx, pos);
-            ob->getOrientation(vob.localIdx, bodyRotation);
-            matvecmul(bodyRotation, vob.offset, offsetInWorld);
-            matmul(bodyRotation, vob.rot, rot);
-            raisim::rotMatToQuat(rot, quat);
-            pos = pos + offsetInWorld;
-            data_ = set(data_, pos, quat);
-          }
+        auto& colOb = dynamic_cast<ArticulatedSystem *>(ob)->getCollisionBodies();
+        for (uint64_t k = 0; k < colOb.size(); k++) {
+          auto &vob = colOb[k];
+          std::string name = std::to_string(ob->getIndexInWorld()) +
+                             "/" + std::to_string(1) + "/" +
+                             std::to_string(k);
+          data_ = set(data_, name);
+
+          Vec<3> pos, offsetInWorld;
+          Vec<4> quat;
+          Mat<3, 3> bodyRotation, rot;
+          ob->getPosition(vob.localIdx, pos);
+          ob->getOrientation(vob.localIdx, bodyRotation);
+          matvecmul(bodyRotation, vob.posOffset, offsetInWorld);
+          matmul(bodyRotation, vob.rotOffset, rot);
+          raisim::rotMatToQuat(rot, quat);
+          pos = pos + offsetInWorld;
+          data_ = set(data_, pos, quat);
         }
       } else if (ob->getObjectType() == ObjectType::COMPOUND) {
         auto *com = dynamic_cast<Compound *>(ob);
