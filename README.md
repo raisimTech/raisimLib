@@ -9,12 +9,14 @@ Documentation available on the [RaiSim Tech website](http://raisim.com).
 ## New update!
 
 RaisimUnreal (Alpha version) is now released. You can get it [here](https://github.com/raisimTech/raisimLib/releases).
+It is compiled only for Linux and Windows for now.
+We will share Mac version soon.
 
-![RaisimUnreal](http://github.com/jhwangbo/raisimLib/tree/master/docs/image/raisimUnreal1.png)
-![RaisimUnreal](http://github.com/jhwangbo/raisimLib/tree/master/docs/image/raisimUnreal2.png)
-![RaisimUnreal](http://github.com/jhwangbo/raisimLib/tree/master/docs/image/raisimUnreal3.png)
-![RaisimUnreal](http://github.com/jhwangbo/raisimLib/tree/master/docs/image/raisimUnreal4.png)
-![RaisimUnreal](http://github.com/jhwangbo/raisimLib/tree/master/docs/image/raisimUnreal5.png)
+![RaisimUnreal](docs/image/raisimUnreal1.png)
+![RaisimUnreal](docs/image/raisimUnreal2.png)
+![RaisimUnreal](docs/image/raisimUnreal3.png)
+![RaisimUnreal](docs/image/raisimUnreal4.png)
+![RaisimUnreal](docs/image/raisimUnreal5.png)
 
 ## License
 
