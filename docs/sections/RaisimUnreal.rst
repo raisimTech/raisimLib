@@ -56,9 +56,97 @@ Available appearances are as shown
 Ground
 ----------
 
+.. image:: ../image/RUnrealterrain_wheat.png
+  :alt: raisimUnreal
+  :width: 800
+"wheat"
+
+.. image:: ../image/RUnrealterrain_marble1.png
+  :alt: raisimUnreal
+  :width: 800
+"marble1"
+
+.. image:: ../image/RUnrealterrain_marble2.png
+  :alt: raisimUnreal
+  :width: 800
+"marble2"
+
+.. image:: ../image/RUnrealterrain_marble3.png
+  :alt: raisimUnreal
+  :width: 800
+"marble3"
+
+.. image:: ../image/RUnrealterrain_wood1.png
+  :alt: raisimUnreal
+  :width: 800
+"wood1"
+
+.. image:: ../image/RUnrealterrain_wood2.png
+  :alt: raisimUnreal
+  :width: 800
+"wood2"
+
+.. image:: ../image/RUnrealterrain_dune.png
+  :alt: raisimUnreal
+  :width: 800
+"dune"
+
+.. image:: ../image/RUnrealterrain_snow.png
+  :alt: raisimUnreal
+  :width: 800
+"snow"
+
+.. image:: ../image/RUnrealterrain_steel.png
+  :alt: raisimUnreal
+  :width: 800
+"steel"
+
 Heightmap
 ----------
+.. image:: ../image/RUnrealHm_marble1.png
+  :alt: raisimUnreal
+  :width: 800
+"marble1"
 
+.. image:: ../image/RUnrealHm_marble2.png
+  :alt: raisimUnreal
+  :width: 800
+"marble2"
+
+.. image:: ../image/RUnrealHm_marble3.png
+  :alt: raisimUnreal
+  :width: 800
+"marble3"
+
+.. image:: ../image/RUnrealHm_marble4.png
+  :alt: raisimUnreal
+  :width: 800
+"marble4"
+
+.. image:: ../image/RUnrealHm_soil1.png
+  :alt: raisimUnreal
+  :width: 800
+"soil1"
+
+.. image:: ../image/RUnrealHm_soil2.png
+  :alt: raisimUnreal
+  :width: 800
+"soil2"
+
+.. image:: ../image/RUnrealHm_wood1.png
+  :alt: raisimUnreal
+  :width: 800
+"wood1"
+
+.. image:: ../image/RUnrealHm_wood2.png
+  :alt: raisimUnreal
+  :width: 800
+"wood2"
+
+.. image:: ../image/RUnrealHm_steel.png
+  :alt: raisimUnreal
+  :width: 800
+"steel"
 
 Troubleshooting and bug reporting
 ==================================
