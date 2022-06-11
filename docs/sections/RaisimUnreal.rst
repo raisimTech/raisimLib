@@ -1,5 +1,5 @@
 #############################
-RaiSim Unreal - ALPHA
+RaiSimUnreal - ALPHA
 #############################
 
 Introduction
@@ -47,8 +47,17 @@ To use RaisimUnreal, you do not have to commit anything.
 From the server side, it is absolutely the same as raisimUnity.
 All you have to do is to create the server instance and launch it (check ``examples/server``).
 
+Textures/Types
+==================================
 
+You can set complex appearance (i.e., types/textures) on ``Ground`` and ``HeightMap``.
+Available appearances are as shown
 
+Ground
+----------
+
+Heightmap
+----------
 
 
 Troubleshooting and bug reporting

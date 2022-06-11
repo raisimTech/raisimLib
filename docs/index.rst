@@ -78,5 +78,5 @@ The geometric model is created using the Full-body musculoskeletal model in Raja
    sections/RaisimGymTorch
    sections/RaiSimPy
    sections/RaisimUnity
-   sections/RaisimUnreal - ALPHA
+   sections/RaiSimUnreal - ALPHA
    sections/RaiSimMatlab
