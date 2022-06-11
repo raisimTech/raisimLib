@@ -32,7 +32,7 @@ RaisimUnity
 *  runs on a separate process
 *  works well in Linux, Mac and Windows
 
-RaisimUnreal - Beta
+RaisimUnreal - Alpha
 *********************
 
 .. image:: ../image/raisimUnreal1.png
@@ -67,39 +67,39 @@ Here is a comparison between RaisimUnity and RaisimUnreal.
 *  **Graphics Quality (my personal opinion)**
 
    *  **RaisimUnity**: 7/10.
-   *  **RaisimUnreal**: 9/10 (Somehow the quality is lower in Linux. This might be due to a driver issue.).
+   *  **RaisimUnreal**: 10/10 (Somehow the quality is lower in Linux. This might be due to a driver issue.).
 
 *  **Compatibility**
 
-   *  **RaisimUnity**: There is an alternate Opengl version for compatibility because many old or integrated GPU's do not have a properly vulkan-supported gpu driver on Linux.
+   *  **RaisimUnity**: There is an alternate Opengl version for compatibility because many old or integrated GPU's do not have a proper vulkan-supporting GPU driver on Linux.
    *  **RaisimUnreal**: Not tested at all. I need your feedback on this. If you find issues, please post it on the github issue.
 
-*  **GPU utilization (based on a few examples on my pc).**
+*  **GPU utilization (based on a few examples on my pc)**
 
    *  **RaisimUnity**: 90%.
-   *  **RaisimUnreal**: 98% (also it runs much faster in Windows. It seems like the Unreal Engine is working well on Linux).
+   *  **RaisimUnreal**: 98% (it runs much faster in Windows. It seems like the Unreal Engine is not working well on Linux. In addition, the weather preset affects the performance significantly).
 
-*  **GPU memory usage (with raisim examples).**
+*  **GPU memory usage (with raisim examples)**
 
    *  **RaisimUnity**: ~2Gb.
    *  **RaisimUnreal**: ~2Gb.
 
-*  **Mesh loading time.**
+*  **Mesh loading time**
 
    *  **RaisimUnity**: Very fast.
-   *  **RaisimUnreal**: Terribly slow! It also lacks a mechanism to instancing a mesh. This means that if you have 100 robots in the scene, it will create the same meshes 100 times.
+   *  **RaisimUnreal**: Terribly slow! It also lacks a mechanism for instancing a mesh. This means that if you have 100 robots in the scene, it will create the same meshes 100 times.
 
-*  **Support.**
+*  **Support**
 
    *  **RaisimUnity**: Will be supported and bug-fixed.
-   *  **RaisimUnreal**: New visualization feature developments will be on raisimUnreal as it seems like a more promising option. Because Unreal is using C++, It is much easier to develop Simulation API (not just the visualization). This might come sometime this year (2022).
+   *  **RaisimUnreal**: New visualization developments will be on raisimUnreal as it seems like a more promising option. Because Unreal is using C++, It is much easier to develop Simulation API (not just the visualization) as well. This might come sometime this year (2022).
 
-*  **Graphs (time series and bar charts).**
+*  **Graphs (time series and bar charts)**
 
    *  **RaisimUnity**: none.
    *  **RaisimUnreal**: RaisimUnreal uses Kantan Chart to visualize user created graphs from the server. It can be a convenient way to visualize the training process. Check the ``examples/atlas.cpp`` for usage.
 
-*  **Vidoes Recording.**
+*  **Vidoes Recording**
 
    *  **RaisimUnity**: Works in Linux.
    *  **RaisimUnreal**: Will be implemented soon.
@@ -118,7 +118,7 @@ System Requirements
 
 Example code
 ===================
-Here is an example of an RaiSim application code.
+Here is an example of an RaiSim application code. You can visualize it using either raisimUnity or raisimUnreal.
 
 .. code-block:: c
 

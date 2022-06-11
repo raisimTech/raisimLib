@@ -1,9 +1,1 @@
 error logs 
-System.Exception: RsUnityRemote: UpdateObjectPosition
-Server is terminating
-  at raisimUnity.RsUnityRemote.ReadAndCheckServer (raisimUnity.ClientMessageType type) [0x001b7] in <cbb72345716a4c67b94b5cb002e36377>:0 
-  at raisimUnity.RsUnityRemote.Update () [0x002c6] in <cbb72345716a4c67b94b5cb002e36377>:0 
-  at raisimUnity.RsuException..ctor (System.Exception ex, System.String message) [0x00037] in <cbb72345716a4c67b94b5cb002e36377>:0 
-  at raisimUnity.RsUnityRemote.Update () [0x0030f] in <cbb72345716a4c67b94b5cb002e36377>:0 
- 
-
