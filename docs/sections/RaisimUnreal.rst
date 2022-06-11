@@ -1,0 +1,69 @@
+#############################
+RaiSimUnreal - ALPHA
+#############################
+
+Introduction
+=====================
+
+RaisimUnreal is a visualization client, just like RaisimUnity.
+The simulation process should launch RaisimServer in order to communicate.
+Once the server is running, RaisimUnreal can connect to it and obtain visualization information.
+
+You can get raisimUnreal in the `release tab <https://github.com/raisimTech/raisimLib/releases>`_.
+Here is a few example rendering shots
+
+.. image:: ../image/raisimUnreal1.png
+  :alt: raisimUnreal1
+  :width: 800
+|
+|
+.. image:: ../image/raisimUnreal2.png
+  :alt: raisimUnreal2
+  :width: 800
+|
+|
+.. image:: ../image/raisimUnreal3.png
+  :alt: raisimUnreal3
+  :width: 800
+|
+|
+.. image:: ../image/raisimUnreal4.png
+  :alt: raisimUnreal4
+  :width: 800
+|
+|
+.. image:: ../image/raisimUnreal5.png
+  :alt: raisimUnreal5
+  :width: 800
+|
+|
+Compared to other visualizers, RaisimUnreal looks absolutely stunning.
+However, it is much like video games and you need a good GPU.
+Do not use it during training.
+It will use 100% of your GPU to get the highest fps (capped at 120 fps).
+It can be used for visualization after training.
+
+To use RaisimUnreal, you do not have to commit anything.
+From the server side, it is absolutely the same as raisimUnity.
+All you have to do is to create the server instance and launch it (check ``examples/server``).
+
+Textures/Types
+==================================
+
+You can set complex appearance (i.e., types/textures) on ``Ground`` and ``HeightMap``.
+Available appearances are as shown
+
+Ground
+----------
+
+Heightmap
+----------
+
+
+Troubleshooting and bug reporting
+==================================
+
+Just like raisimUnity, raisimUnreal creates a log file ``Error_Log.txt`` inside the raisimUnreal2 folder.
+It it is not working properly, please read the log first.
+If you cannot figure it out yourself, you can post an issue with the log file.
+
