@@ -58,94 +58,94 @@ Ground
 
 .. image:: ../image/RUnrealterrain_wheat.png
   :alt: raisimUnreal
-  :width: 800
+  :width: 400
 "wheat"
 
 .. image:: ../image/RUnrealterrain_marble1.png
   :alt: raisimUnreal
-  :width: 800
+  :width: 400
 "marble1"
 
 .. image:: ../image/RUnrealterrain_marble2.png
   :alt: raisimUnreal
-  :width: 800
+  :width: 400
 "marble2"
 
 .. image:: ../image/RUnrealterrain_marble3.png
   :alt: raisimUnreal
-  :width: 800
+  :width: 400
 "marble3"
 
 .. image:: ../image/RUnrealterrain_wood1.png
   :alt: raisimUnreal
-  :width: 800
+  :width: 400
 "wood1"
 
 .. image:: ../image/RUnrealterrain_wood2.png
   :alt: raisimUnreal
-  :width: 800
+  :width: 400
 "wood2"
 
 .. image:: ../image/RUnrealterrain_dune.png
   :alt: raisimUnreal
-  :width: 800
+  :width: 400
 "dune"
 
 .. image:: ../image/RUnrealterrain_snow.png
   :alt: raisimUnreal
-  :width: 800
+  :width: 400
 "snow"
 
 .. image:: ../image/RUnrealterrain_steel.png
   :alt: raisimUnreal
-  :width: 800
+  :width: 400
 "steel"
 
 Heightmap
 ----------
 .. image:: ../image/RUnrealHm_marble1.png
   :alt: raisimUnreal
-  :width: 800
+  :width: 400
 "marble1"
 
 .. image:: ../image/RUnrealHm_marble2.png
   :alt: raisimUnreal
-  :width: 800
+  :width: 400
 "marble2"
 
 .. image:: ../image/RUnrealHm_marble3.png
   :alt: raisimUnreal
-  :width: 800
+  :width: 400
 "marble3"
 
 .. image:: ../image/RUnrealHm_marble4.png
   :alt: raisimUnreal
-  :width: 800
+  :width: 400
 "marble4"
 
 .. image:: ../image/RUnrealHm_soil1.png
   :alt: raisimUnreal
-  :width: 800
+  :width: 400
 "soil1"
 
 .. image:: ../image/RUnrealHm_soil2.png
   :alt: raisimUnreal
-  :width: 800
+  :width: 400
 "soil2"
 
 .. image:: ../image/RUnrealHm_wood1.png
   :alt: raisimUnreal
-  :width: 800
+  :width: 400
 "wood1"
 
 .. image:: ../image/RUnrealHm_wood2.png
   :alt: raisimUnreal
-  :width: 800
+  :width: 400
 "wood2"
 
 .. image:: ../image/RUnrealHm_steel.png
   :alt: raisimUnreal
-  :width: 800
+  :width: 400
 "steel"
 
 Troubleshooting and bug reporting
