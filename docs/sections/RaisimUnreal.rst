@@ -1,5 +1,5 @@
 #############################
-RaiSimUnreal - ALPHA
+RaisimUnreal
 #############################
 
 Introduction
