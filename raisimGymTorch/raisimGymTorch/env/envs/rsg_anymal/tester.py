@@ -56,8 +56,9 @@ else:
 
     # max_steps = 1000000
     max_steps = 1000 ## 10 secs
-
+    
     for step in range(max_steps):
+        
         time.sleep(0.01)
         obs = env.observe(False)
         action_ll = loaded_graph.architecture(torch.from_numpy(obs).cpu())

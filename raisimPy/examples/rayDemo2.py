@@ -53,11 +53,15 @@ for i in range(10000000000):
             normInv = 1. / math.sqrt(pitch * pitch + 1)
             direction = np.mat([np.cos(yaw) * normInv, np.sin(yaw) * normInv, -pitch * normInv], dtype=np.float64)
             rayDirection = lidarOri.dot(direction.transpose())
+            
+           
             col = world.rayTest(lidarPos, rayDirection, 30)
             if col.size() > 0:
                 scans[i * scanSize2 + j].setPosition(col.at(0).getPosition())
             else:
                 scans[i * scanSize2 + j].setPosition(np.array([0, 0, 100]))
+           
+            
 
     robot.setGeneralizedForce(np.array([0, 0, 0, 0, 0, 0, -20, -20, -20, -20]))
     gc = robot.getGeneralizedCoordinate()

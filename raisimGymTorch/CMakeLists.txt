@@ -25,6 +25,7 @@ ENDMACRO()
 set(Dependencies)
 
 add_subdirectory(../thirdParty/pybind11 pybind11)
+set(Eigen3_DIR "C:/Users/edued/Documents/Universidad/Tesis/raisim_workspace/raisimLib/thirdParty/Eigen3/share/eigen3/cmake")
 find_package(Eigen3 REQUIRED)
 
 if (APPLE)
@@ -66,7 +67,6 @@ elseif(WIN32)
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_SOURCE_DIR}/raisimGymTorch/env/bin)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_SOURCE_DIR}/raisimGymTorch/env/bin)
 endif()
-
 find_package(raisim CONFIG REQUIRED)
 
 #######################
