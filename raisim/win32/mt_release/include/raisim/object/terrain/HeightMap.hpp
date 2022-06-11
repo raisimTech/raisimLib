@@ -46,7 +46,7 @@ class HeightMap final : public SingleBodyObject {
             const Eigen::VectorXd &heightIn) :
       SingleBodyObject(HEIGHTMAP) {
     height_.reserve(heightIn.rows());
-    for(size_t i=0; i<heightIn.rows(); i++)
+    for(size_t i=0; i<size_t(heightIn.rows()); i++)
       height_.push_back(heightIn[i]);
     init(xSamples, ysamples, xSize, ySize, centerX, centerY);
   }
@@ -58,8 +58,8 @@ class HeightMap final : public SingleBodyObject {
             const Eigen::MatrixXd &heightIn) :
       SingleBodyObject(HEIGHTMAP) {
     height_.reserve(heightIn.rows() * heightIn.cols());
-    for(size_t i=0; i<heightIn.rows(); i++)
-        for(size_t j=0; i<heightIn.cols(); j++)
+    for(size_t i=0; i<size_t(heightIn.rows()); i++)
+        for(size_t j=0; i<size_t(heightIn.cols()); j++)
           height_.push_back(heightIn(i,j));
     init(heightIn.rows(), heightIn.cols(), xSize, ySize, centerX, centerY);
   }

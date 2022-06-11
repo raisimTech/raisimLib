@@ -19,7 +19,8 @@ int main(int argc, char* argv[]) {
   world.setTimeStep(0.001);
 
   /// create objects
-  world.addGround();
+  auto ground = world.addGround();
+  ground->setAppearance("steel");
   auto aliengo = world.addArticulatedSystem(binaryPath.getDirectory() + "\\rsc\\aliengo\\aliengo.urdf");
 
   /// aliengo joint PD controller

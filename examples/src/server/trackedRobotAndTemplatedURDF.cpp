@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
   dGain.setConstant(50.0);
 
   for (auto wheel: wheelGv)
-    dTarget[wheel] = 2.0;
+    dTarget[wheel] = 5.0;
 
   for (auto flipper: flipperGv) {
     pGain[flipper] = 250.0;

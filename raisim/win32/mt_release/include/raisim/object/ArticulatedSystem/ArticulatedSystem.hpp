@@ -905,7 +905,7 @@ class ArticulatedSystem : public Object {
   const std::vector<raisim::Vec<3>> &getBodyCOM_B() const { return comPos_B; }
 
   /**
- * @return a reference to the position of the center of the mass of each body in the world frame.*/
+   * @return a reference to the position of the center of the mass of each body in the world frame.*/
   std::vector<raisim::Vec<3>> &getBodyCOM_W() { return comPos_W; }
   const std::vector<raisim::Vec<3>> &getBodyCOM_W() const { return comPos_W; }
 

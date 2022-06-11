@@ -15,56 +15,110 @@ However, it is a generic rigid-body simulator and can simulate any rigid body ve
 
 Visualizer
 =====================
-There are two options available for visualization.
+There are three options available for visualization.
 Most of the examples included in this repo requires raisimUnity to visualize.
 You have to run raisimUnity before running the examples.
 
-
-
-raisimUnity
+RaisimUnity
 ***************
-.. image:: ../image/raisimUnity.png
+
+.. image:: ../image/raisimUnity4.png
   :alt: raisimUnity
   :width: 600
 
-* **If this doesn't work on your linux machine, try raisimUnityOpengl, which is a stripped-down version**
-* binaries included in the ``raisimUnity`` directory
-* easy to use but less features
-* runs as a separate process
-* works well in Linux, Mac and Windows
-* source code available `here <https://github.com/raisimTech/raisimUnity>`_ under the MIT license. Written in C#
+*  **If this doesn't work on your linux machine, try raisimUnityOpengl, which is a stripped-down version**
+*  binaries included in the ``raisimUnity`` directory
+*  easy to use but less features
+*  runs on a separate process
+*  works well in Linux, Mac and Windows
 
+RaisimUnreal - Alpha
+*********************
 
-raisimOgre
+.. image:: ../image/raisimUnreal1.png
+  :alt: raisimUnity
+  :width: 600
+
+*  Currently available in Widnows and Linux
+*  Not well tested yet
+*  Easy to use.
+*  Can visualize graphs and bar charts
+*  runs on a separate process
+*  Closed source
+
+RaisimOgre
 ************
 
 .. image:: ../image/raisimOgre.png
   :alt: raisimOgre
   :width: 420
 
-* harder to use but rich in features
-* works well in Linux. Should work in other two major OS's but not tested
-* easy to customize. Only C++ code
-* source code available `here <https://github.com/raisimTech/raisimogre>`_ under the MIT license
+*  harder to use but rich in features
+*  works well in Linux. Should work in other two major OS's but not tested
+*  easy to customize. Only C++ code
+*  source code available `here <https://github.com/raisimTech/raisimogre>`_ under the MIT license
+
+
+Comparison between RaisimUnity and RaisimUnreal
+==================================================
+
+Here is a comparison between RaisimUnity and RaisimUnreal.
+
+*  **Graphics Quality (my personal opinion)**
+
+   *  **RaisimUnity**: 7/10.
+   *  **RaisimUnreal**: 10/10 (Somehow the quality is lower in Linux. This might be due to a driver issue.).
+
+*  **Compatibility**
+
+   *  **RaisimUnity**: There is an alternate Opengl version for compatibility because many old or integrated GPU's do not have a proper vulkan-supporting GPU driver on Linux.
+   *  **RaisimUnreal**: Not tested at all. I need your feedback on this. If you find issues, please post it on the github issue.
+
+*  **GPU utilization (based on a few examples on my pc)**
+
+   *  **RaisimUnity**: 90%.
+   *  **RaisimUnreal**: 98% (it runs much faster in Windows. It seems like the Unreal Engine is not working well on Linux. In addition, the weather preset affects the performance significantly).
+
+*  **GPU memory usage (with raisim examples)**
+
+   *  **RaisimUnity**: ~2Gb.
+   *  **RaisimUnreal**: ~2Gb.
+
+*  **Mesh loading time**
+
+   *  **RaisimUnity**: Very fast.
+   *  **RaisimUnreal**: Terribly slow! It also lacks a mechanism for instancing a mesh. This means that if you have 100 robots in the scene, it will create the same meshes 100 times.
+
+*  **Support**
+
+   *  **RaisimUnity**: Will be supported and bug-fixed.
+   *  **RaisimUnreal**: New visualization developments will be on raisimUnreal as it seems like a more promising option. Because Unreal is using C++, It is much easier to develop Simulation API (not just the visualization) as well. This might come sometime this year (2022).
+
+*  **Graphs (time series and bar charts)**
+
+   *  **RaisimUnity**: none.
+   *  **RaisimUnreal**: RaisimUnreal uses Kantan Chart to visualize user created graphs from the server. It can be a convenient way to visualize the training process. Check the ``examples/atlas.cpp`` for usage.
+
+*  **Vidoes Recording**
+
+   *  **RaisimUnity**: Works in Linux.
+   *  **RaisimUnreal**: Will be implemented soon.
 
 
 System Requirements
 =====================
 - **Linux**
-
     * We recommend ubuntu 16.04, 18.04 and 20.04 but RaiSim might work on other distributions. Works only on a X86 CPU with an AVX2 instruction set.
 
 - **Windows 10**
-
     * Visual Studio 2019. X86 CPU only.
 
 - **Mac**
-
     * Latest version. Requires the AVX2 instruction set. Works on both M1 (Apple ARM) and X86.
 
 Example code
 ===================
-Here is an example of an RaiSim application code.
+Here is an example of an RaiSim application code. You can visualize it using either raisimUnity or raisimUnreal.
 
 .. code-block:: c
 
