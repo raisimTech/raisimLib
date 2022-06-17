@@ -10,7 +10,7 @@ The simulation process should launch a RaisimServer in order to communicate with
 Once the server is running, RaisimUnreal can connect to it and obtain visualization information.
 
 You can get raisimUnreal in the `release tab <https://github.com/raisimTech/raisimLib/releases>`_.
-Here is a few example rendering shots
+Here are a few example shots from RaisimUnreal
 
 .. image:: ../image/raisimUnreal1.png
   :alt: raisimUnreal1
@@ -39,9 +39,12 @@ Here is a few example rendering shots
 |
 Compared to other visualizers, RaisimUnreal looks absolutely stunning.
 However, it is much like video games and you need a good GPU to get high fps.
+In windows, Unreal is highly optimized and it can produce high fps.
+However, Linux version is not as fast.
+
 Do not use it during training because otherwise it will slow down your training.
 It will use 100% of your GPU to get the highest fps.
-I perfer to use it for visualization of final policies after training.
+I prefer to use it for visualization of final policies after training.
 
 To use RaisimUnreal, you do not have to commit anything.
 From the server side, it is absolutely the same as raisimUnity.
