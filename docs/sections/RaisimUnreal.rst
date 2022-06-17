@@ -6,11 +6,11 @@ Introduction
 =====================
 
 RaisimUnreal is a visualization client, just like RaisimUnity.
-The simulation process should launch RaisimServer in order to communicate.
+The simulation process should launch a RaisimServer in order to communicate with RaisimUnreal.
 Once the server is running, RaisimUnreal can connect to it and obtain visualization information.
 
 You can get raisimUnreal in the `release tab <https://github.com/raisimTech/raisimLib/releases>`_.
-Here is a few example rendering shots
+Here are a few example shots from RaisimUnreal
 
 .. image:: ../image/raisimUnreal1.png
   :alt: raisimUnreal1
@@ -38,20 +38,23 @@ Here is a few example rendering shots
 |
 |
 Compared to other visualizers, RaisimUnreal looks absolutely stunning.
-However, it is much like video games and you need a good GPU.
-Do not use it during training.
-It will use 100% of your GPU to get the highest fps (capped at 120 fps).
-It can be used for visualization after training.
+However, it is much like video games and you need a good GPU to get high fps.
+In windows, Unreal is highly optimized and it can produce high fps.
+However, Linux version is not as fast.
+
+Do not use it during training because otherwise it will slow down your training.
+It will use 100% of your GPU to get the highest fps.
+I prefer to use it for visualization of final policies after training.
 
 To use RaisimUnreal, you do not have to commit anything.
 From the server side, it is absolutely the same as raisimUnity.
-All you have to do is to create the server instance and launch it (check ``examples/server``).
+All you have to do is to create the server instance and launch it (check the examples in ``examples/server``).
 
 Textures/Types
 ==================================
 
 You can set complex appearance (i.e., types/textures) on ``Ground`` and ``HeightMap``.
-Available appearances are as shown
+The available appearances are as shown
 
 Ground
 ----------
@@ -151,7 +154,7 @@ Heightmap
 Troubleshooting and bug reporting
 ==================================
 
-Just like raisimUnity, raisimUnreal creates a log file ``Error_Log.txt`` inside the raisimUnreal2 folder.
+RaisimUnreal creates a log file ``Error_Log.txt`` inside the raisimUnreal2 folder.
 It it is not working properly, please read the log first.
 If you cannot figure it out yourself, you can post an issue with the log file.
 
