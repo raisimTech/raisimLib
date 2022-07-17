@@ -50,15 +50,16 @@
 #include "raisim/World.hpp"
 #include "raisim/helper.hpp"
 #include "raisim/object/ArticulatedSystem/JointAndBodies.hpp"
+#include "raisim/Sensors.hpp"
 
 namespace raisim {
 
 class RaisimServer final {
  public:
   static constexpr int SEND_BUFFER_SIZE = 33554432;
-  static constexpr int MAXIMUM_PACKET_SIZE = 1024;
+  static constexpr int MAXIMUM_PACKET_SIZE = 32384;
   static constexpr int FOOTER_SIZE = sizeof(char);
-  static constexpr int RECEIVE_BUFFER_SIZE = 1024;
+  static constexpr int RECEIVE_BUFFER_SIZE = 33554432;
 
   enum ClientMessageType : int {
     REQUEST_OBJECT_POSITION = 0,
@@ -72,7 +73,8 @@ class RaisimServer final {
     REQUEST_CONFIG_XML,
     REQUEST_INITIALIZE_VISUALS,
     REQUEST_VISUAL_POSITION,
-    REQUEST_SERVER_STATUS
+    REQUEST_SERVER_STATUS,
+    REQUEST_SENSOR_UPDATE
   };
 
   enum ServerMessageType : int {
@@ -111,7 +113,7 @@ class RaisimServer final {
     memset(tempBuffer, 0, MAXIMUM_PACKET_SIZE * sizeof(char));
   }
 
-  ~RaisimServer() { }
+  ~RaisimServer() = default;
 
  private:
 #if __linux__ || __APPLE__
@@ -160,7 +162,7 @@ class RaisimServer final {
     WSADATA wsaData;
     int iResult;
 
-    struct addrinfo *result = NULL;
+    struct addrinfo *result = nullptr;
     struct addrinfo hints;
 
     // Initialize Winsock
@@ -168,7 +170,7 @@ class RaisimServer final {
     RSFATAL_IF(result != 0, "WSAStartup failed with error: " << iResult)
 
     // holds address info for socket to connect to
-    struct addrinfo *ptr = NULL;
+    struct addrinfo *ptr = nullptr;
 
     int opt = 1000000;
     ZeroMemory(&hints, sizeof(hints));
@@ -180,7 +182,7 @@ class RaisimServer final {
     std::string portInString = std::to_string(raisimPort_);
 
     // Resolve the server address and port
-    iResult = getaddrinfo(NULL, portInString.c_str(), &hints, &result);
+    iResult = getaddrinfo(nullptr, portInString.c_str(), &hints, &result);
     if (iResult != 0) {
       printf("getaddrinfo failed with error: %d\n", iResult);
       WSACleanup();
@@ -218,13 +220,9 @@ class RaisimServer final {
 
     while (!terminateRequested_) {
       if (waitForReadEvent(2.0)) {
-        RSFATAL_IF((client_ = int(accept(server_fd, NULL, NULL))) < 0,
-                   "accept failed")
-        connected_ = true;
+        client_ = int(accept(server_fd, NULL, NULL));
+        connected_ = client_ != INVALID_SOCKET;
       }
-
-      std::chrono::steady_clock::time_point lastChecked, current;
-      lastChecked = std::chrono::steady_clock::now();
 
       while (connected_) {
         if (terminateRequested_) {
@@ -232,13 +230,13 @@ class RaisimServer final {
           connected_ = false;
         }
 
-        if (connected_ && !processRequests())
-          connected_ = false;
+        connected_ = processRequests();
 
         if (state_ == STATUS_HIBERNATING)
           std::this_thread::sleep_for(std::chrono::microseconds(100000));
       }
     }
+
     closesocket(server_fd);
     WSACleanup();
     state_ = STATUS_RENDERING;
@@ -246,6 +244,7 @@ class RaisimServer final {
 #endif
 
  public:
+
   /**
    * @param[in] port port number to stream
    * start spinning. */
@@ -297,6 +296,8 @@ class RaisimServer final {
    * unlock the visualization mutex so that the server can read from the world */
   inline void unlockVisualizationServerMutex() { serverMutex_.unlock(); }
 
+  /**
+   * @return boolean representing if the termination requested */
   inline bool isTerminateRequested() { return terminateRequested_; }
 
   /**
@@ -611,25 +612,6 @@ class RaisimServer final {
     serverRequest_.push_back(ServerRequestType::STOP_RECORD_VIDEO);
   }
 
-  /** NOT WORKING YET
-   * request for screenshot */
-//  inline const std::vector<char>& getScreenShot() {
-//    serverRequest_.push_back(ServerRequestType::GET_SCREEN_SHOT);
-//    while(!screenShotReady_)
-//      usleep(3000);
-//
-//    screenShotReady_ = false;
-//    return screenShot_;
-//  }
-
-  /** NOT WORKING YET
-   * change the screen size */
-//  inline void setScreenSize(int width, int height) {
-//    serverRequest_.push_back(ServerRequestType::SET_SCREEN_SIZE);
-//    screenShotWidth_ = width;
-//    screenShotHeight_ = height;
-//  }
-
  private:
   inline bool waitForReadEvent(int timeout) {
     fd_set sdset;
@@ -688,33 +670,62 @@ class RaisimServer final {
     return true;
   }
 #elif WIN32
- inline bool hasPendingData(int seconds) {
-   fd_set fds ;
-   int n ;
-   struct timeval tv ;
-   FD_ZERO(&fds) ;
-   FD_SET(client_, &fds) ;
-   tv.tv_sec = 20 ;
-   tv.tv_usec = 100000 ;
-   n = select ( server_fd+1, &fds, NULL, NULL, &tv ) ;
-   if ( n == 0) {
-     RSWARN("The client failed to respond in 20 seconds. Looking for a new client");
-     return false;
-   } else if( n == -1 ) {
-     RSWARN("The client error. Failed to communicate.");
-     return false;
-   }
-   return true;
- }
+  inline bool hasPendingData(int seconds) {
+    fd_set fds ;
+    int n ;
+    struct timeval tv ;
+    FD_ZERO(&fds) ;
+    FD_SET(client_, &fds) ;
+    tv.tv_sec = seconds ;
+    tv.tv_usec = 10000 ;
+    n = select ( server_fd+1, &fds, NULL, NULL, &tv ) ;
+    if ( n == 0) {
+      RSWARN("The client failed to respond in "<< seconds <<" seconds. Looking for a new client");
+      return false;
+    } else if( n == -1 ) {
+      RSWARN("The client error. Failed to communicate.");
+      return false;
+    }
+    return true;
+  }
 #endif
+
+  inline bool receiveMessage() {
+    int receivedData = 0;
+    data_ = &send_buffer[0];
+    int BytesRead = 0;
+    char footer = 'c';
+    int valread;
+
+    while (footer == 'c') {
+      receive_buffer[receivedData + MAXIMUM_PACKET_SIZE - FOOTER_SIZE] = 'c';
+
+      valread = 0;
+      while (valread < MAXIMUM_PACKET_SIZE) {
+        if (!hasPendingData(20)) {
+          RSWARN("Failed to recv from the server. Resetting")
+          return false;
+        }
+        BytesRead = recv(client_, &receive_buffer[0] + receivedData, MAXIMUM_PACKET_SIZE, 0);
+        if (BytesRead == 0) RSWARN("Client did not send any data")
+        valread += BytesRead;
+        receivedData += BytesRead;
+      }
+
+      footer = receive_buffer[receivedData - FOOTER_SIZE];
+      receivedData -= FOOTER_SIZE;
+    }
+
+    if (footer != 'e') return false;
+    return receivedData > 0;
+  }
 
   inline bool processRequests() {
     using namespace server;
-    data_ = &send_buffer[0];
     ClientMessageType type;
-    int recv_size = 0;
+    int recv_size;
 
-    if (hasPendingData(20))
+    if (hasPendingData(10))
       recv_size = recv(client_, &receive_buffer[0], MAXIMUM_PACKET_SIZE, 0);
     else
       return false;
@@ -723,25 +734,11 @@ class RaisimServer final {
       return false;
 
     int clientVersion;
-    auto data = get(&receive_buffer[0], &clientVersion);
-    data_ = set(data_, version_);
+    rData_ = get(&receive_buffer[0], &clientVersion);
+    data_ = set(&send_buffer[0], version_);
 
     if (clientVersion == version_) {
-      data = get(data, &type);
-      data = get(data, &objectId_);
-      int requestSize;
-      data = get(data, &requestSize);
-      if(requestSize == 1) {
-        data = get(data, &screenShotWidth_);
-        data = get(data, &screenShotHeight_);
-        int dataSize = screenShotWidth_*screenShotHeight_*3;
-        if(screenShot_.size() != dataSize) {
-          screenShot_.resize(dataSize);
-        }
-        data = getN(data, &screenShot_[0], dataSize);
-        screenShotReady_ = true;
-      }
-
+      rData_ = get(rData_, &type, &objectId_);
       data_ = set(data_, state_);
 
       // set server request
@@ -760,8 +757,7 @@ class RaisimServer final {
             break;
 
           case ServerRequestType::SET_CAMERA_TO:
-            data_ = setN(data_, position_.data(), 3);
-            data_ = setN(data_, lookAt_.data(), 3);
+            data_ = set(data_, position_, lookAt_);
             break;
 
           case ServerRequestType::FOCUS_ON_SPECIFIC_OBJECT:
@@ -775,7 +771,6 @@ class RaisimServer final {
       }
 
       serverRequest_.clear();
-
       lockVisualizationServerMutex();
 
       if (state_ != Status::STATUS_HIBERNATING) {
@@ -811,12 +806,13 @@ class RaisimServer final {
       unlockVisualizationServerMutex();
     } else {
       RSWARN("Version mismatch. Make sure you have the correct visualizer version")
+      return false;
     }
 
     bool eom = false;
     char *startPtr = &send_buffer[0];
     while (!eom) {
-      int sentBytes;
+      int sentBytes = 0;
       if (data_ - startPtr > MAXIMUM_PACKET_SIZE) {
         memcpy(&tempBuffer[0], startPtr, MAXIMUM_PACKET_SIZE - FOOTER_SIZE);
         tempBuffer[MAXIMUM_PACKET_SIZE - FOOTER_SIZE] = 'c';
@@ -828,7 +824,15 @@ class RaisimServer final {
         sentBytes = send(client_, &tempBuffer[0], MAXIMUM_PACKET_SIZE, 0);
         eom = true;
       }
-      if (sentBytes < 0) return false;
+      if (sentBytes <= 0) return false;
+    }
+
+    if (needsSensorUpdate_) {
+      if (!receiveData())
+        return false;
+
+      updateSensorMeasurements();
+      needsSensorUpdate_ = false;
     }
 
     return state_ == STATUS_RENDERING || state_ == STATUS_HIBERNATING;
@@ -844,15 +848,17 @@ class RaisimServer final {
     for (auto *ob : objList) {
       // set gc
       if (ob->getObjectType() == ObjectType::ARTICULATED_SYSTEM) {
-        data_ = set(data_, (uint64_t) (dynamic_cast<ArticulatedSystem *>(ob)->getVisOb().size() +
-            dynamic_cast<ArticulatedSystem *>(ob)->getVisColOb().size()));
+        auto as = dynamic_cast<ArticulatedSystem *>(ob);
+        data_ = set(data_, (uint64_t) (as->getVisOb().size() +
+            as->getVisColOb().size()));
+        data_ = set(data_, (uint64_t) as->getSensors().size());
 
-        auto& visOb = dynamic_cast<ArticulatedSystem *>(ob)->getVisOb();
+        auto& visOb = as->getVisOb();
         for (uint64_t k = 0; k < visOb.size(); k++) {
           auto &vob = visOb[k];
           std::string name = std::to_string(ob->getIndexInWorld()) +
-                             "/" + std::to_string(0) + "/" +
-                             std::to_string(k);
+              "/" + std::to_string(0) + "/" +
+              std::to_string(k);
           data_ = set(data_, name);
 
           Vec<3> pos, offsetInWorld;
@@ -867,12 +873,12 @@ class RaisimServer final {
           data_ = set(data_, pos, quat);
         }
 
-        auto& colOb = dynamic_cast<ArticulatedSystem *>(ob)->getCollisionBodies();
+        auto& colOb = as->getCollisionBodies();
         for (uint64_t k = 0; k < colOb.size(); k++) {
           auto &vob = colOb[k];
           std::string name = std::to_string(ob->getIndexInWorld()) +
-                             "/" + std::to_string(1) + "/" +
-                             std::to_string(k);
+              "/" + std::to_string(1) + "/" +
+              std::to_string(k);
           data_ = set(data_, name);
 
           Vec<3> pos, offsetInWorld;
@@ -886,9 +892,28 @@ class RaisimServer final {
           pos = pos + offsetInWorld;
           data_ = set(data_, pos, quat);
         }
+
+        // add sensors to be updated
+        for (auto& sensor: as->getSensors()) {
+          if (sensor.second->getUpdateTimeStamp() + 1. / sensor.second->getUpdateRate() < world_->getWorldTime()) {
+            sensor.second->setUpdateTimeStamp(world_->getWorldTime());
+            sensor.second->updatePose(*world_);
+            Vec<4> quat;
+            auto& pos = sensor.second->getPos();
+            auto& rot = sensor.second->getRot();
+            rotMatToQuat(rot, quat);
+            data_ = set(data_, int(1));
+            data_ = setInFloat(data_, pos, quat);
+            needsSensorUpdate_ = true;
+          } else {
+            data_ = set(data_, int(0));
+          }
+        }
       } else if (ob->getObjectType() == ObjectType::COMPOUND) {
         auto *com = dynamic_cast<Compound *>(ob);
         data_ = set(data_, (uint64_t) (com->getObjList().size()));
+        data_ = set(data_, (uint64_t) 0); // sensor size
+
         for (uint64_t k = 0; k < com->getObjList().size(); k++) {
           std::string name = std::to_string(ob->getIndexInWorld()) + "/" + std::to_string(k);
           data_ = set(data_, name);
@@ -904,6 +929,7 @@ class RaisimServer final {
         }
       } else {
         data_ = set(data_, (uint64_t) (1));
+        data_ = set(data_, (uint64_t) 0); // sensor size
         Vec<3> pos;
         Vec<4> quat;
         std::string name = std::to_string(ob->getIndexInWorld());
@@ -915,7 +941,6 @@ class RaisimServer final {
     }
 
     // visuals
-    data_ = set(data_, (uint64_t) (visuals_.size() + visualAs_.size()));
     data_ = set(data_, (uint64_t) (visuals_.size()));
     data_ = set(data_, (uint64_t) (instancedvisuals_.size()));
     data_ = set(data_, (uint64_t) (visualAs_.size()));
@@ -958,7 +983,7 @@ class RaisimServer final {
 
           Vec<3> pos, offsetInWorld;
           Vec<4> quat;
-          Mat<3, 3> bodyRotation, rot;
+          Mat<3,3> bodyRotation, rot;
 
           ob->getPosition(vob.localIdx, pos);
           ob->getOrientation(vob.localIdx, bodyRotation);
@@ -983,7 +1008,6 @@ class RaisimServer final {
 
     // wires
     data_ = set(data_, (uint64_t) (world_->getWires().size()));
-
     for (auto &sw: world_->getWires())
       data_ = set(data_, sw->getP1(), sw->getP2());
 
@@ -997,8 +1021,10 @@ class RaisimServer final {
     }
 
     data_ = set(data_, (uint64_t) numExtForce);
+    numExtForce = 0;
     for (auto *ob: world_->getObjList()) {
       for (size_t extNum = 0; extNum < ob->getExternalForce().size(); extNum++) {
+        numExtForce++;
         data_ = set(data_, ob->getExternalForcePosition()[extNum]);
         data_ = set(data_, ob->getExternalForce()[extNum]);
       }
@@ -1079,6 +1105,84 @@ class RaisimServer final {
       data_ = set(data_, int32_t(c.second->getType()));
       data_ = c.second->serialize(data_);
     }
+  }
+
+  inline bool receiveData() {
+    int counter = 0;
+    int receivedData = 0;
+
+    while (counter++ < 1 && receivedData == 0) {
+      int BytesRead = 0;
+      char footer = 'c';
+      int valread;
+
+      while (footer == 'c') {
+        receive_buffer[receivedData + MAXIMUM_PACKET_SIZE - FOOTER_SIZE] = 'c';
+        valread = 0;
+        while (valread < MAXIMUM_PACKET_SIZE) {
+          if (hasPendingData(5))
+            BytesRead = recv(client_, &receive_buffer[0] + receivedData, MAXIMUM_PACKET_SIZE, 0);
+          else return false;
+
+          if (BytesRead <= 0) return false;
+
+          valread += BytesRead;
+          receivedData += BytesRead;
+        }
+        footer = receive_buffer[receivedData - FOOTER_SIZE];
+        receivedData -= FOOTER_SIZE;
+      }
+    }
+
+    data_ = &receive_buffer[0];
+    return true;
+  }
+
+  inline bool updateSensorMeasurements() {
+    using namespace server;
+    std::lock_guard<std::mutex> guard(serverMutex_);
+    ClientMessageType cMsgType;
+    int nASs;
+    data_ = get(data_, &cMsgType, &nASs);
+
+    if (cMsgType != ClientMessageType::REQUEST_SENSOR_UPDATE) return false;
+
+    auto& obList = world_->getObjList();
+
+    for (int i=0; i < nASs; i++) {
+      int obIndex, nSensors;
+      data_ = get(data_, &obIndex, &nSensors);
+
+      auto* as = dynamic_cast<ArticulatedSystem*>(obList[obIndex]);
+
+      RSFATAL_IF(as->getSensors().size() != nSensors, "updateSensorMeasurements: sensor size mismatch. This must be a bug. Please report")
+      for (int j=0; j < nSensors; j++) {
+        int needsUpdate;
+        data_ = get(data_, &needsUpdate);
+        if (needsUpdate == 0) continue;
+
+        Sensor::Type type;
+        std::string name;
+        data_ = get(data_, &type, &name);
+        auto sensor = as->getSensors()[name];
+
+        if (type == Sensor::Type::RGB) {
+          int width, height;
+          data_ = get(data_, &width, &height);
+          auto& img = std::static_pointer_cast<RGBCamera>(sensor)->getImageBuffer();
+          RSFATAL_IF(width*height*4 != img.size(), "Image size mismatch. Sensor module not working properly")
+          data_ = getN(data_, img.data(), width*height*4);
+        } else if (type == Sensor::Type::DEPTH) {
+          int width, height;
+          data_ = get(data_, &width, &height);
+          auto depthArray = std::static_pointer_cast<DepthCamera>(sensor)->getDepthArray();
+          RSFATAL_IF(width * height != depthArray.size(), "Image size mismatch. Sensor module not working properly")
+          data_ = getN(data_, depthArray.data(), width * height);
+        }
+      }
+    }
+
+    return true;
   }
 
   inline void serializeObjects() {
@@ -1170,16 +1274,15 @@ class RaisimServer final {
 
         case ARTICULATED_SYSTEM:
         {
-          std::string resDir =
-              dynamic_cast<ArticulatedSystem *>(ob)->getResourceDir();
-          data_ = set(data_, resDir);
+          auto as = dynamic_cast<ArticulatedSystem *>(ob);
+          data_ = set(data_, as->getResourceDir());
 
           for (uint64_t i = 0; i < 2; i++) {
             std::vector<VisObject> *visOb;
             if (i == 0)
-              visOb = &(dynamic_cast<ArticulatedSystem *>(ob)->getVisOb());
+              visOb = &as->getVisOb();
             else
-              visOb = &(dynamic_cast<ArticulatedSystem *>(ob)->getVisColOb());
+              visOb = &as->getVisColOb();
 
             data_ = set(data_, (uint64_t) (visOb->size()));
 
@@ -1194,6 +1297,11 @@ class RaisimServer final {
               }
             }
           }
+
+          // add sensors
+          data_ = set(data_, (uint64_t) as->getSensors().size());
+          for (auto& sensor: as->getSensors())
+            data_ = sensor.second->serializeProp(data_);
         }
           break;
 
@@ -1255,7 +1363,6 @@ class RaisimServer final {
 
   inline void serializeVisuals() {
     using namespace server;
-    data_ = set(data_, (uint64_t) (visuals_.size() + visualAs_.size()));
     data_ = set(data_, (uint64_t) (visuals_.size()));
     data_ = set(data_, (uint64_t) (instancedvisuals_.size()));
     data_ = set(data_, (uint64_t) (visualAs_.size()));
@@ -1325,7 +1432,8 @@ class RaisimServer final {
     data_ = set(data_, ServerMessageType::NO_MESSAGE);
   }
 
-  char *data_;
+  char *data_, *rData_;
+  bool needsSensorUpdate_ = false;
   World *world_;
   std::vector<char> receive_buffer, send_buffer;
   bool connected_ = false;
@@ -1351,10 +1459,7 @@ class RaisimServer final {
 
   int raisimPort_ = 8080;
   Eigen::Vector3d position_, lookAt_;
-
-  std::vector<char> screenShot_;
   int screenShotWidth_, screenShotHeight_;
-  bool screenShotReady_ = false;
 
   // version
   constexpr static int version_ = 10007;

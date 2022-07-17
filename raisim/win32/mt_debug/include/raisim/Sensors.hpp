@@ -10,13 +10,14 @@
 #include <Eigen/Core>
 #include "raisim/math.hpp"
 #include "raisim/helper.hpp"
+#include "raisim/server/SerializationHelper.hpp"
 
 
 namespace raisim {
 
 class Sensor {
  public:
-  enum class Type : unsigned {
+  enum class Type : int {
     UNKNOWN = 0,
     RGB,
     DEPTH
@@ -24,20 +25,26 @@ class Sensor {
 
   Sensor (std::string name, Type type, class ArticulatedSystem* as, const Vec<3>& pos, const Mat<3,3>& rot) :
       name_(std::move(name)), type_(type), as_(as), posB_(pos), rotB_(rot) { }
-  virtual ~Sensor() {}
+  virtual ~Sensor() = default;
   void setPose(const Vec<3>& pos, const Mat<3,3>& rot) {
     pos_ = pos;
     rot_ = rot;
   }
-  const Vec<3>& getPos() { return pos_; }
-  const Mat<3,3>& getRot() { return rot_; }
-  const Vec<3>& getPosInSensorFrame() { return posB_; }
-  const Mat<3,3>& getRotInSensorFrame() { return rotB_; }
+  [[nodiscard]] const Vec<3>& getPos() { return pos_; }
+  [[nodiscard]] const Mat<3,3>& getRot() { return rot_; }
+  [[nodiscard]] const Vec<3>& getPosInSensorFrame() { return posB_; }
+  [[nodiscard]] const Mat<3,3>& getRotInSensorFrame() { return rotB_; }
   void setPosInSensorFrame(const Vec<3>& pos) { posB_ = pos; }
   void setRotInSensorFrame(const Mat<3,3>& rot) { rotB_ = rot; }
   const std::string& getName() { return name_; }
-  Type getType() { return type_; };
+  [[nodiscard]] Type getType() { return type_; }
   void setFrameId(size_t id) { frameId_ = id; }
+  [[nodiscard]] double getUpdateRate() const { return updateRate_; }
+  [[nodiscard]] double getUpdateTimeStamp() const { return updateTimeStamp_; }
+  void setUpdateRate(double rate) { updateRate_ = rate; }
+  void setUpdateTimeStamp(double time) { updateTimeStamp_; }
+  virtual char* serializeProp (char* data) const = 0;
+  virtual void updatePose(class World &world) = 0;
 
  protected:
   Type type_;
@@ -48,7 +55,7 @@ class Sensor {
 
  private:
   std::string name_;
-  double timeIncrement_, scanTime_;
+  double updateRate_, updateTimeStamp_ = -1.;
 };
 
 static inline std::string toString(Sensor::Type type) {
@@ -96,7 +103,7 @@ class DepthCamera final : public Sensor {
     }
 
     /// noise type
-    enum class NoiseType : unsigned {
+    enum class NoiseType : int {
       GAUSSIAN = 0,
       UNIFORM,
       NO_NOISE
@@ -110,8 +117,8 @@ class DepthCamera final : public Sensor {
       else
         return NoiseType::NO_NOISE;
     }
-
     double mean = 0., std;
+    std::string format = "16";
   };
 
   explicit DepthCamera(const DepthCameraProperties& prop, class ArticulatedSystem* as, const Vec<3>& pos, const Mat<3,3>& rot) :
@@ -120,6 +127,11 @@ class DepthCamera final : public Sensor {
     threeDPoints_.resize(prop.height * prop.width);
   }
   ~DepthCamera() final = default;
+
+  char* serializeProp (char* data) const final {
+    return server::set(data, type_, prop_.name, prop_.width, prop_.height, prop_.clipNear, prop_.clipFar,
+                       prop_.hFOV, prop_.noiseType, prop_.mean, prop_.std, prop_.format);
+  }
 
   /*
    * This method is only useful on the real robot (and you use raisim on the real robot).
@@ -142,7 +154,7 @@ class DepthCamera final : public Sensor {
    * On the real robot, you can set the 3d data using setDepthArray method
    * @return depthArray
    */
-  const raisim::MatDyn& getDepthArray () const { return depthArray_; }
+  [[nodiscard]] const raisim::MatDyn& getDepthArray () const { return depthArray_; }
 
   /* This method works only if the sensor update type is THREE_DIM_COORD.
    * Otherwise, it will return garbage.
@@ -150,14 +162,15 @@ class DepthCamera final : public Sensor {
    * On the real robot, you can set the 3d data using set3DPoints method
    * @return 3D points in the specified frame. In simulation, the frame is specified in the URDF. On the real robot, you have to update the 3D points (using set3DPoints) in the correct frame.
    */
-  const std::vector<raisim::Vec<3>, AlignedAllocator<raisim::Vec<3>, 32>>& get3DPoints () const { return threeDPoints_; }
+  [[nodiscard]] const std::vector<raisim::Vec<3>, AlignedAllocator<raisim::Vec<3>, 32>>& get3DPoints() const { return threeDPoints_; }
 
-  const DepthCameraProperties& getProperties () const { return prop_; }
+  [[nodiscard]] const DepthCameraProperties& getProperties () const { return prop_; }
 
   void setDataType(DepthCameraProperties::DataType type) { prop_.dataType = type; }
 
-  static Type getType() { return Type::DEPTH; }
+  [[nodiscard]] static Type getType() { return Type::DEPTH; }
 
+  void updatePose(class World &world) final;
   void update (class World& world);
 
  protected:
@@ -172,11 +185,12 @@ class RGBCamera : public Sensor {
  public:
   struct RGBCameraProperties {
     std::string name;
-    size_t width, height;
+    int width, height;
     double clipNear, clipFar;
+    double hFOV;
 
     /// noise type
-    enum class NoiseType : unsigned {
+    enum class NoiseType : int {
       GAUSSIAN = 0,
       UNIFORM,
       NO_NOISE
@@ -192,15 +206,30 @@ class RGBCamera : public Sensor {
     }
 
     double mean = 0., std;
-    std::string format;
+    std::string format = "R8G8B8";
   };
 
   RGBCamera(RGBCameraProperties& prop, class ArticulatedSystem* as, const Vec<3>& pos, const Mat<3,3>& rot) :
-      Sensor(prop.name, Type::RGB, as, pos, rot), prop_(prop) { }
-  static Type getType() { return Type::RGB; }
+      Sensor(prop.name, Type::RGB, as, pos, rot), prop_(prop) {
+    rgbBuffer_.resize(prop.height * prop.width * 4);
+  }
+
+  char* serializeProp (char* data) const final {
+    return server::set(data, type_, prop_.name, prop_.width, prop_.height, prop_.clipNear, prop_.clipFar,
+                       prop_.hFOV, prop_.noiseType, prop_.mean, prop_.std, prop_.format);
+  }
+
+  [[nodiscard]] static Type getType() { return Type::RGB; }
+  [[nodiscard]] const RGBCameraProperties& getProperties () const { return prop_; }
+
+  [[nodiscard]] const std::vector<char>& getImageBuffer () const { return rgbBuffer_; }
+  [[nodiscard]] std::vector<char>& getImageBuffer () { return rgbBuffer_; }
+
+  void updatePose(class World &world) final;
 
  private:
   RGBCameraProperties prop_;
+  std::vector<char> rgbBuffer_;
 };
 
 }

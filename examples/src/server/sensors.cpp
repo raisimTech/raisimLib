@@ -33,31 +33,37 @@ int main(int argc, char **argv) {
       0.03, -0.4, 0.8, -0.03, -0.4, 0.8;
   jointVel << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
 
-  auto anymal = world.addArticulatedSystem(binaryPath.getDirectory() + "\\rsc\\anymal_c\\urdf\\anymal.urdf");
+  auto anymal = world.addArticulatedSystem(binaryPath.getDirectory() + "\\rsc\\anymal_c\\urdf\\anymal_sensored.urdf");
   anymal->setState(jointConfig, jointVel);
   anymal->setControlMode(raisim::ControlMode::PD_PLUS_FEEDFORWARD_TORQUE);
   anymal->setPdGains(jointPgain, jointDgain);
   anymal->setPdTarget(jointConfig, jointVelocityTarget);
   anymal->setGeneralizedForce(Eigen::VectorXd::Zero(anymal->getDOF()));
+  anymal->setName("Anymal");
 
-  auto depthSensor = anymal->getSensor<raisim::DepthCamera>("depth_camera_front_camera_parent/depth");
+  auto depthSensor = anymal->getSensor<raisim::DepthCamera>("depth_camera_front_camera_parent:depth");
   depthSensor->setDataType(raisim::DepthCamera::DepthCameraProperties::DataType::COORDINATE);
 
   server.launchServer();
-  std::vector<raisim::Visuals*> scans;
-  for(int i=0; i<depthSensor->getProperties().width; i++)
-    for(int j=0; j<depthSensor->getProperties().height; j++)
-      scans.push_back(server.addVisualBox("box" + std::to_string(i) + "/" + std::to_string(j), 0.03, 0.03, 0.03, 1, 0, 0));
+//  auto scans = server.addInstancedVisuals("scan points",
+//                                          raisim::InstancedVisuals::VisualBox,
+//                                          {0.05, 0.05, 0.05},
+//                                          {1,0,0,1},
+//                                          {0,1,0,1});
+//  scans->resize(depthSensor->getProperties().width * depthSensor->getProperties().height);
+
+//  std::vector<raisim::Visuals*> scans;
+//  for(int i=0; i<depthSensor->getProperties().width; i++)
+//    for(int j=0; j<depthSensor->getProperties().height; j++)
+//      scans.push_back(server.addVisualBox("box" + std::to_string(i) + "/" + std::to_string(j), 0.03, 0.03, 0.03, 1, 0, 0));
 
   for (int k = 0; k < loopN; k++) {
     world.integrate();
     raisim::MSLEEP(world.getTimeStep() * 1000);
-    depthSensor->update(world);
     auto& pos = depthSensor->get3DPoints();
     for(int i=0; i<depthSensor->getProperties().width; i++)
       for(int j=0; j<depthSensor->getProperties().height; j++) {
         size_t id = i * depthSensor->getProperties().height + j;
-        scans[id]->setPosition(pos[id].e());
       }
   }
 
