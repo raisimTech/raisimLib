@@ -23,6 +23,12 @@ class Sensor {
     DEPTH
   };
 
+  enum class Source : int {
+    RAISIM = 0, // raisim automatically updates the measurements according to the simulation time
+    VISUALIZER, // visualizer automatically updates the measurements according to the simulation time
+    MANUAL // user manually update the measurements whenever needed
+  };
+
   Sensor (std::string name, Type type, class ArticulatedSystem* as, const Vec<3>& pos, const Mat<3,3>& rot) :
       name_(std::move(name)), type_(type), as_(as), posB_(pos), rotB_(rot) { }
   virtual ~Sensor() = default;
@@ -30,6 +36,7 @@ class Sensor {
     pos_ = pos;
     rot_ = rot;
   }
+
   [[nodiscard]] const Vec<3>& getPos() { return pos_; }
   [[nodiscard]] const Mat<3,3>& getRot() { return rot_; }
   [[nodiscard]] const Vec<3>& getPosInSensorFrame() { return posB_; }
@@ -42,9 +49,11 @@ class Sensor {
   [[nodiscard]] double getUpdateRate() const { return updateRate_; }
   [[nodiscard]] double getUpdateTimeStamp() const { return updateTimeStamp_; }
   void setUpdateRate(double rate) { updateRate_ = rate; }
-  void setUpdateTimeStamp(double time) { updateTimeStamp_; }
+  void setUpdateTimeStamp(double time) { updateTimeStamp_ = time; }
   virtual char* serializeProp (char* data) const = 0;
   virtual void updatePose(class World &world) = 0;
+  [[nodiscard]] Source getSource() { return source_; }
+  void setSource(Source source) { source_ = source; }
 
  protected:
   Type type_;
@@ -52,6 +61,7 @@ class Sensor {
   Mat<3,3> rot_, rotB_;
   size_t frameId_;
   class ArticulatedSystem* as_;
+  Source source_ = Source::MANUAL;
 
  private:
   std::string name_;

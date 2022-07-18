@@ -42,7 +42,7 @@ class Sensor {
   [[nodiscard]] double getUpdateRate() const { return updateRate_; }
   [[nodiscard]] double getUpdateTimeStamp() const { return updateTimeStamp_; }
   void setUpdateRate(double rate) { updateRate_ = rate; }
-  void setUpdateTimeStamp(double time) { updateTimeStamp_; }
+  void setUpdateTimeStamp(double time) { updateTimeStamp_ = time; }
   virtual char* serializeProp (char* data) const = 0;
   virtual void updatePose(class World &world) = 0;
 

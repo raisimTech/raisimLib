@@ -690,48 +690,11 @@ class RaisimServer final {
   }
 #endif
 
-  inline bool receiveMessage() {
-    int receivedData = 0;
-    data_ = &send_buffer[0];
-    int BytesRead = 0;
-    char footer = 'c';
-    int valread;
-
-    while (footer == 'c') {
-      receive_buffer[receivedData + MAXIMUM_PACKET_SIZE - FOOTER_SIZE] = 'c';
-
-      valread = 0;
-      while (valread < MAXIMUM_PACKET_SIZE) {
-        if (!hasPendingData(20)) {
-          RSWARN("Failed to recv from the server. Resetting")
-          return false;
-        }
-        BytesRead = recv(client_, &receive_buffer[0] + receivedData, MAXIMUM_PACKET_SIZE, 0);
-        if (BytesRead == 0) RSWARN("Client did not send any data")
-        valread += BytesRead;
-        receivedData += BytesRead;
-      }
-
-      footer = receive_buffer[receivedData - FOOTER_SIZE];
-      receivedData -= FOOTER_SIZE;
-    }
-
-    if (footer != 'e') return false;
-    return receivedData > 0;
-  }
-
   inline bool processRequests() {
     using namespace server;
     ClientMessageType type;
-    int recv_size;
 
-    if (hasPendingData(10))
-      recv_size = recv(client_, &receive_buffer[0], MAXIMUM_PACKET_SIZE, 0);
-    else
-      return false;
-
-    if (recv_size <= 0)
-      return false;
+    if (!receiveData(10)) return false;
 
     int clientVersion;
     rData_ = get(&receive_buffer[0], &clientVersion);
@@ -809,26 +772,10 @@ class RaisimServer final {
       return false;
     }
 
-    bool eom = false;
-    char *startPtr = &send_buffer[0];
-    while (!eom) {
-      int sentBytes = 0;
-      if (data_ - startPtr > MAXIMUM_PACKET_SIZE) {
-        memcpy(&tempBuffer[0], startPtr, MAXIMUM_PACKET_SIZE - FOOTER_SIZE);
-        tempBuffer[MAXIMUM_PACKET_SIZE - FOOTER_SIZE] = 'c';
-        sentBytes = send(client_, &tempBuffer[0], MAXIMUM_PACKET_SIZE, 0);
-        startPtr += MAXIMUM_PACKET_SIZE - FOOTER_SIZE;
-      } else {
-        memcpy(&tempBuffer[0], startPtr, data_ - startPtr);
-        tempBuffer[MAXIMUM_PACKET_SIZE - FOOTER_SIZE] = 'e';
-        sentBytes = send(client_, &tempBuffer[0], MAXIMUM_PACKET_SIZE, 0);
-        eom = true;
-      }
-      if (sentBytes <= 0) return false;
-    }
+    sendData();
 
     if (needsSensorUpdate_) {
-      if (!receiveData())
+      if (!receiveData(5))
         return false;
 
       updateSensorMeasurements();
@@ -895,7 +842,7 @@ class RaisimServer final {
 
         // add sensors to be updated
         for (auto& sensor: as->getSensors()) {
-          if (sensor.second->getUpdateTimeStamp() + 1. / sensor.second->getUpdateRate() < world_->getWorldTime()) {
+          if (sensor.second->getUpdateTimeStamp() + 1. / sensor.second->getUpdateRate() < world_->getWorldTime() + 1e-8) {
             sensor.second->setUpdateTimeStamp(world_->getWorldTime());
             sensor.second->updatePose(*world_);
             Vec<4> quat;
@@ -1107,7 +1054,7 @@ class RaisimServer final {
     }
   }
 
-  inline bool receiveData() {
+  inline bool receiveData(int seconds) {
     int counter = 0;
     int receivedData = 0;
 
@@ -1120,7 +1067,7 @@ class RaisimServer final {
         receive_buffer[receivedData + MAXIMUM_PACKET_SIZE - FOOTER_SIZE] = 'c';
         valread = 0;
         while (valread < MAXIMUM_PACKET_SIZE) {
-          if (hasPendingData(5))
+          if (hasPendingData(seconds))
             BytesRead = recv(client_, &receive_buffer[0] + receivedData, MAXIMUM_PACKET_SIZE, 0);
           else return false;
 
@@ -1136,6 +1083,29 @@ class RaisimServer final {
 
     data_ = &receive_buffer[0];
     return true;
+  }
+
+  inline bool sendData() {
+    bool eom = false;
+    char *startPtr = &send_buffer[0];
+    while (!eom) {
+      int sentBytes = 0, batchBytes = 0;
+      if (data_ - startPtr > MAXIMUM_PACKET_SIZE - FOOTER_SIZE) {
+        memcpy(&tempBuffer[0], startPtr, MAXIMUM_PACKET_SIZE - FOOTER_SIZE);
+        tempBuffer[MAXIMUM_PACKET_SIZE - FOOTER_SIZE] = 'c';
+        while (batchBytes < MAXIMUM_PACKET_SIZE)
+          batchBytes += send(client_, &tempBuffer[0] + batchBytes, MAXIMUM_PACKET_SIZE - batchBytes, 0);
+
+        startPtr += MAXIMUM_PACKET_SIZE - FOOTER_SIZE;
+      } else {
+        memcpy(&tempBuffer[0], startPtr, data_ - startPtr);
+        tempBuffer[MAXIMUM_PACKET_SIZE - FOOTER_SIZE] = 'e';
+        while (batchBytes < MAXIMUM_PACKET_SIZE)
+          batchBytes += send(client_, &tempBuffer[0] + batchBytes, MAXIMUM_PACKET_SIZE - batchBytes, 0);
+        eom = true;
+      }
+      if (sentBytes <= 0) return false;
+    }
   }
 
   inline bool updateSensorMeasurements() {
