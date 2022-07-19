@@ -23,7 +23,8 @@
 #include "raisim/object/singleBodies/Mesh.hpp"
 #include "raisim/contact/BisectionContactSolver.hpp"
 #include "raisim/constraints/PinConstraint.hpp"
-#include "raisim/Sensors.hpp"
+#include "raisim/sensors/RGBSensor.hpp"
+#include "raisim/sensors/DepthSensor.hpp"
 
 namespace raisim {
 

@@ -12,7 +12,7 @@
 
 #include "raisim/math.hpp"
 #include "raisim/object/singleBodies/Mesh.hpp"
-#include "raisim/Sensors.hpp"
+#include "raisim/sensors/Sensors.hpp"
 
 namespace raisim {
 

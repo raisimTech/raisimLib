@@ -50,7 +50,7 @@
 #include "raisim/World.hpp"
 #include "raisim/helper.hpp"
 #include "raisim/object/ArticulatedSystem/JointAndBodies.hpp"
-#include "raisim/Sensors.hpp"
+#include "raisim/sensors/Sensors.hpp"
 
 namespace raisim {
 
@@ -1089,7 +1089,7 @@ class RaisimServer final {
     bool eom = false;
     char *startPtr = &send_buffer[0];
     while (!eom) {
-      int sentBytes = 0, batchBytes = 0;
+      int batchBytes = 0;
       if (data_ - startPtr > MAXIMUM_PACKET_SIZE - FOOTER_SIZE) {
         memcpy(&tempBuffer[0], startPtr, MAXIMUM_PACKET_SIZE - FOOTER_SIZE);
         tempBuffer[MAXIMUM_PACKET_SIZE - FOOTER_SIZE] = 'c';
@@ -1104,8 +1104,11 @@ class RaisimServer final {
           batchBytes += send(client_, &tempBuffer[0] + batchBytes, MAXIMUM_PACKET_SIZE - batchBytes, 0);
         eom = true;
       }
-      if (sentBytes <= 0) return false;
+
+      if (batchBytes <= 0) return false;
     }
+
+    return true;
   }
 
   inline bool updateSensorMeasurements() {
