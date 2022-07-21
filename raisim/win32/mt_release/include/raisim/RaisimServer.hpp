@@ -115,15 +115,17 @@ class RaisimServer final {
 
   ~RaisimServer() = default;
 
- private:
+  /**
+   * Setup the port so that it can accept (acceptConnection) incoming connections
+   */
+  void setupSocket() {
 #if __linux__ || __APPLE__
-  inline void loop() {
     int opt = 1;
     int addrlen = sizeof(address);
 
     // Creating socket file descriptor
-    RSFATAL_IF((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0, "socket error: " << strerror(errno))
-    RSFATAL_IF(setsockopt(server_fd, SOL_SOCKET, RAISIM_SERVER_SOCKET_OPTION,
+    RSFATAL_IF((server_fd_ = socket(AF_INET, SOCK_STREAM, 0)) == 0, "socket error: " << strerror(errno))
+    RSFATAL_IF(setsockopt(server_fd_, SOL_SOCKET, RAISIM_SERVER_SOCKET_OPTION,
                           (char *) &opt, sizeof(opt)), "setsockopt error: "<< strerror(errno))
 
     address.sin_family = AF_INET;
@@ -131,34 +133,10 @@ class RaisimServer final {
     address.sin_port = htons(raisimPort_);
 
     // Forcefully attaching socket to the port 8080
-    RSFATAL_IF(bind(server_fd, (struct sockaddr *) &address, sizeof(address)) < 0, "bind error: " << strerror(errno))
-    RSFATAL_IF(listen(server_fd, 3) < 0, "listen error: " << strerror(errno))
+    RSFATAL_IF(bind(server_fd_, (struct sockaddr *) &address, sizeof(address)) < 0, "bind error: " << strerror(errno))
+    RSFATAL_IF(listen(server_fd_, 3) < 0, "listen error: " << strerror(errno))
 
-    while (!terminateRequested_) {
-      if (waitForReadEvent(2.0)) {
-        RSFATAL_IF((client_ = accept(server_fd, (struct sockaddr *) &address,
-                                     (socklen_t *) &addrlen)) < 0, "accept failed")
-        connected_ = true;
-      }
-
-      while (connected_) {
-        if (terminateRequested_) {
-          state_ = STATUS_TERMINATING;
-          connected_ = false;
-        }
-
-        if (!processRequests())
-          connected_ = false;
-
-        if (state_ == STATUS_HIBERNATING)
-          usleep(100000);
-      }
-    }
-    close(server_fd);
-    state_ = STATUS_RENDERING;
-  }
 #elif WIN32
-  inline void loop() {
     WSADATA wsaData;
     int iResult;
 
@@ -190,44 +168,78 @@ class RaisimServer final {
     }
 
     // Create a SOCKET for connecting to server
-    server_fd =
+    server_fd_ =
         int(socket(result->ai_family, result->ai_socktype, result->ai_protocol));
-    if (server_fd == INVALID_SOCKET) {
+    if (server_fd_ == INVALID_SOCKET) {
       printf("socket failed with error: %ld\n", WSAGetLastError());
       WSACleanup();
       return;
     }
 
-    setsockopt(server_fd, SOL_SOCKET, SO_SNDBUF, (char *)&opt, sizeof(opt));
-    setsockopt(server_fd, SOL_SOCKET, SO_RCVBUF, (char *)&opt, sizeof(opt));
+    setsockopt(server_fd_, SOL_SOCKET, SO_SNDBUF, (char *)&opt, sizeof(opt));
+    setsockopt(server_fd_, SOL_SOCKET, SO_RCVBUF, (char *)&opt, sizeof(opt));
 
     // Setup the TCP listening socket
-    iResult = bind(server_fd, result->ai_addr, (int)result->ai_addrlen);
+    iResult = bind(server_fd_, result->ai_addr, (int)result->ai_addrlen);
     if (iResult == SOCKET_ERROR) {
       printf("bind failed with error: %d\n", WSAGetLastError());
-      closesocket(server_fd);
+      closesocket(server_fd_);
       WSACleanup();
       return;
     }
 
-    iResult = listen(server_fd, SOMAXCONN);
+    iResult = listen(server_fd_, SOMAXCONN);
     if (iResult == SOCKET_ERROR) {
       printf("listen failed with error: %d\n", WSAGetLastError());
-      closesocket(server_fd);
+      closesocket(server_fd_);
       WSACleanup();
       return;
     }
+#endif
+  }
+
+  /**
+   * @param[in] seconds the number of seconds to wait for a connection from a client
+   * Accept a connection to the socket. Only one client can be connected at a time
+   */
+  void acceptConnection(int seconds) {
+    if (waitForReadEvent(seconds, server_fd_)) {
+#if __linux__ || __APPLE__
+      RSFATAL_IF((client_ = accept(server_fd_, (struct sockaddr *) &address,
+                                       (socklen_t *) &addrlen)) < 0, "accept failed")
+      connected_ = true;
+#elif WIN32
+      client_ = int(accept(server_fd_, NULL, NULL));
+      connected_ = client_ != INVALID_SOCKET;
+#endif
+    }
+  }
+
+  /**
+   * Close the current connection from a client. For new connections, the port has to be setup again.
+   */
+  void closeConnection() const {
+#if __linux__ || __APPLE__
+    close(server_fd_);
+#elif WIN32
+    closesocket(server_fd_);
+    WSACleanup();
+#endif
+  }
+
+ private:
+
+  inline void loop() {
+    setupSocket();
 
     while (!terminateRequested_) {
-      if (waitForReadEvent(2.0)) {
-        client_ = int(accept(server_fd, NULL, NULL));
-        connected_ = client_ != INVALID_SOCKET;
-      }
+      acceptConnection(2.0);
 
       while (connected_) {
         if (terminateRequested_) {
           state_ = STATUS_TERMINATING;
           connected_ = false;
+          break;
         }
 
         connected_ = processRequests();
@@ -237,11 +249,9 @@ class RaisimServer final {
       }
     }
 
-    closesocket(server_fd);
-    WSACleanup();
+    closeConnection();
     state_ = STATUS_RENDERING;
   }
-#endif
 
  public:
 
@@ -613,15 +623,6 @@ class RaisimServer final {
   }
 
  private:
-  inline bool waitForReadEvent(int timeout) {
-    fd_set sdset;
-    struct timeval tv;
-    tv.tv_sec = timeout;
-    tv.tv_usec = 0;
-    FD_ZERO(&sdset);
-    FD_SET(server_fd, &sdset);
-    return select(server_fd + 1, &sdset, nullptr, nullptr, &tv) > 0;
-  }
 
  public:
   /**
@@ -648,57 +649,23 @@ class RaisimServer final {
    * check if a client is connected to a server */
   bool isConnected() const { return connected_; }
 
- private:
-
-
-#if defined __linux__ || __APPLE__
-  inline bool hasPendingData(int seconds) {
-    struct pollfd fds[2];
-    int ret;
-
-    // 표준 입력에 대한 이벤트를 감시하기 위한 준비를 합니다.
-    fds[0].fd = STDIN_FILENO;
-    fds[0].events = POLLOUT;
-    ret = poll(fds, 2, 10000);
-    if ( ret == 0) {
-      RSWARN("The client failed to respond in 20 seconds. Looking for a new client");
-      return false;
-    } else if( ret == -1 ) {
-      RSWARN("The client error. Failed to communicate.");
-      return false;
-    }
-    return true;
+  /**
+   * @param[in] seconds the number of seconds to wait for the client
+   * @return true if there is a message from the client
+   * This method checks if there is a message from the client. It waits a specified time for a message.
+   * If this method is not used, the application will stop if there is no message. */
+  inline bool waitForClient(int seconds) {
+    return waitForReadEvent(seconds, client_);
   }
-#elif WIN32
-  inline bool hasPendingData(int seconds) {
-    fd_set fds ;
-    int n ;
-    struct timeval tv ;
-    FD_ZERO(&fds) ;
-    FD_SET(client_, &fds) ;
-    tv.tv_sec = seconds ;
-    tv.tv_usec = 10000 ;
-    n = select ( server_fd+1, &fds, NULL, NULL, &tv ) ;
-    if ( n == 0) {
-      RSWARN("The client failed to respond in "<< seconds <<" seconds. Looking for a new client");
-      return false;
-    } else if( n == -1 ) {
-      RSWARN("The client error. Failed to communicate.");
-      return false;
-    }
-    return true;
-  }
-#endif
 
   inline bool processRequests() {
     using namespace server;
     ClientMessageType type;
-
     if (!receiveData(10)) return false;
 
     int clientVersion;
-    rData_ = get(&receive_buffer[0], &clientVersion);
-    data_ = set(&send_buffer[0], version_);
+    rData_ = get(rData_, &clientVersion);
+    data_ = set(&send_buffer[0]+sizeof(int), version_);
 
     if (clientVersion == version_) {
       rData_ = get(rData_, &type, &objectId_);
@@ -749,7 +716,6 @@ class RaisimServer final {
             break;
 
           case REQUEST_CHANGE_REALTIME_FACTOR:
-            changeRealTimeFactor();
             break;
 
           case REQUEST_CONTACT_INFOS:
@@ -783,6 +749,27 @@ class RaisimServer final {
     }
 
     return state_ == STATUS_RENDERING || state_ == STATUS_HIBERNATING;
+  }
+
+ private:
+
+  inline bool waitForReadEvent(int seconds, int socket) {
+#if defined __linux__ || __APPLE__
+    struct pollfd fds[2];
+    // 표준 입력에 대한 이벤트를 감시하기 위한 준비를 합니다.
+    fds[0].fd = STDIN_FILENO;
+    fds[0].events = POLLOUT;
+    return poll(fds, 2, 10000) > 0;
+#elif WIN32
+    fd_set sdset;
+    int n;
+    struct timeval tv;
+    tv.tv_sec = seconds;
+    tv.tv_usec = 10000;
+    FD_ZERO(&sdset);
+    FD_SET(socket, &sdset);
+    return select( server_fd_+1, &sdset, nullptr, nullptr, &tv ) > 0;
+#endif
   }
 
   inline void serializeWorld() {
@@ -842,7 +829,8 @@ class RaisimServer final {
 
         // add sensors to be updated
         for (auto& sensor: as->getSensors()) {
-          if (sensor.second->getUpdateTimeStamp() + 1. / sensor.second->getUpdateRate() < world_->getWorldTime()) {
+          if (sensor.second->getMeasurementSource() == Sensor::MeasurementSource::VISUALIZER &&
+              sensor.second->getUpdateTimeStamp() + 1. / sensor.second->getUpdateRate() < world_->getWorldTime()) {
             sensor.second->setUpdateTimeStamp(world_->getWorldTime());
             sensor.second->updatePose(*world_);
             Vec<4> quat;
@@ -1055,58 +1043,36 @@ class RaisimServer final {
   }
 
   inline bool receiveData(int seconds) {
-    int counter = 0;
-    int receivedData = 0;
+    using namespace server;
+    int totalDataSize = RECEIVE_BUFFER_SIZE, totalReceivedDataSize = 0, currentReceivedDataSize;
 
-    while (counter++ < 1 && receivedData == 0) {
-      int BytesRead = 0;
-      char footer = 'c';
-      int valread;
-
-      while (footer == 'c') {
-        receive_buffer[receivedData + MAXIMUM_PACKET_SIZE - FOOTER_SIZE] = 'c';
-        valread = 0;
-        while (valread < MAXIMUM_PACKET_SIZE) {
-          if (hasPendingData(seconds))
-            BytesRead = recv(client_, &receive_buffer[0] + receivedData, MAXIMUM_PACKET_SIZE, 0);
-          else return false;
-
-          if (BytesRead <= 0) return false;
-
-          valread += BytesRead;
-          receivedData += BytesRead;
-        }
-        footer = receive_buffer[receivedData - FOOTER_SIZE];
-        receivedData -= FOOTER_SIZE;
+    while (totalDataSize > totalReceivedDataSize) {
+      if (waitForReadEvent(seconds, client_)) {
+        currentReceivedDataSize = recv(client_, &receive_buffer[0] + totalReceivedDataSize, RECEIVE_BUFFER_SIZE - totalReceivedDataSize, 0);
+      } else {
+        RSWARN("Lost connection to the client. Trying to find a new client...")
+        return false;
       }
+
+      if (totalDataSize == RECEIVE_BUFFER_SIZE)
+        rData_ = get(&receive_buffer[0], &totalDataSize);
+
+      if (currentReceivedDataSize == 0) return false;
+
+      totalReceivedDataSize += currentReceivedDataSize;
     }
 
-    data_ = &receive_buffer[0];
     return true;
   }
 
   inline bool sendData() {
-    bool eom = false;
-    char *startPtr = &send_buffer[0];
-    while (!eom) {
-      int batchBytes = 0;
-      if (data_ - startPtr > MAXIMUM_PACKET_SIZE - FOOTER_SIZE) {
-        memcpy(&tempBuffer[0], startPtr, MAXIMUM_PACKET_SIZE - FOOTER_SIZE);
-        tempBuffer[MAXIMUM_PACKET_SIZE - FOOTER_SIZE] = 'c';
-        while (batchBytes < MAXIMUM_PACKET_SIZE)
-          batchBytes += send(client_, &tempBuffer[0] + batchBytes, MAXIMUM_PACKET_SIZE - batchBytes, 0);
+    using namespace server;
+    int dataSize = data_ - &send_buffer[0];
+    int totalSentBytes = 0;
+    set(&send_buffer[0], dataSize);
 
-        startPtr += MAXIMUM_PACKET_SIZE - FOOTER_SIZE;
-      } else {
-        memcpy(&tempBuffer[0], startPtr, data_ - startPtr);
-        tempBuffer[MAXIMUM_PACKET_SIZE - FOOTER_SIZE] = 'e';
-        while (batchBytes < MAXIMUM_PACKET_SIZE)
-          batchBytes += send(client_, &tempBuffer[0] + batchBytes, MAXIMUM_PACKET_SIZE - batchBytes, 0);
-        eom = true;
-      }
-
-      if (batchBytes <= 0) return false;
-    }
+    while (dataSize > totalSentBytes)
+      totalSentBytes += send(client_, &send_buffer[0] + totalSentBytes, dataSize - totalSentBytes, 0);
 
     return true;
   }
@@ -1399,12 +1365,6 @@ class RaisimServer final {
     }
   }
 
-  inline void changeRealTimeFactor() {
-    using namespace server;
-    get(&receive_buffer[0], &realTimeFactor);
-    data_ = set(data_, ServerMessageType::NO_MESSAGE);
-  }
-
   char *data_, *rData_;
   bool needsSensorUpdate_ = false;
   World *world_;
@@ -1416,10 +1376,9 @@ class RaisimServer final {
   std::string focusedObjectName_;
   std::string videoName_;
   int objectId_;
-  double realTimeFactor = 1.0;
   std::atomic<bool> terminateRequested_ = {false};
   int client_;
-  int server_fd;
+  int server_fd_;
   sockaddr_in address;
   int addrlen;
   std::thread serverThread_;

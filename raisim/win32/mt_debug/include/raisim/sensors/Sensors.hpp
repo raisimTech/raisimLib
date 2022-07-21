@@ -52,7 +52,7 @@ class Sensor {
   void setUpdateTimeStamp(double time) { updateTimeStamp_ = time; }
   virtual char* serializeProp (char* data) const = 0;
   virtual void updatePose(class World &world) = 0;
-  [[nodiscard]] MeasurementSource getSource() { return source_; }
+  [[nodiscard]] MeasurementSource getMeasurementSource() { return source_; }
   void setMeasurementSource(MeasurementSource source) { source_ = source; }
   virtual void update (class World& world) = 0;
 

@@ -42,29 +42,15 @@ int main(int argc, char **argv) {
   anymal->setName("Anymal");
 
   auto depthSensor = anymal->getSensor<raisim::DepthCamera>("depth_camera_front_camera_parent:depth");
-  depthSensor->setDataType(raisim::DepthCamera::DepthCameraProperties::DataType::COORDINATE);
+  depthSensor->setMeasurementSource(raisim::Sensor::MeasurementSource::VISUALIZER);
+
+  auto rgbCamera = anymal->getSensor<raisim::RGBCamera>("depth_camera_front_camera_parent:color");
+  rgbCamera->setMeasurementSource(raisim::Sensor::MeasurementSource::VISUALIZER);
 
   server.launchServer();
-//  auto scans = server.addInstancedVisuals("scan points",
-//                                          raisim::InstancedVisuals::VisualBox,
-//                                          {0.05, 0.05, 0.05},
-//                                          {1,0,0,1},
-//                                          {0,1,0,1});
-//  scans->resize(depthSensor->getProperties().width * depthSensor->getProperties().height);
-
-//  std::vector<raisim::Visuals*> scans;
-//  for(int i=0; i<depthSensor->getProperties().width; i++)
-//    for(int j=0; j<depthSensor->getProperties().height; j++)
-//      scans.push_back(server.addVisualBox("box" + std::to_string(i) + "/" + std::to_string(j), 0.03, 0.03, 0.03, 1, 0, 0));
-
   for (int k = 0; k < loopN; k++) {
     world.integrate();
     raisim::MSLEEP(world.getTimeStep() * 1000);
-    auto& pos = depthSensor->get3DPoints();
-    for(int i=0; i<depthSensor->getProperties().width; i++)
-      for(int j=0; j<depthSensor->getProperties().height; j++) {
-        size_t id = i * depthSensor->getProperties().height + j;
-      }
   }
 
   server.killServer();
