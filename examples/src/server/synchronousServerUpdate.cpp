@@ -56,6 +56,7 @@ int main(int argc, char **argv) {
 
     if (server.waitForClient(1.0))
       server.processRequests();
+
     raisim::MSLEEP(world.getTimeStep() * 1000);
   }
 
