@@ -203,11 +203,11 @@ class RaisimServer final {
    * Accept a connection to the socket. Only one client can be connected at a time
    */
   void acceptConnection(int seconds) {
-    if (waitForReadEvent(seconds, server_fd_)) {
+    if (waitForNewClients(seconds)) {
 #if __linux__ || __APPLE__
       RSFATAL_IF((client_ = accept(server_fd_, (struct sockaddr *) &address,
                                        (socklen_t *) &addrlen)) < 0, "accept failed")
-      connected_ = true;
+      connected_ = client_ > -1;
 #elif WIN32
       client_ = int(accept(server_fd_, NULL, NULL));
       connected_ = client_ != INVALID_SOCKET;
@@ -236,13 +236,10 @@ class RaisimServer final {
       acceptConnection(2.0);
 
       while (connected_) {
-        if (terminateRequested_) {
-          state_ = STATUS_TERMINATING;
-          connected_ = false;
-          break;
-        }
+        connected_ = processRequests() && !terminateRequested_;
 
-        connected_ = processRequests();
+        if (terminateRequested_)
+          state_ = STATUS_TERMINATING;
 
         if (state_ == STATUS_HIBERNATING)
           std::this_thread::sleep_for(std::chrono::microseconds(100000));
@@ -654,8 +651,78 @@ class RaisimServer final {
    * @return true if there is a message from the client
    * This method checks if there is a message from the client. It waits a specified time for a message.
    * If this method is not used, the application will stop if there is no message. */
-  inline bool waitForClient(int seconds) {
-    return waitForReadEvent(seconds, client_);
+  inline bool waitForMessageFromClient(int seconds) {
+#if defined __linux__ || __APPLE__
+    struct pollfd fds[2];
+    int ret;
+
+    // 표준 입력에 대한 이벤트를 감시하기 위한 준비를 합니다.
+    fds[0].fd = STDIN_FILENO;
+    fds[0].events = POLLOUT;
+    ret = poll(fds, 2, 10000);
+    if ( ret == 0) {
+      RSWARN("The client failed to respond in 20 seconds. Looking for a new client");
+      return false;
+    } else if( ret == -1 ) {
+      RSWARN("The client error. Failed to communicate.");
+      return false;
+    }
+    return true;
+#elif WIN32
+    fd_set fds ;
+    int n ;
+    struct timeval tv ;
+    FD_ZERO(&fds) ;
+    FD_SET(client_, &fds) ;
+    tv.tv_sec = 20 ;
+    tv.tv_usec = 100000 ;
+    n = select ( server_fd_+1, &fds, NULL, NULL, &tv ) ;
+    if ( n == 0) {
+      RSWARN("The client failed to respond in 20 seconds. Looking for a new client");
+      return false;
+    } else if( n == -1 ) {
+      RSWARN("The client error. Failed to communicate.");
+      return false;
+    }
+    return true;
+#endif
+  }
+
+  inline bool waitForMessageToClient(int seconds) {
+#if defined __linux__ || __APPLE__
+    struct pollfd fds[2];
+    int ret;
+
+    // 표준 입력에 대한 이벤트를 감시하기 위한 준비를 합니다.
+    fds[0].fd = STDIN_FILENO;
+    fds[0].events = POLLOUT;
+    ret = poll(fds, 2, 10000);
+    if ( ret == 0) {
+      RSWARN("The client failed to respond in 20 seconds. Looking for a new client");
+      return false;
+    } else if( ret == -1 ) {
+      RSWARN("The client error. Failed to communicate.");
+      return false;
+    }
+    return true;
+#elif WIN32
+    fd_set fds ;
+    int n ;
+    struct timeval tv ;
+    FD_ZERO(&fds) ;
+    FD_SET(client_, &fds) ;
+    tv.tv_sec = 20 ;
+    tv.tv_usec = 100000 ;
+    n = select ( server_fd_+1, NULL, &fds, NULL, &tv ) ;
+    if ( n == 0) {
+      RSWARN("The client failed to respond in 20 seconds. Looking for a new client");
+      return false;
+    } else if( n == -1 ) {
+      RSWARN("The client error. Failed to communicate.");
+      return false;
+    }
+    return true;
+#endif
   }
 
   inline bool processRequests() {
@@ -738,7 +805,8 @@ class RaisimServer final {
       return false;
     }
 
-    sendData();
+    if (!sendData())
+      return false;
 
     if (needsSensorUpdate_) {
       if (!receiveData(5))
@@ -751,26 +819,17 @@ class RaisimServer final {
     return state_ == STATUS_RENDERING || state_ == STATUS_HIBERNATING;
   }
 
- private:
-
-  inline bool waitForReadEvent(int seconds, int socket) {
-#if defined __linux__ || __APPLE__
-    struct pollfd fds[2];
-    // 표준 입력에 대한 이벤트를 감시하기 위한 준비를 합니다.
-    fds[0].fd = STDIN_FILENO;
-    fds[0].events = POLLOUT;
-    return poll(fds, 2, 10000) > 0;
-#elif WIN32
+  inline bool waitForNewClients(int seconds)  {
     fd_set sdset;
-    int n;
     struct timeval tv;
     tv.tv_sec = seconds;
-    tv.tv_usec = 10000;
+    tv.tv_usec = 0;
     FD_ZERO(&sdset);
-    FD_SET(socket, &sdset);
-    return select( server_fd_+1, &sdset, nullptr, nullptr, &tv ) > 0;
-#endif
+    FD_SET(server_fd_, &sdset);
+    return select(server_fd_ + 1, &sdset, nullptr, nullptr, &tv) > 0;
   }
+
+ private:
 
   inline void serializeWorld() {
     using namespace server;
@@ -1047,7 +1106,7 @@ class RaisimServer final {
     int totalDataSize = RECEIVE_BUFFER_SIZE, totalReceivedDataSize = 0, currentReceivedDataSize;
 
     while (totalDataSize > totalReceivedDataSize) {
-      if (waitForReadEvent(seconds, client_)) {
+      if (waitForMessageFromClient(seconds)) {
         currentReceivedDataSize = recv(client_, &receive_buffer[0] + totalReceivedDataSize, RECEIVE_BUFFER_SIZE - totalReceivedDataSize, 0);
       } else {
         RSWARN("Lost connection to the client. Trying to find a new client...")
@@ -1057,7 +1116,7 @@ class RaisimServer final {
       if (totalDataSize == RECEIVE_BUFFER_SIZE)
         rData_ = get(&receive_buffer[0], &totalDataSize);
 
-      if (currentReceivedDataSize == 0) return false;
+      if (currentReceivedDataSize <= 0) return false;
 
       totalReceivedDataSize += currentReceivedDataSize;
     }
@@ -1072,7 +1131,10 @@ class RaisimServer final {
     set(&send_buffer[0], dataSize);
 
     while (dataSize > totalSentBytes)
-      totalSentBytes += send(client_, &send_buffer[0] + totalSentBytes, dataSize - totalSentBytes, 0);
+      if(waitForMessageToClient(1))
+        totalSentBytes += send(client_, &send_buffer[0] + totalSentBytes, dataSize - totalSentBytes, 0);
+      else
+        return false;
 
     return true;
   }

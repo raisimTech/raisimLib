@@ -53,8 +53,8 @@ int main(int argc, char* argv[]) {
                                           {0.05, 0.05, 0.05},
                                           {1,0,0,1},
                                           {0,1,0,1});
-  int scanSize1 = 20;
-  int scanSize2 = 40;
+  int scanSize1 = 40;
+  int scanSize2 = 50;
 
   scans->resize(scanSize1*scanSize2);
   server.launchServer();
