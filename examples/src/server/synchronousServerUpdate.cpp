@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
     for (int i = 0; i < 10; i++)
       world.integrate();
 
-    if (server.waitForClient(1.0))
+    if (server.waitForMessageFromClient(1.0))
       server.processRequests();
 
     raisim::MSLEEP(world.getTimeStep() * 1000);
