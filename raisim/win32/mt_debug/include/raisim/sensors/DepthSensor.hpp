@@ -62,7 +62,7 @@ class DepthCamera final : public Sensor {
 
   explicit DepthCamera(const DepthCameraProperties& prop, class ArticulatedSystem* as, const Vec<3>& pos, const Mat<3,3>& rot) :
       Sensor(prop.name, Sensor::Type::DEPTH, as, pos, rot), prop_(prop) {
-    depthArray_.setZero(prop.height, prop.width);
+    depthArray_.resize(prop.height * prop.width);
     threeDPoints_.resize(prop.height * prop.width);
   }
   ~DepthCamera() final = default;
@@ -71,12 +71,6 @@ class DepthCamera final : public Sensor {
     return server::set(data, type_, prop_.name, prop_.width, prop_.height, prop_.clipNear, prop_.clipFar,
                        prop_.hFOV, prop_.noiseType, prop_.mean, prop_.std, prop_.format);
   }
-
-  /*
-   * This method is only useful on the real robot (and you use raisim on the real robot).
-   * You can set the depth array manually
-   */
-  void setDepthArray (const Eigen::MatrixXd& data) { depthArray_.e() = data; }
 
   /*
    * This method is only useful on the real robot (and you use raisim on the real robot).
@@ -93,7 +87,8 @@ class DepthCamera final : public Sensor {
    * On the real robot, you can set the 3d data using setDepthArray method
    * @return depthArray
    */
-  [[nodiscard]] const raisim::MatDyn& getDepthArray () const { return depthArray_; }
+  [[nodiscard]] const std::vector<float> & getDepthArray () const { return depthArray_; }
+  [[nodiscard]] std::vector<float> & getDepthArray () { return depthArray_; }
 
   /* This method works only if the sensor update type is THREE_DIM_COORD.
    * Otherwise, it will return garbage.
@@ -123,7 +118,7 @@ class DepthCamera final : public Sensor {
 
  private:
   DepthCameraProperties prop_;
-  raisim::MatDyn depthArray_;
+  std::vector<float> depthArray_;
   std::vector<raisim::Vec<3>, AlignedAllocator<raisim::Vec<3>, 32>> threeDPoints_;
 };
 

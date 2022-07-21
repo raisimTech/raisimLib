@@ -1082,7 +1082,7 @@ class RaisimServer final {
     std::lock_guard<std::mutex> guard(serverMutex_);
     ClientMessageType cMsgType;
     int nASs;
-    data_ = get(data_, &cMsgType, &nASs);
+    rData_ = get(rData_, &cMsgType, &nASs);
 
     if (cMsgType != ClientMessageType::REQUEST_SENSOR_UPDATE) return false;
 
@@ -1090,33 +1090,33 @@ class RaisimServer final {
 
     for (int i=0; i < nASs; i++) {
       int obIndex, nSensors;
-      data_ = get(data_, &obIndex, &nSensors);
-
+      rData_ = get(rData_, &obIndex, &nSensors);
       auto* as = dynamic_cast<ArticulatedSystem*>(obList[obIndex]);
 
       RSFATAL_IF(as->getSensors().size() != nSensors, "updateSensorMeasurements: sensor size mismatch. This must be a bug. Please report")
       for (int j=0; j < nSensors; j++) {
         int needsUpdate;
-        data_ = get(data_, &needsUpdate);
+        rData_ = get(rData_, &needsUpdate);
         if (needsUpdate == 0) continue;
 
         Sensor::Type type;
         std::string name;
-        data_ = get(data_, &type, &name);
+        rData_ = get(rData_, &type, &name);
         auto sensor = as->getSensors()[name];
 
         if (type == Sensor::Type::RGB) {
           int width, height;
-          data_ = get(data_, &width, &height);
+          rData_ = get(rData_, &width, &height);
+
           auto& img = std::static_pointer_cast<RGBCamera>(sensor)->getImageBuffer();
           RSFATAL_IF(width*height*4 != img.size(), "Image size mismatch. Sensor module not working properly")
-          data_ = getN(data_, img.data(), width*height*4);
+          rData_ = getN(rData_, img.data(), width * height * 4);
         } else if (type == Sensor::Type::DEPTH) {
           int width, height;
-          data_ = get(data_, &width, &height);
-          auto depthArray = std::static_pointer_cast<DepthCamera>(sensor)->getDepthArray();
+          rData_ = get(rData_, &width, &height);
+          auto& depthArray = std::static_pointer_cast<DepthCamera>(sensor)->getDepthArray();
           RSFATAL_IF(width * height != depthArray.size(), "Image size mismatch. Sensor module not working properly")
-          data_ = getN(data_, depthArray.data(), width * height);
+          rData_ = getN(rData_, depthArray.data(), width * height);
         }
       }
     }
