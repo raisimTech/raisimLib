@@ -653,15 +653,13 @@ class RaisimServer final {
    * If this method is not used, the application will stop if there is no message. */
   inline bool waitForMessageFromClient(int seconds) {
 #if defined __linux__ || __APPLE__
-    struct pollfd fds[2];
+    struct pollfd fds[1];
     int ret;
-
-    // 표준 입력에 대한 이벤트를 감시하기 위한 준비를 합니다.
     fds[0].fd = STDIN_FILENO;
-    fds[0].events = POLLOUT;
-    ret = poll(fds, 2, 10000);
+    fds[0].events = POLLIN;
+    ret = poll(fds, 1, seconds * 1000);
     if ( ret == 0) {
-      RSWARN("The client failed to respond in 20 seconds. Looking for a new client");
+      RSWARN("The client failed to respond in "<<seconds<<" seconds. Looking for a new client");
       return false;
     } else if( ret == -1 ) {
       RSWARN("The client error. Failed to communicate.");
@@ -676,9 +674,44 @@ class RaisimServer final {
     FD_SET(client_, &fds) ;
     tv.tv_sec = 20 ;
     tv.tv_usec = 100000 ;
-    n = select ( server_fd+1, &fds, NULL, NULL, &tv ) ;
+    n = select ( server_fd_+1, &fds, NULL, NULL, &tv ) ;
     if ( n == 0) {
-      RSWARN("The client failed to respond in 20 seconds. Looking for a new client");
+      RSWARN("The client failed to respond in "<< seconds <<" seconds. Looking for a new client");
+      return false;
+    } else if( n == -1 ) {
+      RSWARN("The client error. Failed to communicate.");
+      return false;
+    }
+    return true;
+#endif
+  }
+
+  inline bool waitForMessageToClient(int seconds) {
+#if defined __linux__ || __APPLE__
+    struct pollfd fds[2];
+    int ret;
+    fds[0].fd = client_;
+    fds[0].events = POLLOUT;
+    ret = poll(fds, 2, seconds * 1000);
+    if ( ret == 0) {
+      RSWARN("The client failed to respond in " << seconds << " seconds. Looking for a new client");
+      return false;
+    } else if( ret == -1 ) {
+      RSWARN("The client error. Failed to communicate.");
+      return false;
+    }
+    return true;
+#elif WIN32
+    fd_set fds ;
+    int n ;
+    struct timeval tv ;
+    FD_ZERO(&fds) ;
+    FD_SET(client_, &fds) ;
+    tv.tv_sec = 20 ;
+    tv.tv_usec = 100000 ;
+    n = select ( server_fd_+1, NULL, &fds, NULL, &tv ) ;
+    if ( n == 0) {
+      RSWARN("The client failed to respond in " << seconds <<" seconds. Looking for a new client");
       return false;
     } else if( n == -1 ) {
       RSWARN("The client error. Failed to communicate.");
@@ -768,7 +801,8 @@ class RaisimServer final {
       return false;
     }
 
-    sendData();
+    if (!sendData())
+      return false;
 
     if (needsSensorUpdate_) {
       if (!receiveData(5))
@@ -1078,7 +1112,7 @@ class RaisimServer final {
       if (totalDataSize == RECEIVE_BUFFER_SIZE)
         rData_ = get(&receive_buffer[0], &totalDataSize);
 
-      if (currentReceivedDataSize == 0) return false;
+      if (currentReceivedDataSize <= 0) return false;
 
       totalReceivedDataSize += currentReceivedDataSize;
     }
@@ -1093,7 +1127,10 @@ class RaisimServer final {
     set(&send_buffer[0], dataSize);
 
     while (dataSize > totalSentBytes)
-      totalSentBytes += send(client_, &send_buffer[0] + totalSentBytes, dataSize - totalSentBytes, 0);
+      if(waitForMessageToClient(1))
+        totalSentBytes += send(client_, &send_buffer[0] + totalSentBytes, dataSize - totalSentBytes, 0);
+      else
+        return false;
 
     return true;
   }
