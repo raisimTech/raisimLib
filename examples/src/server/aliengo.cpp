@@ -40,10 +40,10 @@ int main(int argc, char* argv[]) {
 
   /// launch raisim server
   raisim::RaisimServer server(&world);
-  server.launchServer();
   server.focusOn(aliengo);
+  server.launchServer();
 
-  for (int i=0; i<20000; i++) {
+  for (int i=0; i<2000000; i++) {
     std::this_thread::sleep_for(std::chrono::microseconds(1000));
     server.integrateWorldThreadSafe();
   }
