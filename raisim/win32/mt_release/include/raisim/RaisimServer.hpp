@@ -655,7 +655,7 @@ class RaisimServer final {
 #if defined __linux__ || __APPLE__
     struct pollfd fds[1];
     int ret;
-    fds[0].fd = STDIN_FILENO;
+    fds[0].fd = client_;
     fds[0].events = POLLIN;
     ret = poll(fds, 1, seconds * 1000);
     if ( ret == 0) {
