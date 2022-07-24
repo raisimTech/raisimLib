@@ -51,6 +51,8 @@ int main(int argc, char **argv) {
   for (int k = 0; k < loopN; k++) {
     world.integrate();
     raisim::MSLEEP(world.getTimeStep() * 1000);
+    //std::cout<<"first b pixel rgb "<<int(rgbCamera->getImageBuffer()[0])<<std::endl; // bgra format
+    //std::cout<<"first depth pixel "<<depthSensor->getDepthArray()[0]<<std::endl;
   }
 
   server.killServer();
