@@ -56,15 +56,16 @@ A generalized coordinate fully represents the configuration of the articulated s
 Every joint has a corresponding generalized coordinate and generalized velocity.
 A concatenation of all joint generalized coordinates and velocities are the generalized coordinates and velocities of the articulated system, respectively.
 The order of this concatenation is called **joint order**.
-The joint order is determined by the order the joint appears in the URDF unless otherwise it is explicitly given at the instance construction time.
+The URDF reader lists joints in the depth first manner.
+For the joints from the same parent, the joint order is determined by the order the joint appears in the URDF.
 The joint order can be accessed through :code:`getMovableJointNames()`.
 Note the keyword "movable".
 The fixed joints contribute to neither the generalized coordinate nor the generalized velocity.
-Only movable joints do (with one exception metioned below). 
+Only movable joints do.
 
 The joint order starts with the **root body** which is the first body of the articulated system. 
 For floating-base systems, the root body is the floating base.
-For fixed-base systems, the root body is the one rigidly attached to the wolrd.
+For fixed-base systems, the root body is the one rigidly attached to the world.
 Even though the fixed base cannot move physically, users can move them using :code:`setBaseOrientation` and :code:`setBasePosition`.
 So :code:`getMovableJointNames()` method will return the fixed base name and the fixed base joint is a part of the joint order.
 
