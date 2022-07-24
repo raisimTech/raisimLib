@@ -28,8 +28,8 @@ static inline char *set(char *data, const Vec<N> &vec) {
   return data + sizeof(double) * N;
 }
 template<typename T>
-static inline char *setN(char *data, T val, int64_t N) {
-  memcpy(data, &val, sizeof(T) * N);
+static inline char *setN(char *data, T* val, int64_t N) {
+  memcpy(data, val, sizeof(T) * N);
   return data + sizeof(T) * N;
 }
 
@@ -117,7 +117,7 @@ static inline char *set(char *data, const std::vector<std::string> &str) {
 
 static inline char *set(char *data, const VecDyn &vec) {
   data = set(data, int64_t(vec.size()));
-  data = setN(data, *vec.ptr(), uint64_t(vec.size()));
+  data = setN(data, vec.ptr(), uint64_t(vec.size()));
   return data;
 }
 

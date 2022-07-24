@@ -653,15 +653,13 @@ class RaisimServer final {
    * If this method is not used, the application will stop if there is no message. */
   inline bool waitForMessageFromClient(int seconds) {
 #if defined __linux__ || __APPLE__
-    struct pollfd fds[2];
+    struct pollfd fds[1];
     int ret;
-
-    // 표준 입력에 대한 이벤트를 감시하기 위한 준비를 합니다.
     fds[0].fd = STDIN_FILENO;
-    fds[0].events = POLLOUT;
-    ret = poll(fds, 2, 10000);
+    fds[0].events = POLLIN;
+    ret = poll(fds, 1, seconds * 1000);
     if ( ret == 0) {
-      RSWARN("The client failed to respond in 20 seconds. Looking for a new client");
+      RSWARN("The client failed to respond in "<<seconds<<" seconds. Looking for a new client");
       return false;
     } else if( ret == -1 ) {
       RSWARN("The client error. Failed to communicate.");
@@ -678,7 +676,7 @@ class RaisimServer final {
     tv.tv_usec = 100000 ;
     n = select ( server_fd_+1, &fds, NULL, NULL, &tv ) ;
     if ( n == 0) {
-      RSWARN("The client failed to respond in 20 seconds. Looking for a new client");
+      RSWARN("The client failed to respond in "<< seconds <<" seconds. Looking for a new client");
       return false;
     } else if( n == -1 ) {
       RSWARN("The client error. Failed to communicate.");
@@ -692,13 +690,11 @@ class RaisimServer final {
 #if defined __linux__ || __APPLE__
     struct pollfd fds[2];
     int ret;
-
-    // 표준 입력에 대한 이벤트를 감시하기 위한 준비를 합니다.
-    fds[0].fd = STDIN_FILENO;
+    fds[0].fd = client_;
     fds[0].events = POLLOUT;
-    ret = poll(fds, 2, 10000);
+    ret = poll(fds, 2, seconds * 1000);
     if ( ret == 0) {
-      RSWARN("The client failed to respond in 20 seconds. Looking for a new client");
+      RSWARN("The client failed to respond in " << seconds << " seconds. Looking for a new client");
       return false;
     } else if( ret == -1 ) {
       RSWARN("The client error. Failed to communicate.");
@@ -715,7 +711,7 @@ class RaisimServer final {
     tv.tv_usec = 100000 ;
     n = select ( server_fd_+1, NULL, &fds, NULL, &tv ) ;
     if ( n == 0) {
-      RSWARN("The client failed to respond in 20 seconds. Looking for a new client");
+      RSWARN("The client failed to respond in " << seconds <<" seconds. Looking for a new client");
       return false;
     } else if( n == -1 ) {
       RSWARN("The client error. Failed to communicate.");
