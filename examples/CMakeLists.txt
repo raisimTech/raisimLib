@@ -75,6 +75,7 @@ create_executable(springTest src/server/springTest.cpp)
 create_executable(trackedRobotAndTemplatedURDF src/server/trackedRobotAndTemplatedURDF.cpp)
 create_executable(kinematicObject src/server/kinematicObject.cpp)
 create_executable(sensors src/server/sensors.cpp)
+create_executable(synchronousServerUpdate src/server/synchronousServerUpdate.cpp)
 
 # xml reader
 create_executable(xmlRader src/xml/xmlReader.cpp)

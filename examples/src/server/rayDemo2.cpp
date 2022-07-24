@@ -45,15 +45,20 @@ int main(int argc, char* argv[]) {
 
   /// launch raisim server
   raisim::RaisimServer server(&world);
-  server.launchServer();
-  std::vector<raisim::Visuals *> scans;
-  server.focusOn(robot);
-  int scanSize1 = 8;
-  int scanSize2 = 25;
 
-  for(int i=0; i<scanSize1; i++)
-    for(int j=0; j<scanSize2; j++)
-      scans.push_back(server.addVisualBox("box" + std::to_string(i) + "/" + std::to_string(j), 0.1, 0.1, 0.1, 1, 0, 0));
+
+  /// this method should be called before server launch
+  auto scans = server.addInstancedVisuals("scan points",
+                                          raisim::InstancedVisuals::VisualBox,
+                                          {0.05, 0.05, 0.05},
+                                          {1,0,0,1},
+                                          {0,1,0,1});
+  int scanSize1 = 40;
+  int scanSize2 = 50;
+
+  scans->resize(scanSize1*scanSize2);
+  server.launchServer();
+  server.focusOn(robot);
 
   Eigen::Vector3d direction;
 
@@ -73,10 +78,13 @@ int main(int argc, char* argv[]) {
         Eigen::Vector3d rayDirection;
         rayDirection = lidarOri.e() * direction;
         auto &col = world.rayTest(lidarPos.e(), rayDirection, 30);
-        if (col.size() > 0)
-          scans[i * scanSize2 + j]->setPosition(col[0].getPosition());
+        if (col.size() > 0) {
+          scans->setPosition(i * scanSize2 + j, col[0].getPosition());
+          float length = (col[0].getPosition() - lidarPos.e()).norm();
+          scans->setColorWeight(i * scanSize2 + j, std::min(length/15.f, 1.0f));
+        }
         else
-          scans[i * scanSize2 + j]->setPosition({0, 0, 100});
+          scans->setPosition(i*scanSize2+j, {0, 0, 100});
       }
     }
 
