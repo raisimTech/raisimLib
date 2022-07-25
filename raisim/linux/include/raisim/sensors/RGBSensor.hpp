@@ -36,7 +36,7 @@ class RGBCamera : public Sensor {
     }
 
     double mean = 0., std;
-    std::string format = "R8G8B8A8";
+    std::string format = "R8G8B8A8"; // format is currently fixed
   };
 
   RGBCamera(RGBCameraProperties& prop, class ArticulatedSystem* as, const Vec<3>& pos, const Mat<3,3>& rot) :
