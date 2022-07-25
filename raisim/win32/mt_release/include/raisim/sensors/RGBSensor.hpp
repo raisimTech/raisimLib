@@ -36,7 +36,7 @@ class RGBCamera : public Sensor {
     }
 
     double mean = 0., std;
-    std::string format = "R8G8B8A8";
+    std::string format = "R8G8B8A8"; // format is currently fixed
   };
 
   RGBCamera(RGBCameraProperties& prop, class ArticulatedSystem* as, const Vec<3>& pos, const Mat<3,3>& rot) :
@@ -52,10 +52,13 @@ class RGBCamera : public Sensor {
   [[nodiscard]] static Type getType() { return Type::RGB; }
   [[nodiscard]] const RGBCameraProperties& getProperties () const { return prop_; }
 
+  /**
+   * rgb image in bgra format. It is updated only if the measurement source is the visualizer and raisimUnreal is used
+   * @return The image data in char vector
+   */
   [[nodiscard]] const std::vector<char>& getImageBuffer () const { return rgbBuffer_; }
   [[nodiscard]] std::vector<char>& getImageBuffer () { return rgbBuffer_; }
 
-  void updatePose(class World &world) final;
   void update (class World& world) final {
     RSFATAL("RGB sensors can only be updated by the visualizer. Use RaisimUnreal. ")
   }

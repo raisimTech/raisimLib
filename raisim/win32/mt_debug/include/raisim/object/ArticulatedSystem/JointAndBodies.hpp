@@ -624,6 +624,8 @@ class Child {
 
   void processJointRef();
 
+  void changeParent(Child &ch, Child &gch);
+
   void addChild(const Child &childNode) {
     if (childNode.joint.type == Joint::Type::FIXED) {
       fixedBodies.push_back(childNode);

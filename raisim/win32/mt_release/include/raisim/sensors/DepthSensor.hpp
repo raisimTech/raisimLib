@@ -105,11 +105,6 @@ class DepthCamera final : public Sensor {
   [[nodiscard]] static Type getType() { return Type::DEPTH; }
 
   /*
-   * Manually update the sensor pose
-   */
-  void updatePose(class World &world) final;
-
-  /*
    * Manually update the sensor pose then measurements using Raisim ray cast function.
    */
   void update (class World& world) final;
