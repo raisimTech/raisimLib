@@ -887,10 +887,10 @@ class RaisimServer final {
           if (sensor.second->getMeasurementSource() == Sensor::MeasurementSource::VISUALIZER &&
               sensor.second->getUpdateTimeStamp() + 1. / sensor.second->getUpdateRate() < world_->getWorldTime()) {
             sensor.second->setUpdateTimeStamp(world_->getWorldTime());
-            sensor.second->updatePose(*world_);
+            sensor.second->updatePose();
             Vec<4> quat;
-            auto& pos = sensor.second->getPos();
-            auto& rot = sensor.second->getRot();
+            auto& pos = sensor.second->getPosition();
+            auto& rot = sensor.second->getOrientation();
             rotMatToQuat(rot, quat);
             data_ = set(data_, int(1));
             data_ = setInFloat(data_, pos, quat);
