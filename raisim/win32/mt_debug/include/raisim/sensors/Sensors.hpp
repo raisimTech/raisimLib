@@ -15,7 +15,11 @@
 
 namespace raisim {
 
+class Child;
+
 class Sensor {
+  friend class raisim::Child;
+
  public:
   enum class Type : int {
     UNKNOWN = 0,
@@ -30,7 +34,7 @@ class Sensor {
   };
 
   Sensor (std::string name, Type type, class ArticulatedSystem* as, const Vec<3>& pos, const Mat<3,3>& rot) :
-      name_(std::move(name)), type_(type), as_(as), posB_(pos), rotB_(rot) { }
+      name_(std::move(name)), type_(type), as_(as), posB_(pos), rotB_(rot), posFrame_(pos), rotFrame_(rot) { }
   virtual ~Sensor() = default;
   void setPose(const Vec<3>& pos, const Mat<3,3>& rot) {
     pos_ = pos;
@@ -39,10 +43,13 @@ class Sensor {
 
   [[nodiscard]] const Vec<3>& getPos() { return pos_; }
   [[nodiscard]] const Mat<3,3>& getRot() { return rot_; }
+  [[nodiscard]] const Vec<3>& getFramePosition() { return posFrame_; }
+  [[nodiscard]] const Mat<3,3>& getFrameRotation() { return rotFrame_; }
+
+
   [[nodiscard]] const Vec<3>& getPosInSensorFrame() { return posB_; }
   [[nodiscard]] const Mat<3,3>& getRotInSensorFrame() { return rotB_; }
-  void setPosInSensorFrame(const Vec<3>& pos) { posB_ = pos; }
-  void setRotInSensorFrame(const Mat<3,3>& rot) { rotB_ = rot; }
+
   const std::string& getName() { return name_; }
   [[nodiscard]] Type getType() { return type_; }
   void setFrameId(size_t id) { frameId_ = id; }
@@ -57,9 +64,12 @@ class Sensor {
   virtual void update (class World& world) = 0;
 
  protected:
+  void setFramePosition(const Vec<3>& pos) { posFrame_ = pos; }
+  void setFrameRotation(const Mat<3,3>& rot) { rotFrame_ = rot; }
+
   Type type_;
-  Vec<3> pos_, posB_;
-  Mat<3,3> rot_, rotB_;
+  Vec<3> pos_, posB_, posFrame_;
+  Mat<3,3> rot_, rotB_, rotFrame_;
   size_t frameId_;
   class ArticulatedSystem* as_;
   MeasurementSource source_ = MeasurementSource::MANUAL;
