@@ -28,7 +28,7 @@ class Sensor {
   };
 
   enum class MeasurementSource : int {
-    RAISIM = 0, // raisim automatically updates the measurements according to the simulation time
+    RAISIM = 0, // [NOT IMPLEMENTED YET] raisim automatically updates the measurements according to the simulation time
     VISUALIZER, // visualizer automatically updates the measurements according to the simulation time
     MANUAL // user manually update the measurements whenever needed.
   };
@@ -36,36 +36,105 @@ class Sensor {
   Sensor (std::string name, Type type, class ArticulatedSystem* as, const Vec<3>& pos, const Mat<3,3>& rot) :
       name_(std::move(name)), type_(type), as_(as), posB_(pos), rotB_(rot), posFrame_(pos), rotFrame_(rot) { }
   virtual ~Sensor() = default;
-  void setPose(const Vec<3>& pos, const Mat<3,3>& rot) {
-    pos_ = pos;
-    rot_ = rot;
-  }
 
-  [[nodiscard]] const Vec<3>& getPos() { return pos_; }
-  [[nodiscard]] const Mat<3,3>& getRot() { return rot_; }
+  /**
+   * The pose is updated using updatePose() method. updatePose() can be called by the user. If the visualizer updates the measurement, the server will call this method before the measurement update.
+   * @return The position of the sensor frame
+   */
+  [[nodiscard]] const Vec<3>& getPosition() { return pos_; }
+
+  /**
+   * The pose is updated using updatePose() method. updatePose() can be called by the user. If the visualizer updates the measurement, the server will call this method before the measurement update.
+   * @return The orientation of the sensor frame
+   */
+  [[nodiscard]] const Mat<3,3>& getOrientation() { return rot_; }
+
+  /**
+   * @return The position of the frame w.r.t. the nearest moving parent. It is used to compute the frame position in the world frame
+   */
   [[nodiscard]] const Vec<3>& getFramePosition() { return posFrame_; }
-  [[nodiscard]] const Mat<3,3>& getFrameRotation() { return rotFrame_; }
+
+  /**
+   * @return The orientation of the frame w.r.t. the nearest moving parent. It is used to compute the frame position in the world frame
+   */
+  [[nodiscard]] const Mat<3,3>& getFrameOrientation() { return rotFrame_; }
 
 
+  /**
+   * @return The position of the frame w.r.t. the sensor frame, which is the frame of the parent joint
+   */
   [[nodiscard]] const Vec<3>& getPosInSensorFrame() { return posB_; }
-  [[nodiscard]] const Mat<3,3>& getRotInSensorFrame() { return rotB_; }
 
-  const std::string& getName() { return name_; }
+  /**
+   * @return The orientation of the frame w.r.t. the sensor frame, which is the frame of the parent joint
+   */
+  [[nodiscard]] const Mat<3,3>& getOriInSensorFrame() { return rotB_; }
+
+  /**
+   * @return The name of the sensor
+   */
+  [[nodiscard]] const std::string& getName() { return name_; }
+
+  /**
+   * @return The type of the sensor
+   */
   [[nodiscard]] Type getType() { return type_; }
-  void setFrameId(size_t id) { frameId_ = id; }
+
+  /**
+   * @return The update frequency in Hz
+   */
   [[nodiscard]] double getUpdateRate() const { return updateRate_; }
+
+  /**
+   * @return The time when the last sensor measurement was recorded
+   */
   [[nodiscard]] double getUpdateTimeStamp() const { return updateTimeStamp_; }
+
+  /**
+   * change the update rate of the sensor. The rate is given in Hz
+   * @param[in] rate the update rate in Hz
+   */
   void setUpdateRate(double rate) { updateRate_ = rate; }
+
+  /**
+   * Set the time stamp for the last sensor measurement
+   * @param[in] time the time stamp
+   */
   void setUpdateTimeStamp(double time) { updateTimeStamp_ = time; }
-  virtual char* serializeProp (char* data) const = 0;
-  virtual void updatePose(class World &world) = 0;
+
+  /**
+   * Used by the server. Do not use it if you don't know what it does. It serialized the camera property
+   * @param[in] data the pointer where the property is written
+   * @return the pointer where the next data should be written
+   */
+  [[nodiscard]] virtual char* serializeProp (char* data) const = 0;
+
+  /**
+   * update the pose of the sensor from the articulated system
+   */
+  void updatePose();
+
+  /**
+   * @return The measurement source.
+   */
   [[nodiscard]] MeasurementSource getMeasurementSource() { return source_; }
+
+  /**
+   * change the measurement source
+   * @param[in] source The measurement source.
+   */
   void setMeasurementSource(MeasurementSource source) { source_ = source; }
+
+  /**
+   * Update the sensor measurement using raisim if possible
+   * @param[in] world the world object
+   */
   virtual void update (class World& world) = 0;
 
  protected:
   void setFramePosition(const Vec<3>& pos) { posFrame_ = pos; }
   void setFrameRotation(const Mat<3,3>& rot) { rotFrame_ = rot; }
+  void setFrameId(size_t id) { frameId_ = id; }
 
   Type type_;
   Vec<3> pos_, posB_, posFrame_;
