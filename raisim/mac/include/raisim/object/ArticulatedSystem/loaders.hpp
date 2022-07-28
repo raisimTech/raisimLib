@@ -109,6 +109,7 @@ struct UrdfLink {
   std::vector<UrdfBody> visual, collision;
   UrdfLinkInertial inertial;
   Vec<4> color_;
+  std::vector<std::shared_ptr<Sensor>> sensor;
 };
 
 class LoadFromURDF2 {
