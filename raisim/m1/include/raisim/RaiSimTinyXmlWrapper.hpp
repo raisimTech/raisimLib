@@ -40,7 +40,7 @@ public:
     fileName_ = name;
   }
 
-  std::vector<RaiSimTinyXmlWrapper> getChildren(const std::string &child) const {
+  [[nodiscard]] std::vector<RaiSimTinyXmlWrapper> getChildren(const std::string &child) const {
     RSFATAL_IF(!node_, "You have accessed a dummy node")
     std::vector<RaiSimTinyXmlWrapper> children;
     for(TiXmlElement *oc = node_->FirstChildElement(child.c_str()); oc != NULL;
@@ -55,10 +55,10 @@ public:
     return node_->RemoveChild(node_->FirstChildElement(child.c_str()));
   }
 
-  std::vector<RaiSimTinyXmlWrapper> getChildrenMust(const std::string &child) const {
+  [[nodiscard]] std::vector<RaiSimTinyXmlWrapper> getChildrenMust(const std::string &child) const {
     RSFATAL_IF(!node_, "You have accessed a dummy node")
     auto children = getChildren(child);
-    RSFATAL_IF(children.size() == 0, "in \'" << getFileName()
+    RSFATAL_IF(children.empty(), "in \'" << getFileName()
                    << "\' at "<< "row:" << std::to_string(node_->Row()) 
                    << " col:" << std::to_string(node_->Column())
                    << ", the node "<<"\'"<< getNodeName()<<"\'"
@@ -67,10 +67,10 @@ public:
     return children;
   }
 
-  std::vector<RaiSimTinyXmlWrapper> getChildrenMust() const {
+  [[nodiscard]] std::vector<RaiSimTinyXmlWrapper> getChildrenMust() const {
     RSFATAL_IF(!node_, "You have accessed a dummy node")
     auto children = getChildren();
-    RSFATAL_IF(children.size() == 0, "in \'" << getFileName()
+    RSFATAL_IF(children.empty(), "in \'" << getFileName()
                    << "\' at "<< "row:" << std::to_string(node_->Row()) 
                    << " col:" << std::to_string(node_->Column())
                    << ", the node "<<"\'"<< getNodeName()<<"\'"
@@ -79,14 +79,14 @@ public:
     return children;
   }
 
-  std::vector<RaiSimTinyXmlWrapper> getChildren() const {
+  [[nodiscard]] std::vector<RaiSimTinyXmlWrapper> getChildren() const {
     RSFATAL_IF(!node_, "You have accessed a dummy node")
     std::vector<RaiSimTinyXmlWrapper> children;
-    for (TiXmlElement *oc = node_->FirstChildElement(); oc != NULL;
-         oc = oc->NextSiblingElement())
+    for (TiXmlElement *oc = node_->FirstChildElement(); oc != nullptr;
+         oc = oc->NextSiblingElement()) {
       children.push_back(
           RaiSimTinyXmlWrapper(oc, oc->ValueStr(), nodeTree_, fileName_));
-
+    }
     return children;
   }
 
@@ -105,7 +105,7 @@ public:
   }
 
   template <typename T>
-  const T getAttributeMust(const std::string &attName) const {
+  T getAttributeMust(const std::string &attName) const {
     RSFATAL_IF(!node_, "You have accessed a dummy node")
     T attribute;
     auto result = getAttributeIfExists(attName, attribute);
@@ -219,12 +219,12 @@ public:
 
   bool getAttributeIfExists(const std::string &attName, int &attribute) const {
     if(!node_) return false;
-    return node_->Attribute(attName, &attribute);
+    return bool(node_->Attribute(attName, &attribute));
   }
 
   bool getAttributeIfExists(const std::string &attName, double &attribute) const {
     if(!node_) return false;
-    return node_->Attribute(attName, &attribute);
+    return bool(node_->Attribute(attName, &attribute));
   }
 
   bool getAttributeIfExists(const std::string &attName, std::string &attribute) const {
@@ -232,7 +232,7 @@ public:
     const std::string *result = node_->Attribute(attName);
     if (result)
       attribute = *result;
-    return result;
+    return bool(result);
   }
 
   bool getAttributeIfExists(const std::string &attName, unsigned long &attribute) const {
@@ -240,14 +240,14 @@ public:
     auto result = node_->Attribute(attName);
     if (result)
       attribute = std::stoul(*result);
-    return result;
+    return bool(result);
   }
 
   bool getAttributeIfExists(const std::string &attName, unsigned long long &attribute) const {
     if(!node_) return false;
     auto result = node_->Attribute(attName);
     if (result) attribute = std::stoul(*result);
-    return result;
+    return bool(result);
   }
 
   bool getAttributeIfExists(const std::string &attName, ObjectType &attribute) const {
@@ -255,10 +255,10 @@ public:
     auto result = node_->Attribute(attName);
     if (result)
       attribute = stringToObjectType(*result);
-    return result;
+    return bool(result);
   }
 
-  std::string getFullTree() const {
+  [[nodiscard]] std::string getFullTree() const {
     std::string tree;
 
     for (auto &ele : nodeTree_)
@@ -267,9 +267,9 @@ public:
     return tree;
   }
 
-  const std::string &getFileName() const { return fileName_; }
+  [[nodiscard]] const std::string &getFileName() const { return fileName_; }
 
-  const std::string &getNodeName() const { return node_->ValueTStr(); }  
+  [[nodiscard]] const std::string &getNodeName() const { return node_->ValueTStr(); }
 
 private:
   RaiSimTinyXmlWrapper(TiXmlElement *node, const std::string &child,

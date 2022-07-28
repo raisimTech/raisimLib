@@ -1,1 +1,11 @@
 error logs 
+System.Exception: RsUnityRemote: UpdateObjectPosition
+Unable to read data from the transport connection: Connection reset by peer.
+  at System.Net.Sockets.NetworkStream.Read (System.Byte[] buffer, System.Int32 offset, System.Int32 size) [0x000e2] in <6f1d457dbe7848f19617dea9acc2268a>:0 
+  at raisimUnity.TcpHelper.ReadData () [0x0002b] in <2265bd80598a49d7ae7e24a6682a0295>:0 
+  at raisimUnity.RsUnityRemote.ReadAndCheckServer (raisimUnity.ClientMessageType type) [0x000b4] in <2265bd80598a49d7ae7e24a6682a0295>:0 
+  at raisimUnity.RsUnityRemote.Update () [0x00371] in <2265bd80598a49d7ae7e24a6682a0295>:0 
+  at raisimUnity.RsuException..ctor (System.Exception ex, System.String message) [0x00037] in <2265bd80598a49d7ae7e24a6682a0295>:0 
+  at raisimUnity.RsUnityRemote.Update () [0x003ba] in <2265bd80598a49d7ae7e24a6682a0295>:0 
+ 
+

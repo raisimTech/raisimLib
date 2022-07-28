@@ -26,6 +26,8 @@
 #include <sstream>
 #include <iomanip>
 #include <functional>
+#include "math.h"
+
 
 namespace raisim {
 
