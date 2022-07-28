@@ -6,10 +6,13 @@
 #ifndef RAISIM_JOINTANDBODIES_HPP
 #define RAISIM_JOINTANDBODIES_HPP
 
+#include <unordered_map>
+
 #include "ode/ode.h"
+
 #include "raisim/math.hpp"
 #include "raisim/object/singleBodies/Mesh.hpp"
-#include <unordered_map>
+#include "raisim/sensors/Sensors.hpp"
 
 namespace raisim {
 
@@ -562,6 +565,7 @@ class Body {
   double mass_;
   Mat<3, 3> inertia_;
   Vec<3> com_;
+  std::vector<std::shared_ptr<Sensor>> sensor;
 };
 
 class Child {
@@ -619,6 +623,8 @@ class Child {
   void consumeFixedBodies(std::vector<CoordinateFrame> &frameOfInterest);
 
   void processJointRef();
+
+  void changeParent(Child &ch, Child &gch);
 
   void addChild(const Child &childNode) {
     if (childNode.joint.type == Joint::Type::FIXED) {

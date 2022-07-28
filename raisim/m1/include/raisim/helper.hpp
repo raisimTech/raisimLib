@@ -110,7 +110,7 @@ class AlignedAllocator {
     return &s;
   }
 
-  std::size_t max_size() const {
+  [[nodiscard]] std::size_t max_size() const {
     return (static_cast<std::size_t>(0) - static_cast<std::size_t>(1)) / sizeof(T);
   }
 
@@ -139,20 +139,20 @@ class AlignedAllocator {
 
   AlignedAllocator() = default;
 
-  AlignedAllocator(const AlignedAllocator &) {}
+  AlignedAllocator(const AlignedAllocator &) = default;
 
   template<typename U>
   AlignedAllocator(const AlignedAllocator<U, RSALOCATOR_ALIGNMENT> &) {}
 
-  ~AlignedAllocator() {}
+  ~AlignedAllocator() = default;
 
   T *allocate(const std::size_t n) const {
     if (n == 0)
-      return NULL;
+      return nullptr;
 
     void *const pv = _mm_malloc(n * sizeof(T), RSALOCATOR_ALIGNMENT);
 
-    if (pv == NULL) {
+    if (pv == nullptr) {
       throw std::bad_alloc();
     }
 
