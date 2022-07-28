@@ -132,9 +132,13 @@ class DynamicArray{
 #ifdef _WIN32
     v = static_cast<double *>(
         Eigen::internal::handmade_aligned_malloc(size * sizeof(double)));
-#elif __linux__
+#endif
+
+#ifdef __linux__
     v = static_cast<double*>(aligned_alloc(32, size * sizeof(double)));
-#elif __APPLE__
+#endif
+
+#ifdef __APPLE__
     v = static_cast<double*>(aligned_alloc(32, size * sizeof(double)));
 #endif
   }
@@ -142,9 +146,13 @@ class DynamicArray{
   void dealloc() {
 #ifdef __APPLE__
     if (v) aligned_free(v);
-#elif __linux__
+#endif
+
+#ifdef __linux__
     free(v);
-#elif WIN32
+#endif
+
+#ifdef _WIN32
     if (v) Eigen::internal::handmade_aligned_free(v);
 #endif
   }
