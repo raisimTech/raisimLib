@@ -205,13 +205,13 @@ class RaisimServer final {
   void acceptConnection(int seconds) {
     if (waitForNewClients(seconds)) {
 #if __linux__ || __APPLE__
-      RSFATAL_IF((client_ = accept(server_fd_, (struct sockaddr *) &address,
-                                       (socklen_t *) &addrlen)) < 0, "accept failed")
+      client_ = accept(server_fd_, (struct sockaddr *) &address, (socklen_t *) &addrlen);
       connected_ = client_ > -1;
 #elif WIN32
       client_ = int(accept(server_fd_, NULL, NULL));
       connected_ = client_ != INVALID_SOCKET;
 #endif
+      RSWARN_IF(client_ < 0, "Accept failed: "<<strerror(errno))
     }
   }
 
