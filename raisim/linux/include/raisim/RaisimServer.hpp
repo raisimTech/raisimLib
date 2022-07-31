@@ -124,9 +124,9 @@ class RaisimServer final {
     int addrlen = sizeof(address);
 
     // Creating socket file descriptor
-    RSFATAL_IF((server_fd_ = socket(AF_INET, SOCK_STREAM, 0)) == 0, "socket error: " << strerror(errno))
+    RSFATAL_IF((server_fd_ = socket(AF_INET, SOCK_STREAM, 0)) < 0, "socket error: " << strerror(errno))
     RSFATAL_IF(setsockopt(server_fd_, SOL_SOCKET, RAISIM_SERVER_SOCKET_OPTION,
-                          (char *) &opt, sizeof(opt)), "setsockopt error: "<< strerror(errno))
+                          (char *) &opt, sizeof(opt)) == -1, "setsockopt error: "<< strerror(errno))
 
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
