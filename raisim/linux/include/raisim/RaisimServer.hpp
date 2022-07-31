@@ -121,7 +121,7 @@ class RaisimServer final {
   void setupSocket() {
 #if __linux__ || __APPLE__
     int opt = 1;
-    int addrlen = sizeof(address);
+    addrlen = sizeof(address);
 
     // Creating socket file descriptor
     RSFATAL_IF((server_fd_ = socket(AF_INET, SOCK_STREAM, 0)) < 0, "socket error: " << strerror(errno))
