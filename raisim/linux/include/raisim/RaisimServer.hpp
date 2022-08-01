@@ -885,7 +885,7 @@ class RaisimServer final {
         // add sensors to be updated
         for (auto& sensor: as->getSensors()) {
           if (sensor.second->getMeasurementSource() == Sensor::MeasurementSource::VISUALIZER &&
-              sensor.second->getUpdateTimeStamp() + 1. / sensor.second->getUpdateRate() < world_->getWorldTime()) {
+              sensor.second->getUpdateTimeStamp() + 1. / sensor.second->getUpdateRate() < world_->getWorldTime() + 1e-10) {
             sensor.second->setUpdateTimeStamp(world_->getWorldTime());
             sensor.second->updatePose();
             Vec<4> quat;
