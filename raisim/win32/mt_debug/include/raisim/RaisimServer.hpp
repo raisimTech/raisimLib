@@ -121,12 +121,12 @@ class RaisimServer final {
   void setupSocket() {
 #if __linux__ || __APPLE__
     int opt = 1;
-    int addrlen = sizeof(address);
+    addrlen = sizeof(address);
 
     // Creating socket file descriptor
-    RSFATAL_IF((server_fd_ = socket(AF_INET, SOCK_STREAM, 0)) == 0, "socket error: " << strerror(errno))
+    RSFATAL_IF((server_fd_ = socket(AF_INET, SOCK_STREAM, 0)) < 0, "socket error: " << strerror(errno))
     RSFATAL_IF(setsockopt(server_fd_, SOL_SOCKET, RAISIM_SERVER_SOCKET_OPTION,
-                          (char *) &opt, sizeof(opt)), "setsockopt error: "<< strerror(errno))
+                          (char *) &opt, sizeof(opt)) == -1, "setsockopt error: "<< strerror(errno))
 
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
@@ -205,13 +205,13 @@ class RaisimServer final {
   void acceptConnection(int seconds) {
     if (waitForNewClients(seconds)) {
 #if __linux__ || __APPLE__
-      RSFATAL_IF((client_ = accept(server_fd_, (struct sockaddr *) &address,
-                                       (socklen_t *) &addrlen)) < 0, "accept failed")
+      client_ = accept(server_fd_, (struct sockaddr *) &            , (socklen_t *) &addrlen);
       connected_ = client_ > -1;
 #elif WIN32
       client_ = int(accept(server_fd_, NULL, NULL));
       connected_ = client_ != INVALID_SOCKET;
 #endif
+      RSWARN_IF(client_ < 0, "Accept failed: "<<strerror(errno))
     }
   }
 
@@ -885,7 +885,7 @@ class RaisimServer final {
         // add sensors to be updated
         for (auto& sensor: as->getSensors()) {
           if (sensor.second->getMeasurementSource() == Sensor::MeasurementSource::VISUALIZER &&
-              sensor.second->getUpdateTimeStamp() + 1. / sensor.second->getUpdateRate() < world_->getWorldTime()) {
+              sensor.second->getUpdateTimeStamp() + 1. / sensor.second->getUpdateRate() < world_->getWorldTime() + 1e-10) {
             sensor.second->setUpdateTimeStamp(world_->getWorldTime());
             sensor.second->updatePose();
             Vec<4> quat;
@@ -1104,6 +1104,7 @@ class RaisimServer final {
     while (totalDataSize > totalReceivedDataSize) {
       if (waitForMessageFromClient(seconds)) {
         currentReceivedDataSize = recv(client_, &receive_buffer[0] + totalReceivedDataSize, RECEIVE_BUFFER_SIZE - totalReceivedDataSize, 0);
+        if (currentReceivedDataSize == -1) return false;
       } else {
         RSWARN("Lost connection to the client. Trying to find a new client...")
         return false;
@@ -1124,12 +1125,15 @@ class RaisimServer final {
     using namespace server;
     int dataSize = data_ - &send_buffer[0];
     int totalSentBytes = 0;
+    int currentlySentBytes = 0;
     set(&send_buffer[0], dataSize);
 
     while (dataSize > totalSentBytes)
-      if(waitForMessageToClient(1))
-        totalSentBytes += send(client_, &send_buffer[0] + totalSentBytes, dataSize - totalSentBytes, 0);
-      else
+      if(waitForMessageToClient(1)) {
+        currentlySentBytes = send(client_, &send_buffer[0] + totalSentBytes, dataSize - totalSentBytes, 0);
+        totalSentBytes += currentlySentBytes;
+        if (currentlySentBytes == -1) return false;
+      } else
         return false;
 
     return true;
