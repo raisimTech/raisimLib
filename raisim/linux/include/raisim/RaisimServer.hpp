@@ -1104,6 +1104,7 @@ class RaisimServer final {
     while (totalDataSize > totalReceivedDataSize) {
       if (waitForMessageFromClient(seconds)) {
         currentReceivedDataSize = recv(client_, &receive_buffer[0] + totalReceivedDataSize, RECEIVE_BUFFER_SIZE - totalReceivedDataSize, 0);
+        if (currentReceivedDataSize == -1) return false;
       } else {
         RSWARN("Lost connection to the client. Trying to find a new client...")
         return false;
@@ -1124,12 +1125,15 @@ class RaisimServer final {
     using namespace server;
     int dataSize = data_ - &send_buffer[0];
     int totalSentBytes = 0;
+    int currentlySentBytes = 0;
     set(&send_buffer[0], dataSize);
 
     while (dataSize > totalSentBytes)
-      if(waitForMessageToClient(1))
-        totalSentBytes += send(client_, &send_buffer[0] + totalSentBytes, dataSize - totalSentBytes, 0);
-      else
+      if(waitForMessageToClient(1)) {
+        currentlySentBytes = send(client_, &send_buffer[0] + totalSentBytes, dataSize - totalSentBytes, 0);
+        totalSentBytes += currentlySentBytes;
+        if (currentlySentBytes == -1) return false;
+      } else
         return false;
 
     return true;
