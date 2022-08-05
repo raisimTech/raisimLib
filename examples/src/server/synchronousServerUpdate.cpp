@@ -41,11 +41,17 @@ int main(int argc, char **argv) {
   anymal->setGeneralizedForce(Eigen::VectorXd::Zero(anymal->getDOF()));
   anymal->setName("Anymal");
 
-  auto depthSensor = anymal->getSensor<raisim::DepthCamera>("depth_camera_front_camera_parent:depth");
-  depthSensor->setMeasurementSource(raisim::Sensor::MeasurementSource::VISUALIZER);
+  auto front_depthSensor = anymal->getSensor<raisim::DepthCamera>("depth_camera_front_camera_parent:depth");
+  front_depthSensor->setMeasurementSource(raisim::Sensor::MeasurementSource::VISUALIZER);
 
-  auto rgbCamera = anymal->getSensor<raisim::RGBCamera>("depth_camera_front_camera_parent:color");
-  rgbCamera->setMeasurementSource(raisim::Sensor::MeasurementSource::VISUALIZER);
+  auto front_rgbCamera = anymal->getSensor<raisim::RGBCamera>("depth_camera_front_camera_parent:color");
+  front_rgbCamera->setMeasurementSource(raisim::Sensor::MeasurementSource::VISUALIZER);
+
+  auto rear_depthSensor = anymal->getSensor<raisim::DepthCamera>("depth_camera_rear_camera_parent:depth");
+  rear_depthSensor->setMeasurementSource(raisim::Sensor::MeasurementSource::VISUALIZER);
+
+  auto rear_rgbCamera = anymal->getSensor<raisim::RGBCamera>("depth_camera_rear_camera_parent:color");
+  rear_rgbCamera->setMeasurementSource(raisim::Sensor::MeasurementSource::VISUALIZER);
 
   server.setupSocket();
   server.acceptConnection(2000.0);
