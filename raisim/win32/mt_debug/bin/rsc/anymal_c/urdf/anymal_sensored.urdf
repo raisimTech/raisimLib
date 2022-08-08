@@ -332,7 +332,7 @@
         <origin rpy="0.0 0.0 0.0" xyz="0.0255 0.0175 0.0"/>
     </joint>
     <!-- Camera parent link -->
-    <link name="depth_camera_rear_camera_parent"/>
+    <link name="depth_camera_rear_camera_parent" sensor="realsense435.xml"/>
     <!-- Depth optical frame joint -->
     <joint name="depth_camera_rear_camera_parent_to_depth_optical_frame" type="fixed">
         <parent link="depth_camera_rear_camera_parent"/>

@@ -23,7 +23,6 @@ int main(int argc, char* argv[]) {
 
   /// launch raisim server
   raisim::RaisimServer server(&world);
-  server.launchServer();
   raisim::Vec<4> quat = {0.6, 0.2, -0.6, 0.1};
   quat = quat / quat.norm();
   raisim::Mat<3, 3> inertia;
@@ -54,19 +53,30 @@ int main(int argc, char* argv[]) {
   for( int i = 0; i < 100; i++)
     lines->points.push_back({sin(i*0.1), cos(i*0.1), i*0.01});
 
+
+  auto lines2 = server.addVisualPolyLine("lines2");
+  lines2->color = {0,0,1,1};
+
+  for( int i = 0; i < 100; i++)
+    lines2->points.push_back({sin(i*0.1)+2, cos(i*0.1), i*0.01});
+
+  server.launchServer();
   size_t counter = 0;
   for (int i=0; i<500000; i++) {
     counter++;
+    raisim::MSLEEP(2);
+
+    server.lockVisualizationServerMutex();
     visBox->color[2] = double((counter)%255+1)/256.;
     visBox->setBoxSize(1, double((counter)%255+1)/256.+0.01, 1);
     visCapsule->setCapsuleSize(double((counter)%255+1)/256.+0.01, 1);
     visCylinder->setCapsuleSize(double((counter)%255+1)/256.+0.01, 1);
 
     visSphere->color[1] = double((counter)%255+1)/256.;
-    raisim::MSLEEP(2);
 
     lines->color[2] = double((counter)%255+1)/256.;
     lines->color[0] = 1. - lines->color[2];
+    server.unlockVisualizationServerMutex();
 //    server.integrateWorldThreadSafe();
   }
 
