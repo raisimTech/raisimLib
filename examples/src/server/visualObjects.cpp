@@ -54,6 +54,13 @@ int main(int argc, char* argv[]) {
   for( int i = 0; i < 100; i++)
     lines->points.push_back({sin(i*0.1), cos(i*0.1), i*0.01});
 
+
+  auto lines2 = server.addVisualPolyLine("lines2");
+  lines2->color = {0,0,1,1};
+
+  for( int i = 0; i < 100; i++)
+    lines2->points.push_back({sin(i*0.1)+2, cos(i*0.1), i*0.01});
+
   size_t counter = 0;
   for (int i=0; i<500000; i++) {
     counter++;
