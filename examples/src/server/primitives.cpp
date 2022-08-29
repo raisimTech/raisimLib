@@ -19,8 +19,9 @@ int main(int argc, char* argv[]) {
   world.setTimeStep(0.002);
 
   /// create objects
-  auto ground = world.addGround();
-
+  auto ground = world.addGround(-0.5);
+  ground->setName("ground");
+  ground->setAppearance("grid");
   std::vector<raisim::Box*> cubes;
   std::vector<raisim::Sphere*> spheres;
   std::vector<raisim::Capsule*> capsules;
@@ -38,18 +39,22 @@ int main(int argc, char* argv[]) {
           case 0:
             cubes.push_back(world.addBox(1, 1, 1, 1));
             ob = cubes.back();
+            ob->setAppearance("blue");
             break;
           case 1:
             spheres.push_back(world.addSphere(0.5, 1));
             ob = spheres.back();
+            ob->setAppearance("red");
             break;
           case 2:
-            capsules.push_back(world.addCapsule(0.5, 1., 1));
+            capsules.push_back(world.addCapsule(0.5, 0.5, 1));
             ob = capsules.back();
+            ob->setAppearance("green");
             break;
           case 3:
             cylinders.push_back(world.addCylinder(0.5, 0.5, 1));
             ob = cylinders.back();
+            ob->setAppearance("0.5, 0.5, 0.8, 1.0");
             break;
         }
         ob->setPosition(-N + 2. * i, -N + 2. * j, N * 2. + 2. * k);

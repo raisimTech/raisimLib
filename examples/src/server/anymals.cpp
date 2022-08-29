@@ -19,7 +19,7 @@ int main(int argc, char* argv[]) {
 
   /// create objects
   auto ground = world.addGround(0, "gnd");
-  ground->setAppearance("wheat");
+  ground->setAppearance("hidden");
   auto anymalB = world.addArticulatedSystem(binaryPath.getDirectory() + "\\rsc\\anymal\\urdf\\anymal.urdf");
   auto anymalC = world.addArticulatedSystem(binaryPath.getDirectory() + "\\rsc\\anymal_c\\urdf\\anymal.urdf");
 
@@ -51,6 +51,7 @@ int main(int argc, char* argv[]) {
 
   /// launch raisim server
   raisim::RaisimServer server(&world);
+  server.setMap("wheat");
   server.launchServer();
   server.focusOn(anymalC);
 

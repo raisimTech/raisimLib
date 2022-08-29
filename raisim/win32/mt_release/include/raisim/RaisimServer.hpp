@@ -62,30 +62,13 @@ class RaisimServer final {
   static constexpr int RECEIVE_BUFFER_SIZE = 33554432;
 
   enum ClientMessageType : int {
-    REQUEST_OBJECT_POSITION = 0,
-    REQUEST_INITIALIZATION,
-    REQUEST_RESOURCE,  // request mesh, texture. etc files
-    REQUEST_CHANGE_REALTIME_FACTOR,
-    REQUEST_CONTACT_SOLVER_DETAILS,
-    REQUEST_PAUSE,
-    REQUEST_RESUME,
-    REQUEST_CONTACT_INFOS,
-    REQUEST_CONFIG_XML,
-    REQUEST_INITIALIZE_VISUALS,
-    REQUEST_VISUAL_POSITION,
-    REQUEST_SERVER_STATUS,
+    REQUEST_UPDATE = 0,
     REQUEST_SENSOR_UPDATE
   };
 
   enum ServerMessageType : int {
-    INITIALIZATION = 0,
-    OBJECT_POSITION_UPDATE = 1,
-    STATUS = 2,
-    NO_MESSAGE = 3,
-    CONTACT_INFO_UPDATE = 4,
-    CONFIG_XML = 5,
-    VISUAL_INITILIZATION = 6,
-    VISUAL_POSITION_UPDATE = 7
+    UPDATE_ALL = 0,
+    No_MESSAGE
   };
 
   enum class ServerRequestType : int {
@@ -102,6 +85,18 @@ class RaisimServer final {
     STATUS_RENDERING = 0,
     STATUS_HIBERNATING = 1,
     STATUS_TERMINATING = 2
+  };
+
+  enum Masking : int {
+    AS_VISUAL_OBJ = 0,
+    AS_COL_OBJ,
+    SB_OBJ,
+    VIS_OBJ,
+    CONSTRAINTS,
+    CONTACT_FORCE,
+    CONTACT_POINT,
+    EXT_FORCE,
+    EXT_TORQUE
   };
 
   /**
@@ -176,11 +171,11 @@ class RaisimServer final {
       return;
     }
 
-    setsockopt(server_fd_, SOL_SOCKET, SO_SNDBUF, (char *)&opt, sizeof(opt));
-    setsockopt(server_fd_, SOL_SOCKET, SO_RCVBUF, (char *)&opt, sizeof(opt));
+    setsockopt(server_fd_, SOL_SOCKET, SO_SNDBUF, (char *) &opt, sizeof(opt));
+    setsockopt(server_fd_, SOL_SOCKET, SO_RCVBUF, (char *) &opt, sizeof(opt));
 
     // Setup the TCP listening socket
-    iResult = bind(server_fd_, result->ai_addr, (int)result->ai_addrlen);
+    iResult = bind(server_fd_, result->ai_addr, (int) result->ai_addrlen);
     if (iResult == SOCKET_ERROR) {
       printf("bind failed with error: %d\n", WSAGetLastError());
       closesocket(server_fd_);
@@ -211,7 +206,8 @@ class RaisimServer final {
       client_ = int(accept(server_fd_, NULL, NULL));
       connected_ = client_ != INVALID_SOCKET;
 #endif
-      RSWARN_IF(client_ < 0, "Accept failed: "<<strerror(errno))
+      RSWARN_IF(client_ < 0, "Accept failed: " << strerror(errno))
+      clearScene();
     }
   }
 
@@ -229,11 +225,23 @@ class RaisimServer final {
 
  private:
 
+  inline void clearScene() {
+    lockVisualizationServerMutex();
+    for (auto ob : world_->getObjList()) ob->visualTag = 0u;
+    for (auto& ob: world_->getWires()) ob->visualTag = 0u;
+    for (auto& ob: visuals_) ob.second->visualTag = 0u;
+    for (auto& ob: visualAs_) ob.second->obj.visualTag = 0u;
+    for (auto& ob: instancedvisuals_) ob.second->visualTag = 0u;
+    for (auto& ob: polyLines_) ob.second->visualTag = 0u;
+    for (auto& ob: charts_) ob.second->visualTag = 0u;
+    unlockVisualizationServerMutex();
+  }
+
   inline void loop() {
     setupSocket();
 
     while (!terminateRequested_) {
-      acceptConnection(2.0);
+      acceptConnection(2);
 
       while (connected_) {
         connected_ = processRequests() && !terminateRequested_;
@@ -251,6 +259,16 @@ class RaisimServer final {
   }
 
  public:
+  /**
+   * @param[in] map name of the map to be loaded. This only works with RaisimUnreal. Currently, the following maps are available
+   * "": Empty map. Supports weather and time.
+   * "simple": Empty map. Simple sky for faster rendering.
+   * "wheat": a flat wheat field
+   * "dune": flat dune
+   */
+  inline void setMap(const std::string &map) {
+    mapName_ = map;
+  }
 
   /**
    * @param[in] port port number to stream
@@ -323,6 +341,7 @@ class RaisimServer final {
     if (visualAs_.find(name) != visualAs_.end()) RSFATAL("Duplicated visual object name: " + name)
     visualAs_[name] = new ArticulatedSystemVisual(urdfFile);
     visualAs_[name]->color = raisim::Vec<4>{colorR, colorG, colorB, colorA};
+    visualAs_[name]->name = name;
     updateVisualConfig();
     return visualAs_[name];
   }
@@ -330,12 +349,12 @@ class RaisimServer final {
   /**
    * @param[in] as ArticulatedSystemVisual to be removed
    * remove a visualized articulated system */
-  inline void removeVisualArticulatedSystem(ArticulatedSystemVisual* as) {
+  inline void removeVisualArticulatedSystem(ArticulatedSystemVisual *as) {
     auto it = visualAs_.begin();
 
     // Search for an element with value 2
-    while(it != visualAs_.end()) {
-      if(it->second == as)
+    while (it != visualAs_.end()) {
+      if (it->second == as)
         break;
       it++;
     }
@@ -348,10 +367,10 @@ class RaisimServer final {
   }
 
   inline InstancedVisuals *addInstancedVisuals(const std::string &name,
-                                               InstancedVisuals::VisualType type,
-                                               const Vec<3>& size,
-                                               const Vec<4>& color1,
-                                               const Vec<4>& color2) {
+                                               Shape::Type type,
+                                               const Vec<3> &size,
+                                               const Vec<4> &color1,
+                                               const Vec<4> &color2) {
     RSFATAL_IF(instancedvisuals_.find(name) != instancedvisuals_.end(), "Duplicated visual object name: " + name)
     updateVisualConfig();
     instancedvisuals_[name] = new InstancedVisuals(type, name, size, color1, color2);
@@ -378,7 +397,7 @@ class RaisimServer final {
     if (visuals_.find(name) != visuals_.end()) RSFATAL("Duplicated visual object name: " + name)
     updateVisualConfig();
     visuals_[name] = new Visuals();
-    visuals_[name]->type = Visuals::VisualType::VisualSphere;
+    visuals_[name]->type = Shape::Sphere;
     visuals_[name]->name = name;
     visuals_[name]->size[0] = radius;
     visuals_[name]->color = {colorR, colorG, colorB, colorA};
@@ -410,7 +429,7 @@ class RaisimServer final {
     if (visuals_.find(name) != visuals_.end()) RSFATAL("Duplicated visual object name: " + name)
     updateVisualConfig();
     visuals_[name] = new Visuals();
-    visuals_[name]->type = Visuals::VisualType::VisualBox;
+    visuals_[name]->type = Shape::Box;
     visuals_[name]->name = name;
     visuals_[name]->size[0] = xLength;
     visuals_[name]->size[1] = yLength;
@@ -443,7 +462,7 @@ class RaisimServer final {
     if (visuals_.find(name) != visuals_.end()) RSFATAL("Duplicated visual object name: " + name)
     updateVisualConfig();
     visuals_[name] = new Visuals();
-    visuals_[name]->type = Visuals::VisualType::VisualCylinder;
+    visuals_[name]->type = Shape::Cylinder;
     visuals_[name]->name = name;
     visuals_[name]->size[0] = radius;
     visuals_[name]->size[1] = length;
@@ -475,7 +494,7 @@ class RaisimServer final {
     if (visuals_.find(name) != visuals_.end()) RSFATAL("Duplicated visual object name: " + name)
     updateVisualConfig();
     visuals_[name] = new Visuals();
-    visuals_[name]->type = Visuals::VisualType::VisualCapsule;
+    visuals_[name]->type = Shape::Capsule;
     visuals_[name]->name = name;
     visuals_[name]->size[0] = radius;
     visuals_[name]->size[1] = length;
@@ -506,7 +525,7 @@ class RaisimServer final {
     if (visuals_.find(name) != visuals_.end()) RSFATAL("Duplicated visual object name: " + name)
     updateVisualConfig();
     visuals_[name] = new Visuals();
-    visuals_[name]->type = Visuals::VisualType::VisualMesh;
+    visuals_[name]->type = Shape::Mesh;
     visuals_[name]->name = name;
     visuals_[name]->meshFileName = file;
     visuals_[name]->size = scale;
@@ -515,7 +534,6 @@ class RaisimServer final {
     visuals_[name]->shadow = shadow;
     return visuals_[name];
   }
-
 
   /**
    * @param[in] name the name of the visual mesh object
@@ -537,7 +555,7 @@ class RaisimServer final {
     if (visuals_.find(name) != visuals_.end()) RSFATAL("Duplicated visual object name: " + name)
     updateVisualConfig();
     visuals_[name] = new Visuals();
-    visuals_[name]->type = Visuals::VisualType::VisualArrow;
+    visuals_[name]->type = Shape::Arrow;
     visuals_[name]->name = name;
     visuals_[name]->size[0] = radius;
     visuals_[name]->size[1] = height;
@@ -638,7 +656,7 @@ class RaisimServer final {
   void focusOn(raisim::Object *obj) {
     RSFATAL_IF(obj == nullptr, "object does not exist.")
     serverRequest_.push_back(ServerRequestType::FOCUS_ON_SPECIFIC_OBJECT);
-    focusedObjectName_ = obj->getName();
+    focusedObjectVisTag_ = obj->visualTag;
   }
 
   /**
@@ -667,18 +685,18 @@ class RaisimServer final {
     }
     return true;
 #elif WIN32
-    fd_set fds ;
-    int n ;
-    struct timeval tv ;
-    FD_ZERO(&fds) ;
-    FD_SET(client_, &fds) ;
-    tv.tv_sec = 20 ;
-    tv.tv_usec = 100000 ;
-    n = select ( server_fd_+1, &fds, NULL, NULL, &tv ) ;
-    if ( n == 0) {
-      RSWARN("The client failed to respond in "<< seconds <<" seconds. Looking for a new client");
+    fd_set fds;
+    int n;
+    struct timeval tv;
+    FD_ZERO(&fds);
+    FD_SET(client_, &fds);
+    tv.tv_sec = 20;
+    tv.tv_usec = 100000;
+    n = select(server_fd_ + 1, &fds, NULL, NULL, &tv);
+    if (n == 0) {
+      RSWARN("The client failed to respond in " << seconds << " seconds. Looking for a new client");
       return false;
-    } else if( n == -1 ) {
+    } else if (n == -1) {
       RSWARN("The client error. Failed to communicate.");
       return false;
     }
@@ -702,18 +720,18 @@ class RaisimServer final {
     }
     return true;
 #elif WIN32
-    fd_set fds ;
-    int n ;
-    struct timeval tv ;
-    FD_ZERO(&fds) ;
-    FD_SET(client_, &fds) ;
-    tv.tv_sec = 20 ;
-    tv.tv_usec = 100000 ;
-    n = select ( server_fd_+1, NULL, &fds, NULL, &tv ) ;
-    if ( n == 0) {
-      RSWARN("The client failed to respond in " << seconds <<" seconds. Looking for a new client");
+    fd_set fds;
+    int n;
+    struct timeval tv;
+    FD_ZERO(&fds);
+    FD_SET(client_, &fds);
+    tv.tv_sec = 20;
+    tv.tv_usec = 100000;
+    n = select(server_fd_ + 1, NULL, &fds, NULL, &tv);
+    if (n == 0) {
+      RSWARN("The client failed to respond in " << seconds << " seconds. Looking for a new client");
       return false;
-    } else if( n == -1 ) {
+    } else if (n == -1) {
       RSWARN("The client error. Failed to communicate.");
       return false;
     }
@@ -728,7 +746,7 @@ class RaisimServer final {
 
     int clientVersion;
     rData_ = get(rData_, &clientVersion);
-    data_ = set(&send_buffer[0]+sizeof(int), version_);
+    data_ = set(&send_buffer[0] + sizeof(int), version_);
 
     if (clientVersion == version_) {
       rData_ = get(rData_, &type, &objectId_);
@@ -736,7 +754,7 @@ class RaisimServer final {
 
       // set server request
       data_ = set(data_, (uint64_t) serverRequest_.size());
-      for (const auto &sr : serverRequest_) {
+      for (const auto &sr: serverRequest_) {
         data_ = set(data_, (int) sr);
 
         switch (sr) {
@@ -754,7 +772,7 @@ class RaisimServer final {
             break;
 
           case ServerRequestType::FOCUS_ON_SPECIFIC_OBJECT:
-            data_ = set(data_, focusedObjectName_);
+            data_ = set(data_, focusedObjectVisTag_);
             break;
 
           case ServerRequestType::SET_SCREEN_SIZE:
@@ -766,35 +784,8 @@ class RaisimServer final {
       serverRequest_.clear();
       lockVisualizationServerMutex();
 
-      if (state_ != Status::STATUS_HIBERNATING) {
-        switch (type) {
-          case REQUEST_OBJECT_POSITION:
-            serializeWorld();
-            break;
+      if (state_ != Status::STATUS_HIBERNATING) update();
 
-          case REQUEST_INITIALIZATION:
-            serializeObjects();
-            serializeVisuals();
-            serializeWorld();
-            break;
-
-          case REQUEST_CHANGE_REALTIME_FACTOR:
-            break;
-
-          case REQUEST_CONTACT_INFOS:
-            serializeContacts();
-            break;
-
-          case REQUEST_CONFIG_XML:
-          case REQUEST_INITIALIZE_VISUALS:
-          case REQUEST_VISUAL_POSITION:
-          case REQUEST_SERVER_STATUS:
-            return false;
-
-          default:
-            break;
-        }
-      }
       unlockVisualizationServerMutex();
     } else {
       RSWARN("Version mismatch. Make sure you have the correct visualizer version")
@@ -815,7 +806,7 @@ class RaisimServer final {
     return state_ == STATUS_RENDERING || state_ == STATUS_HIBERNATING;
   }
 
-  inline bool waitForNewClients(int seconds)  {
+  inline bool waitForNewClients(int seconds) {
     fd_set sdset;
     struct timeval tv;
     tv.tv_sec = seconds;
@@ -827,234 +818,412 @@ class RaisimServer final {
 
  private:
 
-  inline void serializeWorld() {
+  static inline std::string colorToString(const raisim::Vec<4> &vec) {
+    std::string str;
+    for (int i = 0; i < vec.size() - 1; i++) {
+      str += std::to_string(vec[i]) + ", ";
+    }
+    str += std::to_string(vec[vec.size() - 1]);
+    return str;
+  }
+
+  inline void serializeAS(ArticulatedSystem* as, bool initialized, const raisim::Vec<4>& colorOverride) {
     using namespace server;
-    auto &objList = world_->getObjList();
-    data_ = set(data_, ServerMessageType::OBJECT_POSITION_UPDATE);
-    data_ = set(data_, (uint64_t) world_->getConfigurationNumber() + visualConfiguration_);
-    data_ = set(data_, (uint64_t) (objList.size()));
+    data_ = set(data_, (int32_t) (as->getVisOb().size() + as->getVisColOb().size()));
+    if (!initialized) data_ = set(data_, as->name_);
 
-    for (auto *ob : objList) {
-      // set gc
-      if (ob->getObjectType() == ObjectType::ARTICULATED_SYSTEM) {
-        auto as = dynamic_cast<ArticulatedSystem *>(ob);
-        data_ = set(data_, (uint64_t) (as->getVisOb().size() +
-            as->getVisColOb().size()));
-        data_ = set(data_, (uint64_t) as->getSensors().size());
+    for (int i = 0; i < 2; i++) {
+      std::vector<VisObject> *visVec;
+      if (i == 0) visVec = &as->getVisOb();
+      else visVec = &as->getVisColOb();
 
-        auto& visOb = as->getVisOb();
-        for (uint64_t k = 0; k < visOb.size(); k++) {
-          auto &vob = visOb[k];
-          std::string name = std::to_string(ob->getIndexInWorld()) +
-              "/" + std::to_string(0) + "/" +
-              std::to_string(k);
-          data_ = set(data_, name);
-
-          Vec<3> pos, offsetInWorld;
-          Vec<4> quat;
-          Mat<3, 3> bodyRotation, rot;
-          ob->getPosition(vob.localIdx, pos);
-          ob->getOrientation(vob.localIdx, bodyRotation);
-          matvecmul(bodyRotation, vob.offset, offsetInWorld);
-          matmul(bodyRotation, vob.rot, rot);
-          raisim::rotMatToQuat(rot, quat);
-          pos = pos + offsetInWorld;
-          data_ = set(data_, pos, quat);
-        }
-
-        auto& colOb = as->getCollisionBodies();
-        for (uint64_t k = 0; k < colOb.size(); k++) {
-          auto &vob = colOb[k];
-          std::string name = std::to_string(ob->getIndexInWorld()) +
-              "/" + std::to_string(1) + "/" +
-              std::to_string(k);
-          data_ = set(data_, name);
-
-          Vec<3> pos, offsetInWorld;
-          Vec<4> quat;
-          Mat<3, 3> bodyRotation, rot;
-          ob->getPosition(vob.localIdx, pos);
-          ob->getOrientation(vob.localIdx, bodyRotation);
-          matvecmul(bodyRotation, vob.posOffset, offsetInWorld);
-          matmul(bodyRotation, vob.rotOffset, rot);
-          raisim::rotMatToQuat(rot, quat);
-          pos = pos + offsetInWorld;
-          data_ = set(data_, pos, quat);
-        }
-
-        // add sensors to be updated
-        for (auto& sensor: as->getSensors()) {
-          if (sensor.second->getMeasurementSource() == Sensor::MeasurementSource::VISUALIZER &&
-              sensor.second->getUpdateTimeStamp() + 1. / sensor.second->getUpdateRate() < world_->getWorldTime() + 1e-10) {
-            sensor.second->setUpdateTimeStamp(world_->getWorldTime());
-            sensor.second->updatePose();
-            Vec<4> quat;
-            auto& pos = sensor.second->getPosition();
-            auto& rot = sensor.second->getOrientation();
-            rotMatToQuat(rot, quat);
-            data_ = set(data_, int(1));
-            data_ = setInFloat(data_, pos, quat);
-            needsSensorUpdate_ = true;
-          } else {
-            data_ = set(data_, int(0));
+      for (int j = 0; j < visVec->size(); j++) {
+        if (!initialized) {
+          data_ = set(data_, visVec->at(j).shape);
+          if (visVec->at(j).shape == Shape::Mesh) {
+            data_ = set(data_, visVec->at(j).fileName);
+            data_ = set(data_, as->getResourceDir());
           }
+          data_ = set(data_, i);
         }
-      } else if (ob->getObjectType() == ObjectType::COMPOUND) {
-        auto *com = dynamic_cast<Compound *>(ob);
-        data_ = set(data_, (uint64_t) (com->getObjList().size()));
-        data_ = set(data_, (uint64_t) 0); // sensor size
 
-        for (uint64_t k = 0; k < com->getObjList().size(); k++) {
-          std::string name = std::to_string(ob->getIndexInWorld()) + "/" + std::to_string(k);
-          data_ = set(data_, name);
-          Vec<3> pos, center;
-          com->getPosition(center);
-          matvecmul(com->getRotationMatrix(), com->getObjList()[k].trans.pos, pos);
-          Mat<3, 3> rot;
-          matmul(com->getRotationMatrix(), com->getObjList()[k].trans.rot, rot);
-          Vec<4> quat;
-          raisim::rotMatToQuat(rot, quat);
-          pos = pos + center;
-          data_ = set(data_, pos, quat);
-        }
-      } else {
-        data_ = set(data_, (uint64_t) (1));
-        data_ = set(data_, (uint64_t) 0); // sensor size
-        Vec<3> pos;
+        if (colorOverride[3] < 0.001)
+          data_ = set(data_, colorToString(visVec->at(j).color));
+        else
+          data_ = set(data_, colorToString(colorOverride));
+
+        if (visVec->at(j).shape == Shape::Mesh)
+          data_ = setInFloat(data_, visVec->at(j).scale, 0.);
+        else
+          data_ = setInFloat(data_, visVec->at(j).visShapeParam);
+
+        Vec<3> pos, offsetInWorld, posOffset;
         Vec<4> quat;
-        std::string name = std::to_string(ob->getIndexInWorld());
-        data_ = set(data_, name);
-        dynamic_cast<SingleBodyObject *>(ob)->getPosition(pos);
-        dynamic_cast<SingleBodyObject *>(ob)->getQuaternion(quat);
-        data_ = set(data_, pos, quat);
+        Mat<3, 3> oriOffset, bodyRotation, rot;
+        as->getPosition(visVec->at(j).localIdx, pos);
+        as->getOrientation(visVec->at(j).localIdx, bodyRotation);
+
+        if (i == 0) {
+          posOffset = visVec->at(j).offset;
+          oriOffset = visVec->at(j).rot;
+        } else {
+          posOffset = as->getCollisionBodies()[j].posOffset;
+          oriOffset = as->getCollisionBodies()[j].rotOffset;
+        }
+
+        matvecmul(bodyRotation, posOffset, offsetInWorld);
+        matmul(bodyRotation, oriOffset, rot);
+        raisim::rotMatToQuat(rot, quat);
+        pos = pos + offsetInWorld;
+        data_ = setInFloat(data_, pos, quat);
       }
     }
 
-    // visuals
-    data_ = set(data_, (uint64_t) (visuals_.size()));
-    data_ = set(data_, (uint64_t) (instancedvisuals_.size()));
-    data_ = set(data_, (uint64_t) (visualAs_.size()));
+    data_ = set(data_, (int32_t) as->getSensors().size());
+    // add sensors to be updated
+    for (auto &sensor: as->getSensors()) {
+      if (!initialized) data_ = sensor.second->serializeProp(data_);
+
+      if (sensor.second->getMeasurementSource() == Sensor::MeasurementSource::VISUALIZER &&
+          sensor.second->getUpdateTimeStamp() + 1. / sensor.second->getUpdateRate()
+              < world_->getWorldTime() + 1e-10) {
+        sensor.second->setUpdateTimeStamp(world_->getWorldTime());
+        sensor.second->updatePose();
+        Vec<4> quat;
+        auto &pos = sensor.second->getPosition();
+        auto &rot = sensor.second->getOrientation();
+        rotMatToQuat(rot, quat);
+        data_ = set(data_, true);
+        data_ = setInFloat(data_, pos, quat);
+        needsSensorUpdate_ = true;
+      } else {
+        data_ = set(data_, false);
+      }
+    }
+  }
+
+  inline void update() {
+    using namespace server;
+    auto &objList = world_->getObjList();
+    data_ = set(data_, ServerMessageType::UPDATE_ALL);
+    data_ = set(data_, mapName_);
+    data_ = set(data_, (uint32_t) (world_->getConfigurationNumber() + visualConfiguration_));
+    data_ = set(data_, (uint32_t) (objList.size() +
+        visuals_.size() +
+        instancedvisuals_.size() +
+        visualAs_.size() +
+        polyLines_.size() +
+        world_->getWires().size()));
+
+    /// UniqueVisualTag/IsInitialized/Name/IsVisual/ObjectType/Instanced/
+    /// VisualSize/{IfNotInitialized:[VisualType/VisualDescription/Masking]/
+    /// Appearance/Size/Pose}/
+    /// SensorSize/{SensorDescription}
+    for (auto *ob: objList) {
+      // set gc
+      bool initialized = ob->visualTag != 0;
+      if (!initialized) ob->visualTag = visTagCounter++;
+      data_ = set(data_, ob->visualTag, initialized, ob->getObjectType(), false);
+      if (ob->getObjectType() == ObjectType::ARTICULATED_SYSTEM) {
+        auto as = dynamic_cast<ArticulatedSystem *>(ob);
+        Vec<4> colorOverride;
+        colorOverride.setZero();
+        serializeAS(as, initialized, colorOverride);
+      } else if (ob->getObjectType() == ObjectType::COMPOUND) {
+        auto *com = dynamic_cast<Compound *>(ob);
+        data_ = set(data_, (int32_t) (com->getObjList().size()));
+        if (!initialized ) data_ = set(data_, ob->name_);
+
+        for (auto &vob: dynamic_cast<Compound *>(ob)->getObjList()) {
+          if (!initialized) {
+            switch (vob.objectType) {
+              case BOX:
+                data_ = set(data_, Shape::Box);
+                break;
+              case CAPSULE:
+                data_ = set(data_, Shape::Capsule);
+                break;
+              case CYLINDER:
+                data_ = set(data_, Shape::Cylinder);
+                break;
+              case SPHERE:
+                data_ = set(data_, Shape::Sphere);
+                break;
+              default:
+                break;
+            }
+            data_ = set(data_, Masking::SB_OBJ);
+          }
+          data_ = set(data_, vob.appearance);
+          data_ = setInFloat(data_, vob.objectParam);
+
+          Vec<3> pos, center;
+          com->getPosition(center);
+          matvecmul(com->getRotationMatrix(), vob.trans.pos, pos);
+          Mat<3, 3> rot;
+          matmul(com->getRotationMatrix(), vob.trans.rot, rot);
+          Vec<4> quat;
+          raisim::rotMatToQuat(rot, quat);
+          pos = pos + center;
+          data_ = setInFloat(data_, pos, quat);
+        }
+        data_ = set(data_, (int32_t) 0);
+      } else {
+        data_ = set(data_, (int32_t) 1);
+
+        if (!initialized) {
+          data_ = set(data_, ob->name_);
+          switch (ob->getObjectType()) {
+            case SPHERE:
+              data_ = set(data_, Shape::Sphere);
+              break;
+            case BOX:
+              data_ = set(data_, Shape::Box);
+              break;
+            case CYLINDER:
+              data_ = set(data_, Shape::Cylinder);
+              break;
+            case CONE:
+              break;
+            case CAPSULE:
+              data_ = set(data_, Shape::Capsule);
+              break;
+            case HALFSPACE:
+              data_ = set(data_, Shape::Ground);
+              break;
+            case MESH:
+              data_ = set(data_, Shape::Mesh);
+              data_ = set(data_, dynamic_cast<Mesh *>(ob)->getMeshFileName());
+              data_ = set(data_, std::string());
+              break;
+            case HEIGHTMAP: {
+              auto hm = dynamic_cast<HeightMap *>(ob);
+              data_ = set(data_, Shape::HeightMap);
+              data_ = setInFloat(data_, hm->getCenterX(), hm->getCenterY(), hm->getXSize(), hm->getYSize());
+              data_ = set(data_, (int32_t) hm->getXSamples(), (int32_t) hm->getYSamples());
+              data_ = setInFloat(data_, hm->getHeightVector());
+            }
+          }
+          data_ = set(data_, Masking::SB_OBJ);
+        }
+        auto *sob = dynamic_cast<SingleBodyObject *>(ob);
+
+        auto tempAdd = data_;
+        data_ = set(data_, sob->getAppearance());
+
+        switch (ob->getObjectType()) {
+          case SPHERE:
+            data_ = setInFloat(data_, dynamic_cast<Sphere *>(ob)->getRadius(), 0., 0., 0.);
+            break;
+          case BOX:
+            data_ = setInFloat(data_, dynamic_cast<Box *>(ob)->getDim(), 0.);
+            break;
+          case CYLINDER:
+            data_ = setInFloat(data_,
+                               dynamic_cast<Cylinder *>(ob)->getRadius(),
+                               dynamic_cast<Cylinder *>(ob)->getHeight(),
+                               0.,
+                               0.);
+            break;
+          case CONE:
+            break;
+          case CAPSULE:
+            data_ = setInFloat(data_,
+                               dynamic_cast<Capsule *>(ob)->getRadius(),
+                               dynamic_cast<Capsule *>(ob)->getHeight(),
+                               0.,
+                               0.);
+            break;
+          case HALFSPACE:
+            data_ = setInFloat(data_, dynamic_cast<Ground *>(ob)->getHeight(), 0., 0., 0.);
+            break;
+          case HEIGHTMAP:
+            data_ = set(data_, 0.f, 0.f, 0.f, 0.f);
+            break;
+          case MESH: {
+            auto scale = float(dynamic_cast<Mesh *>(ob)->getScale());
+            data_ = set(data_, scale, scale, scale, 0.f);
+          }
+            break;
+        }
+
+        Vec<3> pos;
+        Vec<4> quat;
+        sob->getPosition(pos);
+        sob->getQuaternion(quat);
+        data_ = setInFloat(data_, pos, quat);
+        data_ = set(data_, (int32_t) 0);
+      }
+    }
+
+    for (auto &sw: world_->getWires()) {
+      bool initialized = sw->visualTag != 0;
+      if (!initialized) sw->visualTag = visTagCounter++;
+      data_ = set(data_, sw->visualTag, initialized, int32_t(-1), false, (int32_t)1);
+      if (!initialized) data_ = set(data_, sw->name_, Shape::SingleLine, Masking::CONSTRAINTS);
+      data_ = set(data_, colorToString(sw->getColor()));
+      Vec<3> pos, diff, diff_norm;
+      Vec<4> quat;
+      Mat<3,3> rot;
+      diff = sw->getP2() - sw->getP1();
+      diff_norm = diff * (1./diff.norm());
+      pos = (sw->getP1() + sw->getP2()) / 2.0;
+      raisim::zaxisToRotMat(diff_norm, rot);
+      raisim::rotMatToQuat(rot, quat);
+      data_ = set(data_, 0.02f, 0.02f, (float)diff.norm(), 0.f);
+      data_ = setInFloat(data_, pos, quat);
+      data_ = set(data_, (int32_t) 0);
+    }
 
     // single visuals
-    for (auto &kAndVo : visuals_) {
-      auto *vo = kAndVo.second;
+    for (auto &ob: visuals_) {
+      auto *vo = ob.second;
+      bool initialized = vo->visualTag != 0;
+      if (!initialized) vo->visualTag = visTagCounter++;
       Vec<3> pos = vo->getPosition();
       Vec<4> quat = vo->getOrientation();
-      data_ = set(data_, vo->name, pos, quat, vo->type, vo->color, vo->size);
+      data_ = set(data_, vo->visualTag, initialized, int32_t(-1), false, int32_t(1));
+      if (!initialized) {
+        data_ = set(data_, vo->name, vo->type);
+        if (vo->type == Shape::Mesh) {
+          data_ = set(data_, vo->meshFileName);
+          data_ = set(data_, std::string());
+        }
+        data_ = set(data_, Masking::VIS_OBJ);
+      }
+      data_ = set(data_, colorToString(vo->color));
+      data_ = setInFloat(data_, vo->size, pos, quat);
+      data_ = set(data_, (int32_t) 0);
+    }
+
+    // ArticulatedSystemVisuals
+    for (auto &vis: visualAs_) {
+      auto *ob = &vis.second->obj;
+      bool initialized = ob->visualTag != 0;
+      if (!initialized) ob->visualTag = visTagCounter++;
+      data_ = set(data_, ob->visualTag, initialized, ob->getObjectType(), false);
+      serializeAS(ob, initialized, vis.second->color);
     }
 
     // instanced visuals
     for (auto &iv: instancedvisuals_) {
-      auto* v = iv.second;
-      data_ = set(data_, (uint64_t) v->count(), v->name);
-      for (size_t i=0; i < v->count(); i++) {
-        data_ = setInFloat(data_, v->data[i].pos, v->data[i].quat, v->data[i].scale);
+      auto *v = iv.second;
+      bool initialized = v->visualTag != 0;
+      if (!initialized) v->visualTag = visTagCounter++;
+      data_ = set(data_, v->visualTag, initialized, int32_t(-1), true, (int32_t) v->count());
+      if (!initialized) data_ = set(data_, v->name, v->type, Masking::VIS_OBJ);
+      data_ = setInFloat(data_, v->color1, v->color2);
+      for (size_t i = 0; i < v->count(); i++) {
         data_ = set(data_, v->data[i].colorWeight);
-      }
-    }
-
-    // ArticulatedSystemVisuals
-    for (auto &vis : visualAs_) {
-      auto *ob = &vis.second->obj;
-      data_ = set(data_, vis.second->color);
-      data_ = set(data_, (uint64_t) ob->getVisOb().size() + ob->getVisColOb().size());
-
-      for (uint64_t i = 0; i < 2; i++) {
-        std::vector<VisObject> *visOb;
-        if (i == 0)
-          visOb = &(ob->getVisOb());
-        else
-          visOb = &(ob->getVisColOb());
-
-        for (uint64_t k = 0; k < (*visOb).size(); k++) {
-          auto &vob = (*visOb)[k];
-          std::string name = vis.first + "/" + std::to_string(i) + "/" + std::to_string(k);
-          data_ = set(data_, name);
-
-          Vec<3> pos, offsetInWorld;
-          Vec<4> quat;
-          Mat<3,3> bodyRotation, rot;
-
-          ob->getPosition(vob.localIdx, pos);
-          ob->getOrientation(vob.localIdx, bodyRotation);
-          matvecmul(bodyRotation, vob.offset, offsetInWorld);
-          matmul(bodyRotation, vob.rot, rot);
-          pos = pos + offsetInWorld;
-          raisim::rotMatToQuat(rot, quat);
-          data_ = set(data_, pos);
-          data_ = set(data_, quat);
-        }
+        data_ = setInFloat(data_, v->data[i].scale, v->data[i].pos, v->data[i].quat);
       }
     }
 
     // polylines
-    data_ = set(data_, (uint64_t) (polyLines_.size()));
-    for (auto &pl : polyLines_) {
+    for (auto &pl: polyLines_) {
       auto *ptr = pl.second;
-      data_ = set(data_, ptr->name, ptr->color, ptr->width, (uint64_t) (ptr->points.size()));
-      for (auto& p : ptr->points)
-        data_ = set(data_, p);
+      bool initialized = ptr->visualTag != 0;
+      if (!initialized) ptr->visualTag = visTagCounter++;
+      data_ = set(data_, ptr->visualTag, initialized, int32_t(-1), true, (int32_t) (ptr->points.size()-1));
+      if (!initialized) data_ = set(data_, ptr->name, Shape::PolyLine, Masking::VIS_OBJ);
+      data_ = setInFloat(data_, ptr->color, ptr->color);
+      RSFATAL_IF(ptr->points.size() < 2, "polyline point size should be greater than 1")
+      for (int i=0; i<ptr->points.size() - 1; i++) {
+        Vec<3> pos, diff, norm_diff;
+        Vec<4> quat;
+        Mat<3,3> rot;
+        pos = (ptr->points[i] + ptr->points[i+1]) / 2.0;
+        diff = ptr->points[i+1] - ptr->points[i];
+        norm_diff = diff / diff.norm();
+        raisim::zaxisToRotMat(norm_diff, rot);
+        raisim::rotMatToQuat(rot, quat);
+        data_ = setInFloat(data_, 0., ptr->width, ptr->width, diff.norm());
+        data_ = setInFloat(data_, pos, quat);
+      }
     }
-
-    // wires
-    data_ = set(data_, (uint64_t) (world_->getWires().size()));
-    for (auto &sw: world_->getWires())
-      data_ = set(data_, sw->getP1(), sw->getP2());
 
     // External forces
-    size_t numExtForce = 0;
-    size_t numExtTorque = 0;
+    int32_t numExtForce = 0;
+    int32_t numExtTorque = 0;
 
     for (auto *ob: world_->getObjList()) {
-      numExtForce += ob->getExternalForce().size();
-      numExtTorque += ob->getExternalTorque().size();
+      numExtForce += int32_t(ob->getExternalForce().size());
+      numExtTorque += int32_t(ob->getExternalTorque().size());
     }
 
-    data_ = set(data_, (uint64_t) numExtForce);
-    numExtForce = 0;
+    data_ = set(data_, numExtForce);
     for (auto *ob: world_->getObjList()) {
       for (size_t extNum = 0; extNum < ob->getExternalForce().size(); extNum++) {
-        numExtForce++;
-        data_ = set(data_, ob->getExternalForcePosition()[extNum]);
-        data_ = set(data_, ob->getExternalForce()[extNum]);
+        data_ = setInFloat(data_, ob->getExternalForcePosition()[extNum]);
+        data_ = setInFloat(data_, ob->getExternalForce()[extNum]);
       }
     }
 
-    data_ = set(data_, (uint64_t) numExtTorque);
+    data_ = set(data_, numExtTorque);
     for (auto *ob: world_->getObjList()) {
       for (size_t extNum = 0; extNum < ob->getExternalTorque().size(); extNum++) {
-        data_ = set(data_, ob->getExternalTorquePosition()[extNum]);
-        data_ = set(data_, ob->getExternalTorque()[extNum]);
+        data_ = setInFloat(data_, ob->getExternalTorquePosition()[extNum]);
+        data_ = setInFloat(data_, ob->getExternalTorque()[extNum]);
       }
     }
 
+    auto *contactList = world_->getContactProblem();
+    int32_t contactIncrement = 0;
+
+    auto contactSizeLocation = data_;
+    data_ = set(data_, contactIncrement); // reserving space
+
+    /// contact position
+    for (auto *obj: world_->getObjList()) {
+      for (auto &contact: obj->getContacts()) {
+        if (!contact.isObjectA() || contact.skip())
+          continue;
+
+        contactIncrement++;
+        // contact points
+        data_ = setInFloat(data_, contact.getPosition());
+
+        // contact forces
+        auto impulseB = contact.getImpulse();
+        auto contactFrame = contact.getContactFrame();
+
+        Vec<3> impulseW;
+        raisim::matTransposevecmul(contactFrame, impulseB, impulseW);
+        impulseW /= world_->getTimeStep();
+        data_ = setInFloat(data_, impulseW);
+      }
+    }
+    set(contactSizeLocation, contactIncrement);
+
     // object information
-    if(objectId_ > -1) {
-      RSFATAL_IF(objectId_ >= world_->getObjList().size(), "The client is requesting non-existent object")
-      auto *obSelected = world_->getObjList()[objectId_];
-      if(obSelected->getObjectType() == ObjectType::ARTICULATED_SYSTEM) {
+    auto found = std::find_if(world_->getObjList().begin(), world_->getObjList().end(),
+                              [this](const Object * ptr) { return ptr->visualTag == this->objectId_; });
+
+    if (found != world_->getObjList().end()) {
+      auto obSelected = *found;
+      if (obSelected->getObjectType() == ObjectType::ARTICULATED_SYSTEM) {
         data_ = set(data_, int32_t(1));
-        auto* as = reinterpret_cast<ArticulatedSystem*>(obSelected);
+        auto *as = reinterpret_cast<ArticulatedSystem *>(obSelected);
         data_ = set(data_, int32_t(as->getGeneralizedCoordinateDim()));
         data_ = set(data_, int32_t(as->getDOF()));
         data_ = set(data_, int32_t(as->getMovableJointNames().size()));
         data_ = set(data_, int32_t(as->getFrames().size()));
 
-        for(int i=0; i<as->getGeneralizedCoordinateDim(); i++)
+        for (int i = 0; i < as->getGeneralizedCoordinateDim(); i++)
           data_ = set(data_, float(as->getGeneralizedCoordinate()[i]));
 
-        for(int i=0; i<as->getDOF(); i++)
+        for (int i = 0; i < as->getDOF(); i++)
           data_ = set(data_, float(as->getGeneralizedVelocity()[i]));
 
-        for(int i=0; i<as->getMovableJointNames().size(); i++) {
+        for (int i = 0; i < as->getMovableJointNames().size(); i++) {
           data_ = set(data_, as->getMovableJointNames()[i]);
           int j = i;
-          if(as->getJointType(0) == Joint::Type::FIXED)
+          if (as->getJointType(0) == Joint::Type::FIXED)
             j = i + 1;
 
           Vec<3> vec;
           data_ = set(data_, int(as->getJointType(j)));
-          as->getPosition(j, {0,0,0}, vec);
+          as->getPosition(j, {0, 0, 0}, vec);
           data_ = setInFloat(data_, vec);
           vec = as->getJointAxis(j);
           data_ = setInFloat(data_, vec);
@@ -1062,8 +1231,8 @@ class RaisimServer final {
 
         Vec<3> pos;
         Vec<4> quat;
-        Mat<3,3> rot;
-        for(int i=0; i<as->getFrames().size(); i++) {
+        Mat<3, 3> rot;
+        for (int i = 0; i < as->getFrames().size(); i++) {
           data_ = set(data_, as->getFrames()[i].name);
           as->getFramePosition(i, pos);
           as->getFrameOrientation(i, rot);
@@ -1072,7 +1241,7 @@ class RaisimServer final {
         }
 
         // COM position
-        if(as->getJointType(0) == Joint::FLOATING) {
+        if (as->getJointType(0) == Joint::FLOATING) {
           data_ = set(data_, int32_t(0));
           data_ = setInFloat(data_, as->getCOM());
         } else
@@ -1080,22 +1249,38 @@ class RaisimServer final {
 
       } else {
         data_ = set(data_, int32_t(0));
-        auto* sb = reinterpret_cast<SingleBodyObject*>(obSelected);
+        auto *sb = reinterpret_cast<SingleBodyObject *>(obSelected);
+        data_ = set(data_, int32_t(7));
+        data_ = set(data_, int32_t(6));
+        data_ = set(data_, int32_t(1));
+        data_ = set(data_, int32_t(0));
         auto pos = sb->getPosition();
         auto quat = sb->getQuaternion();
         data_ = setInFloat(data_, pos, quat, sb->getLinearVelocity(), sb->getAngularVelocity());
+        data_ = set(data_, std::string("ROOT"));
+        data_ = set(data_, int(Joint::Type::FLOATING));
+        data_ = setInFloat(data_, pos, pos);
+        data_ = set(data_, int32_t(0));
+        data_ = setInFloat(data_, pos);
       }
     } else {
       data_ = set(data_, int32_t(-1));
     }
 
     // charts
-    data_ = set(data_, (uint64_t) (charts_.size()));
+    data_ = set(data_, (int32_t) (charts_.size()));
     for (auto c: charts_) {
-      data_ = set(data_, int32_t(c.second->getType()));
+      bool initialized = c.second->visualTag != 0;
+      if (!initialized) c.second->visualTag = visTagCounter++;
+
+      data_ = set(data_, (int32_t) c.second->getType(), initialized, c.second->visualTag);
+      if (!initialized)
+        data_ = c.second->initialize(data_);
+
       data_ = c.second->serialize(data_);
     }
   }
+
 
   inline bool receiveData(int seconds) {
     using namespace server;
@@ -1103,7 +1288,8 @@ class RaisimServer final {
 
     while (totalDataSize > totalReceivedDataSize) {
       if (waitForMessageFromClient(seconds)) {
-        currentReceivedDataSize = recv(client_, &receive_buffer[0] + totalReceivedDataSize, RECEIVE_BUFFER_SIZE - totalReceivedDataSize, 0);
+        currentReceivedDataSize =
+            recv(client_, &receive_buffer[0] + totalReceivedDataSize, RECEIVE_BUFFER_SIZE - totalReceivedDataSize, 0);
         if (currentReceivedDataSize == -1) return false;
       } else {
         RSWARN("Lost connection to the client. Trying to find a new client...")
@@ -1123,13 +1309,13 @@ class RaisimServer final {
 
   inline bool sendData() {
     using namespace server;
-    int dataSize = data_ - &send_buffer[0];
+    int dataSize = int(data_ - &send_buffer[0]);
     int totalSentBytes = 0;
     int currentlySentBytes = 0;
     set(&send_buffer[0], dataSize);
 
     while (dataSize > totalSentBytes)
-      if(waitForMessageToClient(1)) {
+      if (waitForMessageToClient(1)) {
         currentlySentBytes = send(client_, &send_buffer[0] + totalSentBytes, dataSize - totalSentBytes, 0);
         totalSentBytes += currentlySentBytes;
         if (currentlySentBytes == -1) return false;
@@ -1143,288 +1329,40 @@ class RaisimServer final {
     using namespace server;
     std::lock_guard<std::mutex> guard(serverMutex_);
     ClientMessageType cMsgType;
-    int nASs;
-    rData_ = get(rData_, &cMsgType, &nASs);
+    int nSensors;
+    rData_ = get(rData_, &cMsgType, &nSensors);
 
     if (cMsgType != ClientMessageType::REQUEST_SENSOR_UPDATE) return false;
 
-    auto& obList = world_->getObjList();
+    auto &obList = world_->getObjList();
 
-    for (int i=0; i < nASs; i++) {
-      int obIndex, nSensors;
-      rData_ = get(rData_, &obIndex, &nSensors);
-      auto* as = dynamic_cast<ArticulatedSystem*>(obList[obIndex]);
+    for (int i = 0; i < nSensors; i++) {
+      uint32_t visualTag;
+      std::string name;
+      Sensor::Type type;
+      rData_ = get(rData_, &visualTag, &type, &name);
 
-      RSFATAL_IF(as->getSensors().size() != nSensors, "updateSensorMeasurements: sensor size mismatch. This must be a bug. Please report")
-      for (int j=0; j < nSensors; j++) {
-        int needsUpdate;
-        rData_ = get(rData_, &needsUpdate);
-        if (needsUpdate == 0) continue;
+      ArticulatedSystem *as = dynamic_cast<ArticulatedSystem*>(*std::find_if(obList.begin(), obList.end(),
+                                                                             [visualTag](const Object* i){ return i->visualTag == visualTag; }));
+      auto sensor = as->getSensors()[name];
 
-        Sensor::Type type;
-        std::string name;
-        rData_ = get(rData_, &type, &name);
-        auto sensor = as->getSensors()[name];
-
-        if (type == Sensor::Type::RGB) {
-          int width, height;
-          rData_ = get(rData_, &width, &height);
-
-          auto& img = std::static_pointer_cast<RGBCamera>(sensor)->getImageBuffer();
-          RSFATAL_IF(width*height*4 != img.size(), "Image size mismatch. Sensor module not working properly")
-          rData_ = getN(rData_, img.data(), width * height * 4);
-        } else if (type == Sensor::Type::DEPTH) {
-          int width, height;
-          rData_ = get(rData_, &width, &height);
-          auto& depthArray = std::static_pointer_cast<DepthCamera>(sensor)->getDepthArray();
-          RSFATAL_IF(width * height != depthArray.size(), "Image size mismatch. Sensor module not working properly")
-          rData_ = getN(rData_, depthArray.data(), width * height);
-        }
+      if (type == Sensor::Type::RGB) {
+        int width, height;
+        rData_ = get(rData_, &width, &height);
+        auto &img = std::static_pointer_cast<RGBCamera>(sensor)->getImageBuffer();
+        RSFATAL_IF(width * height * 4 != img.size(), "Image size mismatch. Sensor module not working properly")
+        rData_ = getN(rData_, img.data(), width * height * 4);
+      } else if (type == Sensor::Type::DEPTH) {
+        int width, height;
+        rData_ = get(rData_, &width, &height);
+        auto &depthArray = std::static_pointer_cast<DepthCamera>(sensor)->getDepthArray();
+        RSFATAL_IF(width * height != depthArray.size(), "Image size mismatch. Sensor module not working properly")
+        rData_ = getN(rData_, depthArray.data(), width * height);
       }
+
     }
 
     return true;
-  }
-
-  inline void serializeObjects() {
-    using namespace server;
-    auto &objList = world_->getObjList();
-
-    data_ = set(data_, ServerMessageType::INITIALIZATION);
-    data_ = set(data_, (uint64_t) world_->getConfigurationNumber() + visualConfiguration_);
-    data_ = set(data_, (uint64_t) (objList.size()));
-
-    for (auto *ob : objList) {
-      // set name length
-      data_ = set(data_, (uint64_t) ob->getIndexInWorld(), ob->getObjectType(), ob->getName());
-
-      switch (ob->getObjectType()) {
-        case SPHERE:
-          data_ = set(data_, dynamic_cast<SingleBodyObject *>(ob)->getAppearance());
-          data_ = set(data_, float(dynamic_cast<Sphere *>(ob)->getRadius()));
-          break;
-
-        case BOX:
-          data_ = set(data_, dynamic_cast<SingleBodyObject *>(ob)->getAppearance());
-          for (int i = 0; i < 3; i++)
-            data_ = set(data_, float(dynamic_cast<Box *>(ob)->getDim()[i]));
-          break;
-
-        case CYLINDER:
-          data_ = set(data_, dynamic_cast<SingleBodyObject *>(ob)->getAppearance());
-          data_ = set(data_, float(dynamic_cast<Cylinder *>(ob)->getRadius()));
-          data_ = set(data_, float(dynamic_cast<Cylinder *>(ob)->getHeight()));
-          break;
-
-        case CONE:
-          break;
-
-        case CAPSULE:
-          data_ = set(data_, dynamic_cast<SingleBodyObject *>(ob)->getAppearance());
-          data_ = set(data_, float(dynamic_cast<Capsule *>(ob)->getRadius()));
-          data_ = set(data_, float(dynamic_cast<Capsule *>(ob)->getHeight()));
-          break;
-
-        case HALFSPACE:
-          data_ = set(data_, dynamic_cast<SingleBodyObject *>(ob)->getAppearance());
-          data_ = set(data_, float(dynamic_cast<Ground *>(ob)->getHeight()));
-          break;
-
-        case COMPOUND:
-          data_ = set(data_, dynamic_cast<SingleBodyObject *>(ob)->getAppearance());
-          data_ = set(data_, (uint64_t) (dynamic_cast<Compound *>(ob)->getObjList().size()));
-
-          for (auto &vob : dynamic_cast<Compound *>(ob)->getObjList()) {
-            data_ = set(data_, vob.objectType);
-            data_ = set(data_, vob.appearance);
-
-            switch (vob.objectType) {
-              case BOX:
-                data_ = set(data_, vob.objectParam[0], vob.objectParam[1], vob.objectParam[2]);
-                break;
-              case CAPSULE:
-              case CYLINDER:
-                data_ = set(data_, vob.objectParam[0], vob.objectParam[1]);
-                break;
-              case SPHERE:
-                data_ = set(data_, vob.objectParam[0]);
-                break;
-
-              default:
-                break;
-            }
-          }
-
-          break;
-
-        case MESH:
-          data_ = set(data_, dynamic_cast<Mesh *>(ob)->getAppearance());
-          data_ = set(data_, dynamic_cast<Mesh *>(ob)->getMeshFileName());
-          data_ = set(data_, float(dynamic_cast<Mesh *>(ob)->getScale()));
-          break;
-
-        case HEIGHTMAP:
-        {
-          auto hm = dynamic_cast<HeightMap *>(ob);
-          data_ = set(data_, hm->getAppearance());
-          data_ = setInFloat(data_, hm->getCenterX(), hm->getCenterY(), hm->getXSize(), hm->getYSize());
-          data_ = set(data_, (uint64_t) hm->getXSamples(), (uint64_t) hm->getYSamples());
-          data_ = setInFloat(data_, hm->getHeightVector());
-        }
-          break;
-
-        case ARTICULATED_SYSTEM:
-        {
-          auto as = dynamic_cast<ArticulatedSystem *>(ob);
-          data_ = set(data_, as->getResourceDir());
-
-          for (uint64_t i = 0; i < 2; i++) {
-            std::vector<VisObject> *visOb;
-            if (i == 0)
-              visOb = &as->getVisOb();
-            else
-              visOb = &as->getVisColOb();
-
-            data_ = set(data_, (uint64_t) (visOb->size()));
-
-            for (auto &vob : *visOb) {
-              data_ = set(data_, vob.shape, vob.material, vob.color, i);
-              if (vob.shape == Shape::Mesh) {
-                data_ = set(data_, vob.fileName, vob.scale);
-              } else {
-                data_ = set(data_, (uint64_t) (vob.visShapeParam.size()));
-                for (auto vparam : vob.visShapeParam)
-                  data_ = set(data_, vparam);
-              }
-            }
-          }
-
-          // add sensors
-          data_ = set(data_, (uint64_t) as->getSensors().size());
-          for (auto& sensor: as->getSensors())
-            data_ = sensor.second->serializeProp(data_);
-        }
-          break;
-
-        case UNRECOGNIZED:
-          break;
-      }
-    }
-
-    // constraints
-    data_ = set(data_, (uint64_t) (world_->getWires().size()));
-
-    // charts
-    data_ = set(data_, (uint64_t) (charts_.size()));
-    for (auto c: charts_) {
-      data_ = set(data_, int32_t(c.second->getType()));
-      data_ = c.second->initialize(data_);
-    }
-  }
-
-  inline void serializeContacts() {
-    using namespace server;
-    auto *contactList = world_->getContactProblem();
-
-    // set message type
-    data_ = set(data_, ServerMessageType::CONTACT_INFO_UPDATE);
-
-    // Data begins
-    size_t contactSize = contactList->size();
-    for (const auto &con : *contactList)
-      if (con.rank == 5) contactSize--;
-
-    size_t contactIncrement = 0;
-    auto contactSizeLocation = data_;
-
-    data_ = set(data_, (uint64_t) (contactSize));
-
-    for (auto *obj : world_->getObjList()) {
-      for (auto &contact : obj->getContacts()) {
-        if (!contact.isObjectA() &&
-            contact.getPairObjectBodyType() != raisim::BodyType::STATIC)
-          continue;
-        contactIncrement++;
-        // contact points
-        auto contactPos = contact.getPosition();
-        data_ = set(data_, contactPos);
-
-        // contact forces
-        auto impulseB = contact.getImpulse();
-        auto contactFrame = contact.getContactFrame();
-
-        Vec<3> impulseW;
-        raisim::matTransposevecmul(contactFrame, impulseB, impulseW);
-        impulseW /= world_->getTimeStep();
-        data_ = set(data_, impulseW);
-      }
-    }
-    set(contactSizeLocation, contactIncrement);
-  }
-
-  inline void serializeVisuals() {
-    using namespace server;
-    data_ = set(data_, (uint64_t) (visuals_.size()));
-    data_ = set(data_, (uint64_t) (instancedvisuals_.size()));
-    data_ = set(data_, (uint64_t) (visualAs_.size()));
-
-    for (auto &kAndVo : visuals_) {
-      auto &vo = kAndVo.second;
-      data_ = set(data_, vo->type, vo->name, vo->color, vo->material, vo->glow, vo->shadow);
-
-      switch (vo->type) {
-        case Visuals::VisualSphere:
-          data_ = set(data_, (float) vo->size[0]);
-          break;
-
-        case Visuals::VisualBox:
-          data_ = setInFloat(data_, vo->size);
-          break;
-
-        case Visuals::VisualMesh:
-          data_ = setInFloat(data_, vo->size);
-          data_ = set(data_, vo->meshFileName);
-          break;
-
-        case Visuals::VisualCylinder:
-        case Visuals::VisualCapsule:
-        case Visuals::VisualArrow:
-          data_ = set(data_, (float) vo->size[0], (float) vo->size[1]);
-          break;
-
-        default:
-          break;
-      }
-    }
-
-    for (auto &iv : instancedvisuals_) {
-      auto v = iv.second;
-      data_ = set(data_, v->name, v->type);
-      data_ = setInFloat(data_, v->size, v->color1, v->color2);
-    }
-
-    for (auto &vas : visualAs_) {
-      auto *ob = &vas.second->obj;
-      data_ = set(data_, vas.first);
-      std::string resDir = static_cast<ArticulatedSystem *>(ob)->getResourceDir();
-      data_ = set(data_, resDir);
-
-      for (uint64_t i = 0; i < 2; i++) {
-        std::vector<VisObject> *visOb = i==0 ? &(ob->getVisOb()) : &(ob->getVisColOb());
-        data_ = set(data_, (uint64_t) (visOb->size()));
-
-        for (auto &vob : *visOb) {
-          data_ = set(data_, vob.shape, vob.material, vas.second->color, i);
-          if (vob.shape == Shape::Mesh) {
-            data_ = set(data_, vob.fileName, vob.scale);
-          } else {
-            data_ = set(data_, (uint64_t) (vob.visShapeParam.size()));
-            for (auto vparam : vob.visShapeParam)
-              data_ = set(data_, vparam);
-          }
-        }
-      }
-    }
   }
 
   char *data_, *rData_;
@@ -1435,9 +1373,9 @@ class RaisimServer final {
   char tempBuffer[MAXIMUM_PACKET_SIZE];
   int state_ = STATUS_RENDERING;
   std::vector<ServerRequestType> serverRequest_;
-  std::string focusedObjectName_;
+  uint32_t focusedObjectVisTag_;
   std::string videoName_;
-  int objectId_;
+  uint32_t objectId_;
   std::atomic<bool> terminateRequested_ = {false};
   int client_;
   int server_fd_;
@@ -1445,6 +1383,7 @@ class RaisimServer final {
   int addrlen;
   std::thread serverThread_;
   std::future<bool> threadResult_;
+  std::string mapName_;
 
   std::mutex serverMutex_;
 
@@ -1456,7 +1395,10 @@ class RaisimServer final {
   int screenShotWidth_, screenShotHeight_;
 
   // version
-  constexpr static int version_ = 10007;
+  constexpr static int version_ = 10009;
+
+  // visual tag counter
+  uint32_t visTagCounter = 30;
 
   std::unordered_map<std::string, Visuals *> visuals_;
   std::unordered_map<std::string, InstancedVisuals *> instancedvisuals_;
@@ -1465,14 +1407,17 @@ class RaisimServer final {
   std::map<std::string, Chart *> charts_;
 
  public:
-  inline TimeSeriesGraph* addTimeSeriesGraph(std::string title, std::vector<std::string> names, std::string xAxis, std::string yAxis) {
+  inline TimeSeriesGraph *addTimeSeriesGraph(std::string title,
+                                             std::vector<std::string> names,
+                                             std::string xAxis,
+                                             std::string yAxis) {
     RSFATAL_IF(charts_.find(title) != charts_.end(), "A chart named " << title << "already exists")
     auto chart = new TimeSeriesGraph(std::ref(title), std::ref(names), std::ref(xAxis), std::ref(yAxis));
     charts_[title] = chart;
     return chart;
   }
 
-  inline BarChart* addBarChart(std::string title, std::vector<std::string> names) {
+  inline BarChart *addBarChart(std::string title, std::vector<std::string> names) {
     RSFATAL_IF(charts_.find(title) != charts_.end(), "A chart named " << title << "already exists")
     auto chart = new BarChart(std::ref(title), std::ref(names));
     charts_[title] = chart;

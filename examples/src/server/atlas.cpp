@@ -21,7 +21,7 @@ int main(int argc, char* argv[]) {
 
   /// create objects
   auto ground = world.addGround();
-  ground->setAppearance("dune"); // this works only in raisimUnreal
+  ground->setAppearance("hidden"); // this works only in raisimUnreal
 
   std::vector<raisim::ArticulatedSystem*> atlas;
 
@@ -43,6 +43,7 @@ int main(int argc, char* argv[]) {
 
   /// launch raisim server
   raisim::RaisimServer server(&world);
+  server.setMap("dune");
 
   /// use raisimUnreal to visualize the charts
   auto timeSeries = server.addTimeSeriesGraph("body pos", {"atlas_x", "atlas_y", "atlas_z", "w", "x", "y", "z"}, "time", "pos");

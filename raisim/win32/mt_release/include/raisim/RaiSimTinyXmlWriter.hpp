@@ -75,6 +75,17 @@ class RaiSimTinyXmlWriterElement {
     return *this;
   }
 
+  template<typename T>
+  RaiSimTinyXmlWriterElement& setVectorAttribute(const std::string &name, T attribute, size_t size) {
+    std::string list;
+    for(int i=0; i<size-1; i++)
+      list += std::to_string(attribute[i]) + ", ";
+
+    list += std::to_string(attribute[size-1]);
+    ptr_->SetAttribute(name, list);
+    return *this;
+  }
+
   void link() {
     for(auto& element : elements_) {
       ptr_->LinkEndChild(element.ptr_);

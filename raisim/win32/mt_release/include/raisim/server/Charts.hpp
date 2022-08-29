@@ -13,6 +13,8 @@
 namespace raisim {
 
 class Chart {
+  friend class raisim::RaisimServer;
+
  public:
   virtual char* initialize(char* data) = 0;
   virtual char* serialize(char* data) = 0;
@@ -24,6 +26,7 @@ class Chart {
     BAR_CHART
   } type_;
 
+  uint32_t visualTag = 0;
  public:
   Type getType() { return type_; }
 };

@@ -1306,7 +1306,7 @@ class ArticulatedSystem : public Object {
    * For a sphere, {raidus}.
    * For a cylinder and a capsule, {radius, length}
    * For a box, {x-dim, y-dim, z-dim} */
-  void setCollisionObjectShapeParameters(size_t id, const std::vector<double> &params);
+  void setCollisionObjectShapeParameters(size_t id, const Vec<4> &params);
 
   /**
    * change collision geom offset from the joint position.

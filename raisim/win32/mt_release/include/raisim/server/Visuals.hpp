@@ -15,11 +15,12 @@ namespace raisim {
 class RaisimServer;
 
 struct PolyLine {
+  friend class raisim::RaisimServer;
+
   std::string name;
   Vec<4> color = {1, 1, 1, 1};
   std::vector<Vec<3>> points;
   double width = 0.01;
-
   /**
    * @param[in] r red value of the color (max=1).
    * @param[in] g green value of the color (max=1).
@@ -36,9 +37,14 @@ struct PolyLine {
   /**
    * clear all polyline points. */
   void clearPoints() { points.clear(); }
+
+ protected:
+  uint32_t visualTag = 0;
 };
 
 struct ArticulatedSystemVisual {
+  friend class raisim::RaisimServer;
+
   ArticulatedSystemVisual(const std::string &urdfFile) : obj(urdfFile) {
     color.setZero();
   }
@@ -64,19 +70,15 @@ struct ArticulatedSystemVisual {
 
   raisim::Vec<4> color;
   ArticulatedSystem obj;
+ protected:
+  uint32_t visualTag = 0;
+  std::string name;
 };
 
 struct Visuals {
-  enum VisualType : int {
-    VisualSphere = 0,
-    VisualBox,
-    VisualCylinder,
-    VisualCapsule,
-    VisualMesh,
-    VisualArrow
-  };
+  friend class raisim::RaisimServer;
 
-  VisualType type;
+  Shape::Type type;
   std::string name;
   std::string material;
   std::string meshFileName;
@@ -93,7 +95,7 @@ struct Visuals {
    * capsule    {radius, length, 0}
    * mesh       {xscale, yscale, zscale}
    */
-  Vec<3> size = {0, 0, 0};
+  Vec<4> size = {0, 0, 0, 0};
 
   /**
    * @param[in] radius the raidus of the sphere.
@@ -165,19 +167,15 @@ struct Visuals {
  private:
   Vec<3> position = {0, 0, 0};
   Vec<4> quaternion = {1, 0, 0, 0};
+
+ protected:
+  uint32_t visualTag = 0;
 };
 
 struct InstancedVisuals {
   friend class raisim::RaisimServer;
 
-  enum VisualType : int {
-    VisualSphere = 0,
-    VisualBox,
-    VisualCylinder,
-    VisualArrow
-  };
-
-  InstancedVisuals(VisualType type,
+  InstancedVisuals(Shape::Type type,
                    std::string name,
                    const Vec<3>& size,
                    const Vec<4>& color1,
@@ -205,6 +203,7 @@ struct InstancedVisuals {
     for (auto& d: data) {
       d.quat = Vec<4>{1, 0, 0, 0};
       d.scale = Vec<3>{1, 1, 1};
+      d.scale = size;
     }
   }
 
@@ -212,24 +211,26 @@ struct InstancedVisuals {
    * @param[in] pos position of the visual object in Eigen::Vector3d.
    * @param[in] ori quaternion of the visual object in Eigen::Vector4d.
    * @param[in] scale scale of the visual object in Eigen::Vector3d.
+   * @param[in] colorWeight the final color is an weighted average of color1 and color2
    * add a new instance of the specified pose */
   void addInstance(const Eigen::Vector3d &pos, const Eigen::Vector4d &ori, const Eigen::Vector3d& scale, float colorWeight = 0.f) {
     data.emplace_back();
     data.back().pos = pos;
     data.back().quat = ori;
-    data.back().scale = scale;
+    data.back().scale = {size[0]*scale[0], size[1]*scale[1], size[2]*scale[2]};
     data.back().colorWeight = colorWeight;
   }
 
   /**
    * @param[in] pos position of the visual object in Eigen::Vector3d.
    * @param[in] ori quaternion of the visual object in Eigen::Vector4d.
+   * @param[in] colorWeight the final color is an weighted average of color1 and color2
    * add a new instance of the specified pose */
     void addInstance(const Eigen::Vector3d &pos, const Eigen::Vector4d &ori, float colorWeight = 0.f) {
       data.emplace_back();
       data.back().pos = pos;
       data.back().quat = ori;
-      data.back().scale = raisim::Vec<3>{1,1,1};
+      data.back().scale = size;
       data.back().colorWeight = colorWeight;
     }
 
@@ -240,7 +241,7 @@ struct InstancedVisuals {
     data.emplace_back();
     data.back().pos = pos;
     data.back().quat = raisim::Vec<4>{1,0,0,0};
-    data.back().scale = raisim::Vec<3>{1,1,1};
+    data.back().scale = size;
     data.back().colorWeight = colorWeight;
   }
 
@@ -304,7 +305,7 @@ struct InstancedVisuals {
   };
   Vec<3> size;
   std::vector<PerInstanceData> data;
-  VisualType type;
+  Shape::Type type;
   std::string name;
   std::string material;
   std::string meshFileName;
@@ -312,6 +313,8 @@ struct InstancedVisuals {
   // {r, g, b, a}
   Vec<4> color1 = {1, 1, 1, 1};
   Vec<4> color2 = {1, 1, 1, 1};
+
+  uint32_t visualTag = 0;
 };
 
 }
