@@ -12,15 +12,21 @@
 #include <raisim/Materials.hpp>
 #include <ode/objects.h>
 
-namespace raisim {
 
+namespace raisim {
 class World;
 class Object;
+class SingleBodyObject;
+class ArticulatedSystem;
+}
 
+namespace raisim {
 class Contact {
  public:
-
   friend class raisim::World;
+  friend class raisim::ArticulatedSystem;
+  friend class raisim::Object;
+  friend class raisim::SingleBodyObject;
 
   Contact() = default;
 
@@ -81,68 +87,140 @@ class Contact {
     frame[8] = zAxis[2] * zNormInv;
   }
 
-  const Vec<3> &getPosition() const {
+public:
+  [[nodiscard]] const Vec<3> &getPosition() const {
     return position_;
   }
 
-  const Vec<3> &getNormal() const {
+  [[nodiscard]] const Vec<3> &getNormal() const {
     return normal_;
   }
 
-  const Mat<3, 3> &getContactFrame() const {
+  /**
+   * treturns a TRANSPOSE of the frame that the impulse is expressed.
+   * @return contact frame
+   */
+  [[nodiscard]] const Mat<3, 3> &getContactFrame() const {
     return frame_;
   }
 
-  size_t getIndexContactProblem() const {
+  /**
+   * returns the corresponding index in raisim::world::getContactProblems
+   * @return contact index
+   */
+  [[nodiscard]] size_t getIndexContactProblem() const {
     return contactProblemIndex_;
   }
 
-  size_t getIndexInObjectContactList() const {
+  /**
+   * returns the corresponding index in raisim::Object::getContacts
+   * @return contact index
+   */
+  [[nodiscard]] size_t getIndexInObjectContactList() const {
     return contactIndexInObject_;
   }
 
-  size_t getPairObjectIndex() const {
+  /**
+   * returns the contacting object index in raisim::World::getObjectList
+   * @return object index
+   */
+  [[nodiscard]] size_t getPairObjectIndex() const {
     return pairObjectIndex_;
   }
 
-  size_t getPairContactIndexInPairObject() const {
+  /**
+   * returns the contact index in the contacting (the paired) object in raisim::Object::getContacts
+   * @return contact index
+   */
+  [[nodiscard]] size_t getPairContactIndexInPairObject() const {
     return pairContactIndexInPairObject_;
   }
 
-  const Vec<3> &getImpulse() const {
+  /**
+   * returns the impulse. You have to multiply this number by the time step to get the force
+   * @return impulse
+   */
+  [[nodiscard]] const Vec<3> &getImpulse() const {
     return *impulse_;
   }
 
-  bool isObjectA() const {
+  /**
+   * returns if the object is objectA. When there is a contact, the two paired objects are assigned to be objectA and objectB arbitrarily.
+   * The contact frame is defined such that its z-axis is pointing towards the objectA.
+   * The contact impulse is defined as an external force that objectA experiences.
+   * @return impulse
+   */
+  [[nodiscard]] bool isObjectA() const {
     return objectA_;
   }
 
-  BodyType getPairObjectBodyType() const {
+  /**
+   * returns the body type of the paired object. Please read https://raisim.com/sections/Object.html#body-types to learn about it
+   * @return the body type
+   */
+  [[nodiscard]] BodyType getPairObjectBodyType() const {
     return pairObjectBodyType_;
   }
 
-  Mat<3, 3> &getInvInertia() {
+  /**
+   * returns the inverse apparent inertia of the contacting point
+   * @return inertia
+   */
+  [[nodiscard]] Mat<3, 3> &getInvInertia() {
     return Minv_;
   }
 
-  size_t getlocalBodyIndex() const {
+  /**
+   * get local body index of this contact. The local index is assigned to each moving body in an object
+   * @return the body index.
+   */
+  [[nodiscard]] size_t getlocalBodyIndex() const {
     return localBodyIndex_;
   }
 
-  double getDepth() const {
+  /**
+   * The penetration depth of the contact
+   * @return the depth of the contact
+   */
+  [[nodiscard]] double getDepth() const {
     return depth_;
   }
 
-  bool isSelfCollision() const {
+  /**
+   * returns if the contact is self collision
+   * @return if this is a self collision
+   */
+  [[nodiscard]] bool isSelfCollision() const {
     return isSelfCollision_;
   }
 
-  void setSelfCollision() {
-    isSelfCollision_ = true;
+  /**
+   * this is set true for one self-collision point so that you don't count them twice
+   * @return if you can skip this contact point while iterating contact points
+   */
+  [[nodiscard]] bool skip() const {
+    return skip_;
   }
 
-  bool skip() const {
-    return skip_;
+  /**
+   * get the collision body of this object. This is ODE interface
+   * @return collision body
+   */
+  [[nodiscard]] dGeomID getCollisionBodyA() {
+    return colA_;
+  }
+
+  /**
+   * get the collision body of the pairing object. This is ODE interface
+   * @return collision body
+   */
+  [[nodiscard]] dGeomID getCollisionBodyB() {
+    return colB_;
+  }
+
+protected:
+  void setSelfCollision() {
+    isSelfCollision_ = true;
   }
 
   void setSkip() {
@@ -157,13 +235,7 @@ class Contact {
     impulse_ = im;
   }
 
-  dGeomID getCollisionBodyA() {
-    return colA_;
-  }
 
-  dGeomID getCollisionBodyB() {
-    return colB_;
-  }
 
  private:
   Mat<3, 3> frame_;             // contactFrame of A

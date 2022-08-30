@@ -1407,6 +1407,13 @@ class RaisimServer final {
   std::map<std::string, Chart *> charts_;
 
  public:
+   /**
+    * Only works with RaisimUnreal. Please read the "atlas" example to see how it works.
+    * @param[in] title title of the chart
+    * @param[in] names name of the data curves to be plotted
+    * @param[in] xAxis title of the x-axis
+    * @param[in] yAxis title of the y-axis
+    * @return pointer to the created Time Series Graph */
   inline TimeSeriesGraph *addTimeSeriesGraph(std::string title,
                                              std::vector<std::string> names,
                                              std::string xAxis,
@@ -1417,6 +1424,11 @@ class RaisimServer final {
     return chart;
   }
 
+  /**
+    * Only works with RaisimUnreal. Please read the "atlas" example to see how it works.
+    * @param[in] title title of the chart
+    * @param[in] names name of the data histogram to be plotted
+    * @return pointer to the created Bar Chart */
   inline BarChart *addBarChart(std::string title, std::vector<std::string> names) {
     RSFATAL_IF(charts_.find(title) != charts_.end(), "A chart named " << title << "already exists")
     auto chart = new BarChart(std::ref(title), std::ref(names));

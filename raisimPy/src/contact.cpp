@@ -123,36 +123,12 @@ void init_contact(py::module &m) {
 	        bool: True if object A is in contact.
 	    )mydelimiter")
 
-
 	    .def("getPairObjectBodyType", &raisim::Contact::getPairObjectBodyType, R"mydelimiter(
 	    Get the pair object body type.
 
 	    Returns:
 	        raisim.BodyType: the body type (STATIC, KINEMATIC, DYNAMIC)
 	    )mydelimiter")
-
-
-	    .def("setImpulse", [](raisim::Contact &self, py::array_t<double> impulse) {
-	        Vec<3> impulse_ = convert_np_to_vec<3>(impulse);
-            self.setImpulse(&impulse_);
-        }, R"mydelimiter(
-	    Set the impulse.
-
-	    Args:
-	        np.array[float[3]]: impulse.
-	    )mydelimiter",
-	    py::arg("impulse"))
-
-	    .def("getInvInertia", [](raisim::Contact &self) {
-	        const Mat<3, 3> I_ = self.getInvInertia();
-	        return convert_mat_to_np(I_);
-        }, R"mydelimiter(
-	    Get the inverse inertia matrix.
-
-	    Returns:
-	        np.array[float[3,3]]: inverse of the inertia matrix.
-	    )mydelimiter")
-
 
 	    .def("getlocalBodyIndex", &raisim::Contact::getlocalBodyIndex, R"mydelimiter(
 	    Get local body index.
@@ -176,9 +152,6 @@ void init_contact(py::module &m) {
 	    Returns:
 	        bool: True if self-collision is enabled.
 	    )mydelimiter")
-
-
-	    .def("setSelfCollision", &raisim::Contact::setSelfCollision, "Enable self-collision.")
 
 
         .def("skip", &raisim::Contact::skip, R"mydelimiter(

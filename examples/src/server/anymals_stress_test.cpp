@@ -57,7 +57,11 @@ int main(int argc, char* argv[]) {
 
     anymalB->setGeneralizedForce(genForce);
     anymalC->setGeneralizedForce(genForce);
+    for (auto c : anymalC->getContacts())
+      std::cout<< "impulse "<<c.getImpulse() <<std::endl;
+
     server.integrateWorldThreadSafe();
+
   }
 
   server.killServer();
