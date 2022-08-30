@@ -20,6 +20,7 @@
 namespace raisim {
 
 class World;
+class RaisimServer;
 
 namespace contact {
 class BisectionContactSolver;
@@ -28,6 +29,7 @@ class Single3DContactProblem;
 
 class Object {
   friend class raisim::World;
+  friend class raisim::RaisimServer;
   friend class raisim::contact::BisectionContactSolver;
   friend class raisim::contact::Single3DContactProblem;
 
@@ -146,6 +148,9 @@ class Object {
   std::vector<Vec<3>> externalTorqueVizPos_;
   std::vector<SparseJacobian> constraintJaco_;
   std::vector<Vec<3>> constraintForce_;
+
+ protected:
+  uint32_t visualTag = 0;
 };
 
 } // raisim
