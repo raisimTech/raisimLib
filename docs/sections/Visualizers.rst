@@ -3,8 +3,9 @@ Visualizers
 #############################
 
 There are three options available for visualization.
-Most of the examples included in this repo requires raisimUnity to visualize.
-You have to run raisimUnity before running the examples.
+All examples included in this repo require a server visualizer, such as RaisimUnity and RaisimUnreal.
+You have to run one of the visualizers to what's happening in the simulated world.
+RaisimOgre documentations and examples are included in the `RaisimOgre repo <https://github.com/raisimTech/raisimogre>`_.
 
 RaisimUnity
 ***************
@@ -18,7 +19,7 @@ RaisimUnity
 *  FPS is low but it consumes your computer resource less than RaisimUnreal.
 *  Runs on a separate process (using RaisimServer)
 *  Closed source
-*  works well in Linux, Mac and Windows
+*  Works well in Linux, Mac and Windows
 
 RaisimUnreal - Beta
 *********************
@@ -28,7 +29,7 @@ RaisimUnreal - Beta
   :width: 600
 
 *  Binaries are available in the github release
-*  Currently available in Windows and Linux
+*  Currently available **only in Windows and Linux**
 *  Most complete visualizer. Only RaisimUnreal supports "Maps" (Check out RaisimUnreal section)
 *  It uses multi-threading and fast. But this also means that it can **slow down your RL training or simulation**.
 *  Easy to use.
@@ -43,10 +44,10 @@ RaisimOgre
   :alt: raisimOgre
   :width: 420
 
-*  harder to use but rich in features
-*  works well in Linux. Should work in other two major OS's but not tested
-*  easy to customize. Only C++ code
-*  source code available `here <https://github.com/raisimTech/raisimogre>`_ under the MIT license
+*  Harder to use
+*  Works well **only in Linux**. Should work in other two major OS's but not tested
+*  Easy to customize. Only C++ code
+*  Source code available `here <https://github.com/raisimTech/raisimogre>`_ under the MIT license
 
 
 Comparison between RaisimUnity and RaisimUnreal
@@ -82,7 +83,7 @@ Here is a comparison between RaisimUnity and RaisimUnreal.
 *  **Support**
 
    *  **RaisimUnity**: Will be supported and bug-fixed.
-   *  **RaisimUnreal**: New visualization developments will be on raisimUnreal as it seems like a more promising option. Because Unreal is using C++, It is much easier to develop Simulation API (not just the visualization) as well. This might come sometime this year (2022).
+   *  **RaisimUnreal**: New visualization developments will be on raisimUnreal as it seems like a more promising option. Because Unreal is using C++, it is much easier to develop Simulation API as well.
 
 *  **Graphs (time series and bar charts)**
 
@@ -92,5 +93,4 @@ Here is a comparison between RaisimUnity and RaisimUnreal.
 *  **Vidoes Recording**
 
    *  **RaisimUnity**: Works in Linux.
-   *  **RaisimUnreal**: Will be implemented soon.
-
+   *  **RaisimUnreal**: Works well in both Linux and Windows.

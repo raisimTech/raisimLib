@@ -18,14 +18,17 @@ Collision group and mask in RaiSim uses bit operations as most other physics eng
 In the above example, ``sphere0`` is in collision group 0 and can collide with collision group 0 and 1.
 ``sphere1`` is in collision group 1 and can collide with collision group 0 and 1.
 ``sphere2`` is in collision group 2 and can collide with collision group 1.
-``sphere3`` is in collision group 2 and can collide with any object (-1 means all groups).
+``sphere3`` is in collision group 3 and can collide with any object (-1 means all groups).
+
+**The collision group and mask is AND logic**.
+In order for A and B collide, A should be able to collide with B and vice versa.
 
 ``sphere0`` can collide with ``sphere1``.
 ``sphere1`` cannot collide with ``spehre2`` (both conditions must be satisfied).
-``sphere3`` cannot collide with ``spehre0`` and ``sphere1`` but not with ``sphere2``.
+``sphere3`` cannot collide with any objects (because ``sphere0``, ``sphere1`` and ``sphere2`` cannot collide with the collision group 3).
 
 By default, movable object are in collision group 1 and can collide with anything (collision mask = -1).
-All static objects (e.g., ground and height map) are in collision group 63 and can collide with anything.
+All static objects (e.g., ground and height map) are by default in collision group 63 and can collide with anything.
 
 Contacts
 =========================
@@ -66,3 +69,10 @@ Here is an extensive example
     }
   }
 
+API
+=========
+You can get a vector of collisions on an object using ``raisim::Object::getContacts``.
+Each element in the vector has the following API:
+
+.. doxygenclass:: raisim::Contact
+   :members:
