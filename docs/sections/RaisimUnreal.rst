@@ -50,59 +50,38 @@ To use RaisimUnreal, you do not have to commit anything.
 From the server side, it is absolutely the same as raisimUnity.
 All you have to do is to create the server instance and launch it (check the examples in ``examples/server``).
 
-Textures/Types
+Maps
+================================
+You can use pre-configured maps using raisimUnreal.
+These maps are visually astonishing but each map takes 1 Gb of storage.
+This is a primary reason that RaisimUnreal is so bulky.
+
+You should read the examples in ``examples/src/maps`` to understand how to use them.
+Note that some objects have appearance "hidden".
+This will ensure that they only present in the simulation world, not in the visualization world.
+
+Currently, the following maps are available.
+
+wheat
+--------
+
+dune
+------
+
+office1
+---------
+
+mountain1
+-----------
+
+Materials
 ==================================
 
-You can set complex appearance (i.e., types/textures) on ``Ground`` and ``HeightMap``.
-The available appearances are as shown
+A ``SingleBodyObject`` has an appearance attribute which can be set using ``setAppearance()``.
+You can use basic appearances described `here <https://raisim.com>`_.
+**If you want to hide the object, you can set the appearance to "hidden".**
 
-Ground
-----------
-
-.. image:: ../image/RUnrealterrain_wheat.png
-  :alt: raisimUnreal
-  :width: 400
-"wheat"
-
-.. image:: ../image/RUnrealterrain_marble1.png
-  :alt: raisimUnreal
-  :width: 400
-"marble1"
-
-.. image:: ../image/RUnrealterrain_marble2.png
-  :alt: raisimUnreal
-  :width: 400
-"marble2"
-
-.. image:: ../image/RUnrealterrain_marble3.png
-  :alt: raisimUnreal
-  :width: 400
-"marble3"
-
-.. image:: ../image/RUnrealterrain_wood1.png
-  :alt: raisimUnreal
-  :width: 400
-"wood1"
-
-.. image:: ../image/RUnrealterrain_wood2.png
-  :alt: raisimUnreal
-  :width: 400
-"wood2"
-
-.. image:: ../image/RUnrealterrain_dune.png
-  :alt: raisimUnreal
-  :width: 400
-"dune"
-
-.. image:: ../image/RUnrealterrain_snow.png
-  :alt: raisimUnreal
-  :width: 400
-"snow"
-
-.. image:: ../image/RUnrealterrain_steel.png
-  :alt: raisimUnreal
-  :width: 400
-"steel"
+RaisimUnreal further provides additional appearances shown below
 
 Heightmap
 ----------

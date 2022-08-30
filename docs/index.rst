@@ -57,6 +57,7 @@ The geometric model is created using the Full-body musculoskeletal model in Raja
 
    sections/Introduction
    sections/Installation
+   sections/Visualizers
    sections/ConventionsAndNotations
    sections/Math
    sections/LoggingSystem

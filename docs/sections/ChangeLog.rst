@@ -4,6 +4,12 @@ Change Log
 Here we only describe the changes to the RaiSim library.
 Other peripheral codes are not tracked here.
 
+**v1.1.4**
+=========================================
+This version contains significant improvements on the visualizers: RaisimUnity and RaisimUnreal.
+
+The major advantage of the new version is that the visualizer does not reset when you add objects dynamically.
+
 **v1.1**
 ========================================
 There have been huge changes in this version.
