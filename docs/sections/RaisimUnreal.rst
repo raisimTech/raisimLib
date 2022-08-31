@@ -88,6 +88,9 @@ mountain1
 
 simple (lightweight)
 ---------------------
+.. image:: ../image/rsu_simple.gif
+  :alt: rsu_mountain1
+  :width: 854
 
 Weather
 ====================

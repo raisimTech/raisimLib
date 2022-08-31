@@ -1,5 +1,5 @@
 #############################
-RaiSim Unity
+RaiSimUnity
 #############################
 
 raisimUnity is a visualizer for RaiSim.

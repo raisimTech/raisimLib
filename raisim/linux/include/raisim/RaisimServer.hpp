@@ -1003,6 +1003,10 @@ class RaisimServer final {
               data_ = set(data_, (int32_t) hm->getXSamples(), (int32_t) hm->getYSamples());
               data_ = setInFloat(data_, hm->getHeightVector());
             }
+            case COMPOUND:
+            case ARTICULATED_SYSTEM:
+            case UNRECOGNIZED:
+              break;
           }
           data_ = set(data_, Masking::SB_OBJ);
         }
@@ -1044,6 +1048,10 @@ class RaisimServer final {
             auto scale = float(dynamic_cast<Mesh *>(ob)->getScale());
             data_ = set(data_, scale, scale, scale, 0.f);
           }
+            break;
+          case COMPOUND:
+          case ARTICULATED_SYSTEM:
+          case UNRECOGNIZED:
             break;
         }
 

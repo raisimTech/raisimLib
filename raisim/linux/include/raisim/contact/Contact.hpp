@@ -105,7 +105,7 @@ public:
   }
 
   /**
-   * returns the corresponding index in raisim::world::getContactProblems
+   * returns the corresponding index in raisim::World::getContactProblem
    * @return contact index
    */
   [[nodiscard]] size_t getIndexContactProblem() const {
