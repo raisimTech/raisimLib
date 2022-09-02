@@ -78,6 +78,12 @@ class Mat : public MatExpr<Mat<n, m>> {
   inline double operator()(size_t i, size_t j) const { return v[i + j * n]; }
   inline double &operator()(size_t i, size_t j) { return v[i + j * n]; }
 
+  inline Mat<n,m> operator-() {
+    Mat<n,m> result = *this;
+    result *=-1;
+    return result;
+  }
+
   RAIMATH_MATEXPR_OPERATORS
 
   EigenMat e() { return EigenMat(v);}
