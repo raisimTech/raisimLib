@@ -37,7 +37,7 @@ The xml file is constructed as following:
                 <state pos="1 1 5" quat="1 0 0 0" linVel="0 0 0" angVel="0 0 0" />
             </box>
             <heightmap name="terrain" xSample="50" ySample="50" xSize="20" ySize="20" centerX="0" centerY="0">
-                <terrainProperties frequency="0.2" zScale="3.0" fractalOctaves="3" fractalLacunarity="2.0" fractalGain="0.25" stepSize="0" seed="0"/>
+                <terrainProperties frequency="0.2" zScale="3.0" fractalOctaves="3" fractalLacunarity="2.0" fractalGain="0.25" stepSize="0" heightOffset="0" seed="0"/>
             </heightmap>
         </objects>
     </raisim>

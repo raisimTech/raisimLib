@@ -29,6 +29,7 @@ int main(int argc, char* argv[]) {
   terrainProperties.fractalOctaves = 3;
   terrainProperties.fractalLacunarity = 2.0;
   terrainProperties.fractalGain = 0.25;
+  terrainProperties.heightOffset = -1;
   raisim::HeightMap* hm = world.addHeightMap(0.0, 0.0, terrainProperties);
   hm->setAppearance("blue");
 

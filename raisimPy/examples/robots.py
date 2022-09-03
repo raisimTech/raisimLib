@@ -48,14 +48,19 @@ for i in range(5):
 
         if object_type == 0:
             obj = world.addMesh(monkey_file, 5.0, dummy_inertia, np.array([0, 0, 0]), 0.3)
+            obj.setAppearance("blue")
         elif object_type == 1:
             obj = world.addCylinder(0.2, 0.3, 2.0)
+            obj.setAppearance("red")
         elif object_type == 2:
             obj = world.addCapsule(0.2, 0.3, 2.0)
+            obj.setAppearance("green")
         elif object_type == 3:
             obj = world.addBox(0.4, 0.4, 0.4, 2.0)
+            obj.setAppearance("purple")
         else:
             obj = world.addSphere(0.3, 2.0)
+            obj.setAppearance("orange")
 
         obj.setPosition(i-2.5, j-2.5, 5)
 

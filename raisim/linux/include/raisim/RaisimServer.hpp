@@ -119,17 +119,17 @@ class RaisimServer final {
     addrlen = sizeof(address);
 
     // Creating socket file descriptor
-    RSFATAL_IF((server_fd_ = socket(AF_INET, SOCK_STREAM, 0)) < 0, "socket error: " << strerror(errno))
+    RSFATAL_IF((server_fd_ = socket(AF_INET, SOCK_STREAM, 0)) < 0, "socket error, errno: " << errno)
     RSFATAL_IF(setsockopt(server_fd_, SOL_SOCKET, RAISIM_SERVER_SOCKET_OPTION,
-                          (char *) &opt, sizeof(opt)) == -1, "setsockopt error: "<< strerror(errno))
+                          (char *) &opt, sizeof(opt)) == -1, "setsockopt error, errno: " << errno)
 
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(raisimPort_);
 
     // Forcefully attaching socket to the port 8080
-    RSFATAL_IF(bind(server_fd_, (struct sockaddr *) &address, sizeof(address)) < 0, "bind error: " << strerror(errno))
-    RSFATAL_IF(listen(server_fd_, 3) < 0, "listen error: " << strerror(errno))
+    RSFATAL_IF(bind(server_fd_, (struct sockaddr *) &address, sizeof(address)) < 0, "bind error, errno: " << errno)
+    RSFATAL_IF(listen(server_fd_, 3) < 0, "listen error, errno: " << errno)
 
 #elif WIN32
     WSADATA wsaData;
@@ -203,10 +203,10 @@ class RaisimServer final {
       client_ = accept(server_fd_, (struct sockaddr *) &address, (socklen_t *) &addrlen);
       connected_ = client_ > -1;
 #elif WIN32
-      client_ = int(accept(server_fd_, NULL, NULL));
+      client_ = int(accept(server_fd_, nullptr, nullptr));
       connected_ = client_ != INVALID_SOCKET;
 #endif
-      RSWARN_IF(client_ < 0, "Accept failed: " << strerror(errno))
+      RSWARN_IF(client_ < 0, "Accept failed, errno: " << errno)
       clearScene();
     }
   }
@@ -739,6 +739,12 @@ class RaisimServer final {
 #endif
   }
 
+  /**
+   * Synchronous update method.
+   * Receive a request from the client, process it and return the requested data to the client.
+   * The method return false if 1) the client failed to respond 2) the client protocol version is different 3) the client refused to receive the data 4) the client did not send the sensor data in time
+   * @return if succeeded or not.
+   */
   inline bool processRequests() {
     using namespace server;
     ClientMessageType type;
@@ -806,6 +812,11 @@ class RaisimServer final {
     return state_ == STATUS_RENDERING || state_ == STATUS_HIBERNATING;
   }
 
+  /**
+   * wait for a new client
+   * @param seconds how long to wait for a new client
+   * @return if a new client was found or not
+   */
   inline bool waitForNewClients(int seconds) {
     fd_set sdset;
     struct timeval tv;
@@ -1184,7 +1195,7 @@ class RaisimServer final {
     /// contact position
     for (auto *obj: world_->getObjList()) {
       for (auto &contact: obj->getContacts()) {
-        if (!contact.isObjectA() || contact.skip())
+        if (!contact.isObjectA() && contact.getPairObjectBodyType()==BodyType::DYNAMIC)
           continue;
 
         contactIncrement++;

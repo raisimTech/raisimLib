@@ -50,6 +50,20 @@ To use RaisimUnreal, you do not have to commit anything.
 From the server side, it is absolutely the same as raisimUnity.
 All you have to do is to create the server instance and launch it (check the examples in ``examples/server``).
 
+User Interface
+==========================
+There are two topmost menu panels: the main menu and object menu.
+You can press ``m`` to switch the menu panel.
+
+The object menu list all objects in the world.
+If you click the object name, the camera will focus on that object and the object menu will pop up.
+
+The main menu has the following structure.
+
+.. image:: ../image/raisimUnrealManuel.png
+  :alt: raisimUnrealMenu
+  :width: 1080
+
 Maps
 ================================
 You can use pre-configured maps using raisimUnreal using ``RaisimServer::setMap``.
@@ -62,35 +76,9 @@ This will ensure that they only present in the simulation world, not in the visu
 
 Currently, the following maps are available.
 
-wheat
---------
-.. image:: ../image/rsu_wheat.gif
-  :alt: rsu_wheat
-  :width: 854
-
-dune
-------
-.. image:: ../image/rsu_dune.gif
-  :alt: rsu_dune
-  :width: 854
-
-office1
----------
-.. image:: ../image/rsu_office1.gif
-  :alt: rsu_office1
-  :width: 854
-
-mountain1
------------
-.. image:: ../image/rsu_mountain1.gif
-  :alt: rsu_mountain1
-  :width: 854
-
-simple (lightweight)
----------------------
-.. image:: ../image/rsu_simple.gif
-  :alt: rsu_mountain1
-  :width: 854
+.. image:: ../image/rsu_maps.png
+  :alt: rsu_maps
+  :width: 1080
 
 Weather
 ====================
@@ -114,10 +102,10 @@ Video recording
 RaisimUnreal uses ``ffmpeg`` to record your screen in Linux and Windows.
 You first have to install ffmpeg to use the screen recording feature.
 In Windows, make sure that the directory where the ffmpeg executable lives is added to your ``PATH`` environment variable.
-This is a standard mechanism that Windows find a necessary executable.
+This is a standard mechanism that Windows uses to find a necessary executable.
 
 The options in the menu panel are for ffmpeg.
-If you are new to ffmpeg, you should learn the options it offers before using this feature.
+If you are new to ffmpeg, you should learn the options it offers before modifying this feature.
 
 Materials
 ==================================
@@ -126,57 +114,64 @@ A ``SingleBodyObject`` has an appearance attribute which can be set using ``setA
 You can use basic colors described as per `here <https://raisim.com>`_.
 **If you want to hide the object, you can set the appearance to "hidden".**
 
+
 RaisimUnreal further provides additional appearances shown below
 
-Heightmap
-----------
-
 **marble1**
+
 .. image:: ../image/RUnrealHm_marble1.png
-  :alt: raisimUnreal
-  :width: 400
+   :alt: raisimUnreal
+   :width: 300
 
 **marble2**
+
 .. image:: ../image/RUnrealHm_marble2.png
-  :alt: raisimUnreal
-  :width: 400
+   :alt: raisimUnreal
+   :width: 300
 
 **marble3**
+
 .. image:: ../image/RUnrealHm_marble3.png
   :alt: raisimUnreal
-  :width: 400
+  :width: 300
 
 
 **marble4**
+
 .. image:: ../image/RUnrealHm_marble4.png
   :alt: raisimUnreal
-  :width: 400
+  :width: 300
 
 
 **soil1**
+
 .. image:: ../image/RUnrealHm_soil1.png
   :alt: raisimUnreal
-  :width: 400
+  :width: 300
 
 **soil2**
+
 .. image:: ../image/RUnrealHm_soil2.png
   :alt: raisimUnreal
-  :width: 400
+  :width: 300
 
 **wood1**
+
 .. image:: ../image/RUnrealHm_wood1.png
   :alt: raisimUnreal
-  :width: 400
+  :width: 300
 
 **wood2**
+
 .. image:: ../image/RUnrealHm_wood2.png
   :alt: raisimUnreal
-  :width: 400
+  :width: 300
 
 **steel**
+
 .. image:: ../image/RUnrealHm_steel.png
   :alt: raisimUnreal
-  :width: 400
+  :width: 300
 
 Troubleshooting and bug reporting
 ==================================

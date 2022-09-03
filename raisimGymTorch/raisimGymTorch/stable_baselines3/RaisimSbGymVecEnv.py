@@ -24,14 +24,15 @@ class RaisimSbGymVecEnv(VecEnv):
         self.wrapper = impl
         self.num_obs = self.wrapper.getObDim()
         self.num_acts = self.wrapper.getActionDim()
-        self.observation_space = gym.spaces.Box(-np.full(self.num_obs, np.inf), np.full(self.num_obs, np.inf), dtype=np.float32)
-        self.action_space = gym.spaces.Box(-np.full(self.num_acts, np.inf), np.full(self.num_acts, np.inf), dtype=np.float32)
+        self.observation_space = gym.spaces.Box(-np.full(self.num_obs, 1e6), np.full(self.num_obs, 1e6), dtype=np.float32)
+        self.action_space = gym.spaces.Box(-np.full(self.num_acts, 1e6), np.full(self.num_acts, 1e6), dtype=np.float32)
         super(RaisimSbGymVecEnv, self).__init__(self.wrapper.getNumOfEnvs(), self.observation_space, self.action_space)
 
         self._observation = np.zeros([self.num_envs, self.num_obs], dtype=np.float32)
         self.obs_rms = RunningMeanStd(shape=[self.num_envs, self.num_obs])
         self._reward = np.zeros(self.num_envs, dtype=np.float32)
         self._done = np.zeros(self.num_envs, dtype=np.bool)
+        self._info =[{} for k in range(self.num_envs)]
         self.rewards = [[] for _ in range(self.num_envs)]
         self.seed(seed)
         self.actions = None
@@ -56,7 +57,7 @@ class RaisimSbGymVecEnv(VecEnv):
 
     def step_wait(self):
         self.wrapper.step(self.actions, self._reward, self._done)
-        return self.observe(True), self._reward.copy(), self._done.copy(), []
+        return self.observe(True), self._reward.copy(), self._done.copy(), self._info
 
     def env_method(self, method_name: str, *method_args, indices: VecEnvIndices = None, **method_kwargs):
         pass
@@ -81,15 +82,8 @@ class RaisimSbGymVecEnv(VecEnv):
         np.savetxt(var_file_name, self.obs_rms.var)
 
     def observe(self, update_mean=True):
-        self.wrapper.observe(self._observation)
-
-        if self.normalize_ob:
-            if update_mean:
-                self.obs_rms.update(self._observation)
-
-            return self._normalize_observation(self._observation)
-        else:
-            return self._observation.copy()
+        self.wrapper.observe(self._observation, update_mean)
+        return self._observation
 
     def reset(self):
         self._reward = np.zeros(self.num_envs, dtype=np.float32)

@@ -4,7 +4,8 @@ Visualizers
 
 There are three options available for visualization.
 All examples included in this repo require a server visualizer, such as RaisimUnity and RaisimUnreal.
-You have to run one of the visualizers to what's happening in the simulated world.
+You have to run one of the server visualizers to visualize what's happening in the simulated world.
+This website contains documentations for RaisimUnity and RaisimUnreal.
 RaisimOgre documentations and examples are included in the `RaisimOgre repo <https://github.com/raisimTech/raisimogre>`_.
 
 RaisimUnity
@@ -51,7 +52,7 @@ RaisimOgre
 
 
 Comparison between RaisimUnity and RaisimUnreal
-==================================================
+*******************************************************
 
 Here is a comparison between RaisimUnity and RaisimUnreal.
 
@@ -83,7 +84,7 @@ Here is a comparison between RaisimUnity and RaisimUnreal.
 *  **Support**
 
    *  **RaisimUnity**: Will be supported and bug-fixed.
-   *  **RaisimUnreal**: New visualization developments will be on raisimUnreal as it seems like a more promising option. Because Unreal is using C++, it is much easier to develop Simulation API as well.
+   *  **RaisimUnreal**: New visualization developments will be on raisimUnreal as it seems like a more promising option.
 
 *  **Graphs (time series and bar charts)**
 

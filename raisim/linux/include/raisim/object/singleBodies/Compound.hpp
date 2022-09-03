@@ -18,7 +18,7 @@ class Compound : public SingleBodyObject {
  public:
 
   struct CompoundObjectChild {
-    std::string childCompound;
+    std::string childCompound; // not used currently
     ObjectType objectType;
     Vec<4> objectParam;
     std::string material;
