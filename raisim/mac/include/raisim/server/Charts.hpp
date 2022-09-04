@@ -13,6 +13,8 @@
 namespace raisim {
 
 class Chart {
+  friend class raisim::RaisimServer;
+
  public:
   virtual char* initialize(char* data) = 0;
   virtual char* serialize(char* data) = 0;
@@ -24,18 +26,27 @@ class Chart {
     BAR_CHART
   } type_;
 
+  uint32_t visualTag = 0;
  public:
   Type getType() { return type_; }
 };
 
 class TimeSeriesGraph : public Chart {
- public:
+  friend class raisim::RaisimServer;
+
+ protected:
+   // You should create time series graph using RaisimServer
   TimeSeriesGraph(std::string title, std::vector<std::string> names, std::string xAxis, std::string yAxis) :
       size_(names.size()), xAxis_(std::move(xAxis)), yAxis_(std::move(yAxis)), names_(std::move(names)) {
     title_ = std::move(title);
     type_ = Type::TIME_SERIES;
   }
 
+ public:
+  /**
+    * Please read the "atlas" example to see how it works.
+    * @param[in] time x coordinate for the following data
+    * @param[in] d y coordinates of the data. The order is given when the chart is created */
   void addDataPoints(double time, const raisim::VecDyn& d) {
     RSFATAL_IF(size_ != d.n, "Dimension mismatch. The chart has " << size_ << " categories and the inserted data is " << d.n << "dimension");
     {
@@ -51,6 +62,7 @@ class TimeSeriesGraph : public Chart {
     }
   }
 
+protected:
   // not for users //
   void clearData() {
     timeStamp_ = std::queue<double>();
@@ -92,13 +104,20 @@ class TimeSeriesGraph : public Chart {
 };
 
 class BarChart : public Chart {
- public:
+  friend class raisim::RaisimServer;
+
+ protected:
   BarChart(std::string title, std::vector<std::string> names) :
       size_(names.size()), names_(std::move(names)) {
     title_ = std::move(title);
     type_ = Type::BAR_CHART;
   }
 
+ public:
+
+ /**
+  * Please read the "atlas" example to see how it works.
+  * @param[in] data values of each category. The histogram will be normalized. */
   void setData(const std::vector<float>& data) {
     RSFATAL_IF(size_ != data.size(), "Dimension mismatch. The chart has " << size_ << " categories and the inserted data is " << data.size() << "dimension");
     {
@@ -107,6 +126,7 @@ class BarChart : public Chart {
     }
   }
 
+ protected:
   char* initialize(char* data) final {
     using namespace server;
     return set(data, title_, names_);
