@@ -59,7 +59,7 @@ void init_terrain(py::module &m) {
     /***********/
     py::class_<raisim::TerrainProperties>(m, "TerrainProperties", "Raisim terrain properties")
         .def(py::init<>(), "Initialize the terrain properties")
-        .def(py::init<double, double, double, double, size_t, size_t, size_t, double, double, double, std::uint32_t>(),
+        .def(py::init<double, double, double, double, size_t, size_t, size_t, double, double, double, double, std::uint32_t>(),
         "Initialize the terrain properties.\n\n"
         "Args:\n"
         "    frequency (float): frequency.\n"
@@ -72,11 +72,12 @@ void init_terrain(py::module &m) {
         "    fractal_lacunarity (float): the lacunarity of fractals.\n"
         "    fractal_gain (float): fractal gain.\n"
         "    step_size (float): the step size.\n"
+        "    height_offset (float): the height offset.\n"
         "    seed (int): the random seed.",
         py::arg("frequency") = 0.1, py::arg("x_size") = 10., py::arg("y_size") = 10., py::arg("z_scale") = 2.,
         py::arg("x_samples") = 100, py::arg("y_samples") = 100, py::arg("fractal_octaves") = 5,
         py::arg("fractal_lacunarity") = 2., py::arg("fractal_gain") = 0.5, py::arg("step_size") = 0,
-        py::arg("seed") = std::default_random_engine::default_seed)
+        py::arg("height_offset") = 0, py::arg("seed") = std::default_random_engine::default_seed)
 
         .def_readwrite("frequency", &raisim::TerrainProperties::frequency)
         .def_readwrite("xSize", &raisim::TerrainProperties::xSize)
@@ -88,6 +89,7 @@ void init_terrain(py::module &m) {
         .def_readwrite("fractalLacunarity", &raisim::TerrainProperties::fractalLacunarity)
         .def_readwrite("fractalGain", &raisim::TerrainProperties::fractalGain)
         .def_readwrite("stepSize", &raisim::TerrainProperties::stepSize)
+        .def_readwrite("heightOffset", &raisim::TerrainProperties::heightOffset)
         .def_readwrite("seed", &raisim::TerrainProperties::seed);
 
 
