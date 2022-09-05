@@ -4,6 +4,14 @@ Change Log
 Here we only describe the changes to the RaiSim library.
 Other peripheral codes are not tracked here.
 
+**v1.1.4**
+=========================================
+This version contains significant improvements on the visualizers: RaisimUnity and RaisimUnreal.
+
+* The new server does not reinitialize when a new object is added (try ``examples/src/server/balls` example to see the difference).
+* New ``Map`` feature on `RaisimUnreal <https://raisim.com/sections/RaisimUnreal.html>`_.
+
+
 **v1.1**
 ========================================
 There have been huge changes in this version.

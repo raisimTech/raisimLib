@@ -41,18 +41,20 @@ int main(int argc, char **argv) {
   anymal->setGeneralizedForce(Eigen::VectorXd::Zero(anymal->getDOF()));
   anymal->setName("Anymal");
 
-  auto depthSensor = anymal->getSensor<raisim::DepthCamera>("depth_camera_front_camera_parent:depth");
-  depthSensor->setMeasurementSource(raisim::Sensor::MeasurementSource::VISUALIZER);
+  auto depthSensor1 = anymal->getSensor<raisim::DepthCamera>("depth_camera_front_camera_parent:depth");
+  depthSensor1->setMeasurementSource(raisim::Sensor::MeasurementSource::VISUALIZER);
+  auto rgbCamera1 = anymal->getSensor<raisim::RGBCamera>("depth_camera_front_camera_parent:color");
+  rgbCamera1->setMeasurementSource(raisim::Sensor::MeasurementSource::VISUALIZER);
 
-  auto rgbCamera = anymal->getSensor<raisim::RGBCamera>("depth_camera_front_camera_parent:color");
-  rgbCamera->setMeasurementSource(raisim::Sensor::MeasurementSource::VISUALIZER);
+  auto depthSensor2 = anymal->getSensor<raisim::DepthCamera>("depth_camera_rear_camera_parent:depth");
+  depthSensor2->setMeasurementSource(raisim::Sensor::MeasurementSource::VISUALIZER);
+  auto rgbCamera2 = anymal->getSensor<raisim::RGBCamera>("depth_camera_rear_camera_parent:color");
+  rgbCamera2->setMeasurementSource(raisim::Sensor::MeasurementSource::VISUALIZER);
 
   server.launchServer();
   for (int k = 0; k < loopN; k++) {
     world.integrate();
     raisim::MSLEEP(world.getTimeStep() * 1000);
-    //std::cout<<"first b pixel rgb "<<int(rgbCamera->getImageBuffer()[0])<<std::endl; // bgra format
-    //std::cout<<"first depth pixel "<<depthSensor->getDepthArray()[0]<<std::endl;
   }
 
   server.killServer();

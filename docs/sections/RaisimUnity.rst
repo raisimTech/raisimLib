@@ -1,5 +1,5 @@
 #############################
-RaiSim Unity
+RaiSimUnity
 #############################
 
 raisimUnity is a visualizer for RaiSim.
@@ -48,3 +48,8 @@ You can disable auto-connection by unchecking the ``auto-connect`` checkbox.
 .. image:: ../image/RSUinstruction2.png
 
 .. image:: ../image/RSUinstruction3.png
+
+Object Appearances
+=====================
+You can specify the appearance of an object using ``raisim::SingleBodyObject::setAppearance".
+If you want to hide object completely in RaisimUnity, you can set appearance as ``hidden-unity``.

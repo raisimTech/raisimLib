@@ -107,6 +107,7 @@ struct TerrainProperties {
                     double fractalLacunarity,
                     double fractalGain,
                     double stepSize,
+                    double heightOffset,
                     std::uint32_t seed) :
       frequency(frequency),
       xSize(xSize),
@@ -118,7 +119,8 @@ struct TerrainProperties {
       fractalLacunarity(fractalLacunarity),
       fractalGain(fractalGain),
       stepSize(stepSize),
-      seed(seed) {
+      seed(seed),
+      heightOffset(heightOffset){
   };
 
   double frequency = 0.1;
@@ -128,6 +130,7 @@ struct TerrainProperties {
   double fractalLacunarity = 2.0;
   double fractalGain = 0.5;
   double stepSize = 0;
+  double heightOffset = 0;
 
   size_t fractalOctaves = 5;
   size_t xSamples = 100;
@@ -186,6 +189,10 @@ class TerrainGenerator {
         }
         height_[y * terrainProperties_.xSamples + x] = e;
       }
+
+    for (int y = 0; y < terrainProperties_.ySamples; y++)
+      for (int x = 0; x < terrainProperties_.xSamples; x++)
+        height_[y * terrainProperties_.xSamples + x] += terrainProperties_.heightOffset;
 
     return height_;
   }

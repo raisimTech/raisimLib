@@ -46,10 +46,9 @@ int main(int argc, char* argv[]) {
   /// launch raisim server
   raisim::RaisimServer server(&world);
 
-
   /// this method should be called before server launch
   auto scans = server.addInstancedVisuals("scan points",
-                                          raisim::InstancedVisuals::VisualBox,
+                                          raisim::Shape::Box,
                                           {0.05, 0.05, 0.05},
                                           {1,0,0,1},
                                           {0,1,0,1});
@@ -63,7 +62,7 @@ int main(int argc, char* argv[]) {
   Eigen::Vector3d direction;
 
   for(int time=0; time<1000000; time++) {
-    raisim::MSLEEP(1.0);
+    raisim::MSLEEP(1);
     server.integrateWorldThreadSafe();
     raisim::Vec<3> lidarPos; raisim::Mat<3,3> lidarOri;
     robot->getFramePosition("imu_joint", lidarPos);

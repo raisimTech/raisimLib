@@ -21,6 +21,7 @@ int main(int argc, char* argv[]) {
   auto movingGround = world.addBox(10, 10, 1, 10, "gnd");
   movingGround->setBodyType(raisim::BodyType::KINEMATIC); // kinematic objects have infinite mass
   movingGround->setPosition(0,0,-0.5);
+  movingGround->setAppearance("red");
   auto anymalB = world.addArticulatedSystem(binaryPath.getDirectory() + "\\rsc\\anymal\\urdf\\anymal.urdf");
 
   /// anymalC joint PD controller

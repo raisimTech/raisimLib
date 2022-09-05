@@ -1,15 +1,25 @@
 error logs 
-System.Exception: RsUnityRemote: InitializeObjects
-RsUnityRemote: Instanced Visuals are not supported in RaisimUnity. Use RaisimUnreal
-  at raisimUnity.RsUnityRemote.Update () [0x00264] in <2265bd80598a49d7ae7e24a6682a0295>:0 
-  at raisimUnity.RsuException..ctor (System.Exception ex, System.String message) [0x00037] in <2265bd80598a49d7ae7e24a6682a0295>:0 
-  at raisimUnity.RsUnityRemote.Update () [0x00361] in <2265bd80598a49d7ae7e24a6682a0295>:0 
- 
+System.AggregateException: One or more errors occurred. ---> System.IO.IOException: Unable to read data from the transport connection: Connection reset by peer. ---> System.Net.Sockets.SocketException: Connection reset by peer
+  at System.Net.Sockets.Socket.EndReceive (System.IAsyncResult asyncResult) [0x00012] in <6f1d457dbe7848f19617dea9acc2268a>:0 
+  at System.Net.Sockets.NetworkStream.EndRead (System.IAsyncResult asyncResult) [0x00057] in <6f1d457dbe7848f19617dea9acc2268a>:0 
+   --- End of inner exception stack trace ---
+  at System.Net.Sockets.NetworkStream.EndRead (System.IAsyncResult asyncResult) [0x0009b] in <6f1d457dbe7848f19617dea9acc2268a>:0 
+  at System.IO.Stream+<>c.<BeginEndReadAsync>b__43_1 (System.IO.Stream stream, System.IAsyncResult asyncResult) [0x00000] in <a1e9f114a6e64f4eacb529fc802ec93d>:0 
+  at System.Threading.Tasks.TaskFactory`1+FromAsyncTrimPromise`1[TResult,TInstance].Complete (TInstance thisRef, System.Func`3[T1,T2,TResult] endMethod, System.IAsyncResult asyncResult, System.Boolean requiresSynchronization) [0x00000] in <a1e9f114a6e64f4eacb529fc802ec93d>:0 
+   --- End of inner exception stack trace ---
+  at System.Threading.Tasks.Task.ThrowIfExceptional (System.Boolean includeTaskCanceledExceptions) [0x00011] in <a1e9f114a6e64f4eacb529fc802ec93d>:0 
+  at System.Threading.Tasks.Task`1[TResult].GetResultCore (System.Boolean waitCompletionNotification) [0x0002b] in <a1e9f114a6e64f4eacb529fc802ec93d>:0 
+  at System.Threading.Tasks.Task`1[TResult].get_Result () [0x0000f] in <a1e9f114a6e64f4eacb529fc802ec93d>:0 
+  at raisimUnity.TcpHelper.ReadData () [0x00044] in <e8a3adb12b1f4d9396029edc9689b380>:0 
+  at raisimUnity.RsUnityRemote.ReadAndCheckServer (raisimUnity.ClientMessageType type) [0x00094] in <e8a3adb12b1f4d9396029edc9689b380>:0 
+  at raisimUnity.RsUnityRemote.Update () [0x0002a] in <e8a3adb12b1f4d9396029edc9689b380>:0 
+---> (Inner Exception #0) System.IO.IOException: Unable to read data from the transport connection: Connection reset by peer. ---> System.Net.Sockets.SocketException: Connection reset by peer
+  at System.Net.Sockets.Socket.EndReceive (System.IAsyncResult asyncResult) [0x00012] in <6f1d457dbe7848f19617dea9acc2268a>:0 
+  at System.Net.Sockets.NetworkStream.EndRead (System.IAsyncResult asyncResult) [0x00057] in <6f1d457dbe7848f19617dea9acc2268a>:0 
+   --- End of inner exception stack trace ---
+  at System.Net.Sockets.NetworkStream.EndRead (System.IAsyncResult asyncResult) [0x0009b] in <6f1d457dbe7848f19617dea9acc2268a>:0 
+  at System.IO.Stream+<>c.<BeginEndReadAsync>b__43_1 (System.IO.Stream stream, System.IAsyncResult asyncResult) [0x00000] in <a1e9f114a6e64f4eacb529fc802ec93d>:0 
+  at System.Threading.Tasks.TaskFactory`1+FromAsyncTrimPromise`1[TResult,TInstance].Complete (TInstance thisRef, System.Func`3[T1,T2,TResult] endMethod, System.IAsyncResult asyncResult, System.Boolean requiresSynchronization) [0x00000] in <a1e9f114a6e64f4eacb529fc802ec93d>:0 <---
 
-System.Exception: RsUnityRemote: InitializeObjects
-RsUnityRemote: Instanced Visuals are not supported in RaisimUnity. Use RaisimUnreal
-  at raisimUnity.RsUnityRemote.Update () [0x00264] in <2265bd80598a49d7ae7e24a6682a0295>:0 
-  at raisimUnity.RsuException..ctor (System.Exception ex, System.String message) [0x00037] in <2265bd80598a49d7ae7e24a6682a0295>:0 
-  at raisimUnity.RsUnityRemote.Update () [0x00361] in <2265bd80598a49d7ae7e24a6682a0295>:0 
  
 

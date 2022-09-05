@@ -31,10 +31,13 @@ int main(int argc, char* argv[]) {
   terrainProperties.fractalGain = 0.25;
 
   auto hm = world.addHeightMap(0.0, 0.0, terrainProperties);
+  hm->setAppearance("soil1");
   auto cube = world.addBox(1,1,1,1);
   cube->setPosition(3,0,3);
+  cube->setAppearance("blue");
   auto cylinder = world.addCylinder(1, 1, 1);
   cylinder->setPosition(3,3,3);
+  cylinder->setAppearance("yellow");
   auto capsule = world.addCapsule(1, 1, 1);
   capsule->setPosition(-3,3,3);
   auto sphere = world.addSphere(1, 1);
