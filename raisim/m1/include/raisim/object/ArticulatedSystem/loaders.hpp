@@ -54,7 +54,7 @@ struct UrdfBody {
   Vec<3> origin;
   Mat<3, 3> rot;
   Vec<3> scale;
-  std::vector<double> param;
+  Vec<4> param;
   raisim::Vec<4> color;
   std::string mat;
   std::string collision_mat;
@@ -187,12 +187,12 @@ class LoadFromMjcf {
                               const RaiSimTinyXmlWrapper &node,
                               Shape::Type type,
                               const std::string &typeName,
-                              std::vector<double> &param,
+                              Vec<4> &param,
                               Mat<3, 3> &rot,
                               Vec<3> &pos,
                               const MjcfCompilerSetting& setting);
 
-  static void getMjcfSizeParam(const RaiSimTinyXmlWrapper &g, Shape::Type type, std::vector<double> &param);
+  static void getMjcfSizeParam(const RaiSimTinyXmlWrapper &g, Shape::Type type, Vec<4> &param);
   static void getMjcfPos(const RaiSimTinyXmlWrapper &g, Vec<3> &pos);
   static void posFromFromTo(const RaiSimTinyXmlWrapper &g, Vec<3> &pos);
   static void getMjcfOrientation(const RaiSimTinyXmlWrapper &g, Mat<3, 3> &rot, const std::string& eulerseq, const std::string& anglerep);
