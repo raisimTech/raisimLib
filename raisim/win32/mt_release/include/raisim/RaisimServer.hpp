@@ -656,7 +656,7 @@ class RaisimServer final {
   void focusOn(raisim::Object *obj) {
     RSFATAL_IF(obj == nullptr, "object does not exist.")
     serverRequest_.push_back(ServerRequestType::FOCUS_ON_SPECIFIC_OBJECT);
-    focusedObjectVisTag_ = obj->visualTag;
+    toBeFocused_ = obj;
   }
 
   /**
@@ -755,6 +755,8 @@ class RaisimServer final {
     data_ = set(&send_buffer[0] + sizeof(int), version_);
 
     if (clientVersion == version_) {
+      char* toBeFocusedPtr = nullptr;
+
       rData_ = get(rData_, &type, &objectId_);
       data_ = set(data_, state_);
 
@@ -778,7 +780,8 @@ class RaisimServer final {
             break;
 
           case ServerRequestType::FOCUS_ON_SPECIFIC_OBJECT:
-            data_ = set(data_, focusedObjectVisTag_);
+            toBeFocusedPtr = data_;
+            data_ = set(data_, toBeFocused_->visualTag);
             break;
 
           case ServerRequestType::SET_SCREEN_SIZE:
@@ -791,6 +794,10 @@ class RaisimServer final {
       lockVisualizationServerMutex();
 
       if (state_ != Status::STATUS_HIBERNATING) update();
+
+      /// reassign the vis tag because it was reset in the update
+      if (toBeFocusedPtr)
+        set(toBeFocusedPtr, toBeFocused_->visualTag);
 
       unlockVisualizationServerMutex();
     } else {
@@ -1392,7 +1399,7 @@ class RaisimServer final {
   char tempBuffer[MAXIMUM_PACKET_SIZE];
   int state_ = STATUS_RENDERING;
   std::vector<ServerRequestType> serverRequest_;
-  uint32_t focusedObjectVisTag_;
+  Object* toBeFocused_;
   std::string videoName_;
   uint32_t objectId_;
   std::atomic<bool> terminateRequested_ = {false};
@@ -1426,13 +1433,13 @@ class RaisimServer final {
   std::map<std::string, Chart *> charts_;
 
  public:
-   /**
-    * Only works with RaisimUnreal. Please read the "atlas" example to see how it works.
-    * @param[in] title title of the chart
-    * @param[in] names name of the data curves to be plotted
-    * @param[in] xAxis title of the x-axis
-    * @param[in] yAxis title of the y-axis
-    * @return pointer to the created Time Series Graph */
+  /**
+   * Only works with RaisimUnreal. Please read the "atlas" example to see how it works.
+   * @param[in] title title of the chart
+   * @param[in] names name of the data curves to be plotted
+   * @param[in] xAxis title of the x-axis
+   * @param[in] yAxis title of the y-axis
+   * @return pointer to the created Time Series Graph */
   inline TimeSeriesGraph *addTimeSeriesGraph(std::string title,
                                              std::vector<std::string> names,
                                              std::string xAxis,
