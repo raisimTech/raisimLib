@@ -10,9 +10,6 @@
 int main(int argc, char* argv[]) {
   auto binaryPath = raisim::Path::setFromArgv(argv[0]);
   raisim::World::setActivationKey(binaryPath.getDirectory() + "\\rsc\\activation.raisim");
-#if WIN32
-    timeBeginPeriod(1); // for sleep_for function. windows default clock speed is 1/64 second. This sets it to 1ms.
-#endif
 
   /// create raisim world
   raisim::World world;
@@ -53,7 +50,7 @@ int main(int argc, char* argv[]) {
   server.launchServer();
 
   while (1) {
-    std::this_thread::sleep_for(std::chrono::microseconds(500));
+    raisim::USLEEP(1000);
     atlas[0]->setExternalForce(0, {300,-300,30});
     atlas[0]->setExternalTorque(0, {0,40,0});
     raisim::VecDyn vec(7);

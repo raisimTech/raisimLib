@@ -52,6 +52,7 @@ create_executable(speed_test src/benchmark/speed_test.cpp)
 
 # server examples
 create_executable(primitives src/server/primitives.cpp)
+create_executable(primitives2 src/server/primitives2.cpp)
 create_executable(meshes src/server/meshes.cpp)
 create_executable(laikago src/server/laikago.cpp)
 create_executable(balls src/server/balls.cpp)

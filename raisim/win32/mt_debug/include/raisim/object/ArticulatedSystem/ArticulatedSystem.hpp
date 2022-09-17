@@ -815,7 +815,7 @@ class ArticulatedSystem : public Object {
    * @param[in] bodyIdx the body index. it can be retrieved by getBodyIdx()
    * @param[in] posInBodyFrame the position of the point of interest expressed in the body frame
    * @param[out] pointVel the velocity of the point expressed in the world frame */
-  void getVelocity(size_t bodyIdx, const Vec<3> &posInBodyFrame, Vec<3> &pointVel) const;
+  void getVelocity(size_t bodyIdx, const Vec<3> &posInBodyFrame, Vec<3> &pointVel) const final;
 
   /**
    * @param[in] bodyIdx the body index. it can be retrieved by getBodyIdx()
@@ -1277,10 +1277,26 @@ class ArticulatedSystem : public Object {
    * set the base position using an eigen vector
    * @param[in] pos position of the base */
   void setBasePos(const Vec<3> &pos);
+
   /**
-   * set the base orientation using an eigen vector
+   * set the base orientation using a raisim rotation matrix (i.e., Mat<3,3>)
    * @param[in] rot orientation of the base */
   void setBaseOrientation(const Mat<3, 3> &rot);
+
+  /**
+   * set the base orientation using a raisim quaternion (i.e., Vec<4>)
+   * @param[in] rot orientation of the base */
+    void setBaseOrientation(const Vec<4> &quat);
+
+  /**
+   * set the base position using an eigen vector
+   * @param[in] vel the linear velocity of the base */
+  void setBaseVelocity(const Vec<3> &vel);
+
+  /**
+   * set the base position using an eigen vector
+   * @param[in] vel the angular velocity of the base */
+  void setBaseAngularVelocity(const Vec<3> &vel);
 
   /**
    * set limits in actuation force. It can be also specified in the URDF file

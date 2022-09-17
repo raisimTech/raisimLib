@@ -349,6 +349,23 @@ class World {
                 CollisionGroup collisionMask = CollisionGroup(-1));
 
   /**
+   * create mesh collision body. only the obj format is supported. Inertia and COM are estimated from the mesh geometry
+   * assuming that it is a box.
+   * @param meshFileInObjFormat obj file of the mesh
+   * @param mass mass
+   * @param scale rescale the mesh
+   * @param material material of the mesh (which defines the contact dynamics)
+   * @param collisionGroup read "Contact and Collision/ Collision Group and Mask"
+   * @param collisionMask read "Contact and Collision/ Collision Group and Mask"
+   * @return pointer to the created wire  */
+    Mesh *addMesh(const std::string &meshFileInObjFormat,
+                  double mass,
+                  double scale = 1,
+                  const std::string &material = "",
+                  CollisionGroup collisionGroup = 1,
+                  CollisionGroup collisionMask = CollisionGroup(-1));
+
+  /**
    * create mesh collision body. only the obj format is supported
    * @param meshToClone mesh to copy
    * @param material material of the mesh (which defines the contact dynamics)
