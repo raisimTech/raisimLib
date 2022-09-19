@@ -67,7 +67,7 @@ static inline void MSLEEP(int sleepMs)
 {
 #ifdef _WIN32
   auto start = NowInUs();
-  while ((NowInUs() - start) > sleepMs * 1000) {
+  while ((NowInUs() - start) < sleepMs * 1000) {
   }
 #else
   usleep(sleepMs * 1000);   // usleep takes sleep time in us (1 millionth of a second)
@@ -79,7 +79,7 @@ static inline void USLEEP(int sleepMs)
 {
 #ifdef _WIN32
   auto start = NowInUs();
-  while ((NowInUs() - start) > sleepMs) {
+  while ((NowInUs() - start) < sleepMs) {
   }
 #else
   usleep(sleepMs);   // usleep takes sleep time in us (1 millionth of a second)

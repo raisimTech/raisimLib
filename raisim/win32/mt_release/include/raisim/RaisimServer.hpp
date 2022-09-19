@@ -92,7 +92,8 @@ class RaisimServer final {
     CR_SPAWN_AS,
     CR_ATTACH_WIRE,
     CR_DRAG_OBJECT,
-    CR_REMOVE_OBJECT
+    CR_REMOVE_OBJECT,
+    CR_SAVE_THE_WORLD
   };
 
   enum Status : int {
@@ -923,7 +924,14 @@ class RaisimServer final {
               as->setBaseOrientation(quat);
             }
           }
+            break;
 
+          case ClientRequestType::CR_SAVE_THE_WORLD: {
+            std::string path;
+            rData_ = get(rData_, &path);
+            world_->exportToXml(path);
+          }
+            break;
           default:
             break;
         }

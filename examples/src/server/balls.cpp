@@ -76,13 +76,7 @@ int main(int argc, char* argv[]) {
       j++;
     }
     server.lockVisualizationServerMutex();
-
-    if (j == numBalls) {
-      world.removeObject(anymals[0]);
-      j++;
-    }
     world.integrate();
-
     server.unlockVisualizationServerMutex();
   }
 

@@ -49,7 +49,7 @@
 namespace raisim {
 
 /**
- * @param group Collision group ID
+ * @param[in] group Collision group ID
  * @return Collision group. Can also be used as a collision mask.
  */
 static CollisionGroup COLLISION(unsigned int group) { return CollisionGroup(1) << group; }
@@ -78,7 +78,7 @@ class World {
 
   /**
    * export the world to an xml config file, which can be loaded using a constructor
-   * @param activationKey path to the license file */
+   * @param[in] activationKey path to the license file */
   static void setActivationKey(const std::string& activationKey) { activationKey_ = activationKey; }
 
   /*!
@@ -92,16 +92,27 @@ class World {
 
   /**
    * export the world to an xml config file, which can be loaded using a constructor
-   * @param dir directory to save the xml file
-   * @param fileName file name */
+   * @param[in] dir directory to save the xml file
+   * @param[in] fileName file name */
   void exportToXml(const std::string& dir, const std::string &fileName);
+
+  /**
+   * export the world to an xml config file, which can be loaded using a constructor
+   * @param[in] path path to save the xml file */
+  void exportToXml(const std::string& pathIn) {
+    Path path(pathIn);
+    std::string dir, file;
+    file = path.getFileName();
+    dir = path.getDirectory();
+    exportToXml(dir, file);
+  }
 
   World(const World &world) = delete;
 
   ~World();
 
   /** set the time step
-   * @param dt the time step */
+   * @param[in] dt the time step */
   void setTimeStep(double dt) {
     timeStep_ = dt;
     solver_.setTimestep(dt);
@@ -110,14 +121,14 @@ class World {
 
   /**
    * @return the time step */
-  double getTimeStep() const { return timeStep_; }
+  [[nodiscard]] double getTimeStep() const { return timeStep_; }
 
   /**
-   * @param radius radius
-   * @param mass mass
-   * @param material material of the height map (which defines the contact dynamics)
-   * @param collisionGroup read "Contact and Collision/ Collision Group and Mask"
-   * @param collisionMask read "Contact and Collision/ Collision Group and Mask".
+   * @param[in] radius radius
+   * @param[in] mass mass
+   * @param[in] material material of the height map (which defines the contact dynamics)
+   * @param[in] collisionGroup read "Contact and Collision/ Collision Group and Mask"
+   * @param[in] collisionMask read "Contact and Collision/ Collision Group and Mask".
    * @return pointer to the created box */
   Sphere *addSphere(double radius,
                     double mass,
@@ -126,13 +137,13 @@ class World {
                     CollisionGroup collisionMask = CollisionGroup(-1));
 
   /**
-   * @param xLength x dimension
-   * @param yLength y dimension
-   * @param zLength z dimension
-   * @param mass mass
-   * @param material material of the height map (which defines the contact dynamics)
-   * @param collisionGroup read "Contact and Collision/ Collision Group and Mask"
-   * @param collisionMask read "Contact and Collision/ Collision Group and Mask".
+   * @param[in] xLength x dimension
+   * @param[in] yLength y dimension
+   * @param[in] zLength z dimension
+   * @param[in] mass mass
+   * @param[in] material material of the height map (which defines the contact dynamics)
+   * @param[in] collisionGroup read "Contact and Collision/ Collision Group and Mask"
+   * @param[in] collisionMask read "Contact and Collision/ Collision Group and Mask".
    * @return pointer to the created box */
   Box *addBox(double xLength,
               double yLength,
@@ -143,12 +154,12 @@ class World {
               CollisionGroup collisionMask = CollisionGroup(-1));
 
   /**
-   * @param radius radius
-   * @param height center-to-center distance
-   * @param mass mass
-   * @param material material of the height map (which defines the contact dynamics)
-   * @param collisionGroup read "Contact and Collision/ Collision Group and Mask"
-   * @param collisionMask read "Contact and Collision/ Collision Group and Mask".
+   * @param[in] radius radius
+   * @param[in] height center-to-center distance
+   * @param[in] mass mass
+   * @param[in] material material of the height map (which defines the contact dynamics)
+   * @param[in] collisionGroup read "Contact and Collision/ Collision Group and Mask"
+   * @param[in] collisionMask read "Contact and Collision/ Collision Group and Mask".
    * @return pointer to the created cylinder */
   Cylinder *addCylinder(double radius,
                         double height,
@@ -158,12 +169,12 @@ class World {
                         CollisionGroup collisionMask = CollisionGroup(-1));
 
   /**
-   * @param radius radius
-   * @param height center-to-center distance
-   * @param mass mass
-   * @param material material of the height map (which defines the contact dynamics)
-   * @param collisionGroup read "Contact and Collision/ Collision Group and Mask"
-   * @param collisionMask read "Contact and Collision/ Collision Group and Mask".
+   * @param[in] radius radius
+   * @param[in] height center-to-center distance
+   * @param[in] mass mass
+   * @param[in] material material of the height map (which defines the contact dynamics)
+   * @param[in] collisionGroup read "Contact and Collision/ Collision Group and Mask"
+   * @param[in] collisionMask read "Contact and Collision/ Collision Group and Mask".
    * @return pointer to the created capsule */
   Capsule *addCapsule(double radius,
                       double height,
@@ -173,25 +184,25 @@ class World {
                       CollisionGroup collisionMask = CollisionGroup(-1));
 
   /**
-   * @param zHeight height of the terrain
-   * @param material material of the height map (which defines the contact dynamics)
-   * @param collisionMask read "Contact and Collision/ Collision Group and Mask". Note that collision group of a static object is CollisionGroup(1) << 61ul
+   * @param[in] zHeight height of the terrain
+   * @param[in] material material of the height map (which defines the contact dynamics)
+   * @param[in] collisionMask read "Contact and Collision/ Collision Group and Mask". Note that collision group of a static object is CollisionGroup(1) << 61ul
    * @return pointer to the created ground */
   Ground *addGround(double zHeight = 0.0,
                     const std::string &material = "default",
                     CollisionGroup collisionMask = CollisionGroup(-1));
 
   /**
-   * @param xSamples how many points along x axis
-   * @param ySamples how many points along y axis
-   * @param xSize x width of the height map
-   * @param ySize y length of the height map
-   * @param centerX x coordinate of the center of the height map
-   * @param centerY y coordinate of the center of the height map
-   * @param height a vector of doubles representing heights. the size should be xSample X ySamples
-   * @param material material of the height map (which defines the contact dynamics)
-   * @param collisionGroup read "Contact and Collision/ Collision Group and Mask"
-   * @param collisionMask read "Contact and Collision/ Collision Group and Mask"
+   * @param[in] xSamples how many points along x axis
+   * @param[in] ySamples how many points along y axis
+   * @param[in] xSize x width of the height map
+   * @param[in] ySize y length of the height map
+   * @param[in] centerX x coordinate of the center of the height map
+   * @param[in] centerY y coordinate of the center of the height map
+   * @param[in] height a vector of doubles representing heights. the size should be xSample X ySamples
+   * @param[in] material material of the height map (which defines the contact dynamics)
+   * @param[in] collisionGroup read "Contact and Collision/ Collision Group and Mask"
+   * @param[in] collisionMask read "Contact and Collision/ Collision Group and Mask"
    * @return pointer to the created height map */
   HeightMap *addHeightMap(size_t xSamples,
                           size_t ySamples,
@@ -205,12 +216,12 @@ class World {
                           CollisionGroup collisionMask = CollisionGroup(-1));
 
   /**
-   * @param raisimHeightMapFileName the raisim text file which will be used to create the height map
-   * @param centerX x coordinate of the center of the height map
-   * @param centerY y coordinate of the center of the height map
-   * @param material material of the height map (which defines the contact dynamics)
-   * @param collisionGroup read "Contact and Collision/ Collision Group and Mask"
-   * @param collisionMask read "Contact and Collision/ Collision Group and Mask"
+   * @param[in] raisimHeightMapFileName the raisim text file which will be used to create the height map
+   * @param[in] centerX x coordinate of the center of the height map
+   * @param[in] centerY y coordinate of the center of the height map
+   * @param[in] material material of the height map (which defines the contact dynamics)
+   * @param[in] collisionGroup read "Contact and Collision/ Collision Group and Mask"
+   * @param[in] collisionMask read "Contact and Collision/ Collision Group and Mask"
    * @return pointer to the created height map */
   HeightMap *addHeightMap(const std::string &raisimHeightMapFileName,
                           double centerX,
@@ -220,16 +231,16 @@ class World {
                           CollisionGroup collisionMask = CollisionGroup(-1));
 
   /**
-   * @param pngFileName the png file which will be used to create the height map
-   * @param centerX x coordinate of the center of the height map
-   * @param centerY y coordinate of the center of the height map
-   * @param xSize x width of the height map
-   * @param ySize y length of the height map
-   * @param heightScale a png file (if 8-bit) has pixel values from 0 to 255. This parameter scales the pixel values to the actual height
-   * @param heightOffset height of the 0-value pixel
-   * @param material material of the height map (which defines the contact dynamics)
-   * @param collisionGroup read "Contact and Collision/ Collision Group and Mask"
-   * @param collisionMask read "Contact and Collision/ Collision Group and Mask"
+   * @param[in] pngFileName the png file which will be used to create the height map
+   * @param[in] centerX x coordinate of the center of the height map
+   * @param[in] centerY y coordinate of the center of the height map
+   * @param[in] xSize x width of the height map
+   * @param[in] ySize y length of the height map
+   * @param[in] heightScale a png file (if 8-bit) has pixel values from 0 to 255. This parameter scales the pixel values to the actual height
+   * @param[in] heightOffset height of the 0-value pixel
+   * @param[in] material material of the height map (which defines the contact dynamics)
+   * @param[in] collisionGroup read "Contact and Collision/ Collision Group and Mask"
+   * @param[in] collisionMask read "Contact and Collision/ Collision Group and Mask"
    * @return pointer to the created height map */
   HeightMap *addHeightMap(const std::string &pngFileName,
                           double centerX,
@@ -243,12 +254,12 @@ class World {
                           CollisionGroup collisionMask = CollisionGroup(-1));
 
  /**
-  * @param centerX x coordinate of the center of the height map
-  * @param centerY y coordinate of the center of the height map
-  * @param terrainProperties perlin noise parameters which will be used to create the height map
-  * @param material material of the height map (which defines the contact dynamics)
-  * @param collisionGroup read "Contact and Collision/ Collision Group and Mask"
-  * @param collisionMask read "Contact and Collision/ Collision Group and Mask"
+  * @param[in] centerX x coordinate of the center of the height map
+  * @param[in] centerY y coordinate of the center of the height map
+  * @param[in] terrainProperties perlin noise parameters which will be used to create the height map
+  * @param[in] material material of the height map (which defines the contact dynamics)
+  * @param[in] collisionGroup read "Contact and Collision/ Collision Group and Mask"
+  * @param[in] collisionMask read "Contact and Collision/ Collision Group and Mask"
   * @return pointer to the created height map */
   HeightMap *addHeightMap(double centerX,
                           double centerY,
@@ -258,21 +269,21 @@ class World {
                           CollisionGroup collisionMask = CollisionGroup(-1));
 
   /**
-   * @param heightmapToBeCloned Another height map to be cloned
-   * @param collisionGroup read "Contact and Collision/ Collision Group and Mask"
-   * @param collisionMask read "Contact and Collision/ Collision Group and Mask"
+   * @param[in] heightmapToBeCloned Another height map to be cloned
+   * @param[in] collisionGroup read "Contact and Collision/ Collision Group and Mask"
+   * @param[in] collisionMask read "Contact and Collision/ Collision Group and Mask"
    * @return pointer to the created height map */
   HeightMap *addHeightMap(const HeightMap* heightmapToBeCloned,
                           CollisionGroup collisionGroup = RAISIM_STATIC_COLLISION_GROUP,
                           CollisionGroup collisionMask = CollisionGroup(-1));
 
   /**
-   * @param filePathOrURDFScript Path to urdf file or a URDF string. Depending on the contents of the string, RaiSim will interpret it as an xml string or a file path.
-   * @param resPath Path to the resource directory. Leave it empty ("") if it is the urdf file directory
-   * @param jointOrder this can be used to redefine the joint order. A child cannot precede its parent. Leave it empty ({}) to use the joint order defined in the URDF file.
-   * @param collisionGroup read "Contact and Collision/ Collision Group and Mask"
-   * @param collisionMask read "Contact and Collision/ Collision Group and Mask"
-   * @param options Currently only support "doNotCollideWithParent"
+   * @param[in] filePathOrURDFScript Path to urdf file or a URDF string. Depending on the contents of the string, RaiSim will interpret it as an xml string or a file path.
+   * @param[in] resPath Path to the resource directory. Leave it empty ("") if it is the urdf file directory
+   * @param[in] jointOrder this can be used to redefine the joint order. A child cannot precede its parent. Leave it empty ({}) to use the joint order defined in the URDF file.
+   * @param[in] collisionGroup read "Contact and Collision/ Collision Group and Mask"
+   * @param[in] collisionMask read "Contact and Collision/ Collision Group and Mask"
+   * @param[in] options Currently only support "doNotCollideWithParent"
    * @return pointer to the articulated system */
   ArticulatedSystem *addArticulatedSystem(const std::string &filePathOrURDFScript,
                                           const std::string &resPath = "",
@@ -282,13 +293,13 @@ class World {
                                           ArticulatedSystemOption options = ArticulatedSystemOption());
 
   /**
-   * @param xmlFileTemplate xml template file.
-   * @param params parameters for the xml file.
-   * @param resPath Path to the resource directory. Leave it empty ("") if it is the urdf file directory
-   * @param jointOrder this can be used to redefine the joint order. A child cannot precede its parent. Leave it empty ({}) to use the joint order defined in the URDF file.
-   * @param collisionGroup read "Contact and Collision/ Collision Group and Mask"
-   * @param collisionMask read "Contact and Collision/ Collision Group and Mask"
-   * @param options Currently only support "doNotCollideWithParent"
+   * @param[in] xmlFileTemplate xml template file.
+   * @param[in] params parameters for the xml file.
+   * @param[in] resPath Path to the resource directory. Leave it empty ("") if it is the urdf file directory
+   * @param[in] jointOrder this can be used to redefine the joint order. A child cannot precede its parent. Leave it empty ({}) to use the joint order defined in the URDF file.
+   * @param[in] collisionGroup read "Contact and Collision/ Collision Group and Mask"
+   * @param[in] collisionMask read "Contact and Collision/ Collision Group and Mask"
+   * @param[in] options Currently only support "doNotCollideWithParent"
    * @return pointer to the articulated system */
   ArticulatedSystem *addArticulatedSystem(const std::string &xmlFileTemplate,
                                           const std::unordered_map<std::string, std::string>& params,
@@ -300,11 +311,11 @@ class World {
 
   /**
    * This method programmatically creates an articulated system without an URDF file.
-   * @param child an instance of Child class which has an articulated system structure.
-   * @param resPath Path to the resource directory. Leave it empty ("") if it is the urdf file directory
-   * @param collisionGroup read "Contact and Collision/ Collision Group and Mask"
-   * @param collisionMask read "Contact and Collision/ Collision Group and Mask"
-   * @param options Currently only support "doNotCollideWithParent"
+   * @param[in] child an instance of Child class which has an articulated system structure.
+   * @param[in] resPath Path to the resource directory. Leave it empty ("") if it is the urdf file directory
+   * @param[in] collisionGroup read "Contact and Collision/ Collision Group and Mask"
+   * @param[in] collisionMask read "Contact and Collision/ Collision Group and Mask"
+   * @param[in] options Currently only support "doNotCollideWithParent"
    * @return pointer to the articulated system */
   ArticulatedSystem *addArticulatedSystem(const Child& child,
                                           const std::string &resPath = "",
@@ -314,12 +325,12 @@ class World {
 
   /**
    * Add a single body which is composed of multiple primitive collision shapes
-   * @param children a vector of CompoundObjectChild which contains each primitive shape's position, orientation, material and shape parameters
-   * @param mass mass of the composite body
-   * @param COM center of the composite body
-   * @param inertia inertia of the composite body
-   * @param collisionGroup read "Contact and Collision/ Collision Group and Mask"
-   * @param collisionMask read "Contact and Collision/ Collision Group and Mask"
+   * @param[in] children a vector of CompoundObjectChild which contains each primitive shape's position, orientation, material and shape parameters
+   * @param[in] mass mass of the composite body
+   * @param[in] COM center of the composite body
+   * @param[in] inertia inertia of the composite body
+   * @param[in] collisionGroup read "Contact and Collision/ Collision Group and Mask"
+   * @param[in] collisionMask read "Contact and Collision/ Collision Group and Mask"
    * @return pointer to the created compound object */
   Compound *addCompound(const std::vector<Compound::CompoundObjectChild> &children,
                         double mass,
@@ -330,14 +341,14 @@ class World {
 
   /**
    * create mesh collision body. only the obj format is supported
-   * @param meshFileInObjFormat obj file of the mesh
-   * @param mass mass
-   * @param inertia inertia
-   * @param COM the center of the mass
-   * @param scale rescale the mesh
-   * @param material material of the mesh (which defines the contact dynamics)
-   * @param collisionGroup read "Contact and Collision/ Collision Group and Mask"
-   * @param collisionMask read "Contact and Collision/ Collision Group and Mask"
+   * @param[in] meshFileInObjFormat obj file of the mesh
+   * @param[in] mass mass
+   * @param[in] inertia inertia
+   * @param[in] COM the center of the mass
+   * @param[in] scale rescale the mesh
+   * @param[in] material material of the mesh (which defines the contact dynamics)
+   * @param[in] collisionGroup read "Contact and Collision/ Collision Group and Mask"
+   * @param[in] collisionMask read "Contact and Collision/ Collision Group and Mask"
    * @return pointer to the created wire  */
   Mesh *addMesh(const std::string &meshFileInObjFormat,
                 double mass,
@@ -351,12 +362,12 @@ class World {
   /**
    * create mesh collision body. only the obj format is supported. Inertia and COM are estimated from the mesh geometry
    * assuming that it is a box.
-   * @param meshFileInObjFormat obj file of the mesh
-   * @param mass mass
-   * @param scale rescale the mesh
-   * @param material material of the mesh (which defines the contact dynamics)
-   * @param collisionGroup read "Contact and Collision/ Collision Group and Mask"
-   * @param collisionMask read "Contact and Collision/ Collision Group and Mask"
+   * @param[in] meshFileInObjFormat obj file of the mesh
+   * @param[in] mass mass
+   * @param[in] scale rescale the mesh
+   * @param[in] material material of the mesh (which defines the contact dynamics)
+   * @param[in] collisionGroup read "Contact and Collision/ Collision Group and Mask"
+   * @param[in] collisionMask read "Contact and Collision/ Collision Group and Mask"
    * @return pointer to the created wire  */
     Mesh *addMesh(const std::string &meshFileInObjFormat,
                   double mass,
@@ -367,10 +378,10 @@ class World {
 
   /**
    * create mesh collision body. only the obj format is supported
-   * @param meshToClone mesh to copy
-   * @param material material of the mesh (which defines the contact dynamics)
-   * @param collisionGroup read "Contact and Collision/ Collision Group and Mask"
-   * @param collisionMask read "Contact and Collision/ Collision Group and Mask"
+   * @param[in] meshToClone mesh to copy
+   * @param[in] material material of the mesh (which defines the contact dynamics)
+   * @param[in] collisionGroup read "Contact and Collision/ Collision Group and Mask"
+   * @param[in] collisionMask read "Contact and Collision/ Collision Group and Mask"
    * @return pointer to the created wire  */
   Mesh *addMesh(const Mesh* meshToClone,
                 const std::string &material = "",
@@ -379,13 +390,13 @@ class World {
 
   /**
    * Stiff unilateral constraint. It cannot push. It can only pull.
-   * @param obj1 the first object the wire is attached to
-   * @param localIdx1 the body index (0 for a SingleBodyObject) for the first object
-   * @param pos1_b location of the cable attachment on the first object
-   * @param obj2 the second object the wire is attached to
-   * @param localIdx2 the body index (0 for a SingleBodyObject) for the second object
-   * @param pos2_b location of the cable attachment on the second object
-   * @param length length of the wire
+   * @param[in] obj1 the first object the wire is attached to
+   * @param[in] localIdx1 the body index (0 for a SingleBodyObject) for the first object
+   * @param[in] pos1_b location of the cable attachment on the first object
+   * @param[in] obj2 the second object the wire is attached to
+   * @param[in] localIdx2 the body index (0 for a SingleBodyObject) for the second object
+   * @param[in] pos2_b location of the cable attachment on the second object
+   * @param[in] length length of the wire
    * @return pointer to the created wire  */
   StiffLengthConstraint *addStiffWire(Object *obj1,
                                       size_t localIdx1,
@@ -397,14 +408,14 @@ class World {
 
   /**
    * soft unilateral constraint. It cannot push. It can only pull.
-   * @param obj1 the first object the wire is attached to
-   * @param localIdx1 the body index (0 for a SingleBodyObject) for the first object
-   * @param pos1_b location of the cable attachment on the first object
-   * @param obj2 the second object the wire is attached to
-   * @param localIdx2 the body index (0 for a SingleBodyObject) for the second object
-   * @param pos2_b location of the cable attachment on the second object
-   * @param length length of the wire
-   * @param stiffness stiffness of the wire
+   * @param[in] obj1 the first object the wire is attached to
+   * @param[in] localIdx1 the body index (0 for a SingleBodyObject) for the first object
+   * @param[in] pos1_b location of the cable attachment on the first object
+   * @param[in] obj2 the second object the wire is attached to
+   * @param[in] localIdx2 the body index (0 for a SingleBodyObject) for the second object
+   * @param[in] pos2_b location of the cable attachment on the second object
+   * @param[in] length length of the wire
+   * @param[in] stiffness stiffness of the wire
    * @return pointer to the created wire  */
   CompliantLengthConstraint *addCompliantWire(Object *obj1,
                                               int localIdx1,
@@ -417,13 +428,13 @@ class World {
 
   /**
    * Custom wire that applies user-set tension between two points.
-   * @param obj1 the first object the wire is attached to
-   * @param localIdx1 the body index (0 for a SingleBodyObject) for the first object
-   * @param pos1_b location of the cable attachment on the first object
-   * @param obj2 the second object the wire is attached to
-   * @param localIdx2 the body index (0 for a SingleBodyObject) for the second object
-   * @param pos2_b location of the cable attachment on the second object
-   * @param length length of the wire. You can use this to compute how much it stretched from a nominal length. It might not be necessary for some wire types.
+   * @param[in] obj1 the first object the wire is attached to
+   * @param[in] localIdx1 the body index (0 for a SingleBodyObject) for the first object
+   * @param[in] pos1_b location of the cable attachment on the first object
+   * @param[in] obj2 the second object the wire is attached to
+   * @param[in] localIdx2 the body index (0 for a SingleBodyObject) for the second object
+   * @param[in] pos2_b location of the cable attachment on the second object
+   * @param[in] length length of the wire. You can use this to compute how much it stretched from a nominal length. It might not be necessary for some wire types.
    * @return pointer to the created wire  */
   CustomLengthConstraint *addCustomWire(Object *obj1,
                                         int localIdx1,
@@ -455,7 +466,7 @@ class World {
 
   /**
    * @returns the configuration number. this number is updated every time an object is added or removed */
-  unsigned long getConfigurationNumber() { return objectConfiguration_; }
+  [[nodiscard]] unsigned long getConfigurationNumber() { return objectConfiguration_; }
 
   /**
    * Returns the internal reference of the ray collision list
@@ -479,12 +490,12 @@ class World {
 
   /**
    * removes an object
-   * @param obj object to be removed */
+   * @param[in] obj object to be removed */
   void removeObject(Object *obj);
 
   /**
    * removes a wire (i.e., LengthConstraint)
-   * @param wire the wire to be removed */
+   * @param[in] wire the wire to be removed */
   void removeObject(LengthConstraint *wire);
 
   /**
@@ -512,8 +523,12 @@ class World {
    *    1) calls "preContactSolverUpdate2()" of each body
    *    2) run collision solver
    *    3) calls "integrate" method of each object */
-  const contact::ContactProblems *getContactProblem() const { return &contactProblems_; }
+  [[nodiscard]] const contact::ContactProblems *getContactProblem() const { return &contactProblems_; }
 
+  /**
+   * Set gravity
+   * @param[in] gravity gravitational acceleration of the world
+   */
   void setGravity(const Vec<3> &gravity);
 
   /**
@@ -523,11 +538,11 @@ class World {
 
   /**
    * Add a new material pair property. In RaiSim, material property is defined by the pair.
-   * @param mat1 name of the first material (the order of mat1 and mat2 is not important)
-   * @param mat2 name of the first material
-   * @param friction the coefficient of friction
-   * @param restitution the coefficient of restitution
-   * @param resThreshold the minimum impact velocity to make the object bounce */
+   * @param[in] mat1 name of the first material (the order of mat1 and mat2 is not important)
+   * @param[in] mat2 name of the first material
+   * @param[in] friction the coefficient of friction
+   * @param[in] restitution the coefficient of restitution
+   * @param[in] resThreshold the minimum impact velocity to make the object bounce */
   void setMaterialPairProp(const std::string &mat1,
                            const std::string &mat2,
                            double friction,
@@ -536,13 +551,13 @@ class World {
 
   /**
    * Add a new material pair property. In RaiSim, material property is defined by the pair.
-   * @param mat1 name of the first material (the order of mat1 and mat2 is not important)
-   * @param mat2 name of the first material
-   * @param friction the dynamic coefficient of friction
-   * @param restitution the coefficient of restitution
-   * @param resThreshold the minimum impact velocity to make the object bounce
-   * @param staticFriction the static coefficient of friction
-   * @param staticFrictionThresholdVelocity if the relative velocity of two points is bigger than this value, then the dynamic coefficient of friction is applied. Otherwise, the coefficient of friction is interpolated between the static and dynamic one proportional to the relative velocity.*/
+   * @param[in] mat1 name of the first material (the order of mat1 and mat2 is not important)
+   * @param[in] mat2 name of the first material
+   * @param[in] friction the dynamic coefficient of friction
+   * @param[in] restitution the coefficient of restitution
+   * @param[in] resThreshold the minimum impact velocity to make the object bounce
+   * @param[in] staticFriction the static coefficient of friction
+   * @param[in] staticFrictionThresholdVelocity if the relative velocity of two points is bigger than this value, then the dynamic coefficient of friction is applied. Otherwise, the coefficient of friction is interpolated between the static and dynamic one proportional to the relative velocity.*/
   void setMaterialPairProp(const std::string &mat1,
                            const std::string &mat2,
                            double friction,
@@ -553,20 +568,20 @@ class World {
 
   /**
    * this default material property is used if a material pair property is not defined for the specific collision
-   * @param friction the coefficient of friction
-   * @param restitution the coefficient of restitution
-   * @param resThreshold the minimum impact velocity to make the object bounce */
+   * @param[in] friction the coefficient of friction
+   * @param[in] restitution the coefficient of restitution
+   * @param[in] resThreshold the minimum impact velocity to make the object bounce */
   void setDefaultMaterial(double friction,
                           double restitution,
                           double resThreshold);
 
   /**
    * this default material property is used if a material pair property is not defined for the specific collision
-   * @param friction the coefficient of friction
-   * @param restitution the coefficient of restitution
-   * @param resThreshold the minimum impact velocity to make the object bounce
-   * @param staticFriction the static coefficient of friction
-   * @param staticFrictionThresholdVelocity if the relative velocity of two points is bigger than this value, then the dynamic coefficient of friction is applied. Otherwise, the coefficient of friction is interpolated between the static and dynamic one proportional to the relative velocity.*/
+   * @param[in] friction the coefficient of friction
+   * @param[in] restitution the coefficient of restitution
+   * @param[in] resThreshold the minimum impact velocity to make the object bounce
+   * @param[in] staticFriction the static coefficient of friction
+   * @param[in] staticFrictionThresholdVelocity if the relative velocity of two points is bigger than this value, then the dynamic coefficient of friction is applied. Otherwise, the coefficient of friction is interpolated between the static and dynamic one proportional to the relative velocity.*/
   void setDefaultMaterial(double friction,
                           double restitution,
                           double resThreshold,
@@ -575,51 +590,51 @@ class World {
 
   /**
    * @return gravitational acceleration of the world */
-  const Vec<3> &getGravity() const { return gravity_; }
+  [[nodiscard]] const Vec<3> &getGravity() const { return gravity_; }
 
   /**
    * Changes the Error Reduction Parameter. It often has very minimalistic impact on simulation
-   * @param erp spring constant between object. This constant is scaled by the apparent inertia so it has no well-defined physical meaning
-   * @param erp2 damping constant between object. This constant is scaled by the apparent inertia so it has no well-defined physical meaning */
+   * @param[in] erp spring constant between object. This constant is scaled by the apparent inertia so it has no well-defined physical meaning
+   * @param[in] erp2 damping constant between object. This constant is scaled by the apparent inertia so it has no well-defined physical meaning */
   void setERP(double erp, double erp2 = 0);
 
   /**
    * Changes the contact solver parameter.
    * For details, please check "Hwangbo, Jemin, Joonho Lee, and Marco Hutter. "Per-contact iteration method for solving contact dynamics." IEEE Robotics and Automation Letters 3.2 (2018): 895-902."
-   * @param alpha_init how aggressive the solver is initially
-   * @param alpha_min how aggressive the solver is after an infinite number of solver iterations
-   * @param alpha_decay how fast alpha converges from alpha_init to alpha_min
-   * @param threshold error threshold for termination
-   * @param maxIter the maximum number of iterations allowed */
+   * @param[in] alpha_init how aggressive the solver is initially
+   * @param[in] alpha_min how aggressive the solver is after an infinite number of solver iterations
+   * @param[in] alpha_decay how fast alpha converges from alpha_init to alpha_min
+   * @param[in] threshold error threshold for termination
+   * @param[in] maxIter the maximum number of iterations allowed */
   void setContactSolverParam(double alpha_init, double alpha_min, double alpha_decay, int maxIter, double threshold);
 
   /**
    * @return the total integrated time (which is updated at every integrate2() call)*/
-  double getWorldTime() const { return worldTime_; }
+  [[nodiscard]] double getWorldTime() const { return worldTime_; }
 
   /**
    * manually adjust the world time
-   * @param time the world time */
+   * @param[in] time the world time */
   void setWorldTime(double time) { worldTime_ = time; }
 
   /**
    * @return a non-const ref of the contact solver. contact::BisectionContactSolver::setOrder(bool) can be used to make the solver deterministic */
-  raisim::contact::BisectionContactSolver &getContactSolver() { return solver_; }
+  [[nodiscard]] raisim::contact::BisectionContactSolver &getContactSolver() { return solver_; }
 
   /**
    * @return a const ref of the contact solver. Internal states can be retrieved using this method */
-  const raisim::contact::BisectionContactSolver &getContactSolver() const { return solver_; }
+  [[nodiscard]] const raisim::contact::BisectionContactSolver &getContactSolver() const { return solver_; }
 
   /**
    * get the config file if the world was created using a xml config file
    * @return the path to the xml config file */
-  const std::string &getConfigFile() { return configFile_; };
+  [[nodiscard]] const std::string &getConfigFile() { return configFile_; };
 
   /**
    * get a vector wires in the world
    * @return a vector of unique_ptrs of wires
    */
-  std::vector<std::unique_ptr<LengthConstraint>>& getWires () { return wire_; }
+  [[nodiscard]] std::vector<std::unique_ptr<LengthConstraint>>& getWires () { return wire_; }
 
   /**
    * get the material pair properties. The order of materials does not matter.
@@ -627,7 +642,7 @@ class World {
    * @param[in] mat2 material name
    * @return material pair properties
    */
-  const MaterialPairProperties& getMaterialPairProperties (const std::string& mat1, const std::string& mat2) const {
+  [[nodiscard]] const MaterialPairProperties& getMaterialPairProperties (const std::string& mat1, const std::string& mat2) const {
     return mat_.getMaterialPairProp(mat1, mat2); }
 
 protected:
