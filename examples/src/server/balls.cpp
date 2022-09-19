@@ -67,7 +67,7 @@ int main(int argc, char* argv[]) {
 
   for (int i = 0;; i++) {
     raisim::MSLEEP(dt*1000.);
-
+    server.lockVisualizationServerMutex();
     if (i % interval == 0 && j < numBalls) {
       auto* ball = world.addSphere(0.1, 1.0);
       ball->setPosition(0, -2, 0.8);
@@ -75,7 +75,7 @@ int main(int argc, char* argv[]) {
       ball->setAppearance("red");
       j++;
     }
-    server.lockVisualizationServerMutex();
+    server.applyInteractionForce();
     world.integrate();
     server.unlockVisualizationServerMutex();
   }

@@ -47,7 +47,7 @@ int main(int argc, char* argv[]) {
   server.launchServer();
 
   for (int i=0; i<2000000; i++) {
-    raisim::MSLEEP(20);
+    raisim::MSLEEP(1);
     server.integrateWorldThreadSafe();
   }
 

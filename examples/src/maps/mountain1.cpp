@@ -47,7 +47,5 @@ int main(int argc, char* argv[]) {
     server.integrateWorldThreadSafe();
   }
 
-  std::cout<<"mass "<<aliengo->getMassMatrix()[0]<<std::endl;
-
   server.killServer();
 }

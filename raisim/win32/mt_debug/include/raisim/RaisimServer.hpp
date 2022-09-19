@@ -303,6 +303,14 @@ class RaisimServer final {
    * Integrate the world. */
   inline void integrateWorldThreadSafe() {
     std::lock_guard<std::mutex> guard(serverMutex_);
+    applyInteractionForce();
+    world_->integrate();
+  }
+
+  /**
+   * Apply interaction force, which is specified by the user in the visualizer (raisimUnreal).
+   * This is automatically called in raisim::RaisimServer::integrateWorldThreadSafe. */
+  inline void applyInteractionForce() {
     // interaction wire
     if (wireStiffness_ > 0 && hangingObjVisTag_ != 0) {
       Vec<3> normal, vel, force;
@@ -330,7 +338,6 @@ class RaisimServer final {
     } else {
       hangingObjVisTag_ = 0;
     }
-    world_->integrate();
   }
 
   /**
