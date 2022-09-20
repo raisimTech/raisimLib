@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
 
   server.launchServer();
   for (int k = 0; k < loopN; k++) {
-    world.integrate();
+    server.integrateWorldThreadSafe();
     raisim::MSLEEP(world.getTimeStep() * 1000);
   }
 

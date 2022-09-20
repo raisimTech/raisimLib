@@ -22,6 +22,6 @@ server.launchServer(8080)
 
 for i in range(500000):
     time.sleep(0.001)
-    world.integrate()
+    server.integrateWorldThreadSafe()
 
 server.killServer()

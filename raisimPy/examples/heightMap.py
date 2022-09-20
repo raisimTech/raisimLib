@@ -36,7 +36,7 @@ server = raisim.RaisimServer(world)
 server.launchServer(8080)
 
 for i in range(500000):
-    world.integrate()
+    server.integrateWorldThreadSafe()
     time.sleep(0.0005)
 
 server.killServer()
