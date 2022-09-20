@@ -80,6 +80,7 @@ class Object {
   virtual void getVelocity(size_t localIdx, Vec<3>& vel_w) const = 0;
   virtual void getOrientation(size_t localIdx, Mat<3,3>& rot) const = 0;
   virtual void getPosition(size_t localIdx, const Vec<3>& pos_b, Vec<3>& pos_w) const = 0;
+  virtual void getVelocity(size_t localIdx, const Vec<3>& pos_b, Vec<3>& vel_w) const = 0;
 
   /**
    * get the object body type.
