@@ -81,6 +81,21 @@ class RaisimServer final {
     SET_SCREEN_SIZE = 6
   };
 
+  enum class ClientRequestType : int {
+    CR_SPAWN_BOX = 0,
+    CR_SPAWN_SPHERE,
+    CR_SPAWN_CYLINDER,
+    CR_SPAWN_CAPSULE,
+    CR_SPAWN_HEIGHT_MAP,
+    CR_SPAWN_MESH,
+    CR_SPAWN_PLANE,
+    CR_SPAWN_AS,
+    CR_ATTACH_WIRE,
+    CR_DRAG_OBJECT,
+    CR_REMOVE_OBJECT,
+    CR_SAVE_THE_WORLD
+  };
+
   enum Status : int {
     STATUS_RENDERING = 0,
     STATUS_HIBERNATING = 1,
@@ -288,7 +303,41 @@ class RaisimServer final {
    * Integrate the world. */
   inline void integrateWorldThreadSafe() {
     std::lock_guard<std::mutex> guard(serverMutex_);
+    applyInteractionForce();
     world_->integrate();
+  }
+
+  /**
+   * Apply interaction force, which is specified by the user in the visualizer (raisimUnreal).
+   * This is automatically called in raisim::RaisimServer::integrateWorldThreadSafe. */
+  inline void applyInteractionForce() {
+    // interaction wire
+    if (wireStiffness_ > 0 && hangingObjVisTag_ != 0) {
+      Vec<3> normal, vel, force;
+      auto iter = std::find_if(world_->getObjList().begin(), world_->getObjList().end(),
+                               [&](const Object *o) { return o->visualTag == hangingObjVisTag_; });
+      if (iter == world_->getObjList().end()) {
+        hangingObjLocalId_ = -1;
+      } else {
+        interactingOb_ = *iter;
+        interactingOb_->getPosition(hangingObjLocalId_, hangingObjLocalPos_, hangingObjPos_);
+        interactingOb_->getVelocity(hangingObjLocalId_, hangingObjLocalPos_, vel);
+        vecsub(hangingObjTargetPos_, hangingObjPos_, normal);
+        double distance = normal.norm();
+        if (distance > 1e-8) {
+          normal *= 1. / distance;
+          double axisVel = vecDot(vel, normal);
+          force = wireStiffness_ * (distance - 0.5 * axisVel * world_->getTimeStep()) * normal * interactingOb_->getMass(hangingObjLocalId_);
+
+          if (std::find(world_->getObjList().begin(), world_->getObjList().end(), interactingOb_)
+              != world_->getObjList().end()) {
+            interactingOb_->setConstraintForce(hangingObjLocalId_, hangingObjLocalPos_, force);
+          }
+        }
+      }
+    } else {
+      hangingObjVisTag_ = 0;
+    }
   }
 
   /**
@@ -752,15 +801,152 @@ class RaisimServer final {
 
     int clientVersion;
     rData_ = get(rData_, &clientVersion);
+    rData_ = get(rData_, &type, &objectId_);
+
     data_ = set(&send_buffer[0] + sizeof(int), version_);
-
     if (clientVersion == version_) {
-      char* toBeFocusedPtr = nullptr;
+      // get client request
+      int clientRequestSize;
+      ClientRequestType requestType;
+      rData_ = get(rData_, &clientRequestSize);
+      wireStiffness_ = 0.;
+      lockVisualizationServerMutex();
 
-      rData_ = get(rData_, &type, &objectId_);
-      data_ = set(data_, state_);
+      for (int i=0; i<clientRequestSize; i++) {
+        rData_ = get(rData_, &requestType);
+        switch (requestType) {
+          case ClientRequestType::CR_ATTACH_WIRE: {
+            rData_ = get(rData_, &hangingObjVisTag_, &hangingObjLocalId_, &hangingObjPos_);
+
+            // hanging rope
+            auto &obList = world_->getObjList();
+            auto iter = std::find_if(obList.begin(), obList.end(),
+                                     [&](const Object *o) { return o->visualTag == hangingObjVisTag_; });
+            if (iter != obList.end()) {
+              interactingOb_ = *iter;
+              if (interactingOb_->getObjectType() == ObjectType::ARTICULATED_SYSTEM) {
+                auto as = dynamic_cast<ArticulatedSystem *>(interactingOb_);
+                as->getPositionInBodyCoordinate(hangingObjLocalId_, hangingObjPos_, hangingObjLocalPos_);
+              } else {
+                auto sob = dynamic_cast<SingleBodyObject *>(interactingOb_);
+                Vec<3> sobPos;
+                Mat<3, 3> sobRot;
+                sob->getPosition(sobPos);
+                sob->getOrientation(0, sobRot);
+                hangingObjLocalPos_ = sobRot.transpose() * (hangingObjPos_ - sobPos);
+              }
+            } else {
+              hangingObjLocalId_ = -1;
+            }
+          }
+            break;
+          case ClientRequestType::CR_DRAG_OBJECT: {
+            rData_ = getInFloat(rData_, &wireStiffness_);
+            rData_ = get(rData_, &hangingObjTargetPos_);
+          }
+            break;
+
+          case ClientRequestType::CR_REMOVE_OBJECT: {
+            uint32_t id;
+            rData_ = get(rData_, &id);
+            auto &obList = world_->getObjList();
+            auto iter = std::find_if(obList.begin(), obList.end(),
+                                     [&](const Object *o) { return o->visualTag == id; });
+            if (iter != obList.end()) {
+              auto ob = *iter;
+              world_->removeObject(ob);
+            } else {
+              auto &wireList = world_->getWires();
+              LengthConstraint *w = nullptr;
+              for (int j = 0; j < wireList.size(); j++) {
+                if (wireList[j]->visualTag == id) {
+                  w = wireList[j].get();
+                  break;
+                }
+              }
+              if (w)
+                world_->removeObject(w);
+            }
+          }
+            break;
+          case ClientRequestType::CR_SPAWN_BOX:
+          case ClientRequestType::CR_SPAWN_SPHERE:
+          case ClientRequestType::CR_SPAWN_CYLINDER:
+          case ClientRequestType::CR_SPAWN_CAPSULE:
+          case ClientRequestType::CR_SPAWN_HEIGHT_MAP:
+          case ClientRequestType::CR_SPAWN_MESH:
+          case ClientRequestType::CR_SPAWN_PLANE:
+          case ClientRequestType::CR_SPAWN_AS: {
+            std::string name, appearance, file;
+            float mass;
+            Vec<3> pos, linVel, angVel;
+            Vec<6> size;
+            Vec<4> quat;
+            rData_ = get(rData_, &name, &appearance, &mass);
+            rData_ = getInFloat(rData_, &size, &pos, &linVel, &angVel, &quat);
+            rData_ = get(rData_, &file);
+
+            if (requestType == ClientRequestType::CR_SPAWN_HEIGHT_MAP ||
+                requestType == ClientRequestType::CR_SPAWN_MESH ||
+                requestType == ClientRequestType::CR_SPAWN_AS) {
+              if (!raisim::fileExists(file)) {
+                RSWARN("file \""<<file<<"\" does not exist. Ignoring the spawning commnad.")
+                continue;
+              }
+            }
+
+            if (int(requestType) < 4 || requestType == ClientRequestType::CR_SPAWN_MESH) {
+              raisim::SingleBodyObject* sob = nullptr;
+
+              if (requestType == ClientRequestType::CR_SPAWN_BOX) {
+                sob = world_->addBox(size[0], size[1], size[2], mass);
+              } else if (requestType == ClientRequestType::CR_SPAWN_SPHERE) {
+                sob = world_->addSphere(size[0], mass);
+              } else if (requestType == ClientRequestType::CR_SPAWN_CYLINDER) {
+                sob = world_->addCylinder(size[0], size[1], mass);
+              } else if (requestType == ClientRequestType::CR_SPAWN_CAPSULE) {
+                sob = world_->addCapsule(size[0], size[1], mass);
+              } else if (requestType == ClientRequestType::CR_SPAWN_MESH) {
+                sob = world_->addMesh(file, mass);
+              }
+
+              if (sob) {
+                sob->setPosition(pos);
+                sob->setOrientation(quat);
+                sob->setLinearVelocity(linVel);
+                sob->setAngularVelocity(angVel);
+                sob->setName(name);
+                sob->setAppearance(appearance);
+              }
+            } else if (requestType == ClientRequestType::CR_SPAWN_PLANE) {
+              auto ground = world_->addGround(size[0]);
+              ground->setName(name);
+            } else if (requestType == ClientRequestType::CR_SPAWN_HEIGHT_MAP) {
+              auto hm = world_->addHeightMap(file, size[0], size[1], size[2], size[3], size[4], size[5]);
+              hm->setName(name);
+            } else if (requestType == ClientRequestType::CR_SPAWN_AS) {
+              auto as = world_->addArticulatedSystem(file);
+              as->setName(name);
+              as->setBasePos(pos);
+              as->setBaseOrientation(quat);
+            }
+          }
+            break;
+
+          case ClientRequestType::CR_SAVE_THE_WORLD: {
+            std::string path;
+            rData_ = get(rData_, &path);
+            world_->exportToXml(path);
+          }
+            break;
+          default:
+            break;
+        }
+      }
 
       // set server request
+      char* toBeFocusedPtr = nullptr;
+      data_ = set(data_, state_);
       data_ = set(data_, (uint64_t) serverRequest_.size());
       for (const auto &sr: serverRequest_) {
         data_ = set(data_, (int) sr);
@@ -791,7 +977,6 @@ class RaisimServer final {
       }
 
       serverRequest_.clear();
-      lockVisualizationServerMutex();
 
       if (state_ != Status::STATUS_HIBERNATING) update();
 
@@ -862,7 +1047,7 @@ class RaisimServer final {
             data_ = set(data_, visVec->at(j).fileName);
             data_ = set(data_, as->getResourceDir());
           }
-          data_ = set(data_, i);
+          data_ = set(data_, i, int32_t(visVec->at(j).localIdx));
         }
 
         if (colorOverride[3] < 0.001)
@@ -970,7 +1155,7 @@ class RaisimServer final {
               default:
                 break;
             }
-            data_ = set(data_, Masking::SB_OBJ);
+            data_ = set(data_, Masking::SB_OBJ, int32_t(0));
           }
           data_ = set(data_, vob.appearance);
           data_ = setInFloat(data_, vob.objectParam);
@@ -1026,7 +1211,7 @@ class RaisimServer final {
             case UNRECOGNIZED:
               break;
           }
-          data_ = set(data_, Masking::SB_OBJ);
+          data_ = set(data_, Masking::SB_OBJ, int32_t(0));
         }
         auto *sob = dynamic_cast<SingleBodyObject *>(ob);
 
@@ -1086,7 +1271,7 @@ class RaisimServer final {
       bool initialized = sw->visualTag != 0;
       if (!initialized) sw->visualTag = visTagCounter++;
       data_ = set(data_, sw->visualTag, initialized, int32_t(-1), false, (int32_t)1);
-      if (!initialized) data_ = set(data_, sw->name_, Shape::SingleLine, Masking::CONSTRAINTS);
+      if (!initialized) data_ = set(data_, sw->name_, Shape::SingleLine, Masking::CONSTRAINTS, int32_t(0));
       data_ = set(data_, colorToString(sw->getColor()));
       Vec<3> pos, diff, diff_norm;
       Vec<4> quat;
@@ -1115,7 +1300,7 @@ class RaisimServer final {
           data_ = set(data_, vo->meshFileName);
           data_ = set(data_, std::string());
         }
-        data_ = set(data_, Masking::VIS_OBJ);
+        data_ = set(data_, Masking::VIS_OBJ, int32_t(0));
       }
       data_ = set(data_, colorToString(vo->color));
       data_ = setInFloat(data_, vo->size, pos, quat);
@@ -1421,10 +1606,17 @@ class RaisimServer final {
   int screenShotWidth_, screenShotHeight_;
 
   // version
-  constexpr static int version_ = 10009;
+  constexpr static int version_ = 10010;
 
   // visual tag counter
   uint32_t visTagCounter = 30;
+
+  // hanging object
+  uint32_t hangingObjVisTag_ = 0;
+  Object* interactingOb_;
+  double wireStiffness_;
+  int hangingObjLocalId_ = -1;
+  Vec<3> hangingObjPos_, hangingObjLocalPos_, hangingObjTargetPos_;
 
   std::unordered_map<std::string, Visuals *> visuals_;
   std::unordered_map<std::string, InstancedVisuals *> instancedvisuals_;
