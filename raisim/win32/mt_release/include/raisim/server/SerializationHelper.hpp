@@ -81,6 +81,12 @@ static inline char *setInFloat(char *data, const T& val) {
 }
 
 template<typename T>
+static inline char *get(char *data, T *val) {
+  memcpy(val, data, sizeof(T));
+  return data + sizeof(T);
+}
+
+template<typename T>
 static inline char *getInFloat(char *data, T *val) {
   float temp;
   for (int i = 0; i < T::size(); i++) {
@@ -95,12 +101,6 @@ static inline char *getInFloat(char *data, double *val) {
   memcpy(&temp, data, sizeof(float));
   *val = temp;
   return data + sizeof(float);
-}
-
-template<typename T>
-static inline char *get(char *data, T *val) {
-  memcpy(val, data, sizeof(T));
-  return data + sizeof(T);
 }
 
 template<typename T>

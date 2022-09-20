@@ -879,12 +879,13 @@ class RaisimServer final {
           case ClientRequestType::CR_SPAWN_AS: {
             std::string name, appearance, file;
             float mass;
+            int bodyType;
             Vec<3> pos, linVel, angVel;
             Vec<6> size;
             Vec<4> quat;
             rData_ = get(rData_, &name, &appearance, &mass);
             rData_ = getInFloat(rData_, &size, &pos, &linVel, &angVel, &quat);
-            rData_ = get(rData_, &file);
+            rData_ = get(rData_, &bodyType, &file);
 
             if (requestType == ClientRequestType::CR_SPAWN_HEIGHT_MAP ||
                 requestType == ClientRequestType::CR_SPAWN_MESH ||
@@ -917,6 +918,15 @@ class RaisimServer final {
                 sob->setAngularVelocity(angVel);
                 sob->setName(name);
                 sob->setAppearance(appearance);
+                if (bodyType == 0) {
+                  sob->setBodyType(BodyType::DYNAMIC);
+                } else if (bodyType == 1) {
+                  sob->setBodyType(BodyType::KINEMATIC);
+                } else if (bodyType == 2) {
+                  sob->setBodyType(BodyType::STATIC);
+                } else {
+                  RSFATAL("Unknown body!")
+                }
               }
             } else if (requestType == ClientRequestType::CR_SPAWN_PLANE) {
               auto ground = world_->addGround(size[0]);
