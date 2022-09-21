@@ -135,6 +135,13 @@ class SingleBodyObject : public Object {
   }
 
   /**
+   * returns the rotation matrix
+   * @return rotation matrix */
+    inline const Mat<3,3>& getOrientation() const {
+      return bodyRotationMatrix_;
+    }
+
+  /**
    * returns the kinetic energy
    * @return the kinetic energy of the object */
   [[nodiscard]] double getKineticEnergy() const;
@@ -412,6 +419,13 @@ class SingleBodyObject : public Object {
    */
   void getPosition(Vec<3>& pos_w) { pos_w = bodyPosition_; };
   void getVelocity(size_t localIdx, Vec<3>& vel_w) const final { vel_w = linVel_; }
+
+  void getVelocity(size_t localIdx, const Vec<3>& pos_b, Vec<3>& vel_w) const final {
+    vel_w = linVel_;
+    Vec<3> joint2Point_W;
+    matvecmul(bodyRotationMatrix_, pos_b, joint2Point_W);
+    crossThenAdd(angVel_, joint2Point_W, vel_w);
+  }
 
   void preContactSolverUpdate1(const Vec<3> &gravity, double dt) final;
   void preContactSolverUpdate2(const Vec<3> &gravity, double dt, contact::ContactProblems& problems) final;
