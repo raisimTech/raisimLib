@@ -10,9 +10,9 @@ System.AggregateException: One or more errors occurred. ---> System.IO.IOExcepti
   at System.Threading.Tasks.Task.ThrowIfExceptional (System.Boolean includeTaskCanceledExceptions) [0x00011] in <a1e9f114a6e64f4eacb529fc802ec93d>:0 
   at System.Threading.Tasks.Task`1[TResult].GetResultCore (System.Boolean waitCompletionNotification) [0x0002b] in <a1e9f114a6e64f4eacb529fc802ec93d>:0 
   at System.Threading.Tasks.Task`1[TResult].get_Result () [0x0000f] in <a1e9f114a6e64f4eacb529fc802ec93d>:0 
-  at raisimUnity.TcpHelper.ReadData () [0x00044] in <e8a3adb12b1f4d9396029edc9689b380>:0 
-  at raisimUnity.RsUnityRemote.ReadAndCheckServer (raisimUnity.ClientMessageType type) [0x00094] in <e8a3adb12b1f4d9396029edc9689b380>:0 
-  at raisimUnity.RsUnityRemote.Update () [0x0002a] in <e8a3adb12b1f4d9396029edc9689b380>:0 
+  at raisimUnity.TcpHelper.ReadData () [0x00044] in <065e27c4d63640a69e08bfffcc8598cf>:0 
+  at raisimUnity.RsUnityRemote.ReadAndCheckServer (raisimUnity.ClientMessageType type) [0x000a0] in <065e27c4d63640a69e08bfffcc8598cf>:0 
+  at raisimUnity.RsUnityRemote.Update () [0x0002a] in <065e27c4d63640a69e08bfffcc8598cf>:0 
 ---> (Inner Exception #0) System.IO.IOException: Unable to read data from the transport connection: Connection reset by peer. ---> System.Net.Sockets.SocketException: Connection reset by peer
   at System.Net.Sockets.Socket.EndReceive (System.IAsyncResult asyncResult) [0x00012] in <6f1d457dbe7848f19617dea9acc2268a>:0 
   at System.Net.Sockets.NetworkStream.EndRead (System.IAsyncResult asyncResult) [0x00057] in <6f1d457dbe7848f19617dea9acc2268a>:0 
