@@ -6,6 +6,7 @@
 
 #ifndef RAISIM_HELPER_HPP
 #define RAISIM_HELPER_HPP
+
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -18,16 +19,17 @@
 
 #include <vector>
 #include <stdexcept>
-#include <stddef.h>
+#include <cstddef>
 #include "raisim_message.hpp"
 #include <fstream>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "raisim/Path.hpp"
 
+
 namespace raisim {
 
-inline std::string separator() {
+static inline std::string separator() {
 #ifdef _WIN32
   return "\\";
 #else
@@ -35,14 +37,56 @@ inline std::string separator() {
 #endif
 }
 
-inline void MSLEEP(int sleepMs)
+#ifdef _WIN32
+
+static inline uint64_t GetPerfFrequency() {
+  ::LARGE_INTEGER freq;
+  ::QueryPerformanceFrequency(&freq);
+  return freq.QuadPart;
+}
+
+static inline uint64_t PerfFrequency() {
+  static uint64_t xFreq = GetPerfFrequency();
+  return xFreq;
+}
+
+static inline uint64_t PerfCounter() {
+  ::LARGE_INTEGER counter;
+  ::QueryPerformanceCounter(&counter);
+  return counter.QuadPart;
+}
+
+static uint64_t NowInUs() {
+  return static_cast<uint64_t>(
+      static_cast<double>(PerfCounter()) * 1000000 / PerfFrequency());
+}
+
+#endif
+
+static inline void MSLEEP(int sleepMs)
 {
 #ifdef _WIN32
-  Sleep(sleepMs);
+  auto start = NowInUs();
+  while ((NowInUs() - start) < sleepMs * 1000) {
+  }
 #else
   usleep(sleepMs * 1000);   // usleep takes sleep time in us (1 millionth of a second)
 #endif
 }
+
+
+static inline void USLEEP(int sleepMs)
+{
+#ifdef _WIN32
+  auto start = NowInUs();
+  while ((NowInUs() - start) < sleepMs) {
+  }
+#else
+  usleep(sleepMs);   // usleep takes sleep time in us (1 millionth of a second)
+#endif
+}
+
+
 
 /* returns the file name without extension */
 inline std::string getBaseFileName(const std::string& fullPath) {

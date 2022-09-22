@@ -33,7 +33,7 @@ for i in range(0, 100):
 counter = 0
 server.startRecordingVideo("visualObjectDemo.mp4")
 
-for i in range(1000):
+for i in range(100000):
     counter = counter + 1
     visBox.setColor(1, 1, (counter % 255 + 1) / 256., 1)
     visSphere.setColor(1, (counter % 255 + 1) / 256., 1, 1)

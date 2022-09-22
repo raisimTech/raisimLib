@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
     robot->setPdGains(pGain, dGain);
     robot->setPdTarget(pTarget, dTarget);
 
-    std::this_thread::sleep_for(std::chrono::microseconds(1000));
+    raisim::MSLEEP(1);
     server.integrateWorldThreadSafe();
   }
 

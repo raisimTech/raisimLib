@@ -78,6 +78,6 @@ jaco_foot_lh_angular = anymal.getDenseFrameRotationalJacobian("LF_ADAPTER_TO_FOO
 
 for i in range(500000):
     time.sleep(0.001)
-    world.integrate()
+    server.integrateWorldThreadSafe()
 
 server.killServer()

@@ -8,8 +8,31 @@ cmake -G"Visual Studio 16 2019" -A x64 .. -DRAISIM_TEST=OFF -DCMAKE_INSTALL_PREF
 cmake --build . --config Debug
 cmake --build . --target install --config Debug
 
+conda activate python35
 Set-Location C:\Users\jemin\source\repos\raisimLib\build
-cmake .. -DRAISIM_EXAMPLE=ON -DRAISIM_PY=ON -DRAISIM_MATLAB=ON -DPYTHON_EXECUTABLE=C:\Users\jemin\anaconda3\envs\python35\python
+cmake .. -DRAISIM_EXAMPLE=ON -DRAISIM_PY=ON -DRAISIM_MATLAB=ON -DPYTHON_EXECUTABLE:FILEPATH=C:\Users\jemin\anaconda3\envs\python35\python
 cmake --build . --config Release
+
+conda activate python36
+Set-Location C:\Users\jemin\source\repos\raisimLib\build
+cmake .. -DRAISIM_EXAMPLE=OFF -DRAISIM_PY=ON -DRAISIM_MATLAB=OFF -DPYTHON_EXECUTABLE:FILEPATH=C:\Users\jemin\anaconda3\envs\python36\python
+cmake --build . --config Release
+
+conda activate python37
+Set-Location C:\Users\jemin\source\repos\raisimLib\build
+cmake .. -DRAISIM_EXAMPLE=OFF -DRAISIM_PY=ON -DRAISIM_MATLAB=OFF -DPYTHON_EXECUTABLE:FILEPATH=C:\Users\jemin\anaconda3\envs\python37\python
+cmake --build . --config Release
+
+conda activate python38
+Set-Location C:\Users\jemin\source\repos\raisimLib\build
+cmake .. -DRAISIM_EXAMPLE=OFF -DRAISIM_PY=ON -DRAISIM_MATLAB=OFF -DPYTHON_EXECUTABLE:FILEPATH=C:\Users\jemin\anaconda3\envs\python38\python
+cmake --build . --config Release
+
+conda activate python39
+Set-Location C:\Users\jemin\source\repos\raisimLib\build
+cmake .. -DRAISIM_EXAMPLE=OFF -DRAISIM_PY=ON -DRAISIM_MATLAB=OFF -DPYTHON_EXECUTABLE:FILEPATH=C:\Users\jemin\anaconda3\envs\python39\python
+cmake --build . --config Release
+
+
 
 cd C:\Users\jemin

@@ -17,6 +17,9 @@ class Mesh final : public SingleBodyObject {
 
   explicit Mesh(const std::string &filename, dSpaceID space, double mass, const Mat<3, 3> &inertia, const Vec<3> &COM,
                 double scale=1.0);
+
+  explicit Mesh(const std::string &filename, dSpaceID space, double mass, double scale=1.0);
+
   explicit Mesh(const std::vector<float> &verticies, const std::vector<unsigned int> &idx, dSpaceID space, double mass,
                 const Mat<3, 3> &inertia, const Vec<3> &COM, double scale=1.0);
 
