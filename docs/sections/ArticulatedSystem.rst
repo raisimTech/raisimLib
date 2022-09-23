@@ -37,7 +37,7 @@ There are three ways to specify the system.
 2. by providing :code:`std::string` of the URDF text (can be useful when working with Xacro)
 3. by providing a :code:`raisim::Child` instance. It is an advanced method and not recommnded to beginners.
 
-Note that option 1 and 2 use the same method. 
+Note that option 1 and 2 use the same method.
 You can provide either the path string or the contents string and the class will identify which one is provided.
 
 State Representation
