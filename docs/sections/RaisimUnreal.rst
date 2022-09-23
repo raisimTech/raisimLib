@@ -6,7 +6,7 @@ Introduction
 =====================
 
 RaisimUnreal is a visualization client, just like RaisimUnity.
-The simulation process should launch a RaisimServer in order to communicate with RaisimUnreal.
+The simulation process should launch (``raisim::RaisimServer::launchServer``) a RaisimServer in order to communicate with RaisimUnreal.
 Once the server is running, RaisimUnreal can connect to it and obtain visualization information.
 
 You can get raisimUnreal in the `release tab <https://github.com/raisimTech/raisimLib/releases>`_.
@@ -48,21 +48,63 @@ I prefer to use it for visualization of final policies after training.
 
 To use RaisimUnreal, you do not have to commit anything.
 From the server side, it is absolutely the same as raisimUnity.
-All you have to do is to create the server instance and launch it (check the examples in ``examples/server``).
+All you have to do is to create the server instance (``raisim::RaisimServer``) and launch it (check the examples in ``examples/server``).
 
 User Interface
 ==========================
-There are two topmost menu panels: the main menu and object menu.
-You can press ``m`` to switch the menu panel.
+There are three topmost menu panels: the main menu, object list menu, and object spawner menu.
+You can press ``m`` to switch the menu panel or to hide them.
 
-The object menu list all objects in the world.
-If you click the object name, the camera will focus on that object and the object menu will pop up.
+The **main menu** contains connection-related widgets, visualization related-widgets, and interaction-related widgets.
+Most of the widget items have a corresponding a keyboard binding.
 
-The main menu has the following structure.
+The **object list menu** list all objects in the world.
+You can click the object button to focus on the object.
+You can also type in the search bar to find an object with a specific name (the name can be set by ``raisim::Object::setName``).
 
-.. image:: ../image/raisimUnrealManuel.png
-  :alt: raisimUnrealMenu
-  :width: 1080
+The **object spawner menu** allows you to spawn new objects in the map.
+You can set the initial state of the object as well.
+
+There are also a few sub-menus which can be created at need.
+
+The **object menu** is created when an object is focused.
+You can focus on an object by clicking either the object in the scene or the object button in the object list menu to select an object.
+You can also focus on an object from the server side using ``raisim::RaisimServer::focusOn``.
+Once the object is focused, you can read about states of the object, frames associated with the object, and joints of the object.
+
+The **event menu** is created when you press ``tab``.
+It lists events happened during the execution.
+It might be useful for debugging.
+
+The **graph menu** is created when you press ``g``.
+It lists all graphs specified by the server (read the atlas.cpp example for details).
+
+Interaction
+=================
+
+Object deletion
+------------------
+You can delete the focused object using ``del`` key.
+You can focus on an object using either by left-clicking the object or by selecting an object in the object list menu.
+
+Object spawning
+------------------
+You can find an object spawner menu by pressing ``m`` key a few times.
+There are 8 different objects you can spawn.
+Click on the object you want to spawn and fill in the other parameters that are activated in the object spawner menu.
+Press ``enter`` or just click on the button to spawn the object.
+
+Apply force
+---------------
+You can apply external forces by pressing ``shift`` and dragging the object.
+The force model is a spring so it will apply the force proportional to the distance you dragged.
+Once you release the left-mouse-button, it will stop applying the force.
+
+Measure position or distance
+------------------------------
+You can press ``alt`` and ``left-click`` on an object to specify a *point of interest*.
+If there is one *point of interest*, the ruler will measure a position.
+If there are two, the ruler will measure the displacement.
 
 Maps
 ================================
@@ -82,9 +124,10 @@ Currently, the following maps are available.
 
 Weather
 ====================
-If you see a dropdown menu on the main menu panel, that means that map supports dynamic weather.
-If it does not support dynamic weather, it will support dynamic lighting so that you can move the light sources around.
+If you see a dropdown menu for weather on the main menu panel, that means that map supports dynamic weather.
+If it does not support dynamic weather, it will support dynamic lighting so that you can move the light source around.
 Weather related computation and visualization are costly and you can use a simpler map such as "simple" if you want to save computational resources.
+
 Here is an example of weather changes
 
 .. image:: ../image/rsu_weather.gif
@@ -96,6 +139,7 @@ If the map support dynamic weather, it also supports "timeOfDay" option. You can
 .. image:: ../image/rsu_timeOfDay.gif
   :alt: rsu_tod
   :width: 854
+
 
 Video recording
 =============================
@@ -177,6 +221,6 @@ Troubleshooting and bug reporting
 ==================================
 
 RaisimUnreal creates a log file ``Error_Log.txt`` inside the raisimUnreal2 folder.
-It it is not working properly, please read the log first.
+If RaisimUnreal is not working properly, please read the log first.
 If you cannot figure it out yourself, you can post an issue with the log file.
 
