@@ -13,10 +13,6 @@ However, it is a generic rigid-body simulator and can simulate any rigid body ve
 * Easiest C++ simulation library to learn/use
 * A minimum number of dependencies (only on STL and Eigen)
 
-Visualizer
-=============
-Raisim on its own cannot visualize the simulated environment. Please read the Visualizer section.
-
 System Requirements
 =====================
 - **Linux**
