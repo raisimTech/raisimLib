@@ -8,8 +8,23 @@ You have to run one of the server visualizers to visualize what's happening in t
 This website contains documentations for RaisimUnity and RaisimUnreal.
 RaisimOgre documentations and examples are included in the `RaisimOgre repo <https://github.com/raisimTech/raisimogre>`_.
 
+How to choose a visualizer? (Short version)
+***********************************************
+
+If you only work in Linux and you want to customize the visualizer -- RaisimOgre.
+
+If you want a simple solution that works well across all OS's -- RaisimUnity.
+
+If you have only an integrated GPU and you work in Linux -- RaisimUnityOpenGL.
+
+If you want the most versatile solution, if you want good graphics for your publication or if you use vision data for your reinforcement learning project -- RaisimUnreal.
+
+
+How to choose a visualizer? (Long version)
+*********************************************
+
 RaisimUnity
-***************
+======================
 
 .. image:: ../image/raisimUnity4.png
   :alt: raisimUnity
@@ -23,7 +38,7 @@ RaisimUnity
 *  Works well in Linux, Mac and Windows
 
 RaisimUnreal - Beta
-*********************
+=====================
 
 .. image:: ../image/raisimUnreal1.png
   :alt: raisimUnity
@@ -34,12 +49,12 @@ RaisimUnreal - Beta
 *  Most complete visualizer. Only RaisimUnreal supports "Maps" (Check out RaisimUnreal section)
 *  It uses multi-threading and fast. But this also means that it can **slow down your RL training or simulation**.
 *  Easy to use.
-*  Can visualize graphs and bar charts (Check out "atlas" example.)
+*  Can visualize graphs and bar charts (Check out atlas.cpp example.)
 *  Runs on a separate process (using RaisimServer)
 *  Closed source
 
 RaisimOgre
-************
+=====================
 
 .. image:: ../image/raisimOgre.png
   :alt: raisimOgre
@@ -52,7 +67,7 @@ RaisimOgre
 
 
 Comparison between RaisimUnity and RaisimUnreal
-*******************************************************
+======================================================
 
 Here is a comparison between RaisimUnity and RaisimUnreal.
 
@@ -95,3 +110,8 @@ Here is a comparison between RaisimUnity and RaisimUnreal.
 
    *  **RaisimUnity**: Works in Linux.
    *  **RaisimUnreal**: Works well in both Linux and Windows.
+
+*  **Object Interactions**
+
+   * **RaisimUnity**: Not supported.
+   * **RaisimUnreal**: You can apply force, measure distance and spawn/delete objects
