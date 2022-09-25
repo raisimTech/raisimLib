@@ -809,8 +809,8 @@ class RaisimServer final {
       int clientRequestSize;
       ClientRequestType requestType;
       rData_ = get(rData_, &clientRequestSize);
-      wireStiffness_ = 0.;
       lockVisualizationServerMutex();
+      wireStiffness_ = 0.;
 
       for (int i=0; i<clientRequestSize; i++) {
         rData_ = get(rData_, &requestType);
