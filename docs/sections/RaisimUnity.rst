@@ -51,5 +51,5 @@ You can disable auto-connection by unchecking the ``auto-connect`` checkbox.
 
 Object Appearances
 =====================
-You can specify the appearance of an object using ``raisim::SingleBodyObject::setAppearance".
+You can specify the appearance of an object using ``raisim::SingleBodyObject::setAppearanc``.
 If you want to hide object completely in RaisimUnity, you can set appearance as ``hidden-unity``.

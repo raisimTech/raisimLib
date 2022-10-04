@@ -28,7 +28,7 @@ int main(int argc, char* argv[]) {
   terrainProperties.fractalGain = 0.25;
   terrainProperties.heightOffset = -1;
   raisim::HeightMap* hm = world.addHeightMap(0.0, 0.0, terrainProperties);
-  hm->setAppearance("soil1");
+  hm->setAppearance("red");
 
   std::vector<raisim::ArticulatedSystem*> anymals;
 

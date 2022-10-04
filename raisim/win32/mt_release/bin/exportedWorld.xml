@@ -43,11 +43,11 @@
             <inertia xx="0.0032" xy="0" xz="0" yy="0.0032" yz="0" zz="0.0032" />
             <state pos="-4.000000, 0.000000, 7.000000" quat="1.000000, 0.000000, 0.000000, 0.000000" lin_vel="0.000000, 0.000000, 0.000000" ang_vel="0.000000, 0.000000, 0.000000" />
         </sphere>
-        <articulatedSystem name="anymalC" res_dir="C:\Users\jemin\workspace\raisimLib\raisim\win32\mt_release\bin\rsc\anymal_c\urdf" urdf_path="C:\Users\jemin\workspace\raisimLib\raisim\win32\mt_release\bin\rsc\anymal_c\urdf\anymal.urdf" collision_group="1" collision_mask="4294967295">
+        <articulatedSystem name="anymalC" res_dir="C:\Users\jemin\source\repos\raisimLib\raisim\win32\mt_release\bin\rsc\anymal_c\urdf" urdf_path="C:\Users\jemin\source\repos\raisimLib\raisim\win32\mt_release\bin\rsc\anymal_c\urdf\anymal.urdf" collision_group="1" collision_mask="4294967295">
             <dim />
             <state qpos="-3.000000, 0.000000, 4.540000, 1.000000, 0.000000, 0.000000, 0.000000, 0.030000, 0.400000, -0.800000, -0.030000, 0.400000, -0.800000, 0.030000, -0.400000, 0.800000, -0.030000, -0.400000, 0.800000" qvel="0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000" />
         </articulatedSystem>
-        <articulatedSystem name="anymalB" res_dir="C:\Users\jemin\workspace\raisimLib\raisim\win32\mt_release\bin\rsc\anymal\urdf" urdf_path="C:\Users\jemin\workspace\raisimLib\raisim\win32\mt_release\bin\rsc\anymal\urdf\anymal.urdf" collision_group="1" collision_mask="4294967295">
+        <articulatedSystem name="anymalB" res_dir="C:\Users\jemin\source\repos\raisimLib\raisim\win32\mt_release\bin\rsc\anymal\urdf" urdf_path="C:\Users\jemin\source\repos\raisimLib\raisim\win32\mt_release\bin\rsc\anymal\urdf\anymal.urdf" collision_group="1" collision_mask="4294967295">
             <dim />
             <state qpos="-4.000000, 0.000000, 4.540000, 1.000000, 0.000000, 0.000000, 0.000000, 0.030000, 0.400000, -0.800000, -0.030000, 0.400000, -0.800000, 0.030000, -0.400000, 0.800000, -0.030000, -0.400000, 0.800000" qvel="0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000" />
         </articulatedSystem>
