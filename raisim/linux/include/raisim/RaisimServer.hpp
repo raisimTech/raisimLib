@@ -1029,6 +1029,14 @@ class RaisimServer final {
     return select(server_fd_ + 1, &sdset, nullptr, nullptr, &tv) > 0;
   }
 
+  /**
+   * Saves the screenshot (the directory is chosen by the visualizer)
+   */
+  void requestSaveScreenshot() {
+    std::lock_guard<std::mutex> guard(serverMutex_);
+    serverRequest_.push_back(ServerRequestType::GET_SCREEN_SHOT);
+  }
+
  private:
 
   static inline std::string colorToString(const raisim::Vec<4> &vec) {
@@ -1501,7 +1509,6 @@ class RaisimServer final {
       data_ = c.second->serialize(data_);
     }
   }
-
 
   inline bool receiveData(int seconds) {
     using namespace server;
