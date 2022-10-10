@@ -74,6 +74,7 @@ install(
 )
 
 # Install precompiled Python modules (raisimpy)
+find_package(PythonInterp REQUIRED)
 execute_process(
         COMMAND "${PYTHON_EXECUTABLE}" -c "if True:
     from distutils import sysconfig as sc
