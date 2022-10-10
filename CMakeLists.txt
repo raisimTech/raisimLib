@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.11)
 set(RAISIM_VERSION 1.1.5)
 project(raisim VERSION ${RAISIM_VERSION} LANGUAGES CXX)
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
@@ -57,12 +57,36 @@ install(
         ${CMAKE_INSTALL_PREFIX}
 )
 
+# Distinguish installation between shared libraries and Python modules
+#  - NB: raisimpy may be rebuilt for the current environment Python if RAISIM_PY is set to be true. This does not affect the installation of precompiled libraries.
+#  - GLOB_RECURSE is available from CMake version 3.11
+file(GLOB_RECURSE RAISIM_LIBS "${CMAKE_CURRENT_LIST_DIR}/raisim/${RAISIM_BIN_DIR}/lib/*")
+set(RAISIM_PY_LIBS ${RAISIM_LIBS})
+list(FILTER RAISIM_PY_LIBS INCLUDE REGEX "^${CMAKE_CURRENT_LIST_DIR}/raisim/${RAISIM_BIN_DIR}/lib/raisimpy")
+list(FILTER RAISIM_LIBS EXCLUDE REGEX "^${CMAKE_CURRENT_LIST_DIR}/raisim/${RAISIM_BIN_DIR}/lib/raisimpy")
+
+# Install regular libraries
 install(
-        DIRECTORY
-        "${CMAKE_CURRENT_LIST_DIR}/raisim/${RAISIM_BIN_DIR}/lib"
+        FILES
+        ${RAISIM_LIBS}
         DESTINATION
-        ${CMAKE_INSTALL_PREFIX}
+        ${CMAKE_INSTALL_PREFIX}/lib
 )
+
+# Install precompiled Python modules (raisimpy)
+execute_process(
+        COMMAND "${PYTHON_EXECUTABLE}" -c "if True:
+    from distutils import sysconfig as sc
+    print(sc.get_python_lib(prefix='', plat_specific=True))"
+        OUTPUT_VARIABLE PYTHON_SITE
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+install(
+        FILES
+        ${RAISIM_PY_LIBS}
+        DESTINATION
+        ${CMAKE_INSTALL_PREFIX}/${PYTHON_SITE}
+)
+
 
 install(FILES package.xml DESTINATION "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}")
 
