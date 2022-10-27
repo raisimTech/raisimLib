@@ -25,7 +25,7 @@ ENDMACRO()
 set(Dependencies)
 
 add_subdirectory(../thirdParty/pybind11 pybind11)
-find_package(Eigen3 REQUIRED)
+find_package(Eigen3 CONFIG REQUIRED)
 
 if (APPLE)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")

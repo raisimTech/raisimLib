@@ -29,6 +29,7 @@ if(UNIX)
             LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../raisim/${RAISIM_OS}/lib"
             RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../raisim/${RAISIM_OS}/lib"
             )
+    install(TARGETS raisimpy DESTINATION ${CMAKE_INSTALL_PREFIX}/${PYTHON_SITE})
 else()
     set_target_properties(raisimpy
             PROPERTIES
