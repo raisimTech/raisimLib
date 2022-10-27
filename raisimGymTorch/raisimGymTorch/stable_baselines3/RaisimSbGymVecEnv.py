@@ -57,7 +57,7 @@ class RaisimSbGymVecEnv(VecEnv):
 
     def step_wait(self):
         self.wrapper.step(self.actions, self._reward, self._done)
-        return self.observe(True), self._reward.copy(), self._done.copy(), self._info
+        return self.observe(self.normalize_ob), self._reward.copy(), self._done.copy(), self._info
 
     def env_method(self, method_name: str, *method_args, indices: VecEnvIndices = None, **method_kwargs):
         pass
