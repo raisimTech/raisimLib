@@ -64,11 +64,20 @@ file(GLOB_RECURSE RAISIM_LIBS "${CMAKE_CURRENT_LIST_DIR}/raisim/${RAISIM_BIN_DIR
 set(RAISIM_PY_LIBS ${RAISIM_LIBS})
 list(FILTER RAISIM_PY_LIBS INCLUDE REGEX "^${CMAKE_CURRENT_LIST_DIR}/raisim/${RAISIM_BIN_DIR}/lib/raisimpy")
 list(FILTER RAISIM_LIBS EXCLUDE REGEX "^${CMAKE_CURRENT_LIST_DIR}/raisim/${RAISIM_BIN_DIR}/lib/raisimpy")
+list(FILTER RAISIM_LIBS EXCLUDE REGEX "^${CMAKE_CURRENT_LIST_DIR}/raisim/${RAISIM_BIN_DIR}/lib/cmake")
 
 # Install regular libraries
 install(
         FILES
         ${RAISIM_LIBS}
+        DESTINATION
+        ${CMAKE_INSTALL_PREFIX}/lib
+)
+
+# Install cmake files
+install(
+        DIRECTORY
+        ${CMAKE_CURRENT_LIST_DIR}/raisim/${RAISIM_BIN_DIR}/lib/cmake
         DESTINATION
         ${CMAKE_INSTALL_PREFIX}/lib
 )
