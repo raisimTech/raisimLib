@@ -4,7 +4,6 @@ import os
 from ruamel.yaml import YAML, dump, RoundTripDumper
 from stable_baselines3 import PPO
 from stable_baselines3.ppo import MlpPolicy
-from stable_baselines3.common.vec_env import VecNormalize
 from raisimGymTorch.env.bin import rsg_anymal
 from raisimGymTorch.stable_baselines3.RaisimSbGymVecEnv import RaisimSbGymVecEnv as VecEnv
 
@@ -19,8 +18,7 @@ task_path = stb_path + "/../env/envs/rsg_anymal"
 cfg = YAML().load(open(task_path + "/cfg.yaml", 'r'))
 
 # create environment from the configuration file
-vec_env = VecEnv(rsg_anymal.RaisimGymEnv(rsc_path, dump(cfg['environment'], Dumper=RoundTripDumper)), normalize_ob=False)
-env = VecNormalize(venv=vec_env, training=True, norm_obs=True, norm_reward=False)
+env = VecEnv(rsg_anymal.RaisimGymEnv(rsc_path, dump(cfg['environment'], Dumper=RoundTripDumper)), normalize_ob=True)
 obs = env.reset()
 
 n_steps = int(cfg['environment']['max_time'] / cfg['environment']['control_dt'])
