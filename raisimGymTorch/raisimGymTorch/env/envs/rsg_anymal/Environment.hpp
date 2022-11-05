@@ -54,7 +54,9 @@ class ENVIRONMENT : public RaisimGymEnv {
 
     /// action scaling
     actionMean_ = gc_init_.tail(nJoints_);
-    actionStd_.setConstant(0.3);
+    double action_std;
+    READ_YAML(double, action_std, cfg_["action_std"]) /// example of reading params from the config
+    actionStd_.setConstant(action_std);
 
     /// Reward coefficients
     rewards_.initializeFromConfigurationFile (cfg["reward"]);
