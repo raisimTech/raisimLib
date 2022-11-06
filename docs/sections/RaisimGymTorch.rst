@@ -15,12 +15,6 @@ A simple pytorch-based RL framework is provided as well but it should work well 
 Instead of using raisimPy, pybind11 wraps a vectorized environment in C++ so that the parallelization happens in C++.
 This improves the speed tremendously.
 
-Dependencies
-============
-
-* raisim dependencies
-* (optional) virtualenv or anaconda
-
 Why raisimGymTorch?
 ============================
 
@@ -36,10 +30,17 @@ Such a number of state transitions is necessary to train for very difficult task
 About **160 billion time steps** were used to train the above controller.
 raisimGymTorch can process about 500k time steps per second in the above environment (with 3950x) with an actuator network (which is as heavy as the physics simulation).
 
+Dependencies
+============
+Assuming that you have installed raisim,
+
+* Anaconda
+* pytorch (https://pytorch.org/)
+* to use GPU, install cuda as well. Install the version recommended by pytorch
+* The rest of the dependencies are installed when you build a raisimGym environment for the first time
 
 How to run the example
 =============================
-
 We provide an ANYmal locomotion example.
 In the raisimGymTorch directory,
 
@@ -54,7 +55,6 @@ All recorded videos can be found in ``raisimlib/raisimUnity/<OS>/screenshots``
 
 How to debug
 =============================
-
 A pybind11 package (e.g., your environment) might be difficult to debug because you have to write it in C++ but you cannot run it as a normal executable.
 So we provide a debug app that wraps your environment and creates an executable.
 To build the debug app, build your environment with
@@ -93,10 +93,23 @@ Your launch file (e.g., ``runner.py``) can be customized for your need.
 
 How to add a custom environment?
 ===================================
-You can add your environment in ``raisimGymTorch/raisimGymTorch/env/envs``.
-If you want to keep your source file somewhere else, then add a symlink to it in ``raisimGymTorch/raisimGymTorch/env/envs``.
-An example environment can be found `here <https://github.com/raisimTech/raisimlib/tree/master/raisimGymTorch/raisimGymTorch/env/envs/rsg_anymal>`_
+You can copy ``raisimGymTorch/raisimGymTorch`` to another location.
+Make sure that you delete all temporary directories ``build`` and ``raisim_gym_torch.egg-info`` (they are created when you run ``python setup.py develop``).
+To build in another directory, you have to let cmake know where you have raisim as
 
+.. code-block:: bash
+
+    python setup.py develop --CMAKE_PREFIX_PATH <WHERE-YOU-HAVE-RAISIM>/raisim/<OS>
+
+Everything will work without further operations.
+However, if you want to keep multiple environments, you might want to change a few of them.
+
+ * Package name: You can find it in ``setup.py`` (``name='raisim_gym_torch'``). This is the name you will find in ``site_packages`` directory of your anaconda environment.
+ * Directory name: This is the directory name that you will find in the top ``raisimGymTorch`` directory. The default name is also ``raisimGymTorch`` directory. Modify it if necessary. Then, you have to modify the directories in the header of ``runner.py`` and the ``CMakeLists.txt``.
+ * Binary name: This is the name of the directory of your environment. The default name is ``rsg_anymal``. If you change the directory name, you have to rename ``rsg_anymal`` in ``runner.py`` file.
+ * Environment name: This is the name of the binary that will be built from your ``Environment.hpp`` file. The default name is ``RaisimGymVecEnv``. You can find it in ``raisim_gym.cpp`` file. If you change it, you also have to change the name is ``runner.py`` file.
+
+ You can also just create another conda environment to avoid name conflicts.
 
 Code structure (if you are curious)
 ======================================
@@ -111,5 +124,9 @@ You can consider it similar to ``VectorEnv`` in OpenAI Baselines but RaisimGym p
 It simply defines the interface functions.
 
 Finally, ``RaisimGymVecEnv`` is a python class that wraps a python library created from ``raisim_gym.cpp``.
+
+Common issues and solutions
+================================
+* If python scripts complain about missing "libcudnn.so": conda install -c nvidia cudnn
 
 

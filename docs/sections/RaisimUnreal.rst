@@ -4,7 +4,6 @@ RaisimUnreal
 
 Introduction
 =====================
-
 RaisimUnreal is a visualization client, just like RaisimUnity.
 The simulation process should launch (``raisim::RaisimServer::launchServer``) a RaisimServer in order to communicate with RaisimUnreal.
 Once the server is running, RaisimUnreal can connect to it and obtain visualization information.
@@ -49,6 +48,19 @@ I prefer to use it for visualization of final policies after training.
 To use RaisimUnreal, you do not have to commit anything.
 From the server side, it is absolutely the same as raisimUnity.
 All you have to do is to create the server instance (``raisim::RaisimServer``) and launch it (check the examples in ``examples/server``).
+
+Requirements
+==========================
+
+Windows:
+*********************
+If you run the raisimUnreal app, it will guide you for installation of dependencies.
+
+Linux
+*********************
+* Ubuntu 20.04 or higher (18.04 also works but it will be painful to get all package versions right)
+* Vulkan: Follow the instructions in this link https://linuxconfig.org/install-and-test-vulkan-on-linux
+* Latest graphics driver. If you use pytorch, use the driver version that Cuda installs. (The driver will be installed if you follow their instructions.). Otherwise, use the latest version.
 
 User Interface
 ==========================

@@ -13,8 +13,8 @@ html_theme = "sphinx_rtd_theme"
 project = 'raisim'
 copyright = '2022, RaiSim Tech Inc.'
 author = 'Yeonjoo Chung and Jemin Hwangbo'
-version = '1.1.4'
-release = '1.1.4'
+version = '1.1.5'
+release = '1.1.5'
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'raisim_doc'
 html_show_sourcelink = False
