@@ -1,0 +1,15 @@
+<raisim version="1.1.5">
+    <objects>
+        <array idx="@@idx" start="0" end="@@sphere_count" increment="1">
+            <sphere name="sphere_array_@@idx"  mass="1" exist="@@spawn_sphere">
+                <dim radius="{0.5+@@idx*0.001}" />
+                <state pos="{cos(0.1*@@idx)*(@@idx*0.2+0.1)} {sin(0.1*@@idx)*(@@idx*0.2+0.1)} {@@sphere_height_offset+@@idx*1.0}"/>
+            </sphere>
+            <box name="box" mass="1" exist="@@spawn_box">
+                <dim x="0.5" y="0.5" z="1"/>
+                <inertia xx="0.1" xy="0" xz="0" yy="0.1" yz="0" zz="0.1" />
+                <state pos="{cos(0.1*@@idx)*(@@idx*0.3+0.2)} {sin(0.1*@@idx)*(@@idx*0.3+0.2)} {@@sphere_height_offset+@@idx*1.0}" />
+            </box>
+        </array>
+    </objects>
+</raisim>

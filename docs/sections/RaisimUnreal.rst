@@ -49,6 +49,36 @@ To use RaisimUnreal, you do not have to commit anything.
 From the server side, it is absolutely the same as raisimUnity.
 All you have to do is to create the server instance (``raisim::RaisimServer``) and launch it (check the examples in ``examples/server``).
 
+<<<<<<< HEAD
+Prerequisites
+========================
+
+* Make sure that you have a vulkan-supported GPU
+* In Linux, install vulkan libraries following the link here: https://linuxconfig.org/install-and-test-vulkan-on-linux
+* In Windows, an window will pop up to guide you for installation of dependencies if you run the app.
+* **Update your GPU driver. Use either the version recommended by pytorch or the latest one**
+
+Give a permission to run the app
+====================================
+Your OS will mark this app malicious because it does not know who created it.
+You can allow OS to run this app in the following ways
+
+In Linux
+***********
+Open a terminal, go to the ``RaisimUnity/linux directory`` and type
+
+.. code-block:: c
+
+    chmod +x ./raisimUnity.x86_64
+
+In Windows
+**************
+Double click the app, press "run app anyway"
+
+In Mac
+***********************
+
+=======
 Requirements
 ==========================
 
@@ -61,6 +91,7 @@ Linux
 * Ubuntu 20.04 or higher (18.04 also works but it will be painful to get all package versions right)
 * Vulkan: Follow the instructions in this link https://linuxconfig.org/install-and-test-vulkan-on-linux
 * Latest graphics driver. If you use pytorch, use the driver version that Cuda installs. (The driver will be installed if you follow their instructions.). Otherwise, use the latest version.
+>>>>>>> cd38ab2865aab352d1c90fdf3092495da034524e
 
 User Interface
 ==========================

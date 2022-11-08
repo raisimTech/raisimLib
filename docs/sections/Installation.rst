@@ -5,12 +5,14 @@ Installation
 Setup
 ========
 
-Please install/save everything locally to prevent any conflicts with other libraries. We will assume that you have a single workspace where you save all repos related to raisim. Here we introduce two variables
+Please install/save everything locally to prevent any conflicts with other libraries.
+We will assume that you have a single workspace where you save all repos related to raisim.
+Here we introduce two variables
 
 * ``WORKSPACE``: workspace where you clone your git repos (e.g., ~/raisim_workspace)
 * ``LOCAL_INSTALL``: install directory where you install exported cmake libraries (e.g., ~/raisim_build)
 
-You can add them to your environment variables or simply replace them by the path you want in the below instructions.
+You can add them to your environment variables or simply replace them by the path you want in the following instructions on this page.
 
 Dependencies
 ============

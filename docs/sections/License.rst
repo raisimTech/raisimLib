@@ -23,3 +23,5 @@ Following license types are available
 * Commercial license (`SLA <https://drive.google.com/file/d/1IAHbS8mXTCyVAnMikp3WyT0cCqFCxTZw/view?usp=sharing>`_): 1000 USD per person per year
 * Academic license (`SLA <https://drive.google.com/file/d/10W_9H8Ur37B6GllR0Qb3JQyj7Fh-AVlx/view?usp=sharing>`_): free
 * Trial license (`SLA <https://drive.google.com/file/d/1-fUZx2_h9UO3KcePWRjRz-itiypHORp2/view?usp=sharing>`_): free but only for one month
+
+If you purchase 3 or more commercial licenses, we provide a master key which works on any machine.

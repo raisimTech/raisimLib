@@ -44,18 +44,7 @@ You can override it as
 The macros actually affect the performance.
 For examples, all ``_IF`` macros will check the boolean and branching might occur.
 
-So if you only want to add the macros only in the debugging mode, add these lines in your CMAKE
-
-.. code-block:: c
-
-    # compiling options
-    if (CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "DEBUG")
-        add_definitions(-DRSDEBUG)
-    else()
-        remove_definitions(-DRSDEBUG)
-    endif ()
-
-and use these alternative macros instead
+If you do not want to lose performance from branching, there are following debug versions of the macros available
 
 - DRSINFO(msg)
 - DRSWARN(msg)
@@ -68,5 +57,5 @@ and use these alternative macros instead
 - DRSISNAN(val)
 - DRSISNAN_MSG(val, msg)
 
-These are ignored if the ``-DRSDEBUG`` flag is not set (and because you modified your cmake as above, the flag is set only in the debug mode).
+These are ignored if the build type is not debug.
 

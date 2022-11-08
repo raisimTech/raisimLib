@@ -76,6 +76,7 @@ create_executable(synchronousServerUpdate src/server/synchronousServerUpdate.cpp
 
 # xml reader
 create_executable(xmlRader src/xml/xmlReader.cpp)
+create_executable(templatedXml src/xml/templatedWorld.cpp)
 
 # mjcf files
 create_executable(mjcf_humanoid src/mjcf/humanoid.cpp)

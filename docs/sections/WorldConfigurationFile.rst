@@ -157,3 +157,8 @@ articulated_system
 
 1. <child> ``state``
     **attributes**: ``qpos`` [VecDyn], (optional, default=zeros) ``qvel`` [VecDyn]
+
+
+Configuration Template
+----------------------------
+Configuration templates can be useful to systematically create a world.
