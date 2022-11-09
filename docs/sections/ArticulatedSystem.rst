@@ -199,7 +199,7 @@ For details, check the `URDF protocol <http://wiki.ros.org/urdf/XML>`_.
 Templated URDF
 *******************************
 You can template an URDF and create different robots by providing different parameters in C++.
-An example can be found in https://github.com/raisimTech/raisimLib/tree/master/rsc/templatedTrackedRobot.
+An example can be found in `here <https://github.com/raisimTech/raisimLib/tree/master/rsc/templatedTrackedRobot>`_.
 
 In the URDF template, variables should be marked with ``@@``.
 Just like in a world configuration template, you can write math expressions inside ``{}``.
@@ -463,6 +463,8 @@ The following two methods are used to apply external force and torque respective
 
 * :code:`setExternalForce`
 * :code:`setExternalTorque`
+
+You will find above methods in the API section on this page.
 
 Collision
 ==============================
