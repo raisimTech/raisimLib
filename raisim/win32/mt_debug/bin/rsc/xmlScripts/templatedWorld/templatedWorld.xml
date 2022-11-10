@@ -1,0 +1,16 @@
+<raisim version="1.1.5">
+    <gravity value="0, 0, -9.81"/>
+    <timeStep value="0.001"/>
+    <include value="[THIS_DIR]/terrain.xml"/>
+    <include value="[THIS_DIR]/spheres.xml"/>
+    <params>
+        <object_spawn_height value = "0.3"/> <!--you can add parameters in here-->
+    </params>
+
+    <objects>
+        <articulatedSystem name="laikago0" resDir="[THIS_DIR]/../../laikago" urdfPath="[THIS_DIR]/../../laikago/laikago.urdf">
+            <state qpos="@@laikago_start_x, @@laikago_start_y, 0.48, 1.0, 0.0, 0.0, 0.0, 0.0, 0.5, -1.0, 0.0, 0.5, -1.0, 0.0, 0.5, -1.0, 0.0, 0.5, -0.7"
+                   qvel="0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0" />
+        </articulatedSystem>
+    </objects>
+</raisim>
