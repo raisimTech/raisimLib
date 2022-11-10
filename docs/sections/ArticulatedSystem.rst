@@ -35,10 +35,15 @@ There are three ways to specify the system.
 
 1. by providing the path to the URDF file (the most recommneded way)
 2. by providing :code:`std::string` of the URDF text (can be useful when working with Xacro)
-3. by providing a :code:`raisim::Child` instance. It is an advanced method and not recommnded to beginners.
+3. by providing a :code:`raisim::Child` instance. It is an advanced method and not recommended for beginners.
 
 Note that option 1 and 2 use the same method.
 You can provide either the path string or the contents string and the class will identify which one is provided.
+
+To use option 3, you have to provide all details of the robot in C++ code.
+Child is a tree node which contains ``fixedBodies`` and ``child``.
+It also contains ``joint``, ``body``, and ``name``.
+All properties should be filled.
 
 State Representation
 =============================
@@ -191,6 +196,20 @@ Collision bodies contain a collision object of one of the following shapes: *mes
 Visual objects just store specifications for visualization and the actual visualzation happens in a visualizer (e.g., `raisimOgre <https://github.com/leggedrobotics/raisimOgre>`_)
 For details, check the `URDF protocol <http://wiki.ros.org/urdf/XML>`_.
 
+Templated URDF
+*******************************
+You can template an URDF and create different robots by providing different parameters in C++.
+An example can be found in `here <https://github.com/raisimTech/raisimLib/tree/master/rsc/templatedTrackedRobot>`_.
+
+In the URDF template, variables should be marked with ``@@``.
+Just like in a world configuration template, you can write math expressions inside ``{}``.
+Only basic functions (i.e., sin, cos, log, exp) are available.
+
+Template parameters should be provided at runtime in ``raisim::World::addArticulatedSystem``.
+One of the overloading methods take ``const std::unordered_map<std::string, std::string>& params`` as input.
+The first one in the pair is the name and the second one is the parameter in a form of string.
+
+
 Kinematics
 =============================
 
@@ -227,7 +246,25 @@ You can also store a Frame reference.
 For e.g., you can replace :code:`getFrameIdxByName` by :code:`getFrameByName` in the above example.
 In this way, you can access the internal variables and even modify them.
 Modifying the frames do not affect the joints.
-Frames are instantiated during initialization of the articulated system instance and affect neither kinematics nor dynamics of the system.
+Frames are instantiated during initialization of the articulated system instance and affect neither kinematics nor dynamics of the system even if you change them.
+
+Joint limits
+************************
+Joint limits can be defined in an URDF file **per joint** as following
+
+.. code-block:: c
+
+   <limit effort="80" lower="-6.28" upper="6.28" velocity="15"/>
+
+The ``lower`` and ``upper`` are joint position limits and the ``velocity`` is the joint velocity limit.
+The joint limits are implemented as if there is a hard stop at the limits.
+This means that there is a hard collision (with 0 restitution of coefficient) when the joint hits a limit.visualization
+
+You modify the position joint limits in C++ using ``raisim::ArticulatedSystem::setJointLimits()``.
+Currently, you cannot modify the velocity joint limits in code.
+
+During simulation, you can get information on joint limit violations using ``raisim::ArticulatedSystem::getJointLimitViolations``.
+Even though joint limits are collisions (and thus handled by a contact solver), they are not listed in ``raisim::Object::getContacts()``.
 
 Jacobians
 ****************************
@@ -426,6 +463,8 @@ The following two methods are used to apply external force and torque respective
 
 * :code:`setExternalForce`
 * :code:`setExternalTorque`
+
+You will find above methods in the API section on this page.
 
 Collision
 ==============================

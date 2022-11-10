@@ -6,6 +6,35 @@ raisimUnity is a visualizer for RaiSim.
 It communicates with RaiSim using a TCP/IP protocol.
 Pre-built executables are provided in ``raisimUnity`` directory.
 
+Prerequisites
+========================
+
+* Make sure that you have a vulkan-supported GPU
+* In linux, install vulkan libraries following the link here: https://linuxconfig.org/install-and-test-vulkan-on-linux
+* In Ubuntu, ``sudo apt install minizip ffmpeg``
+* Update your GPU driver. Use either the version recommended by pytorch or the latest one
+
+Give a permission to run the app
+====================================
+Your OS will mark this app malicious because it does not know who created it.
+You can allow OS to run this app in the following ways
+
+In Linux
+***********
+Open a terminal, go to the ``RaisimUnity/linux directory`` and type
+
+.. code-block:: c
+
+    chmod +x ./raisimUnity.x86_64
+
+In Windows
+**************
+Double click the app, press "run app anyway"
+
+In Mac
+***********************
+
+
 How to use raisimUnity
 =========================
 

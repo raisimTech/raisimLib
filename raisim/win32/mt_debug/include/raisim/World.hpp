@@ -88,7 +88,7 @@ class World {
   /*!
     Create an world as specified in the xml config file
   */
-  explicit World(const std::string &configFile);
+  explicit World(const std::string &configFile, const std::unordered_map<std::string, std::string>& params={});
 
   /**
    * export the world to an xml config file, which can be loaded using a constructor
@@ -653,7 +653,7 @@ protected:
                           const std::string &material,
                           CollisionGroup collisionGroup,
                           CollisionGroup collisionMask);
-  void loadRaiSimConfig(const std::string& configFile);
+  void loadRaiSimConfig(const std::string& configFile, const std::unordered_map<std::string, std::string>& params);
   raisim::SingleBodyObject* addMjcfGeom(const RaiSimTinyXmlWrapper& geom,
                                         const std::unordered_map<std::string, RaiSimTinyXmlWrapper>& defaults,
                                         const std::unordered_map<std::string, std::pair<std::string, Vec<3>>>& mesh,

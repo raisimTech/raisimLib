@@ -24,7 +24,7 @@ ENDMACRO()
 ####################
 set(Dependencies)
 
-add_subdirectory(../thirdParty/pybind11 pybind11)
+add_subdirectory(thirdParty/pybind11 pybind11)
 find_package(Eigen3 CONFIG REQUIRED)
 
 if (APPLE)

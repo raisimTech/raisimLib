@@ -157,3 +157,32 @@ articulated_system
 
 1. <child> ``state``
     **attributes**: ``qpos`` [VecDyn], (optional, default=zeros) ``qvel`` [VecDyn]
+
+
+Configuration Template
+----------------------------
+Configuration templates can be useful to systematically create a world.
+An example can be found `here <https://github.com/raisimTech/raisimLib/tree/master/rsc/xmlScripts/templatedWorld/templatedWorld.xml>`_.
+
+You can include other configuration files using tag ``include``.
+This can be useful if you have subworlds and want to create multiple combinations of them.
+
+You can denote parameters prefixed by ``@@``.
+Variables can be either specified in the script using ``params``.
+An example can be found `here <https://github.com/raisimTech/raisimLib/tree/master/rsc/xmlScripts/templatedWorld/templatedWorld.xml>`_.
+This can be useful if you want to change the world at runtime or create multiple versions of the configuration file.
+
+You can use tag ``array`` to create **forloop** in the configuration file.
+An example can be found in `here <https://github.com/raisimTech/raisimLib/tree/master/rsc/xmlScripts/templatedWorld/spheres.xml>`_.
+You have to give attribute ``idx``, ``start``, ``end``, and ``increment``.
+The last three should be integers.
+
+You can also write **math expressions** inside the configuration file.
+An example can be found in the same file.
+You have to use ``{}`` to encapsulate the equation part.
+You can use simple binary functions such as ``sin``, ``cos``, ``exp``, and ``log``.
+You have to use ``()`` for functions and closing expressions just like in C++.
+
+Objects can have an attribute ``exist``.
+This allows you to remove objects at runtime using parameters.
+An example file can be found `here <https://github.com/raisimTech/raisimLib/tree/master/rsc/xmlScripts/templatedWorld/spheres.xml>`_.

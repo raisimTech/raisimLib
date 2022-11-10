@@ -1,0 +1,5 @@
+<raisim version="1.1.5">
+    <objects>
+        <ground name="floor" height="@@floor_height"/>
+    </objects>
+</raisim>
