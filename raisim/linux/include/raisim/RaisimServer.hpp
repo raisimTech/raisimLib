@@ -58,7 +58,6 @@ class RaisimServer final {
  public:
   static constexpr int SEND_BUFFER_SIZE = 33554432;
   static constexpr int MAXIMUM_PACKET_SIZE = 32384;
-  static constexpr int FOOTER_SIZE = sizeof(char);
   static constexpr int RECEIVE_BUFFER_SIZE = 33554432;
 
   enum ClientMessageType : int {
@@ -222,6 +221,8 @@ class RaisimServer final {
       connected_ = client_ != INVALID_SOCKET;
 #endif
       RSWARN_IF(client_ < 0, "Accept failed, errno: " << errno)
+      RSINFO_IF(client_ >= 0, "Connection to "<< client_<<" is established")
+
       clearScene();
     }
   }
