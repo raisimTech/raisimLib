@@ -33,6 +33,8 @@ int main(int argc, char* argv[]) {
   auto mesh = world.addMesh(binaryPath.getDirectory() + "/rsc/monkey/monkey.obj", 1, inertia, com);
   auto visMesh = server.addVisualMesh("v_mesh", binaryPath.getDirectory() + "/rsc/monkey/monkey.obj");
   auto anymalB = server.addVisualArticulatedSystem("v_anymal", binaryPath.getDirectory() + "/rsc/anymal/urdf/anymal.urdf");
+  auto varrow = server.addVisualArrow("v_arrow", 1, 2, 1, 0, 0);
+
   anymalB->color = {0.5, 0.0, 0.0, 0.5};
   mesh->setOrientation(quat);
   visMesh->setOrientation(quat.e());
@@ -40,6 +42,7 @@ int main(int argc, char* argv[]) {
   visCylinder->setPosition(0,2,0);
   visCapsule->setPosition(2,2,0);
   visMesh->setPosition(2,-2,1);
+  varrow->setPosition(0,0,4);
   mesh->setPosition(2,-2,1.1);
   Eigen::VectorXd gc(19);
   gc << 0, 0, 3.54, 1.0, 0.0, 0.0, 0.0, 0.03, 0.4, -0.8, -0.03, 0.4, -0.8, 0.03, -0.4, 0.8, -0.03, -0.4, 0.8;
