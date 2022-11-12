@@ -27,10 +27,10 @@ This is why the older versions of RaiSim and other simulators use the CRC combo.
 Because the ABA does not compute those properties, it was not useful in rigid body simulation.
 
 RaiSim v1.1 is equipped with a family of new algorithms that compute the contact related properties at O(n).
-These algorithms do not compute the mass matrix and its inverse (they have n^2 elements and there is no way to compute them at O(n)).
+These algorithms do not compute the mass matrix nor its inverse (they have n^2 elements and there is no way to compute them at O(n)).
 These properties are in fact not necessary to compute any contact related properties that the RaiSim contact solver needs.
 Consequently, **RaiSim (>v1.1) computes the whole forward dynamics of an articulated system at O(n) including contact related properties**.
-We cannot share exactly what these algorithms do and what they compute.
+We cannot share exactly what these algorithms are and what they compute.
 They are not published.
 
 
@@ -70,12 +70,13 @@ Consequently, the old scheme might be faster if there are many contact points.
 
 For the ANYmal robot without collision, the new scheme runs at 318 kHz.
 This is faster than the old version which runs at 272 Hz.
+
 All simulation tests were performed on a single core of 3950X, which is not excellent at single-thread performance.
-The current best single-thread cpu (for RaiSim at least) is Apple's M1.
+The current best single-thread cpu (for RaiSim at least) is Apple's M2.
 The ANYmal simulation without contacts runs at 380 kHz on M1.
 
-Linux and OSX are the best for RL and other high-speed simulation applications.
-In Windows, you get less than half the performance due to the MSVC compiler.
+Linux and OSX are the best for high-speed simulation applications.
+In Windows, you get less than half the performance because it is compiled with MSVC, which is bad optimizing math operations.
 
 The computational speed of **4** becomes very significant when there are more than 10 coupled contact points.
 Therefore, it is important to check if there are unnecessary contact points.
