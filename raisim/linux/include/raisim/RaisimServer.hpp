@@ -1128,6 +1128,7 @@ class RaisimServer final {
     using namespace server;
     auto &objList = world_->getObjList();
     data_ = set(data_, ServerMessageType::UPDATE_ALL);
+    data_ = set(data_, (double) world_->getWorldTime());
     data_ = set(data_, mapName_);
     data_ = set(data_, (uint32_t) (world_->getConfigurationNumber() + visualConfiguration_));
     data_ = set(data_, (uint32_t) (objList.size() +
@@ -1624,7 +1625,7 @@ class RaisimServer final {
   int screenShotWidth_, screenShotHeight_;
 
   // version
-  constexpr static int version_ = 10010;
+  constexpr static int version_ = 10011;
 
   // visual tag counter
   uint32_t visTagCounter = 30;
