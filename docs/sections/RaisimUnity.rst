@@ -33,7 +33,13 @@ Double click the app, press "run app anyway"
 
 In Mac
 ***********************
+You will get one of the following messages
 
+* RaiSimUnity can't be opened because it is from an unidentified developer. Your security preferences allow installation of only apps from the App Store and identified developers."
+* "RaiSimUnity cannot be opened because the developer cannot be verified."
+* "macOS cannot verify that this app is free from malware."
+
+Open the raisimUnity executable location in Finder -> control click the raisimUnity -> open -> open.
 
 How to use raisimUnity
 =========================
