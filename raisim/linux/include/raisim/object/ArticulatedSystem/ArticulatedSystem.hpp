@@ -424,6 +424,12 @@ class ArticulatedSystem : public Object {
       vecvecCwiseMulThenSub(kd_, gv_, genForce);
       vecvecCwiseMulThenAdd(kd_, uref_, genForce);
     }
+
+    /// enforce joint torque limits
+    for (size_t i = 0; i < dof; i++) {
+      genForce[i] = genForce[i] < tauUpper_[i] ? genForce[i] : tauUpper_[i];
+      genForce[i] = genForce[i] > tauLower_[i] ? genForce[i] : tauLower_[i];
+    }
     return genForce;
   }
 
