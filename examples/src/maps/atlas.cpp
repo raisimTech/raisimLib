@@ -45,7 +45,7 @@ int main(int argc, char* argv[]) {
   /// use raisimUnreal to visualize the charts
   auto timeSeries = server.addTimeSeriesGraph("body pos", {"atlas_x", "atlas_y", "atlas_z", "w", "x", "y", "z"}, "time", "pos");
   auto barChart = server.addBarChart("body pos2", {"x", "y", "z"});
-  barChart->setData({0.1, 0.2, 0.3});
+  barChart->setData({0.1f, 0.2f, 0.3f});
 
   server.launchServer();
   int count = 0;

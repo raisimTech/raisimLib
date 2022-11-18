@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<raisim version="1.0">
+    <timeStep value="0.001"/>
+    <objects>
+        <sphere name="sphere" mass="1">
+            <dim radius="0.5" />
+            <inertia xx="0.1" xy="0" xz="0" yy="0.1" yz="0" zz="0.1" />
+            <state pos="0 0 5" quat="1 0 0 0" lin_vel="0 0 0" ang_vel="0 0 0" />
+        </sphere>
+        <capsule name="capsule" mass="1">
+            <dim radius="0.5" height="1" />
+            <inertia xx="0.1" xy="0" xz="0" yy="0.1" yz="0" zz="0.1" />
+            <state pos="1 0 5" quat="1 0 0 0" lin_vel="0 0 0" ang_vel="0 0 0" />
+        </capsule>
+        <box name="box" mass="1">
+            <dim x="0.5" y="1" z="2"/>
+            <inertia xx="0.1" xy="0" xz="0" yy="0.1" yz="0" zz="0.1" />
+            <state pos="1 1 5" quat="1 0 0 0" lin_vel="0 0 0" ang_vel="0 0 0" />
+        </box>
+        <heightmap name="terrain" text="[THIS_DIR]/heightMapExample.txt" center_x="0" center_y="0"/>
+    </objects>
+</raisim>

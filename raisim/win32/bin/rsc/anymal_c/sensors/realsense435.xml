@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<sensor_set name="realsense_d435">
+    <origin rpy="0.0 0.0 0.0" xyz="0 0 0.015"/>
+    <link>
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="0.061575"/>
+            <inertia ixx="9.108e-05" ixy="0" ixz="0" iyy="2.51e-06" iyz="0" izz="8.931e-05"/>
+        </inertial>
+        <visual>
+            <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+            <geometry>
+              <mesh filename="model://realsense_camera/meshes/realsense.dae" scale=".001 .001 .001"/>
+            </geometry>
+        </visual>
+<!--        <collision name='collision'>-->
+<!--            <origin rpy="0 0 0" xyz="0 0 0"/>-->
+<!--            <geometry>-->
+<!--                <box size="0.0078 0.130 0.0192"/>-->
+<!--            </geometry>-->
+<!--        </collision>-->
+        <sensor name="color" type="rgb" update_rate="20">
+            <origin rpy="0.0 0.0 0.0" xyz="0 -0.046 0.004"/>
+            <camera horizontal_fov="1.047">
+                <image width="640" height="480"/>
+                <clip near="0.1" far="100"/>
+                <noise type="gaussian" mean="0.0" stddev="0.007"/>
+            </camera>
+            <update_rate>60</update_rate>
+        </sensor>
+        <sensor name="ired1" type="camera" update_rate="20">
+            <origin rpy="0.0 0.0 0.0" xyz="0 -0.06 0.004"/>
+            <camera horizontal_fov="1.047">
+                <image width="640" height="480"/>
+                <clip near="0.1" far="100"/>
+                <noise type="gaussian" mean="0.0" stddev="0.007"/>
+            </camera>
+            <update_rate>60</update_rate>
+        </sensor>
+        <sensor name="ired2" type="camera" update_rate="20">
+            <origin rpy="0.0 0.0 0.0" xyz="0 0.01 0.004"/>
+            <camera horizontal_fov="1.047">
+                <image width="640" height="480"/>
+                <clip near="0.1" far="100"/>
+                <noise type="gaussian" mean="0.0" stddev="0.007"/>
+            </camera>
+        </sensor>
+        <sensor name="depth" type="depth" update_rate="20">
+            <data type="coordinates"/>
+            <origin rpy="0.0 0.0 0.0" xyz="0 -0.03 0.004"/>
+            <camera horizontal_fov="1.047">
+                <image width="640" height="480"/>
+                <clip near="0.1" far="100"/>
+                <noise type="gaussian" mean="0.0" stddev="0.007"/>
+            </camera>
+        </sensor>
+    </link>
+</sensor_set>

@@ -1,0 +1,68 @@
+<?xml version="1.0" ?>
+<raisim version="1.0">
+    <time_step value="0.001"/>
+    <params>
+        <sphere_height_offset value="0.1"/>
+    </params>
+    <objects>
+        <ground name="ground"/>
+        <array idx="@@idx" start="0" end="80" increment="1">
+            <sphere name="sphere_array_@@idx"  mass="1">
+                <dim radius="{0.5+@@idx*0.001}" />
+                <state pos="{cos(0.1*@@idx)*(@@idx*0.2+0.1)} {sin(0.1*@@idx)*(@@idx*0.2+0.1)} {@@sphere_height_offset+@@idx*1.0}"/>
+            </sphere>
+            <box name="box" mass="1">
+                <dim x="0.5" y="0.5" z="1"/>
+                <inertia xx="0.1" xy="0" xz="0" yy="0.1" yz="0" zz="0.1" />
+                <state pos="{cos(0.1*@@idx)*(@@idx*0.3+0.2)} {sin(0.1*@@idx)*(@@idx*0.3+0.2)} {@@sphere_height_offset+@@idx*1.0}" />
+            </box>
+        </array>
+        <sphere name="sphere" mass="1">
+            <dim radius="0.5" />
+            <inertia xx="0.1" xy="0" xz="0" yy="0.1" yz="0" zz="0.1" />
+            <state pos="0 0 5" quat="1 0 0 0" lin_vel="0 0 0" ang_vel="0 0 0" />
+        </sphere>
+        <capsule name="capsule" mass="1">
+            <dim radius="0.5" height="1" />
+            <inertia xx="0.1" xy="0" xz="0" yy="0.1" yz="0" zz="0.1" />
+            <state pos="1 0 5" quat="1 0 0 0" lin_vel="0 0 0" ang_vel="0 0 0" />
+        </capsule>
+        <box name="box" mass="1">
+            <dim x="0.5" y="1" z="2"/>
+            <inertia xx="0.1" xy="0" xz="0" yy="0.1" yz="0" zz="0.1" />
+            <state pos="1 1 5" quat="1 0 0 0" lin_vel="0 0 0" ang_vel="0 0 0" />
+        </box>
+        <cylinder name="cylinder" mass="1">
+            <dim radius="0.5" height="1" />
+            <inertia xx="0.1" xy="0" xz="0" yy="0.1" yz="0" zz="0.1" />
+            <state pos="-1 0 5" quat="1 0 0 0" lin_vel="0 0 0" ang_vel="0 0 0" />
+        </cylinder>
+        <mesh name="mesh" mass="1" file_name="[THIS_DIR]/../../monkey/monkey.obj" com="0 0 0" scale="1 1 1">
+            <inertia xx="0.1" xy="0" xz="0" yy="0.1" yz="0" zz="0.1" />
+            <state pos="-1 2.5 5" quat="1 0 0 0" lin_vel="0 0 0" ang_vel="0 0 0" />
+        </mesh>
+        <compound name="compound" mass="10" com="0 0 0">
+            <inertia xx="1" xy="0" xz="0" yy="1" yz="0" zz="1" />
+            <children>
+                <sphere name="sphere" mass="1">
+                    <dim radius="0.2" />
+                    <state pos="-0.5 0 -0.5" quat="1 0 0 0"/>
+                </sphere>
+                <capsule name="capsule" mass="1">
+                    <dim radius="0.2" height="0.5" />
+                    <state pos="0.5 0 -0.5" quat="1 0 0 0" />
+                </capsule>
+                <box name="box" mass="1">
+                    <dim x="0.2" y="0.5" z="0.7"/>
+                    <state pos="0 0 0.5" quat="1 0 0 0"/>
+                </box>
+                <cylinder name="cylinder" mass="1">
+                    <dim radius="0.2" height="0.5" />
+                    <state pos="0 0 0" quat="1 0 0 0"/>
+                </cylinder>
+            </children>
+            <state pos="0 0 10"/>
+        </compound>
+    </objects>
+    <camera follow="ground" x="5" y="5" z="5"/>
+</raisim>
