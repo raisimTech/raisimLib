@@ -17,38 +17,88 @@ You can add them to your environment variables or simply replace them by the pat
 Dependencies
 ============
 
-RaiSim depends on the following open-source libraries
+You have to install the following packages before using raisim
 
-* *Eigen3* (:code:`sudo apt-get install libeigen3-dev`)
-* cmake > 3.10 (Technically it is not a dependency but it makes the installation easier)
-* For windows users, visual studio 2019 (we only support 2019 but it will probably work with 2015 or above)
+* eigen library
+* cmake > 3.10
+* For windows users, visual studio 2019 (we only support 2019 but it will probably work with 2015 or above). **Make sure that you install the C++ module as well by checking the corresponding checkbox during install**.
 
 RaiSim includes many open-source libraries. See the COPYING file for the full list.
+Source code of Eigen and Pybind11 are included in the ``thirdParty`` directory.
 
 RaiSim Install
 ===============
 
 Clone raisim from https://github.com/raisimTech/raisimlib.
 
-RaiSim is installed using cmake. The following options are available
+The cloned repo is already a set of installed raisim packages.
+Under ``raisimLib/raisim/<OS-TYPE>``, you will find the installed cmake packages.
+
+To use raisim in your project, you can simply add the cmake package path and the shared library path to their corresponding environment variables as following
+
+
+.. tabs::
+  .. group-tab:: Linux
+    Add the following lines to your ``~/.bashrc`` file
+
+    .. code-block:: bash
+
+        export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$WORKSPACE/raisim/linux/lib
+        export PYTHONPATH=$PYTHONPATH:$WORKSPACE/raisim/linux/lib
+
+    This allow the linux linker to find the raisim shared libraries.
+    To let your project CMake know where to find raisim, simply pass an argument ``-DCMAKE_PREFIX_PATH=$WORKSPACE/raisim/linux``.
+
+  .. group-tab:: Mac
+    Add the following lines to your ``.zshrc`` file
+
+    .. code-block:: bash
+
+        export DYLD_LIBRARY_PATH=DYLD_LIBRARY_PATH:$WORKSPACE/raisim/mac/lib
+        export PYTHONPATH=$PYTHONPATH:$WORKSPACE/raisim/mac/lib
+
+    If you use an M1 or M2 based Mac, use ``m1`` directory instead of ``mac``.
+    Do not use ``~`` to reference your home directory.
+    Write the full path.
+    Now the Mac linker knows where to find the raisim shared libraries.
+    To let your project CMake know where to find raisim, simply pass an argument ``-DCMAKE_PREFIX_PATH=$WORKSPACE/raisim/mac``.
+    Again, use ``m1`` if you use an Apple silicon.
+
+
+  .. group-tab:: Windows
+    Add the win32 cmake package directory to your `Path` environment variable.
+    You can do that by following these steps
+
+    1. “Edit the system environment variables”
+    2. In "Advanced tab", "Environment Variables"
+    3. Click "Path" variable in the "System variables" list and click "edit"
+    4. Append ``$WORKSPACE/raisim/win32/``
+    5. To let your project know where raisim is, simply pass an argument ``-DCMAKE_PREFIX_PATH=$WORKSPACE/raisim/win32``. (Note that we no longer have separate directories for release and debug builds. They are combined in to a single one.)
+
+
+Building RaiSim Examples and Installing RaisimPy
+====================================================
+
+You can use the ``CMakeLists.txt`` in the ``raisimLib`` directory to build raisim examples and other modules.
+The following options are available
 
 * ``RAISIM_EXAMPLE`` : Compile C++ RaiSim examples
 * ``RAISIM_MATLAB`` : Compile raisimMatlab (compiled binary is also provided). You need MATLAB for this option
-* ``RAISIM_PY`` : Compile raisimPy. The desired python version can be set by ``-DPYTHON_EXECUTABLE=$(python3 -c "import sys; print(sys.executable)")`` in Linux or Mac. In Linux, you need to install python library using ``sudo apt install libpython<YOUR_PYTHON_VERSION>-dev`` to build a python package.
+* ``RAISIM_PY`` : Compile raisimPy.
 
 You can generate build files using CMake as following
 
+To build raisimPy for the correct python version, activate your conda environment before calling cmake.
+
 .. tabs::
   .. group-tab:: Linux or Mac
-
-    Replace ``$(python3 -c "import sys; print(sys.executable)")`` to specify which python executable to use.
 
     .. code-block:: c
 
       cd $WORKSPACE/raisimLib
       mkdir build
       cd build
-      cmake .. -DCMAKE_INSTALL_PREFIX=$LOCAL_INSTALL -DRAISIM_EXAMPLE=ON -DRAISIM_PY=ON -DPYTHON_EXECUTABLE=$(python3 -c "import sys; print(sys.executable)")
+      cmake .. -DCMAKE_INSTALL_PREFIX=$LOCAL_INSTALL -DRAISIM_EXAMPLE=ON -DRAISIM_PY=ON
       make install -j4
 
   .. group-tab:: Windows
@@ -62,50 +112,17 @@ You can generate build files using CMake as following
       cd $WORKSPACE/raisimLib
       mkdir build
       cd build
-      cmake .. -DCMAKE_INSTALL_PREFIX=$LOCAL_INSTALL -DRAISIM_EXAMPLE=ON -DRAISIM_PY=ON -DPYTHON_EXECUTABLE=<THE-PATH-TO-THE-PYTHON-EXE>
+      cmake .. -DCMAKE_INSTALL_PREFIX=$LOCAL_INSTALL -DRAISIM_EXAMPLE=ON -DRAISIM_PY=ON
       cmake --build . --target install --config Release
 
-To use RaiSim more conveniently, you have to let your linker know where you installed RaiSim
-
-.. tabs::
-  .. group-tab:: Linux
-
-    Add the following lines to your ``~/.bashrc`` file
-
-    .. code-block:: bash
-
-        export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:<WHERE-YOU-HAVE-INSTALLED-RAISIM>/lib
-        export PYTHONPATH=$PYTHONPATH:<WHERE-YOU-HAVE-INSTALLED-RAISIM>/lib
-
-    Do not use ``~`` to reference your home directory. Write the full path
-
-  .. group-tab:: Mac
-
-    Add the following lines to your ``.zshrc`` file
-
-    .. code-block:: bash
-
-        export DYLD_LIBRARY_PATH=DYLD_LIBRARY_PATH:<WHERE-YOU-HAVE-INSTALLED-RAISIM>/lib
-        export PYTHONPATH=$PYTHONPATH:<WHERE-YOU-HAVE-INSTALLED-RAISIM>/lib
-
-    Do not use ``~`` to reference your home directory. Write the full path
-
-  .. group-tab:: Windows
-    Add the installation directory to your `Path` environment variable.
-    You can do that by following these steps
-
-    1. “Edit the system environment variables”
-
-    2. In "Advanced tab", "Environment Variables"
-
-    3. Click "Path" variable in the "System variables" list and click "edit"
-
-    4. Append the install directory
 
 .. note::
     **For Linux users**
     To use (vulkan version) RaiSimUnity in Linux, you need to install ``minizip``, ``ffmpeg`` and ``vulkan``.
     To install vulkan, follow this link https://linuxconfig.org/install-and-test-vulkan-on-linux
+    **Do not install nvidia-graphics-drivers-396 as the link says**.
+    If you are going to use raisimGym, install the version recommended by pytorch.
+    If not, install the latest version.
 
     To install ``minizip`` and ``ffmpeg``,
 
@@ -113,7 +130,7 @@ To use RaiSim more conveniently, you have to let your linker know where you inst
 
         sudo apt install minizip ffmpeg
 
-    If you still cannot raisimUnity, this probably means that your driver does not support vulkan so well.
+    If you still cannot use raisimUnity, this probably means that your driver does not support vulkan so well.
     In that case, you should use raisimUnityOpengl.
     It only supports minimalistic graphics.
 
@@ -125,7 +142,7 @@ Save that file in ``<YOUR-HOME-DIR>/.raisim``.
 In Linux and Mac, this is ``/home/<YOUR-USERNAME>/.raisim``.
 In Windows, this is ``C:\Users\<YOUR-USERNAME>\.raisim`` (You might not be using ``C`` as your home directory).
 
-RaiSim will check the path you set by ``raisim::World::setActivationKey()``.
+RaiSim will also check the path you set by ``raisim::World::setActivationKey()``.
 If the file is not found, it will search in the user directory, where you saved your ``activation.raisim`` file.
 
 Examples
