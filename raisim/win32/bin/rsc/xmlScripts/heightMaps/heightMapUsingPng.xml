@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<raisim version="1.0">
+    <timeStep value="0.001"/>
+    <objects>
+        <articulated_system name="anymal" res_dir="[THIS_DIR]/../../anymal" urdf_path="[THIS_DIR]/../../anymal/urdf/anymal.urdf" collision_group="1" collision_mask="-1">
+            <state qpos="0, 0, 10.84, 1.0, 0.0, 0.0, 0.0, 0.03, 0.4, -0.8, -0.03, 0.4, -0.8, 0.03, -0.4, 0.8, -0.03, -0.4, 0.8"
+                   qvel="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0" />
+        </articulated_system>
+        <heightmap name="terrain" png="[THIS_DIR]/zurichHeightMap.png" x_size="500" y_size="500" center_x="0" center_y="0" z_offset="-10" z_scale="0.005"/>
+    </objects>
+    <camera follow="anymal" x="1" y="1" z="1"/>
+</raisim>

@@ -29,8 +29,7 @@ elseif(APPLE)
     list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_SOURCE_DIR}/raisim/${RAISIM_OS})
 elseif(WIN32)
     set(RAISIM_OS win32)
-    list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_SOURCE_DIR}/raisim/${RAISIM_OS}/mt_release)
-    list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_SOURCE_DIR}/raisim/${RAISIM_OS}/mt_debug)   
+    list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_SOURCE_DIR}/raisim/${RAISIM_OS})
     list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_SOURCE_DIR}/thirdParty/Eigen3)
 endif()
 
@@ -38,7 +37,7 @@ endif()
 # Package installation
 #==
 if(WIN32)
-    set(RAISIM_BIN_DIR ${RAISIM_OS}/mt_release)
+    set(RAISIM_BIN_DIR ${RAISIM_OS})
     install(
         DIRECTORY
         ${CMAKE_CURRENT_LIST_DIR}/raisim/${RAISIM_BIN_DIR}/bin

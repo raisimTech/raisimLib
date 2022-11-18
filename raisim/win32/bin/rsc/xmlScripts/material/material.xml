@@ -1,0 +1,26 @@
+<?xml version="1.0" ?>
+<raisim version="1.0">
+    <timeStep value="0.001"/>
+    <objects>
+        <ground name="ground" material="steel"/>
+        <sphere name="sphere_steel" mass="1" material="steel">
+            <dim radius="0.5"/>
+            <state pos="-2 0 5" quat="1 0 0 0" lin_vel="0 0 0" ang_vel="0 0 0"/>
+        </sphere>
+        <sphere name="sphere_rubber" mass="1" material="rubber">
+            <dim radius="0.5"/>
+            <state pos="0 0 5" quat="1 0 0 0" lin_vel="0 0 0" ang_vel="0 0 0"/>
+        </sphere>
+        <sphere name="sphere_copper" mass="1" material="copper">
+            <dim radius="0.5"/>
+            <state pos="2 0 5" quat="1 0 0 0" lin_vel="0 0 0" ang_vel="0 0 0"/>
+        </sphere>
+    </objects>
+    <material>
+        <default friction="0.8" restitution="0" restitution_threshold="0"/>
+        <pair_prop name1="steel" name2="steel" friction="0.8" restitution="0.95" restitution_threshold="0.001"/>
+        <pair_prop name1="steel" name2="rubber" friction="0.8" restitution="0.15" restitution_threshold="0.001"/>
+        <pair_prop name1="steel" name2="copper" friction="0.8" restitution="0.65" restitution_threshold="0.001"/>
+    </material>
+    <camera follow="anymal" x="1" y="1" z="1"/>
+</raisim>
