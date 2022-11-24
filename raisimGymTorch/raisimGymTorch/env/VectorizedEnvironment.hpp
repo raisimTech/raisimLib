@@ -9,6 +9,7 @@
 #include "RaisimGymEnv.hpp"
 #include "omp.h"
 #include "Yaml.hpp"
+#define VISUAL_ENV 3
 
 namespace raisim {
 
@@ -44,7 +45,7 @@ class VectorizedEnvironment {
     environments_.reserve(num_envs_);
     rewardInformation_.reserve(num_envs_);
     for (int i = 0; i < num_envs_; i++) {
-      environments_.push_back(new ChildEnvironment(resourceDir_, cfg_, render_ && i == 0));
+      environments_.push_back(new ChildEnvironment(resourceDir_, cfg_, render_ && i == VISUAL_ENV));
       environments_.back()->setSimulationTimeStep(cfg_["simulation_dt"].template As<double>());
       environments_.back()->setControlTimeStep(cfg_["control_dt"].template As<double>());
       rewardInformation_.push_back(environments_.back()->getRewards().getStdMap());
@@ -79,29 +80,41 @@ class VectorizedEnvironment {
     for (auto env: environments_)
       env->reset();
   }
+/////////////////////////////// my comment ////////////////////////////////////////
+//   void observe(Eigen::Ref<EigenRowMajorMat> &ob, bool updateStatistics) {
+// #pragma omp parallel for schedule(auto)
+//     for (int i = 0; i < num_envs_; i++)
+//       environments_[i]->observe(ob.row(i));
 
-  void observe(Eigen::Ref<EigenRowMajorMat> &ob, bool updateStatistics) {
-#pragma omp parallel for schedule(auto)
+//     if (normalizeObservation_)
+//       updateObservationStatisticsAndNormalize(ob, updateStatistics);
+//   }
+//////////////////////////////////////////////////////////////////////////////////
+////////////////////////// my observe ///////////////////////////////////////////
+  void observe(Eigen::Ref<EigenRowMajorMat> &ob, Eigen::Ref<EigenRowMajorMat> &normed_obs, bool updateStatistics,bool isnoise) {
+#pragma omp parallel for schedule(auto) 
     for (int i = 0; i < num_envs_; i++)
-      environments_[i]->observe(ob.row(i));
+      environments_[i]->observe(ob.row(i),isnoise);
+    
+    normed_obs = ob;
 
     if (normalizeObservation_)
-      updateObservationStatisticsAndNormalize(ob, updateStatistics);
-  }
-
-
+        updateObservationStatisticsAndNormalize(normed_obs, updateStatistics);
+}
+/////////////////////////////////////////////////////////////////////////////////
   void step(Eigen::Ref<EigenRowMajorMat> &action,
             Eigen::Ref<EigenVec> &reward,
-            Eigen::Ref<EigenBoolVec> &done) {
+            Eigen::Ref<EigenBoolVec> &done,
+            int step) {
 #pragma omp parallel for schedule(auto)
     for (int i = 0; i < num_envs_; i++)
-      perAgentStep(i, action, reward, done);
+      perAgentStep(i, action, reward, done,step);
   }
 
-  void turnOnVisualization() { if(render_) environments_[0]->turnOnVisualization(); }
-  void turnOffVisualization() { if(render_) environments_[0]->turnOffVisualization(); }
-  void startRecordingVideo(const std::string& videoName) { if(render_) environments_[0]->startRecordingVideo(videoName); }
-  void stopRecordingVideo() { if(render_) environments_[0]->stopRecordingVideo(); }
+  void turnOnVisualization() { if(render_) environments_[VISUAL_ENV]->turnOnVisualization(); }
+  void turnOffVisualization() { if(render_) environments_[VISUAL_ENV]->turnOffVisualization(); }
+  void startRecordingVideo(const std::string& videoName) { if(render_) environments_[VISUAL_ENV]->startRecordingVideo(videoName); }
+  void stopRecordingVideo() { if(render_) environments_[VISUAL_ENV]->stopRecordingVideo(); }
   void getObStatistics(Eigen::Ref<EigenVec> &mean, Eigen::Ref<EigenVec> &var, float &count) {
     mean = obMean_; var = obVar_; count = obCount_; }
   void setObStatistics(Eigen::Ref<EigenVec> &mean, Eigen::Ref<EigenVec> &var, float count) {
@@ -164,21 +177,24 @@ class VectorizedEnvironment {
       obCount_ = totCount;
     }
 
-#pragma omp parallel for schedule(auto)
+    #pragma omp parallel for schedule(auto)
     for(int i=0; i<num_envs_; i++)
       ob.row(i) = (ob.row(i) - obMean_.transpose()).template cwiseQuotient<>((obVar_ + epsilon).cwiseSqrt().transpose());
+        
   }
 
   inline void perAgentStep(int agentId,
                            Eigen::Ref<EigenRowMajorMat> &action,
                            Eigen::Ref<EigenVec> &reward,
-                           Eigen::Ref<EigenBoolVec> &done) {
-    reward[agentId] = environments_[agentId]->step(action.row(agentId));
+                           Eigen::Ref<EigenBoolVec> &done,
+                           int step) {
+    reward[agentId] = environments_[agentId]->step(action.row(agentId),step);
+    
     rewardInformation_[agentId] = environments_[agentId]->getRewards().getStdMap();
-
+    
     float terminalReward = 0;
     done[agentId] = environments_[agentId]->isTerminalState(terminalReward);
-
+    
     if (done[agentId]) {
       environments_[agentId]->reset();
       reward[agentId] += terminalReward;
@@ -230,20 +246,24 @@ class NormalSampler {
   void seed(int seed) {
     // this ensures that every thread gets a different seed
 #pragma omp parallel for schedule(static, 1)
+    // for (int i = 0; i < THREAD_COUNT; i++)
+    //   normal_[0].seed(i + seed);
     for (int i = 0; i < THREAD_COUNT; i++)
-      normal_[0].seed(i + seed);
+      normal_[i].seed(i + seed);
   }
 
   inline void sample(Eigen::Ref<EigenRowMajorMat> &mean,
                      Eigen::Ref<EigenVec> &std,
                      Eigen::Ref<EigenRowMajorMat> &samples,
-                     Eigen::Ref<EigenVec> &log_prob) {
+                     Eigen::Ref<EigenVec> &log_prob) 
+    {
     int agentNumber = log_prob.rows();
 
-#pragma omp parallel for schedule(auto)
+    #pragma omp parallel for schedule(auto)
     for (int agentId = 0; agentId < agentNumber; agentId++) {
       log_prob(agentId) = 0;
       for (int i = 0; i < dim_; i++) {
+        //reparameterization trick
         const float noise = normal_[omp_get_thread_num()].sample();
         samples(agentId, i) = mean(agentId, i) + noise * std(i);
         log_prob(agentId) -= noise * noise * 0.5 + std::log(std(i));
@@ -251,7 +271,8 @@ class NormalSampler {
       log_prob(agentId) -= float(dim_) * 0.9189385332f;
     }
   }
-  int dim_;
+
+  int dim_; // action dimension
   std::vector<NormalDistribution> normal_;
 };
 

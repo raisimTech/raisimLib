@@ -14,4 +14,7 @@ raisimGymTorch/env/data/*
 .vscode/*
 id_rsa
 */data/*
-raisimGymTorch/env/bin/rsg*
+raisimGymTorch/env/bin/
+wandb/*
+runs/*
+thirdParty/*

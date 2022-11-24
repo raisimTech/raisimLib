@@ -5,7 +5,9 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
 from .storage import RolloutStorage
-
+##########################my import#######################################
+import wandb
+##########################################################################
 
 class PPO:
     def __init__(self,
@@ -97,10 +99,9 @@ class PPO:
     def log(self, variables):
         self.tot_timesteps += self.num_transitions_per_env * self.num_envs
         mean_std = self.actor.distribution.std.mean()
-        self.writer.add_scalar('PPO/value_function', variables['mean_value_loss'], variables['it'])
-        self.writer.add_scalar('PPO/surrogate', variables['mean_surrogate_loss'], variables['it'])
-        self.writer.add_scalar('PPO/mean_noise_std', mean_std.item(), variables['it'])
-        self.writer.add_scalar('PPO/learning_rate', self.learning_rate, variables['it'])
+        wandb.log({"value_loss":variables['mean_value_loss'],\
+         "surrogate_loss":variables['mean_surrogate_loss'],"mean_noise_std":mean_std.item(),\
+            "learning_rate": self.learning_rate,'update_loss': variables['it']})
 
     def _train_step(self, log_this_iteration):
         mean_value_loss = 0

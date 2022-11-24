@@ -1,0 +1,21 @@
+seed: 1
+record_video: no
+wandb_mode: online
+environment:
+  render: False
+# just testing commenting
+  num_envs: 100
+  eval_every_n: 200
+  num_threads: 30
+  simulation_dt: 0.001
+  control_dt: 0.002
+  max_time: 5.0
+  reward:
+    forwardVel:
+      coeff: 1.0
+    torque:
+      coeff: -4e-5
+  updates: 2601
+architecture:
+  policy_net: [128, 128]
+  value_net: [128, 128]

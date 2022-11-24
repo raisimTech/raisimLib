@@ -29,11 +29,10 @@ class RaisimGymEnv {
   /////// implement these methods /////////
   virtual void init() = 0;
   virtual void reset() = 0;
-  virtual void observe(Eigen::Ref<EigenVec> ob) = 0;
-  virtual float step(const Eigen::Ref<EigenVec>& action) = 0;
+  virtual void observe(Eigen::Ref<EigenVec> ob,bool isnoise) = 0;
+  virtual float step(const Eigen::Ref<EigenVec>& action,int step) = 0;
   virtual bool isTerminalState(float& terminalReward) = 0;
   ////////////////////////////////////////
-
   /////// optional methods ///////
   virtual void curriculumUpdate() {};
   virtual void close() {};

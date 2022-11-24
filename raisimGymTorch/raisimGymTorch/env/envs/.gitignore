@@ -1,9 +1,0 @@
-# Ignore everything in repository root 
-/*
-
-# Files to not ignore
-!/.gitignore
-!/some_other_files
-
-# Folder to not ignore
-!/rsg*/

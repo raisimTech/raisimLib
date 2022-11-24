@@ -1,0 +1,47 @@
+seed: 1
+video_header: MPC_BC_test
+wandb_mode: offline
+environment:
+  render: True
+  num_envs: 1
+  eval_every_n: 200
+  num_threads: 30
+  simulation_dt: 0.001
+  control_dt: 0.002
+  max_time: 10.0
+  reward:
+    forwardVel:
+      coeff: 1.0  
+  updates: 2601
+architecture:
+  policy_net: [256, 128]
+  value_net: [128, 128]
+learner:
+  w_rl: 1.0
+  w_im: 1.0
+mpc:
+  num_peripheral: 4
+
+# seed: 1
+# video_header: MPC_BC
+# wandb_mode: online
+# environment:
+#   render: True
+#   num_envs: 20
+#   eval_every_n: 200
+#   num_threads: 30
+#   simulation_dt: 0.001
+#   control_dt: 0.002
+#   max_time: 5.0
+#   reward:
+#     forwardVel:
+#       coeff: 1.0  
+#   updates: 2601
+# architecture:
+#   policy_net: [256, 128]
+#   value_net: [128, 128]
+# learner:
+#   w_rl: 1.0
+#   w_im: 1.0
+# mpc:
+#   num_peripheral: 4

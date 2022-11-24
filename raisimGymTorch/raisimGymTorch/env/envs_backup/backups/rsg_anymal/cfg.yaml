@@ -1,0 +1,44 @@
+seed: 1
+record_video: yes
+
+environment:
+  render: True
+# just testing commenting
+  num_envs: 100
+  eval_every_n: 200
+  num_threads: 30
+  simulation_dt: 0.0025
+  control_dt: 0.01
+  max_time: 4.0
+  reward:
+    forwardVel:
+      coeff: 0.3
+    torque:
+      coeff: -4e-5
+
+    # my coefff#################################
+    # r_torso:
+    #   coeff: 1
+    # r_feet:
+    #   coeff: 0.5
+    # r_up:
+    #   coeff: 0.1
+    # torque:
+    #   coeff: -6e-5
+
+    # forwardVel:
+    #   coeff: 1
+    
+    # angVel:
+    #   coeff: -0.2
+
+    # torque:
+    #   coeff: -4e-5
+    # forwardVel:
+    #   coeff: 1
+    
+    ############################################
+
+architecture:
+  policy_net: [128, 128]
+  value_net: [128, 128]

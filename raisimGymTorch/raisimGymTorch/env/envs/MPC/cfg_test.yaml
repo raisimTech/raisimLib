@@ -1,0 +1,13 @@
+seed: 1
+video_header: MPC
+wandb_mode: disabled
+environment:
+  render: True
+  num_envs: 5
+  num_threads: 30
+  simulation_dt: 0.001
+  control_dt: 0.002
+  max_time: 5.0
+  reward:
+    forwardVel:
+      coeff: 1.0  
