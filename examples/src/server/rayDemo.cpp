@@ -52,7 +52,7 @@ int main(int argc, char* argv[]) {
   auto visSphere = server.addVisualSphere("viz_sphere", 0.3, 1,0,0,1);
 
   while (1) {
-    raisim::MSLEEP(2);
+    RS_TIMED_LOOP(int(world.getTimeStep()*1e6))
     server.integrateWorldThreadSafe();
     double angle = counter/1000.;
     double magnitude = (counter%3000)*0.1;

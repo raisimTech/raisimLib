@@ -47,7 +47,7 @@ int main(int argc, char* argv[]) {
   Eigen::VectorXd genForce(18);
 
   for (int i=0; i<200000000; i++) {
-    raisim::MSLEEP(1);
+    RS_TIMED_LOOP(int(world.getTimeStep()*1e6))
     if(i%2000==0)
       for(int j=0; j<18; j++)
         genForce[j] = unif(re);

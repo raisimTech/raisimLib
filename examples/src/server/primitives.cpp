@@ -13,7 +13,7 @@ int main(int argc, char* argv[]) {
   raisim::World::setActivationKey(binaryPath.getDirectory() + "\\rsc\\activation.raisim");
 
   raisim::World world;
-  world.setTimeStep(0.002);
+  world.setTimeStep(0.005);
 
   /// create objects
   auto ground = world.addGround(-0.5);
@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
   std::vector<raisim::Capsule*> capsules;
   std::vector<raisim::Cylinder*> cylinders;
 
-  static const int N = 3;
+  static const int N = 6;
 
   for (size_t i = 0; i < N; i++) {
     for (size_t j = 0; j < N; j++) {
@@ -64,7 +64,7 @@ int main(int argc, char* argv[]) {
   server.launchServer();
 
   while (1) {
-    raisim::MSLEEP(2);
+    RS_TIMED_LOOP(int(world.getTimeStep()*1e6))
     server.integrateWorldThreadSafe();
   }
 

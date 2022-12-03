@@ -57,7 +57,7 @@ int main(int argc, char* argv[]) {
   server.launchServer();
 
   for (int i = 0; i < 10000000; i++) {
-    raisim::MSLEEP(3);
+    RS_TIMED_LOOP(int(world.getTimeStep()*1e6))
     server.integrateWorldThreadSafe();
   }
 

@@ -114,10 +114,12 @@ int main(int argc, char **argv) {
   world.exportToXml(binaryPath.getDirectory(), "exportedWorld.xml");
 
   for (int i=0; i< 5000000; i++) {
-    raisim::MSLEEP(1);
-    server.integrateWorldThreadSafe();
+    RS_TIMED_LOOP(int(world.getTimeStep()*1e6))
+    if (server.isConnected()) {
+      server.integrateWorldThreadSafe();
+    }
 
-    if(i==5000)
+    if (i == 5000)
       world.removeObject(wire7);
   }
 

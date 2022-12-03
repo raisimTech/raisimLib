@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
   server.focusOn(cartPole);
 
   for (int i=0; i<200000; i++) {
-    raisim::MSLEEP(1);
+    RS_TIMED_LOOP(int(world.getTimeStep()*1e6))
     server.integrateWorldThreadSafe();
   }
 

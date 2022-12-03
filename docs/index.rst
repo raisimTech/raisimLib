@@ -1,5 +1,5 @@
 #############################
-RaiSim v1.1.5
+RaiSim v1.1.6
 #############################
 
 RaiSim is a cross-platform multi-body physics engine for robotics and AI.

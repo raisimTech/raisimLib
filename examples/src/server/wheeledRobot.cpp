@@ -37,7 +37,7 @@ int main(int argc, char* argv[]) {
   server.focusOn(robot);
 
   for (int i=0; i<20000000; i++) {
-    std::this_thread::sleep_for(std::chrono::microseconds(10000));
+    RS_TIMED_LOOP(int(world.getTimeStep()*1e6))
     server.integrateWorldThreadSafe();
   }
 

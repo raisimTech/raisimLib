@@ -4,6 +4,13 @@ Change Log
 Here we only describe the changes to the RaiSim library.
 Other peripheral codes are not tracked here.
 
+**v1.1.6**
+========================================
+The contact solver has been improved.
+Both the accuracy and speed has been improved.
+New macro ``RS_TIMED_LOOP(us)`` hass been added.
+Please check the examples.
+
 **v1.1.4**
 =========================================
 This version contains significant improvements on the visualizers: RaisimUnity and RaisimUnreal.

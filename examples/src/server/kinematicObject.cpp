@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
   server.launchServer();
 
   for (int i=0; i<20000; i++) {
-    raisim::MSLEEP(1);
+    RS_TIMED_LOOP(int(world.getTimeStep()*1e6))
     movingGround->setLinearVelocity({0, 0, 3. * sin(double(i)/3000. * M_PI)});
     server.integrateWorldThreadSafe();
 //    world.integrate();

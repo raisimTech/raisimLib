@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
   std::cout<<"now dynamic friction is active"<<std::endl;
 
   for (int i = 0; i < 5000; i++) {
-    raisim::MSLEEP(1);
+    RS_TIMED_LOOP(int(world.getTimeStep()*1e6))
     box->setExternalForce(0, {5, 0, 0});
     server.integrateWorldThreadSafe();
   }
