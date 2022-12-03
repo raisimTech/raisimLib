@@ -9,6 +9,7 @@
 int main(int argc, char* argv[]) {
   auto binaryPath = raisim::Path::setFromArgv(argv[0]);
   raisim::World::setActivationKey(binaryPath.getDirectory() + "\\rsc\\activation.raisim");
+  raisim::RaiSimMsg::setFatalCallback([](){throw;});
 
   /// create raisim world
   raisim::World world;
@@ -52,9 +53,26 @@ int main(int argc, char* argv[]) {
   server.launchServer();
   server.focusOn(anymalC);
 
+  /// graphs
+  std::vector<std::string> jointNames = {"LF_HAA", "LF_HFE", "LF_KFE", "RF_HAA", "RF_HFE", "RF_KFE",
+                                         "LH_HAA", "LH_HFE", "LH_KFE", "RH_HAA", "RH_HFE", "RH_KFE"};
+  auto jcGraph = server.addTimeSeriesGraph("joint position", jointNames, "time", "position");
+  auto jvGraph = server.addTimeSeriesGraph("joint velocity", jointNames, "time", "velocity");
+  auto jfGraph = server.addTimeSeriesGraph("joint torque", jointNames, "time", "torque");
+
+  raisim::VecDyn jc(12), jv(12), jf(12);
+
   for (int i=0; i<200000000; i++) {
     RS_TIMED_LOOP(int(world.getTimeStep()*1e6))
     server.integrateWorldThreadSafe();
+    if (i % 10 == 0) {
+      jc = anymalC->getGeneralizedCoordinate().e().tail(12);
+      jv = anymalC->getGeneralizedVelocity().e().tail(12);
+      jf = anymalC->getGeneralizedForce().e().tail(12);
+      jcGraph->addDataPoints(world.getWorldTime(), jc);
+      jvGraph->addDataPoints(world.getWorldTime(), jv);
+      jfGraph->addDataPoints(world.getWorldTime(), jf);
+    }
   }
 
   server.killServer();
