@@ -3,9 +3,6 @@
 
 #include "raisim/World.hpp"
 #include "raisim/RaisimServer.hpp"
-#if WIN32
-#include <timeapi.h>
-#endif
 
 int main(int argc, char* argv[]) {
   auto binaryPath = raisim::Path::setFromArgv(argv[0]);
@@ -26,8 +23,8 @@ int main(int argc, char* argv[]) {
   raisim::RaisimServer server(&world);
   server.launchServer();
   for (int i=0; i<10000000; i++) {
+    RS_TIMED_LOOP(int(world.getTimeStep()*1e6))
     server.integrateWorldThreadSafe();
-    raisim::MSLEEP(1000*world.getTimeStep());
   }
 
   server.killServer();
