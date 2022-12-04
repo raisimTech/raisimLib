@@ -3,9 +3,6 @@
 
 #include "raisim/World.hpp"
 #include "raisim/RaisimServer.hpp"
-#if WIN32
-#include <timeapi.h>
-#endif
 
 int main(int argc, char* argv[]) {
   auto binaryPath = raisim::Path::setFromArgv(argv[0]);
@@ -45,7 +42,7 @@ int main(int argc, char* argv[]) {
   server.setCameraPositionAndLookAt({5,0,2}, {0,0,2});
 
   while (1) {
-    raisim::MSLEEP(2);
+    RS_TIMED_LOOP(int(world.getTimeStep()*1e6))
     server.integrateWorldThreadSafe();
   }
 

@@ -3,9 +3,6 @@
 
 #include "raisim/World.hpp"
 #include "raisim/RaisimServer.hpp"
-#if WIN32
-#include <timeapi.h>
-#endif
 
 int main(int argc, char* argv[]) {
   auto binaryPath = raisim::Path::setFromArgv(argv[0]);
@@ -63,8 +60,8 @@ int main(int argc, char* argv[]) {
   server.launchServer();
   size_t counter = 0;
   for (int i=0; i<500000; i++) {
+    RS_TIMED_LOOP(int(world.getTimeStep()*1e6))
     counter++;
-    raisim::MSLEEP(2);
 
     server.lockVisualizationServerMutex();
     visBox->color[2] = double((counter)%255+1)/256.;

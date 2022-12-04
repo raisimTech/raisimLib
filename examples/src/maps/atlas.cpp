@@ -3,9 +3,6 @@
 
 #include "raisim/RaisimServer.hpp"
 #include "raisim/World.hpp"
-#if WIN32
-#include <timeapi.h>
-#endif
 
 int main(int argc, char* argv[]) {
   auto binaryPath = raisim::Path::setFromArgv(argv[0]);
@@ -51,7 +48,7 @@ int main(int argc, char* argv[]) {
   int count = 0;
 
   while (1) {
-    raisim::USLEEP(1000);
+    RS_TIMED_LOOP(int(world.getTimeStep()*1e6))
     atlas[0]->setExternalForce(0, {300,-300,30});
     atlas[0]->setExternalTorque(0, {0,40,0});
     raisim::VecDyn vec(7);

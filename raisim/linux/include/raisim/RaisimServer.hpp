@@ -303,9 +303,12 @@ class RaisimServer final {
    * This will prevent visualization thread reading from the world (otherwise, there can be a segfault).
    * Integrate the world. */
   inline void integrateWorldThreadSafe() {
-    std::lock_guard<std::mutex> guard(serverMutex_);
+    serverMutex_.lock();
     applyInteractionForce();
     world_->integrate();
+    serverMutex_.unlock();
+    if (tryingToLock_)
+      USLEEP(10);
   }
 
   /**
@@ -369,7 +372,11 @@ class RaisimServer final {
 
   /**
    * unlock the visualization mutex so that the server can read from the world */
-  inline void unlockVisualizationServerMutex() { serverMutex_.unlock(); }
+  inline void unlockVisualizationServerMutex() {
+    serverMutex_.unlock();
+    if (tryingToLock_)
+      USLEEP(10);
+  }
 
   /**
    * @return boolean representing if the termination requested */
@@ -810,8 +817,10 @@ class RaisimServer final {
       int clientRequestSize;
       ClientRequestType requestType;
       rData_ = get(rData_, &clientRequestSize);
-      lockVisualizationServerMutex();
       wireStiffness_ = 0.;
+      tryingToLock_ = true;
+      lockVisualizationServerMutex();
+      tryingToLock_ = false;
 
       for (int i=0; i<clientRequestSize; i++) {
         rData_ = get(rData_, &requestType);
@@ -1616,6 +1625,7 @@ class RaisimServer final {
   std::string mapName_;
 
   std::mutex serverMutex_;
+  std::atomic_bool tryingToLock_;
 
   uint64_t visualConfiguration_ = 0;
   void updateVisualConfig() { visualConfiguration_++; }

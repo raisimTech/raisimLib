@@ -3,9 +3,6 @@
 
 #include "raisim/RaisimServer.hpp"
 #include "raisim/World.hpp"
-#if WIN32
-#include <timeapi.h>
-#endif
 
 int main(int argc, char* argv[]) {
   /// create raisim world
@@ -59,7 +56,7 @@ int main(int argc, char* argv[]) {
   Eigen::Vector3d direction;
 
   for(int time=0; time<1000000; time++) {
-    raisim::MSLEEP(1);
+    RS_TIMED_LOOP(int(world.getTimeStep()*1e6))
     server.integrateWorldThreadSafe();
     raisim::Vec<3> lidarPos; raisim::Mat<3,3> lidarOri;
     robot->getFramePosition("imu_joint", lidarPos);

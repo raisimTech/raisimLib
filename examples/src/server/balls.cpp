@@ -3,9 +3,6 @@
 
 #include "raisim/RaisimServer.hpp"
 #include "raisim/World.hpp"
-#if WIN32
-#include <timeapi.h>
-#endif
 
 int main(int argc, char* argv[]) {
   auto binaryPath = raisim::Path::setFromArgv(argv[0]);
@@ -66,7 +63,7 @@ int main(int argc, char* argv[]) {
   int j = 0;
 
   for (int i = 0;; i++) {
-    raisim::MSLEEP(dt*1000.);
+    RS_TIMED_LOOP(int(world.getTimeStep()*1e6))
     server.lockVisualizationServerMutex();
     if (i % interval == 0 && j < numBalls) {
       auto* ball = world.addSphere(0.1, 1.0);

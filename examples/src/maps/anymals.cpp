@@ -2,9 +2,6 @@
 // Inc. prior to usage.
 
 #include "raisim/RaisimServer.hpp"
-#if WIN32
-#include <timeapi.h>
-#endif
 
 int main(int argc, char* argv[]) {
   auto binaryPath = raisim::Path::setFromArgv(argv[0]);
@@ -63,7 +60,7 @@ int main(int argc, char* argv[]) {
   raisim::VecDyn jc(12), jv(12), jf(12);
 
   for (int i=0; i<200000000; i++) {
-    raisim::MSLEEP(1);
+    RS_TIMED_LOOP(int(world.getTimeStep()*1e6))
     server.integrateWorldThreadSafe();
     if (i % 10 == 0) {
       jc = anymalC->getGeneralizedCoordinate().e().tail(12);

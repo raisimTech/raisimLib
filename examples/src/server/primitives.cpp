@@ -3,9 +3,6 @@
 
 #include "raisim/RaisimServer.hpp"
 #include "raisim/World.hpp"
-#if WIN32
-#include <timeapi.h>
-#endif
 
 int main(int argc, char* argv[]) {
   /// create raisim world
@@ -13,10 +10,10 @@ int main(int argc, char* argv[]) {
   raisim::World::setActivationKey(binaryPath.getDirectory() + "\\rsc\\activation.raisim");
 
   raisim::World world;
-  world.setTimeStep(0.002);
+  world.setTimeStep(0.005);
 
   /// create objects
-  auto ground = world.addGround(-0.5);
+  auto ground = world.addGround();
   ground->setName("ground");
   ground->setAppearance("grid");
   std::vector<raisim::Box*> cubes;
@@ -24,7 +21,7 @@ int main(int argc, char* argv[]) {
   std::vector<raisim::Capsule*> capsules;
   std::vector<raisim::Cylinder*> cylinders;
 
-  static const int N = 3;
+  static const int N = 6;
 
   for (size_t i = 0; i < N; i++) {
     for (size_t j = 0; j < N; j++) {
@@ -54,7 +51,7 @@ int main(int argc, char* argv[]) {
             ob->setAppearance("0.5, 0.5, 0.8, 1.0");
             break;
         }
-        ob->setPosition(-N + 2. * i, -N + 2. * j, N * 2. + 2. * k);
+        ob->setPosition(-N + 2. * i, -N + 2. * j, 1. + 1.5 * k);
       }
     }
   }
@@ -64,7 +61,7 @@ int main(int argc, char* argv[]) {
   server.launchServer();
 
   while (1) {
-    raisim::MSLEEP(2);
+    RS_TIMED_LOOP(int(world.getTimeStep()*1e6))
     server.integrateWorldThreadSafe();
   }
 

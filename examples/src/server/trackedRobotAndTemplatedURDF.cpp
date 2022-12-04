@@ -3,9 +3,6 @@
 
 #include "raisim/RaisimServer.hpp"
 #include "raisim/World.hpp"
-#if WIN32
-#include <timeapi.h>
-#endif
 
 int main(int argc, char *argv[]) {
   auto binaryPath = raisim::Path::setFromArgv(argv[0]);
@@ -70,6 +67,7 @@ int main(int argc, char *argv[]) {
   server.focusOn(robot);
 
   for (int i = 0; i < 200000; i++) {
+    RS_TIMED_LOOP(int(world.getTimeStep()*1e6))
     raisim::VecDyn gc = robot->getGeneralizedCoordinate();
     raisim::VecDyn gv = robot->getGeneralizedVelocity();
 
@@ -84,8 +82,6 @@ int main(int argc, char *argv[]) {
     robot->setState(gc.e(), gv.e());
     robot->setPdGains(pGain, dGain);
     robot->setPdTarget(pTarget, dTarget);
-
-    raisim::MSLEEP(1);
     server.integrateWorldThreadSafe();
   }
 

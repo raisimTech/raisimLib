@@ -4,7 +4,7 @@ RaisimPy
 
 RaisimPy is a nearly complete Python wrapper for raisim.
 It was initiated by Brian Delhaisse and now RaiSim Tech Inc. is continuing the development.
-RaisimPy is distributed under the MIT license.
+RaisimPy is distributed under the MIT license (but it depends on raisim).
 The install instructions are given `here <https://raisim.com/sections/Installation.html>`_.
 
 The syntax of raisimPy is nearly identical to that of the C++ API except that it takes numpy arrays instead of Eigen vectors.
