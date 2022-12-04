@@ -1,0 +1,108 @@
+<?xml version="1.0" ?>
+<raisim version="1.1.5">
+    <gravity value="0.000000, 0.000000, -9.810000" />
+    <timeStep value="0.001" />
+    <erp erp="0.3" erp2="0.002" />
+    <objects>
+        <ground name="unnamed_0" body_type="static" collision_group="2147483648" collision_mask="4294967295">
+            <dim height="0" />
+            <state />
+        </ground>
+        <sphere name="unnamed_1" body_type="static" collision_group="2147483648" collision_mask="4294967295" mass="0.8" com="0.000000, 0.000000, 0.000000">
+            <dim radius="0.1" />
+            <inertia xx="0.0032" xy="0" xz="0" yy="0.0032" yz="0" zz="0.0032" />
+            <state pos="0.000000, 0.000000, 3.000000" quat="1.000000, 0.000000, 0.000000, 0.000000" lin_vel="0.000000, 0.000000, 0.000000" ang_vel="0.000000, 0.000000, 0.000000" />
+        </sphere>
+        <sphere name="unnamed_2" body_type="static" collision_group="2147483648" collision_mask="4294967295" mass="0.8" com="0.000000, 0.000000, 0.000000">
+            <dim radius="0.1" />
+            <inertia xx="0.0032" xy="0" xz="0" yy="0.0032" yz="0" zz="0.0032" />
+            <state pos="0.300000, 0.000000, 3.000000" quat="1.000000, 0.000000, 0.000000, 0.000000" lin_vel="0.000000, 0.000000, 0.000000" ang_vel="0.000000, 0.000000, 0.000000" />
+        </sphere>
+        <sphere name="unnamed_3" body_type="static" collision_group="2147483648" collision_mask="4294967295" mass="0.8" com="0.000000, 0.000000, 0.000000">
+            <dim radius="0.1" />
+            <inertia xx="0.0032" xy="0" xz="0" yy="0.0032" yz="0" zz="0.0032" />
+            <state pos="0.600000, 0.000000, 3.000000" quat="1.000000, 0.000000, 0.000000, 0.000000" lin_vel="0.000000, 0.000000, 0.000000" ang_vel="0.000000, 0.000000, 0.000000" />
+        </sphere>
+        <sphere name="unnamed_4" body_type="static" collision_group="2147483648" collision_mask="4294967295" mass="0.8" com="0.000000, 0.000000, 0.000000">
+            <dim radius="0.1" />
+            <inertia xx="0.0032" xy="0" xz="0" yy="0.0032" yz="0" zz="0.0032" />
+            <state pos="0.900000, 0.000000, 3.000000" quat="1.000000, 0.000000, 0.000000, 0.000000" lin_vel="0.000000, 0.000000, 0.000000" ang_vel="0.000000, 0.000000, 0.000000" />
+        </sphere>
+        <sphere name="unnamed_5" body_type="static" collision_group="2147483648" collision_mask="4294967295" mass="0.8" com="0.000000, 0.000000, 0.000000">
+            <dim radius="0.1" />
+            <inertia xx="0.0032" xy="0" xz="0" yy="0.0032" yz="0" zz="0.0032" />
+            <state pos="0.900000, 0.000000, 6.000000" quat="1.000000, 0.000000, 0.000000, 0.000000" lin_vel="0.000000, 0.000000, 0.000000" ang_vel="0.000000, 0.000000, 0.000000" />
+        </sphere>
+        <sphere name="unnamed_6" body_type="static" collision_group="2147483648" collision_mask="4294967295" mass="0.8" com="0.000000, 0.000000, 0.000000">
+            <dim radius="0.1" />
+            <inertia xx="0.0032" xy="0" xz="0" yy="0.0032" yz="0" zz="0.0032" />
+            <state pos="-3.000000, 0.000000, 7.000000" quat="1.000000, 0.000000, 0.000000, 0.000000" lin_vel="0.000000, 0.000000, 0.000000" ang_vel="0.000000, 0.000000, 0.000000" />
+        </sphere>
+        <sphere name="unnamed_7" body_type="static" collision_group="2147483648" collision_mask="4294967295" mass="0.8" com="0.000000, 0.000000, 0.000000">
+            <dim radius="0.1" />
+            <inertia xx="0.0032" xy="0" xz="0" yy="0.0032" yz="0" zz="0.0032" />
+            <state pos="-4.000000, 0.000000, 7.000000" quat="1.000000, 0.000000, 0.000000, 0.000000" lin_vel="0.000000, 0.000000, 0.000000" ang_vel="0.000000, 0.000000, 0.000000" />
+        </sphere>
+        <articulatedSystem name="anymalC" res_dir="C:\Users\jemin\source\repos\raisimLib\raisim\win32\bin\rsc\anymal_c\urdf" urdf_path="C:\Users\jemin\source\repos\raisimLib\raisim\win32\bin\rsc\anymal_c\urdf\anymal.urdf" collision_group="1" collision_mask="4294967295">
+            <dim />
+            <state qpos="-3.000000, 0.000000, 4.540000, 1.000000, 0.000000, 0.000000, 0.000000, 0.030000, 0.400000, -0.800000, -0.030000, 0.400000, -0.800000, 0.030000, -0.400000, 0.800000, -0.030000, -0.400000, 0.800000" qvel="0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000" />
+        </articulatedSystem>
+        <articulatedSystem name="anymalB" res_dir="C:\Users\jemin\source\repos\raisimLib\raisim\win32\bin\rsc\anymal\urdf" urdf_path="C:\Users\jemin\source\repos\raisimLib\raisim\win32\bin\rsc\anymal\urdf\anymal.urdf" collision_group="1" collision_mask="4294967295">
+            <dim />
+            <state qpos="-4.000000, 0.000000, 4.540000, 1.000000, 0.000000, 0.000000, 0.000000, 0.030000, 0.400000, -0.800000, -0.030000, 0.400000, -0.800000, 0.030000, -0.400000, 0.800000, -0.030000, -0.400000, 0.800000" qvel="0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000" />
+        </articulatedSystem>
+        <sphere name="unnamed_8" collision_group="1" collision_mask="4294967295" mass="0.8" com="0.000000, 0.000000, 0.000000">
+            <dim radius="0.1498" />
+            <inertia xx="0.00718081" xy="0" xz="0" yy="0.00718081" yz="0" zz="0.00718081" />
+            <state pos="0.000000, 0.000000, 1.000000" quat="1.000000, 0.000000, 0.000000, 0.000000" lin_vel="0.000000, 0.000000, 0.000000" ang_vel="0.000000, 0.000000, 0.000000" />
+        </sphere>
+        <sphere name="unnamed_9" collision_group="1" collision_mask="4294967295" mass="0.8" com="0.000000, 0.000000, 0.000000">
+            <dim radius="0.1499" />
+            <inertia xx="0.0071904" xy="0" xz="0" yy="0.0071904" yz="0" zz="0.0071904" />
+            <state pos="0.300000, 0.000000, 1.000000" quat="1.000000, 0.000000, 0.000000, 0.000000" lin_vel="0.000000, 0.000000, 0.000000" ang_vel="0.000000, 0.000000, 0.000000" />
+        </sphere>
+        <sphere name="unnamed_10" collision_group="1" collision_mask="4294967295" mass="0.8" com="0.000000, 0.000000, 0.000000">
+            <dim radius="0.1499" />
+            <inertia xx="0.0071904" xy="0" xz="0" yy="0.0071904" yz="0" zz="0.0071904" />
+            <state pos="0.600000, 0.000000, 1.000000" quat="1.000000, 0.000000, 0.000000, 0.000000" lin_vel="0.000000, 0.000000, 0.000000" ang_vel="0.000000, 0.000000, 0.000000" />
+        </sphere>
+        <sphere name="unnamed_11" collision_group="1" collision_mask="4294967295" mass="0.8" com="0.000000, 0.000000, 0.000000">
+            <dim radius="0.1499" />
+            <inertia xx="0.0071904" xy="0" xz="0" yy="0.0071904" yz="0" zz="0.0071904" />
+            <state pos="2.900000, 0.000000, 3.000000" quat="1.000000, 0.000000, 0.000000, 0.000000" lin_vel="0.000000, 0.000000, 0.000000" ang_vel="0.000000, 0.000000, 0.000000" />
+        </sphere>
+        <box name="unnamed_12" collision_group="1" collision_mask="4294967295" mass="1" com="0.000000, 0.000000, 0.000000">
+            <dim x="0.1" y="0.1" z="0.1" />
+            <inertia xx="0.00166667" xy="0" xz="0" yy="0.00166667" yz="0" zz="0.00166667" />
+            <state pos="0.900000, 0.000000, 4.200000" quat="1.000000, 0.000000, 0.000000, 0.000000" lin_vel="0.000000, 0.000000, 0.000000" ang_vel="0.000000, 0.000000, 0.000000" />
+        </box>
+    </objects>
+    <wire type="stiff" length="2" name="unnamed_13" stretch_type="stretch_only">
+        <object1 name="unnamed_1" local_index="0" pos="0.000000, 0.000000, 0.000000" />
+        <object2 name="unnamed_8" local_index="0" pos="0.000000, 0.000000, 0.000000" />
+    </wire>
+    <wire type="stiff" length="2" name="unnamed_14" stretch_type="stretch_only">
+        <object1 name="unnamed_2" local_index="0" pos="0.000000, 0.000000, 0.000000" />
+        <object2 name="unnamed_9" local_index="0" pos="0.000000, 0.000000, 0.000000" />
+    </wire>
+    <wire type="stiff" length="2" name="unnamed_15" stretch_type="stretch_only">
+        <object1 name="unnamed_3" local_index="0" pos="0.000000, 0.000000, 0.000000" />
+        <object2 name="unnamed_10" local_index="0" pos="0.000000, 0.000000, 0.000000" />
+    </wire>
+    <wire type="stiff" length="2" name="unnamed_16" stretch_type="stretch_only">
+        <object1 name="unnamed_4" local_index="0" pos="0.000000, 0.000000, 0.000000" />
+        <object2 name="unnamed_11" local_index="0" pos="0.000000, 0.000000, 0.000000" />
+    </wire>
+    <wire type="compliant" stiffness="200" length="2" name="unnamed_17" stretch_type="both">
+        <object1 name="unnamed_5" local_index="0" pos="0.000000, 0.000000, 0.000000" />
+        <object2 name="unnamed_12" local_index="0" pos="0.000000, 0.000000, 0.000000" />
+    </wire>
+    <wire type="compliant" stiffness="1000" length="2" name="unnamed_18" stretch_type="both">
+        <object1 name="unnamed_6" local_index="0" pos="0.000000, 0.000000, 0.000000" />
+        <object2 name="anymalC" local_index="0" pos="0.000000, 0.000000, 0.000000" />
+    </wire>
+    <wire type="custom" length="2" name="unnamed_19" stretch_type="compression_only">
+        <object1 name="unnamed_7" local_index="0" pos="0.000000, 0.000000, 0.000000" />
+        <object2 name="anymalB" local_index="0" pos="0.000000, 0.000000, 0.000000" />
+    </wire>
+</raisim>

@@ -20,6 +20,7 @@
 #include <vector>
 #include <stdexcept>
 #include <cstddef>
+#include <chrono>
 #include "raisim_message.hpp"
 #include <fstream>
 #include <sys/types.h>
@@ -73,7 +74,6 @@ static inline void MSLEEP(int sleepMs)
   usleep(sleepMs * 1000);   // usleep takes sleep time in us (1 millionth of a second)
 #endif
 }
-
 
 static inline void USLEEP(int sleepMs)
 {
@@ -131,6 +131,26 @@ inline bool directoryExists (const std::string& name) {
   struct stat buffer;
   return (stat (name.c_str(), &buffer) == 0);
 }
+
+class TimedLoop {
+ public:
+  TimedLoop(uint64_t loop_time_in_us) {
+    loopTimeInUs = loop_time_in_us;
+    begin = std::chrono::steady_clock::now();
+  }
+
+  ~TimedLoop() {
+    auto end = std::chrono::steady_clock::now();
+    auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
+    if (loopTimeInUs > microseconds)
+      USLEEP(int(loopTimeInUs - microseconds));
+  }
+
+  std::chrono::steady_clock::time_point begin;
+  uint64_t loopTimeInUs;
+};
+
+#define RS_TIMED_LOOP(US) auto raisim_arb_variable_name123 = raisim::TimedLoop(US);
 
 void read_png_file(const char *file_name, int &width, int &height, std::vector<double> &values, double scale, double zOffset);
 
