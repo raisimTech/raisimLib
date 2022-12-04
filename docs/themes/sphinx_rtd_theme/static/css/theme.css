@@ -3437,8 +3437,8 @@ button[disabled] {
     cursor: pointer;
     font-size: 100%;
     padding: 6px 12px 8px;
-    color: #fff;
-    border: 1px solid rgba(0, 0, 0, .1);
+    color: #36be2e;
+    border: 3px solid rgba(0, 0, 0, .1);
     background-color: #27ae60;
     text-decoration: none;
     font-weight: 400;
@@ -3460,7 +3460,7 @@ button[disabled] {
 
 .btn-hover {
     background: #2e8ece;
-    color: #fff
+    color: #468041
 }
 
 .btn:hover {
