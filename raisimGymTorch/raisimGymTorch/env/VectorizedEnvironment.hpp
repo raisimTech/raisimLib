@@ -50,8 +50,6 @@ class VectorizedEnvironment {
       rewardInformation_.push_back(environments_.back()->getRewards().getStdMap());
     }
 
-    setSeed(0);
-
     for (int i = 0; i < num_envs_; i++) {
       // only the first environment is visualized
       environments_[i]->init();
@@ -109,8 +107,10 @@ class VectorizedEnvironment {
 
   void setSeed(int seed) {
     int seed_inc = seed;
-    for (auto *env: environments_)
-      env->setSeed(seed_inc++);
+
+    #pragma omp parallel for schedule(auto)
+    for(int i=0; i<num_envs_; i++)
+      environments_[i]->setSeed(seed_inc++);
   }
 
   void close() {
