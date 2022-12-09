@@ -9,10 +9,11 @@ You need an **activation key** to use RaiSim.
 You can request the activation key using the **RaiSim License Request Form**
 
 .. link-button:: https://docs.google.com/forms/d/e/1FAIpQLSc1FjnRj4BV9xSTgrrRH-GMDsio_Um4DmD0Yt12MLNAFKm12Q/viewform?usp=sf_link
+        :classes: btn-success
         :text: Go to the RaiSim License Request Form
 
 After you submit the form, we will review your request and send you an activation key.
-Our review can take up to 2 days.
+**Our review can take up to 2 days**.
 
 Please check the included examples to see how to use the activation key.
 The Installation section provides you with further information.
