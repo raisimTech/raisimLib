@@ -1006,7 +1006,7 @@ class RaisimServer final {
 
       unlockVisualizationServerMutex();
     } else {
-      RSWARN("Version mismatch. Make sure you have the correct visualizer version")
+      RSWARN("Version mismatch. Raisim protocol version: "<<version_<<", Visualizer protocol version: "<<clientVersion)
       return false;
     }
 
@@ -1016,6 +1016,10 @@ class RaisimServer final {
     if (needsSensorUpdate_) {
       if (!receiveData(5))
         return false;
+
+      /// send dummy data to let visualizer know that receive is done
+      data_ = set(&send_buffer[0] + sizeof(int), version_);
+      sendData();
 
       updateSensorMeasurements();
       needsSensorUpdate_ = false;
@@ -1635,7 +1639,7 @@ class RaisimServer final {
   int screenShotWidth_, screenShotHeight_;
 
   // version
-  constexpr static int version_ = 10011;
+  constexpr static int version_ = 10012;
 
   // visual tag counter
   uint32_t visTagCounter = 30;
