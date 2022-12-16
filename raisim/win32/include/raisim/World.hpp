@@ -622,6 +622,13 @@ class World {
   [[nodiscard]] raisim::contact::BisectionContactSolver &getContactSolver() { return solver_; }
 
   /**
+   * This sets the iteration order (e.g., forward and backward) of the contact solver. Given this order, Raisim is deterministic.
+   * Without an explicit order, the order flips in every ``integrate`` call.
+   * @param order
+   */
+  void setContactSolverIterationOrder(bool order) { solver_.setOrder(order); }
+
+  /**
    * @return a const ref of the contact solver. Internal states can be retrieved using this method */
   [[nodiscard]] const raisim::contact::BisectionContactSolver &getContactSolver() const { return solver_; }
 
