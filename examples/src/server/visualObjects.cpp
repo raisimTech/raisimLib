@@ -23,7 +23,7 @@ int main(int argc, char* argv[]) {
   inertia.setIdentity();
   const raisim::Vec<3> com = {0, 0, 0};
 
-  auto visSphere = server.addVisualSphere("v_sphere", 1.0, 1, 1, 1, 1);
+  auto visSphere = server.addVisualSphere("v_sphere", 1.0, 1, 1, 1, 0.5);
   auto visBox = server.addVisualBox("v_box", 1, 1, 1, 1, 1, 1, 1);
   auto visCylinder = server.addVisualCylinder("v_cylinder", 1, 1, 0, 1, 0, 1);
   auto visCapsule = server.addVisualCapsule("v_capsule", 1, 0.5, 0, 0, 1, 1);

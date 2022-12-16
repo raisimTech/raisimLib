@@ -128,6 +128,8 @@ class RaisimServer final {
    * Setup the port so that it can accept (acceptConnection) incoming connections
    */
   void setupSocket() {
+    tryingToLock_ = false;
+
 #if __linux__ || __APPLE__
     int opt = 1;
     addrlen = sizeof(address);
@@ -764,10 +766,9 @@ class RaisimServer final {
   inline bool waitForMessageToClient(int seconds) {
 #if defined __linux__ || __APPLE__
     struct pollfd fds[2];
-    int ret;
     fds[0].fd = client_;
     fds[0].events = POLLOUT;
-    ret = poll(fds, 2, seconds * 1000);
+    int ret = poll(fds, 2, seconds * 1000);
     if ( ret == 0) {
       RSWARN("The client failed to respond in " << seconds << " seconds. Looking for a new client");
       return false;
@@ -1584,7 +1585,6 @@ class RaisimServer final {
       std::string name;
       Sensor::Type type;
       rData_ = get(rData_, &visualTag, &type, &name);
-
       ArticulatedSystem *as = dynamic_cast<ArticulatedSystem*>(*std::find_if(obList.begin(), obList.end(),
                                                                              [visualTag](const Object* i){ return i->visualTag == visualTag; }));
       auto sensor = as->getSensors()[name];
