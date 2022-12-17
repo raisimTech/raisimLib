@@ -90,7 +90,9 @@ int main(int argc, char **argv) {
   auto box = world.addBox(.1, .1, .1, 1);
   box->setPosition(0.9, 0.0, 4.2);
 
-  world.addStiffWire(pin1, 0, {0,0,0}, ball1, 0, {0,0,0}, 2.0);
+  auto wire1 = world.addStiffWire(pin1, 0, {0,0,0}, ball1, 0, {0,0,0}, 2.0);
+  wire1->setVisualizationWidth(0.05);
+  wire1->setColor({1, 0, 0, 1});
   world.addStiffWire(pin2, 0, {0,0,0}, ball2, 0, {0,0,0}, 2.0);
   world.addStiffWire(pin3, 0, {0,0,0}, ball3, 0, {0,0,0}, 2.0);
   world.addStiffWire(pin4, 0, {0,0,0}, ball4, 0, {0,0,0}, 2.0);

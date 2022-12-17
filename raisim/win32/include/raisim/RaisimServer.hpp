@@ -1315,7 +1315,7 @@ class RaisimServer final {
       pos = (sw->getP1() + sw->getP2()) / 2.0;
       raisim::zaxisToRotMat(diff_norm, rot);
       raisim::rotMatToQuat(rot, quat);
-      data_ = set(data_, 0.02f, 0.02f, (float)diff.norm(), 0.f);
+      data_ = set(data_, float(sw->getVisualizationWidth()), float(sw->getVisualizationWidth()), (float)diff.norm(), 0.f);
       data_ = setInFloat(data_, pos, quat);
       data_ = set(data_, (int32_t) 0);
     }
