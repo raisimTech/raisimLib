@@ -111,7 +111,7 @@ static inline char *getN(char *data, T *val, int32_t N) {
 }
 
 static inline char *get(char *data, std::string *str) {
-  int32_t size;
+  uint64_t size;
   data = get(data, &size);
   str->resize(size);
   data = getN(data, const_cast<char *>(str->c_str()), size);
