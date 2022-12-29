@@ -425,6 +425,15 @@ class RaisimServer final {
     delete as;
   }
 
+  /**
+   *
+   * @param name
+   * @param type
+   * @param size
+   * @param color1
+   * @param color2
+   * @return
+   */
   inline InstancedVisuals *addInstancedVisuals(const std::string &name,
                                                Shape::Type type,
                                                const Vec<3> &size,
@@ -968,7 +977,7 @@ class RaisimServer final {
       // set server request
       char* toBeFocusedPtr = nullptr;
       data_ = set(data_, state_);
-      data_ = set(data_, (uint64_t) serverRequest_.size());
+      data_ = set(data_, (int32_t) serverRequest_.size());
       for (const auto &sr: serverRequest_) {
         data_ = set(data_, (int) sr);
 
@@ -1239,6 +1248,8 @@ class RaisimServer final {
               data_ = setInFloat(data_, hm->getCenterX(), hm->getCenterY(), hm->getXSize(), hm->getYSize());
               data_ = set(data_, (int32_t) hm->getXSamples(), (int32_t) hm->getYSamples());
               data_ = setInFloat(data_, hm->getHeightVector());
+              data_ = setInFloat(data_, hm->getColor1(), hm->getColor2());
+              data_ = set(data_, hm->getColorLevel());
             }
             case COMPOUND:
             case ARTICULATED_SYSTEM:
@@ -1248,8 +1259,21 @@ class RaisimServer final {
           data_ = set(data_, Masking::SB_OBJ, int32_t(0));
         }
         auto *sob = dynamic_cast<SingleBodyObject *>(ob);
-
         auto tempAdd = data_;
+
+        // if heightmap, check if update is necessary
+        if (ob->getObjectType() == ObjectType::HEIGHTMAP) {
+          auto hm = dynamic_cast<HeightMap *>(ob);
+          data_ = set(data_, int(hm->isUpdated()));
+          if (hm->isUpdated()) {
+            data_ = setInFloat(data_, hm->getCenterX(), hm->getCenterY(), hm->getXSize(), hm->getYSize());
+            data_ = set(data_, (int32_t) hm->getXSamples(), (int32_t) hm->getYSamples());
+            data_ = setInFloat(data_, hm->getHeightVector());
+            data_ = setInFloat(data_, hm->getColor1(), hm->getColor2());
+            data_ = set(data_, hm->getColorLevel());
+          }
+        }
+
         data_ = set(data_, sob->getAppearance());
 
         switch (ob->getObjectType()) {
@@ -1631,7 +1655,7 @@ class RaisimServer final {
   std::mutex serverMutex_;
   std::atomic_bool tryingToLock_;
 
-  uint64_t visualConfiguration_ = 0;
+  int32_t visualConfiguration_ = 0;
   void updateVisualConfig() { visualConfiguration_++; }
 
   int raisimPort_ = 8080;
@@ -1639,7 +1663,7 @@ class RaisimServer final {
   int screenShotWidth_, screenShotHeight_;
 
   // version
-  constexpr static int version_ = 10012;
+  constexpr static int version_ = 10013;
 
   // visual tag counter
   uint32_t visTagCounter = 30;
