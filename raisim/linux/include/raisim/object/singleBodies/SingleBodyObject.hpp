@@ -534,10 +534,8 @@ class SingleBodyObject : public Object {
   Vec<3> comPosition_;
   Vec<3> body2com_;     // w.r.t body frame
 
-  // bullet pose
   /// bullet frame orientation always coincides with body frame
   Vec<3> colPosition_;
-  Vec<3> col2com_;     // w.r.t bullet frame
 
   // object velocity
   /// com velocity and angular velocity w.r.t com
