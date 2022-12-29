@@ -236,6 +236,14 @@ class AlignedAllocator {
   AlignedAllocator &operator=(const AlignedAllocator &);
 };
 
+struct ColorRGB {
+  uint8_t r,g,b;
+};
+
+struct ColorRGBA {
+  uint8_t r,g,b,a;
+};
+
 }
 
 #endif //RAISIM_HELPER_HPP
