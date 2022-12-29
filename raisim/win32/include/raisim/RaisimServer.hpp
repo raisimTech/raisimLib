@@ -1248,8 +1248,7 @@ class RaisimServer final {
               data_ = setInFloat(data_, hm->getCenterX(), hm->getCenterY(), hm->getXSize(), hm->getYSize());
               data_ = set(data_, (int32_t) hm->getXSamples(), (int32_t) hm->getYSamples());
               data_ = setInFloat(data_, hm->getHeightVector());
-              data_ = setInFloat(data_, hm->getColor1(), hm->getColor2());
-              data_ = set(data_, hm->getColorLevel());
+              data_ = set(data_, hm->getColorMap());
             }
             case COMPOUND:
             case ARTICULATED_SYSTEM:
@@ -1269,8 +1268,7 @@ class RaisimServer final {
             data_ = setInFloat(data_, hm->getCenterX(), hm->getCenterY(), hm->getXSize(), hm->getYSize());
             data_ = set(data_, (int32_t) hm->getXSamples(), (int32_t) hm->getYSamples());
             data_ = setInFloat(data_, hm->getHeightVector());
-            data_ = setInFloat(data_, hm->getColor1(), hm->getColor2());
-            data_ = set(data_, hm->getColorLevel());
+            data_ = set(data_, hm->getColorMap());
           }
         }
 
