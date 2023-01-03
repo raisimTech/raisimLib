@@ -203,50 +203,72 @@ class HeightMap final : public SingleBodyObject {
 
   /**
    * Set varying color on the heightmap
-   * final color is color1*(1-colorLevel) + color2*colorLevel
    * If set, the appearance will be ignored.
    * Set emtpy vector to the color level to make the appearance active
    * @param color1 first color
    * @param color2 second color
    * @param colorLevel color level
    */
-  void setColor(const Vec<3>& color1, const Vec<3>& color2, const std::vector<float>& colorLevel) {
+  void setColor(const std::vector<ColorRGB>& colorLevel) {
     RSFATAL_IF(colorLevel.size() != height_.size(), "The color levels should be the same size as the vertices (heights).")
     updated_ = true;
-    color1_ = color1;
-    color2_ = color2;
-    colorLevel_ = colorLevel;
+    colorMap_ = colorLevel;
   }
 
   /**
-   * Get the first color.
-   * final color is color1*(1-colorLevel) + color2*colorLevel
-   * If set, the appearance will be ignored.
-   * @return color1
+   * Get the whole color vector.
+   * If set, the appearance will be ignored in unreal. Unity color map is not supported yet
+   * @return color
    */
-  [[nodiscard]] const Vec<3>& getColor1() const { return color1_; }
+  [[nodiscard]] const std::vector<ColorRGB>& getColorMap() const { return colorMap_; }
 
   /**
-   * Get the second color.
-   * Final color is color1*(1-colorLevel) + color2*colorLevel.
-   * If set, the appearance will be ignored.
-   * @return color2
+   * Returns color of the heightmap at specified point. The color from an RGB camera can be different from this because this is the base color and lighting changes the appearance.
+   * @param x
+   * @param y
+   * @return the RGB color
    */
-  [[nodiscard]] const Vec<3>& getColor2() const { return color2_; }
+  [[nodiscard]] ColorRGB getColor(double x, double y) const {
+    double normalizedX = (x - centerX_ + .5 * sizeX_) / sizeX_ * double(xSamples_-1);
+    double normalizedY = (y - centerY_ + .5 * sizeY_) / sizeY_ * double(ySamples_-1);
+    auto gridX = std::min(std::max(size_t(normalizedX), size_t(0)), xSamples_-1);
+    auto gridY = std::min(std::max(size_t(normalizedY), size_t(0)), ySamples_-1);
+    auto nextX = std::min(std::max(size_t(normalizedX) + size_t(1), size_t(0)), xSamples_-1);
+    auto nextY = std::min(std::max(size_t(normalizedY) + size_t(1), size_t(0)), ySamples_-1);
 
-  /**
-   * Get the color level.
-   * Final color is color1*(1-colorLevel) + color2*colorLevel.
-   * If set, the appearance will be ignored.
-   * @return color level
-   */
-  [[nodiscard]] const std::vector<float>& getColorLevel() const { return colorLevel_; }
+    double xPercent = normalizedX - double(gridX);
+    double yPercent = normalizedY - double(gridY);
+
+    RSFATAL_IF(colorMap_.size() != height_.size(), "Color map is not specified")
+
+    ColorRGB colorxy = colorMap_[gridY * xSamples_ + gridX];
+    ColorRGB colorxy1 = colorMap_[nextY * xSamples_ + gridX];
+    ColorRGB colorx1y = colorMap_[gridY * xSamples_ + nextX];
+    ColorRGB colorx1y1 = colorMap_[nextY * xSamples_ + nextX];
+
+    ColorRGB finalColor;
+    finalColor.r = colorxy.r * (1. - xPercent) * (1. - yPercent) +
+        colorxy1.r * (1. - xPercent) * yPercent +
+        colorx1y.r * xPercent * (1. - yPercent) +
+        colorx1y1.r * xPercent * yPercent;
+
+    finalColor.g = colorxy.g * (1. - xPercent) * (1. - yPercent) +
+        colorxy1.g * (1. - xPercent) * yPercent +
+        colorx1y.g * xPercent * (1. - yPercent) +
+        colorx1y1.g * xPercent * yPercent;
+
+    finalColor.b = colorxy.b * (1. - xPercent) * (1. - yPercent) +
+        colorxy1.b * (1. - xPercent) * yPercent +
+        colorx1y.b * xPercent * (1. - yPercent) +
+        colorx1y1.b * xPercent * yPercent;
+
+    return finalColor;
+  }
 
  private:
   void generateTerrain(const TerrainProperties &terrainProperties);
   std::vector<double> height_, odeHeight_;
-  std::vector<float> colorLevel_; /// visualization color. final color is color1*(1-colorLevel) + color2*colorLevel
-  Vec<3> color1_, color2_;
+  std::vector<ColorRGB> colorMap_;
   bool updated_ = false;
   dHeightfieldDataID heightFieldData_;
   double centerX_, centerY_, sizeX_, sizeY_;

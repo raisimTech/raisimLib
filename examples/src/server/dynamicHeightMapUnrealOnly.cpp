@@ -9,8 +9,8 @@ int main(int argc, char *argv[]) {
   raisim::World world;
   world.setTimeStep(0.01);
   std::vector<double> height(10000, 0.);
-  std::vector<float> colorWeight(10000, 0.f);
-  colorWeight.resize(10000);
+  std::vector<raisim::ColorRGB> colorMap(10000, {0, 0, 0});
+  colorMap.resize(10000);
   raisim::Vec<3> color1{1,0,0}, color2{0,0,1};
 
   auto hm = world.addHeightMap(100, 100, 10., 10., 0., 0., height);
@@ -26,13 +26,15 @@ int main(int argc, char *argv[]) {
     for (int k=0; k<100; k++) {
       for (int j=0; j<100; j++) {
         height[k*100+j] = std::sin(0.01f * float(i) + 0.05 * float(k+j));
-        colorWeight[k*100+j] = std::sin(0.01f * float(i) + 0.05 * float(k+j)) * 0.5f + 0.5f;
+        colorMap[k*100+j] = {uint8_t((std::sin(0.02f * float(i) + 0.05 * float(2*k+j)) * 0.5f + 0.5f)*255.f),
+                           uint8_t((std::cos(0.02f * float(i) + 0.07 * float(2*k+j)) * 0.5f + 0.5f)*255.f),
+                           uint8_t((std::sin(0.02f * float(i) + 0.09 * float(2*k+j)) * 0.5f + 0.5f)*255.f)};
       }
     }
-
     server.lockVisualizationServerMutex();
     hm->update(0., 0., 10., 10., height);
-    hm->setColor(color1, color2, colorWeight);
+    hm->setColor(colorMap);
+
     world.integrate();
     server.unlockVisualizationServerMutex();
   }
