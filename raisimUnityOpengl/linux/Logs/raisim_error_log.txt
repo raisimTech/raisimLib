@@ -1,1 +1,7 @@
 error logs 
+System.Exception: ReadData timeout!
+  at raisimUnity.TcpHelper.ReadData () [0x0004c] in <9025813875404b18861afabc43d978dd>:0 
+  at raisimUnity.RsUnityRemote.ReadAndCheckServer (raisimUnity.ClientMessageType type) [0x000a0] in <9025813875404b18861afabc43d978dd>:0 
+  at raisimUnity.RsUnityRemote.Update () [0x0002a] in <9025813875404b18861afabc43d978dd>:0 
+ 
+
