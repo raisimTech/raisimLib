@@ -6,7 +6,7 @@ if ismac
 elseif isunix
     addpath('../../raisim/linux/lib')
 elseif ispc
-    addpath('../../raisim/win32/bin')
+    addpath('../../raisim/win32/bin/Release')
 else
     disp('Platform not supported')
 end

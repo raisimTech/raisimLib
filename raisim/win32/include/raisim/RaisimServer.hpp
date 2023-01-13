@@ -293,6 +293,7 @@ class RaisimServer final {
    * start spinning. */
   inline void launchServer(int port = 8080) {
     raisimPort_ = port;
+    tryingToLock_ = false;
 
     threadResult_ = std::async(std::launch::async, [this] {
       serverThread_ = std::thread(&raisim::RaisimServer::loop, this);
@@ -1669,7 +1670,7 @@ class RaisimServer final {
   // hanging object
   uint32_t hangingObjVisTag_ = 0;
   Object* interactingOb_;
-  double wireStiffness_;
+  double wireStiffness_ = 0.;
   int hangingObjLocalId_ = -1;
   Vec<3> hangingObjPos_, hangingObjLocalPos_, hangingObjTargetPos_;
 
