@@ -25,6 +25,7 @@ ENDMACRO()
 set(Dependencies)
 
 add_subdirectory(thirdParty/pybind11 pybind11)
+list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../thirdParty/Eigen3)
 find_package(Eigen3 CONFIG REQUIRED)
 
 if (APPLE)
