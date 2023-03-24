@@ -7,7 +7,7 @@ if(CMAKE_VERSION VERSION_LESS "2.8.3")
    message(FATAL_ERROR "CMake >= 2.8.3 required")
 endif()
 cmake_policy(PUSH)
-cmake_policy(VERSION 2.8.3...3.23)
+cmake_policy(VERSION 2.8.3...3.24)
 #----------------------------------------------------------------
 # Generated CMake target import file.
 #----------------------------------------------------------------
@@ -86,7 +86,7 @@ set_target_properties(raisim::raisimODE PROPERTIES
 )
 
 # Create imported target raisim::raisim
-add_library(raisim::raisim SHARED IMPORTED)
+add_library(raisim::raisim SHARED IMPORTED ../../../../../examples/src/server/inverseDynamics.cpp)
 
 set_target_properties(raisim::raisim PROPERTIES
   INTERFACE_COMPILE_FEATURES "cxx_std_11"

@@ -1127,6 +1127,9 @@ class RaisimServer final {
     data_ = set(data_, (int32_t) as->getSensors().size());
     // add sensors to be updated
     for (auto &sensor: as->getSensors()) {
+      if (sensor.second->getType() != Sensor::Type::DEPTH &&
+          sensor.second->getType() != Sensor::Type::RGB) continue;
+
       if (!initialized) data_ = sensor.second->serializeProp(data_);
 
       if (sensor.second->getMeasurementSource() == Sensor::MeasurementSource::VISUALIZER &&

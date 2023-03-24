@@ -55,5 +55,9 @@
                 <noise type="gaussian" mean="0.0" stddev="0.007"/>
             </camera>
         </sensor>
+        <sensor name="imu" type="imu" update_rate="200">
+            <origin rpy="0.0 0.0 0.0" xyz="0 0 0"/>
+            <limit acc_limit="50" ang_vel_limit="40"/>
+        </sensor>
     </link>
 </sensor_set>

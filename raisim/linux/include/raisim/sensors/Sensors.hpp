@@ -24,7 +24,8 @@ class Sensor {
   enum class Type : int {
     UNKNOWN = 0,
     RGB,
-    DEPTH
+    DEPTH,
+    IMU
   };
 
   enum class MeasurementSource : int {
@@ -130,6 +131,14 @@ class Sensor {
    * @param[in] world the world object
    */
   virtual void update (class World& world) = 0;
+
+  /**
+   * Get the id of the frame on which the sensor is attached
+   * @return frame id
+   */
+  size_t getFrameId() {
+    return frameId_;
+  }
 
  protected:
   void setFramePosition(const Vec<3>& pos) { posFrame_ = pos; }

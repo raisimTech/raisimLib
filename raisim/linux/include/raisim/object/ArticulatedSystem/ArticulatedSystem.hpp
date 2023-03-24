@@ -25,6 +25,8 @@
 #include "raisim/constraints/PinConstraint.hpp"
 #include "raisim/sensors/RGBSensor.hpp"
 #include "raisim/sensors/DepthSensor.hpp"
+#include "raisim/sensors/InertialMeasurementUnit.hpp"
+
 
 namespace raisim {
 
@@ -257,6 +259,7 @@ class ArticulatedSystem : public Object {
   friend class raisim::World;
   friend class raisim::urdf::LoadFromURDF2;
   friend class raisim::mjcf::LoadFromMjcf;
+  friend class raisim::InertialMeasurementUnit;
 
  public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -288,6 +291,11 @@ class ArticulatedSystem : public Object {
   /**
    * @return generalized velocity of the system */
   [[nodiscard]] const raisim::VecDyn &getGeneralizedVelocity() const { return gv_; }
+
+  /**
+   * @return generalized acceleration of the system. The generalized acceleration is computed in the integration step.
+   * So this function does not work properly if you have not integrated the world. */
+  [[nodiscard]] const raisim::VecDyn &getGeneralizedAcceleration() const { return ga_; }
 
   /**
    * @param[out] quaternion orientation of base*/
@@ -447,7 +455,12 @@ class ArticulatedSystem : public Object {
    * get the coriolis and the gravitational term
    * @param[in] gravity gravitational acceleration. You should get this value from the world.getGravity();
    * @return the coriolis and the gravitational term. Check Object/ArticulatedSystem section in the manual */
-  [[nodiscard]] const VecDyn &getNonlinearities(const Vec<3>& gravity) { computeNonlinearities(gravity, h_); return h_; }
+  [[nodiscard]] const VecDyn &getNonlinearities(const Vec<3>& gravity) {
+    VecDyn ga(dof);
+    ga.setZero();
+    recursiveNewtonEuler(gravity, false, ga, h_);
+    return h_;
+  }
 
   /**
    * get the inverse mass matrix. Note that this is actually damped inverse.
@@ -679,6 +692,39 @@ class ArticulatedSystem : public Object {
    * @param[in] frame custom frame defined by the user
    * @param[out] angVel_W the angular velocity of the frame expressed to the world frame */
   void getFrameAngularVelocity(const CoordinateFrame &frame, Vec<3> &angVel_W) const;
+
+  /**
+   * YOU NEED TO ENABLE INVERSEDYNAMICS COMPUTATION TO USE THIS METHOD
+   * This is time derivative of (body velocity expressed in the world frame).
+   * If you premultiply this by the transpose of the rotation matrix of the frame,
+   * it is the same as what your accelerometer sensor will measure if you place it at the frame.
+   * This is not the same as {(time derivative of body velocity expressed in the body frame) expressed in the world frame}
+   * @param[in] frameName name of the frame
+   * @param[out] acc_W the linear acceleration of the frame expressed in the world frame */
+  void getFrameAcceleration(const std::string &frameName, Vec<3> &acc_W) const {
+    getFrameAcceleration(frameOfInterest_[getFrameIdxByName(frameName)], acc_W);
+  }
+
+  /**
+   * YOU NEED TO ENABLE INVERSEDYNAMICS COMPUTATION TO USE THIS METHOD
+   * This is time derivative of (body velocity expressed in the world frame).
+   * If you premultiply this by the transpose of the rotation matrix of the frame,
+   * it is the same as what your accelerometer sensor will measure if you place it at the frame.
+   * This is not the same as {(time derivative of body velocity expressed in the body frame) expressed in the world frame}
+   * @param[in] frame custom frame defined by the user
+   * @param[out] acc_W the linear acceleration of the frame expressed in the world frame */
+  void getFrameAcceleration(const CoordinateFrame &frame, Vec<3> &acc_W) const {
+    Vec<3> pos;
+    acc_W.setZero();
+
+    getFramePosition(frame, pos);
+    acc_W = bodyLinearAcc[frame.parentId];
+
+    /// Centrifugal acc
+    addCentrifugalTerm(bodyAngVel_W[frame.parentId], pos - jointPos_W[frame.parentId], acc_W);
+    /// Linear acc due to ang acc
+    crossThenAdd(bodyAngAcc[frame.parentId], pos - jointPos_W[frame.parentId], acc_W);
+  }
 
   /**
    * @param[in] bodyIdx the body index. Note that body index and the joint index are the same because every body has one parent joint. It can be retrieved by getBodyIdx()
@@ -1491,7 +1537,8 @@ class ArticulatedSystem : public Object {
     RSFATAL_IF(sensors_.find(name) == sensors_.end(), "Cannot find \""<<name<<"\"")
     auto sensor = sensors_.find(name)->second;
     RSFATAL_IF(sensor->getType() != T::getType(), "Type mismatch. "
-        << name << " has a type of " << toString(sensor->getType()) << " and the requested type is " << toString(T::getType()))
+        << name << " has a type of " << toString(sensor->getType()) << " and the requested type is "
+        << toString(T::getType()))
     return reinterpret_cast<T*>(sensor.get());
   }
 
@@ -1504,6 +1551,35 @@ class ArticulatedSystem : public Object {
   // not recommended for users. only for developers
   void addConstraints(const std::vector<PinConstraintDefinition>& pinDef);
   void initializeConstraints();
+
+  /**
+   * If it is true, it also computes inverse dynamics and you can get the following properties:
+   * the force and torque (including the constrained directions) at the joint and acceleration of a body (necessary for IMU computation)
+   * @param flag
+   */
+  void setComputeInverseDynamics(bool flag) { computeInverseDynamics_ = flag; }
+
+  /**
+   *
+   * @return return if the inverse dynamics is computed
+   */
+  bool getComputeInverseDynamics() const { return computeInverseDynamics_; }
+
+  /**
+   * YOU MUST CALL raisim::ArticulatedSystem::setComputeInverseDynamics(true) before calling this method.
+   * This method returns the force at the specified joint
+   * @param jointId[in] the joint id
+   * @return force at the joint
+   */
+  const raisim::Vec<3>& getForceAtJointInWorldFrame(size_t jointId) const { return forceAtJoint_W[jointId]; }
+
+  /**
+   * YOU MUST CALL raisim::ArticulatedSystem::setComputeInverseDynamics(true) before calling this method.
+   * This method returns the torque at the specified joint
+   * @param jointId[in] the joint id
+   * @return torque at the joint
+   */
+  const raisim::Vec<3>& getTorqueAtJointInWorldFrame(size_t jointId) const { return torqueAtJoint_W[jointId]; }
 
  protected:
 
@@ -1521,8 +1597,6 @@ class ArticulatedSystem : public Object {
 
   void computeMassMatrix(MatDyn &M) noexcept;
 
-  void computeNonlinearities(const Vec<3> &gravity, VecDyn &b);
-
   void destroyCollisionBodies(dSpaceID id) final;
 
   /* This computes Delassus matrix necessary for contact force computation */
@@ -1530,7 +1604,7 @@ class ArticulatedSystem : public Object {
   void preContactSolverUpdate2(const Vec<3> &gravity, double dt, contact::ContactProblems& problems) final;
   void integrateWithoutContact(const Vec<3> &gravity, double dt);
 
-  void integrate(double dt, const Vec<3> &gravity) final;
+  void integrate(double dt, const World* world) final;
 
   void addContactPointVel(size_t pointId, Vec<3> &vel) final;
 
@@ -1546,9 +1620,23 @@ class ArticulatedSystem : public Object {
 
   void updateTimeStepIfNecessary(double dt) final;
 
+  void updateSensorsIfNecessary(const raisim::World* world) final;
+
   inline void jacoSub(const raisim::SparseJacobian &jaco1, raisim::SparseJacobian &jaco, bool isFloatingBase);
 
   void setConstraintForce(size_t bodyIdx, const Vec<3> &pos, const Vec<3> &force) final;
+
+  void updateInertialMeasurementUnit(InertialMeasurementUnit* imu, Eigen::Vector3d& linAcc, Eigen::Vector3d& angVel);
+
+  /**
+   * Recursive Newton Euler algorithm computes inverse dynamics of the system.
+   * In other words, it computes the generalized force that results in the given given generalized acceleration.
+   * After calling this method, you can also call below methods
+   * @param gravity[in] The gravitational acceleration of the world (raisim::World::getGravity())
+   * @param ga[in] The generalized acceleration
+   * @param b[out] The generalized force
+   */
+  void recursiveNewtonEuler(const Vec<3> &gravity, bool includeExternalForces, const VecDyn& ga, VecDyn &b);
 
  private:
 
@@ -1602,8 +1690,8 @@ class ArticulatedSystem : public Object {
   std::vector<raisim::Vec<3>> bodyLinVel_pc_W;
   std::vector<raisim::Vec<3>> bodyLinearAcc;
   std::vector<raisim::Vec<3>> bodyAngAcc;
-  std::vector<raisim::Vec<3>> propagatingForceAtJoint_W;
-  std::vector<raisim::Vec<3>> propagatingTorqueAtJoint_W;
+  std::vector<raisim::Vec<3>> forceAtJoint_W;
+  std::vector<raisim::Vec<3>> torqueAtJoint_W;
   std::vector<raisim::Mat<3, 3>> inertiaAboutJoint_W;
   std::vector<raisim::Mat<3, 3>> inertia_comW;
   std::vector<raisim::Vec<3>> sketch;
@@ -1635,7 +1723,7 @@ class ArticulatedSystem : public Object {
   std::vector<size_t> lambda;
 
   /// State variables
-  VecDyn gc_, gcOld_, gv_, udot_, gvOld_, gvAvg_, h_, gvERP_, gvTemp_, gvPreimpact_, gcRK_[4], gvRK_[4], slopeRK_[4];
+  VecDyn gc_, gcOld_, gv_, ga_, udot_, gvOld_, gvAvg_, h_, gvERP_, gvTemp_, gvPreimpact_, gcRK_[4], gvRK_[4], slopeRK_[4];
   MatDyn M_, Minv_, lT_;
 
   /// Contact variables
@@ -1663,6 +1751,7 @@ class ArticulatedSystem : public Object {
  private:
   size_t nbody, dof = 0, gcDim = 0;
   bool dampedDiagonalTermUpdated_ = false;
+  bool computeInverseDynamics_ = false;
   ControlMode::Type controlMode_ = ControlMode::FORCE_AND_TORQUE;
   raisim::SparseJacobian tempJaco_;
   double dt_ = 0.001;
