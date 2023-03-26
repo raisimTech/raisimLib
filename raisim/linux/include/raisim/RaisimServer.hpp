@@ -293,6 +293,7 @@ class RaisimServer final {
    * start spinning. */
   inline void launchServer(int port = 8080) {
     raisimPort_ = port;
+    tryingToLock_ = false;
 
     threadResult_ = std::async(std::launch::async, [this] {
       serverThread_ = std::thread(&raisim::RaisimServer::loop, this);
@@ -1124,17 +1125,19 @@ class RaisimServer final {
       }
     }
 
-    data_ = set(data_, (int32_t) as->getSensors().size());
+    auto sensorNLocation = data_;
+    int sensorCount = 0;
+
+    data_ = set(data_, (int32_t) 0);
+
     // add sensors to be updated
     for (auto &sensor: as->getSensors()) {
-      if (sensor.second->getType() != Sensor::Type::DEPTH &&
-          sensor.second->getType() != Sensor::Type::RGB) continue;
-
-      if (!initialized) data_ = sensor.second->serializeProp(data_);
-
       if (sensor.second->getMeasurementSource() == Sensor::MeasurementSource::VISUALIZER &&
           sensor.second->getUpdateTimeStamp() + 1. / sensor.second->getUpdateRate()
               < world_->getWorldTime() + 1e-10) {
+        sensorCount++;
+        if (!initialized) data_ = sensor.second->serializeProp(data_);
+
         sensor.second->setUpdateTimeStamp(world_->getWorldTime());
         sensor.second->updatePose();
         Vec<4> quat;
@@ -1148,6 +1151,7 @@ class RaisimServer final {
         data_ = set(data_, false);
       }
     }
+    *sensorNLocation = sensorCount;
   }
 
   inline void update() {
@@ -1672,7 +1676,7 @@ class RaisimServer final {
   // hanging object
   uint32_t hangingObjVisTag_ = 0;
   Object* interactingOb_;
-  double wireStiffness_;
+  double wireStiffness_ = 0.;
   int hangingObjLocalId_ = -1;
   Vec<3> hangingObjPos_, hangingObjLocalPos_, hangingObjTargetPos_;
 

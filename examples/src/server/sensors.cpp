@@ -46,11 +46,14 @@ int main(int argc, char **argv) {
   depthSensor2->setMeasurementSource(raisim::Sensor::MeasurementSource::VISUALIZER);
   auto rgbCamera2 = anymal->getSensor<raisim::RGBCamera>("depth_camera_rear_camera_parent:color");
   rgbCamera2->setMeasurementSource(raisim::Sensor::MeasurementSource::VISUALIZER);
+  auto imu = anymal->getSensor<raisim::InertialMeasurementUnit>("depth_camera_front_camera_parent:imu");
 
   server.launchServer();
   for (int k = 0; k < loopN; k++) {
     RS_TIMED_LOOP(int(world.getTimeStep()*1e6))
     server.integrateWorldThreadSafe();
+    std::cout<<imu->getLinearAcceleration()<<std::endl;
+
   }
 
   server.killServer();

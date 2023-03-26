@@ -697,7 +697,8 @@ class ArticulatedSystem : public Object {
    * YOU NEED TO ENABLE INVERSEDYNAMICS COMPUTATION TO USE THIS METHOD
    * This is time derivative of (body velocity expressed in the world frame).
    * If you premultiply this by the transpose of the rotation matrix of the frame,
-   * it is the same as what your accelerometer sensor will measure if you place it at the frame.
+   * it is the same as what your accelerometer sensor will measure if you place it at the frame
+   * (but an IMU has gravity bias so they will be off by the gravitational acceleration).
    * This is not the same as {(time derivative of body velocity expressed in the body frame) expressed in the world frame}
    * @param[in] frameName name of the frame
    * @param[out] acc_W the linear acceleration of the frame expressed in the world frame */
@@ -710,6 +711,7 @@ class ArticulatedSystem : public Object {
    * This is time derivative of (body velocity expressed in the world frame).
    * If you premultiply this by the transpose of the rotation matrix of the frame,
    * it is the same as what your accelerometer sensor will measure if you place it at the frame.
+   * (but an IMU has gravity bias so they will be off by the gravitational acceleration).
    * This is not the same as {(time derivative of body velocity expressed in the body frame) expressed in the world frame}
    * @param[in] frame custom frame defined by the user
    * @param[out] acc_W the linear acceleration of the frame expressed in the world frame */
@@ -722,6 +724,7 @@ class ArticulatedSystem : public Object {
 
     /// Centrifugal acc
     addCentrifugalTerm(bodyAngVel_W[frame.parentId], pos - jointPos_W[frame.parentId], acc_W);
+
     /// Linear acc due to ang acc
     crossThenAdd(bodyAngAcc[frame.parentId], pos - jointPos_W[frame.parentId], acc_W);
   }
@@ -1412,7 +1415,7 @@ class ArticulatedSystem : public Object {
    * @param[in] jointIndex the joint index
    * @return the joint type */
   Joint::Type getJointType(size_t jointIndex) { return jointType[jointIndex]; }
-  [[nodiscard]] const Joint::Type getJointType(size_t jointIndex) const { return jointType[jointIndex]; }
+  [[nodiscard]] Joint::Type getJointType(size_t jointIndex) const { return jointType[jointIndex]; }
 
   /**
    * @return the number of joints (same as the number of bodies) */

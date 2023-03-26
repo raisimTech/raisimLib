@@ -86,7 +86,7 @@ set_target_properties(raisim::raisimODE PROPERTIES
 )
 
 # Create imported target raisim::raisim
-add_library(raisim::raisim SHARED IMPORTED ../../../../../examples/src/server/inverseDynamics.cpp)
+add_library(raisim::raisim SHARED IMPORTED)
 
 set_target_properties(raisim::raisim PROPERTIES
   INTERFACE_COMPILE_FEATURES "cxx_std_11"
