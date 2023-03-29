@@ -57,7 +57,7 @@ class Object {
   virtual void updateCollision() = 0;
   virtual void preContactSolverUpdate1(const Vec<3> &gravity, double dt) = 0;
   virtual void preContactSolverUpdate2(const Vec<3> &gravity, double dt, contact::ContactProblems& problems) = 0;
-  virtual void integrate(double dt, const Vec<3>& gravity) = 0;
+  virtual void integrate(double dt, const World* gravity) = 0;
 
   /// apply forces at the Center of Mass
   virtual void setExternalForce(size_t localIdx, const Vec<3>& force) = 0;
@@ -128,6 +128,7 @@ class Object {
 
   virtual void updateTimeStep(double dt) = 0;
   virtual void updateTimeStepIfNecessary(double dt) = 0;
+  virtual void updateSensorsIfNecessary(const raisim::World* world) { };
   virtual void updateGenVelWithImpulse(size_t pointId, const Vec<3>& imp) = 0;
   virtual void appendJointLimits(std::vector<contact::Single3DContactProblem, AlignedAllocator<contact::Single3DContactProblem, 32>>& problem) {};
   virtual double enforceJointLimits(contact::Single3DContactProblem& problem) { return 0; };
@@ -143,12 +144,15 @@ class Object {
   std::vector<bool> isExternalForces_;
   std::vector<Vec<3>> externalForceAndTorque_;
   std::vector<Vec<3>> externalForceAndTorquePos_;
+  std::vector<size_t> externalForceAndTorqueBodyIndex_;
   std::vector<Vec<3>> externalForceViz_;
   std::vector<Vec<3>> externalForceVizPos_;
   std::vector<Vec<3>> externalTorqueViz_;
   std::vector<Vec<3>> externalTorqueVizPos_;
   std::vector<SparseJacobian> constraintJaco_;
+  std::vector<Vec<3>> constraintPos_;
   std::vector<Vec<3>> constraintForce_;
+  std::vector<size_t> constraintIdx_;
 
  protected:
   uint32_t visualTag = 0;
