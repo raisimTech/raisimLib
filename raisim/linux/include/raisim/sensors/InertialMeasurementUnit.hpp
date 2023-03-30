@@ -15,12 +15,6 @@ class InertialMeasurementUnit final : public Sensor {
  public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-  enum Frame : unsigned {
-    SENSOR_FRAME = 0,
-    ROOT_FRAME,
-    WORLD_FRAME
-  };
-
   struct ImuProperties {
     std::string name;
     double maxAcc = std::numeric_limits<double>::max();
@@ -53,8 +47,15 @@ class InertialMeasurementUnit final : public Sensor {
   ~InertialMeasurementUnit() final = default;
 
   char* serializeProp (char* data) const final {
-    return nullptr;
+    return server::set(data, type_, prop_.name, prop_.maxAcc, prop_.maxAngVel);
   }
+
+  [[nodiscard]] char* serializeMeasurements (char* data) const {
+    Vec<3> linA, angV;
+    linA.e() = getLinearAcceleration();
+    angV.e() = getAngularVelocity();
+    return server::setInFloat(data, linA, angV);
+  };
 
   /**
    * Get the linear acceleration measured by the sensor.
@@ -94,6 +95,9 @@ class InertialMeasurementUnit final : public Sensor {
   void update (class World& world) final;
 
  protected:
+  void validateMeasurementSource() final {
+    RSFATAL_IF(source_ == MeasurementSource::VISUALIZER, "IMU cannot be updated by the visualizer")
+  };
 
  private:
   ImuProperties prop_;

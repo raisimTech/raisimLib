@@ -111,6 +111,13 @@ class Sensor {
   [[nodiscard]] virtual char* serializeProp (char* data) const = 0;
 
   /**
+   * Used by the server. Do not use it if you don't know what it does. It serialized the camera property
+   * @param[in] data the pointer where the property is written
+   * @return the pointer where the next data should be written
+   */
+  [[nodiscard]] virtual char* serializeMeasurements (char* data) const { return data; };
+
+  /**
    * update the pose of the sensor from the articulated system
    */
   void updatePose();
@@ -124,7 +131,9 @@ class Sensor {
    * change the measurement source
    * @param[in] source The measurement source.
    */
-  void setMeasurementSource(MeasurementSource source) { source_ = source; }
+  void setMeasurementSource(MeasurementSource source) {
+    source_ = source;
+  }
 
   /**
    * Update the sensor measurement using raisim if possible
@@ -144,6 +153,7 @@ class Sensor {
   void setFramePosition(const Vec<3>& pos) { posFrame_ = pos; }
   void setFrameRotation(const Mat<3,3>& rot) { rotFrame_ = rot; }
   void setFrameId(size_t id) { frameId_ = id; }
+  virtual void validateMeasurementSource() {};
 
   Type type_;
   Vec<3> pos_, posB_, posFrame_;
