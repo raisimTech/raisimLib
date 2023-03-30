@@ -38,22 +38,22 @@ list(APPEND _cmake_import_check_files_for_raisim::raisimMine "${_IMPORT_PREFIX}/
 # Import target "raisim::raisimODE" for configuration "RELEASE"
 set_property(TARGET raisim::raisimODE APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
 set_target_properties(raisim::raisimODE PROPERTIES
-  IMPORTED_LOCATION_RELEASE "${_IMPORT_PREFIX}/lib/libraisimODE.so.1.1.6"
-  IMPORTED_SONAME_RELEASE "libraisimODE.so.1.1.6"
+  IMPORTED_LOCATION_RELEASE "${_IMPORT_PREFIX}/lib/libraisimODE.so.1.1.7"
+  IMPORTED_SONAME_RELEASE "libraisimODE.so.1.1.7"
   )
 
 list(APPEND _cmake_import_check_targets raisim::raisimODE )
-list(APPEND _cmake_import_check_files_for_raisim::raisimODE "${_IMPORT_PREFIX}/lib/libraisimODE.so.1.1.6" )
+list(APPEND _cmake_import_check_files_for_raisim::raisimODE "${_IMPORT_PREFIX}/lib/libraisimODE.so.1.1.7" )
 
 # Import target "raisim::raisim" for configuration "RELEASE"
 set_property(TARGET raisim::raisim APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
 set_target_properties(raisim::raisim PROPERTIES
-  IMPORTED_LOCATION_RELEASE "${_IMPORT_PREFIX}/lib/libraisim.so.1.1.6"
-  IMPORTED_SONAME_RELEASE "libraisim.so.1.1.6"
+  IMPORTED_LOCATION_RELEASE "${_IMPORT_PREFIX}/lib/libraisim.so.1.1.7"
+  IMPORTED_SONAME_RELEASE "libraisim.so.1.1.7"
   )
 
 list(APPEND _cmake_import_check_targets raisim::raisim )
-list(APPEND _cmake_import_check_files_for_raisim::raisim "${_IMPORT_PREFIX}/lib/libraisim.so.1.1.6" )
+list(APPEND _cmake_import_check_files_for_raisim::raisim "${_IMPORT_PREFIX}/lib/libraisim.so.1.1.7" )
 
 # Commands beyond this point should not need to know the version.
 set(CMAKE_IMPORT_FILE_VERSION)
