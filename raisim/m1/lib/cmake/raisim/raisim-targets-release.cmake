@@ -12,8 +12,8 @@ set_target_properties(raisim::raisimZ PROPERTIES
   IMPORTED_SONAME_RELEASE "@rpath/libraisimZ.dylib"
   )
 
-list(APPEND _IMPORT_CHECK_TARGETS raisim::raisimZ )
-list(APPEND _IMPORT_CHECK_FILES_FOR_raisim::raisimZ "${_IMPORT_PREFIX}/lib/libraisimZ.dylib" )
+list(APPEND _cmake_import_check_targets raisim::raisimZ )
+list(APPEND _cmake_import_check_files_for_raisim::raisimZ "${_IMPORT_PREFIX}/lib/libraisimZ.dylib" )
 
 # Import target "raisim::raisimPng" for configuration "RELEASE"
 set_property(TARGET raisim::raisimPng APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
@@ -22,8 +22,8 @@ set_target_properties(raisim::raisimPng PROPERTIES
   IMPORTED_SONAME_RELEASE "@rpath/libraisimPng.dylib"
   )
 
-list(APPEND _IMPORT_CHECK_TARGETS raisim::raisimPng )
-list(APPEND _IMPORT_CHECK_FILES_FOR_raisim::raisimPng "${_IMPORT_PREFIX}/lib/libraisimPng.dylib" )
+list(APPEND _cmake_import_check_targets raisim::raisimPng )
+list(APPEND _cmake_import_check_files_for_raisim::raisimPng "${_IMPORT_PREFIX}/lib/libraisimPng.dylib" )
 
 # Import target "raisim::raisimMine" for configuration "RELEASE"
 set_property(TARGET raisim::raisimMine APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
@@ -32,8 +32,8 @@ set_target_properties(raisim::raisimMine PROPERTIES
   IMPORTED_SONAME_RELEASE "@rpath/libraisimMine.dylib"
   )
 
-list(APPEND _IMPORT_CHECK_TARGETS raisim::raisimMine )
-list(APPEND _IMPORT_CHECK_FILES_FOR_raisim::raisimMine "${_IMPORT_PREFIX}/lib/libraisimMine.dylib" )
+list(APPEND _cmake_import_check_targets raisim::raisimMine )
+list(APPEND _cmake_import_check_files_for_raisim::raisimMine "${_IMPORT_PREFIX}/lib/libraisimMine.dylib" )
 
 # Import target "raisim::raisimODE" for configuration "RELEASE"
 set_property(TARGET raisim::raisimODE APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
@@ -42,8 +42,8 @@ set_target_properties(raisim::raisimODE PROPERTIES
   IMPORTED_SONAME_RELEASE "@rpath/libraisimODE.1.1.6.dylib"
   )
 
-list(APPEND _IMPORT_CHECK_TARGETS raisim::raisimODE )
-list(APPEND _IMPORT_CHECK_FILES_FOR_raisim::raisimODE "${_IMPORT_PREFIX}/lib/libraisimODE.1.1.6.dylib" )
+list(APPEND _cmake_import_check_targets raisim::raisimODE )
+list(APPEND _cmake_import_check_files_for_raisim::raisimODE "${_IMPORT_PREFIX}/lib/libraisimODE.1.1.6.dylib" )
 
 # Import target "raisim::raisim" for configuration "RELEASE"
 set_property(TARGET raisim::raisim APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
@@ -52,8 +52,8 @@ set_target_properties(raisim::raisim PROPERTIES
   IMPORTED_SONAME_RELEASE "@rpath/libraisim.1.1.6.dylib"
   )
 
-list(APPEND _IMPORT_CHECK_TARGETS raisim::raisim )
-list(APPEND _IMPORT_CHECK_FILES_FOR_raisim::raisim "${_IMPORT_PREFIX}/lib/libraisim.1.1.6.dylib" )
+list(APPEND _cmake_import_check_targets raisim::raisim )
+list(APPEND _cmake_import_check_files_for_raisim::raisim "${_IMPORT_PREFIX}/lib/libraisim.1.1.6.dylib" )
 
 # Commands beyond this point should not need to know the version.
 set(CMAKE_IMPORT_FILE_VERSION)

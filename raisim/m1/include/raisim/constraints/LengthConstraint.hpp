@@ -40,6 +40,18 @@ class LengthConstraint : public Constraints {
   double getLength() const;
 
   /**
+   * get wire width for visualization
+   * @return width
+   */
+  double getVisualizationWidth() { return width_; }
+
+  /**
+   * set visualization width
+   * @param width width
+   */
+  void setVisualizationWidth(double width) { width_ = width; }
+
+  /**
    * @return the distance between the two mounting points */
   double getDistance() const;
 
@@ -130,6 +142,7 @@ class LengthConstraint : public Constraints {
   double length_;
   double distance_;
   double stretch_;
+  double width_ = 0.02; /// for visualization only
   WireType type_;
   StretchType stretchType_ = StretchType::COMPRESSION_RESISTANT_ONLY;
 

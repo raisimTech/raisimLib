@@ -142,7 +142,7 @@ class TimedLoop {
   ~TimedLoop() {
     auto end = std::chrono::steady_clock::now();
     auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
-    if (loopTimeInUs > microseconds)
+    if (int(loopTimeInUs) > microseconds)
       USLEEP(int(loopTimeInUs - microseconds));
   }
 
@@ -234,6 +234,14 @@ class AlignedAllocator {
 
  private:
   AlignedAllocator &operator=(const AlignedAllocator &);
+};
+
+struct ColorRGB {
+  uint8_t r,g,b;
+};
+
+struct ColorRGBA {
+  uint8_t r,g,b,a;
 };
 
 }
