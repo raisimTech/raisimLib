@@ -59,13 +59,13 @@ static inline char *setInFloat(char *data, double val) {
 }
 
 static inline char *set(char *data, const std::string &val) {
-  data = set(data, (uint64_t) (val.size()));
+  data = set(data, (int32_t) (val.size()));
   memcpy(data, val.data(), sizeof(char) * val.size());
   return data + sizeof(char) * val.size();
 }
 
 static inline char *setInFloat(char *data, const std::vector<double>& val) {
-  data = set(data, (uint64_t) (val.size()));
+  data = set(data, (int32_t) (val.size()));
   for (int i = 0; i < val.size(); i++)
     data = set(data, float(val[i]));
 
@@ -104,7 +104,7 @@ static inline char *getInFloat(char *data, double *val) {
 }
 
 template<typename T>
-static inline char *getN(char *data, T *val, uint64_t N) {
+static inline char *getN(char *data, T *val, int32_t N) {
   memcpy(val, data, sizeof(T) * N);
   data += sizeof(T) * N;
   return data;
@@ -120,33 +120,33 @@ static inline char *get(char *data, std::string *str) {
 
 template<typename T>
 static inline char *set(char *data, const std::vector<T> &str) {
-  data = set(data, int64_t(str.size()));
-  data = setN(data, str.data(), uint64_t(str.size()));
+  data = set(data, int32_t(str.size()));
+  data = setN(data, str.data(), int32_t(str.size()));
   return data;
 }
 
 static inline char *set(char *data, const std::vector<std::string> &str) {
-  data = set(data, int64_t(str.size()));
+  data = set(data, int32_t(str.size()));
   for (auto& s: str)
     data = set(data, s);
   return data;
 }
 
 static inline char *set(char *data, const VecDyn &vec) {
-  data = set(data, int64_t(vec.size()));
-  data = setN(data, vec.ptr(), uint64_t(vec.size()));
+  data = set(data, int32_t(vec.size()));
+  data = setN(data, vec.ptr(), int32_t(vec.size()));
   return data;
 }
 
 static inline char *set(char *data, const std::vector<VecDyn> &vecs) {
-  data = set(data, int64_t(vecs.size()));
+  data = set(data, int32_t(vecs.size()));
   for (auto& v : vecs) data = set(data, v);
   return data;
 }
 
 template<typename T>
 static inline char *setInFloat(char *data, const std::vector<double> &str) {
-  data = set(data, int64_t(str.size()));
+  data = set(data, int32_t(str.size()));
   for (auto v : str)
     data = set(data, float(v));
   return data;
@@ -154,16 +154,16 @@ static inline char *setInFloat(char *data, const std::vector<double> &str) {
 
 template<typename T>
 static inline char *get(char *data, std::vector<T> *vec) {
-  uint64_t size;
+  int32_t size;
   data = get(data, &size);
   vec->resize(size);
-  data = getN(data, &vec[0], (uint64_t) (vec->size()));
+  data = getN(data, &vec[0], (int32_t) (vec->size()));
   return data;
 }
 
 template<typename T>
 static inline char *set(char *data, const std::vector<std::string> &val) {
-  data = set(data, uint64_t(val.size()));
+  data = set(data, int32_t(val.size()));
   for (auto &v : val)
     data = set(data, v);
   return data;

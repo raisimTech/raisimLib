@@ -54,14 +54,14 @@ endif()
 add_library(raisim::raisimZ SHARED IMPORTED)
 
 set_target_properties(raisim::raisimZ PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
+  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/"
 )
 
 # Create imported target raisim::raisimPng
 add_library(raisim::raisimPng SHARED IMPORTED)
 
 set_target_properties(raisim::raisimPng PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
+  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/"
   INTERFACE_LINK_LIBRARIES "raisim::raisimZ"
 )
 
@@ -69,7 +69,7 @@ set_target_properties(raisim::raisimPng PROPERTIES
 add_library(raisim::raisimMine SHARED IMPORTED)
 
 set_target_properties(raisim::raisimMine PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
+  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/"
 )
 
 # Create imported target raisim::raisimODE

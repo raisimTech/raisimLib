@@ -267,15 +267,18 @@ struct InstancedVisuals {
   /**
    * @param[in] color1 first color.
    * @param[in] color2 second color.
-   * The color of the instance is interpolated between the two colors. */
+   * The color of the instance is interpolated between the two colors.
+   * 100% color1 when weight is 0.
+   * */
   void setColor(const Vec<4>& color1, const Vec<4>& color2) {
     this->color1 = color1;
     this->color2 = color2; }
 
   /**
    * @param[in] id instance id
-   * @param[in] weight the color weight.
+   * @param[in] weight the color weight
    * The actual color is linearly interpolated between color1 and color2 which are set by setColor method.
+   * 100% color1 when weight is 0.
    */
   void setColorWeight(size_t id, float weight) {
     data[id].colorWeight = weight;
