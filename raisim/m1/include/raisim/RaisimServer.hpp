@@ -128,6 +128,8 @@ class RaisimServer final {
    * Setup the port so that it can accept (acceptConnection) incoming connections
    */
   void setupSocket() {
+    tryingToLock_ = false;
+
 #if __linux__ || __APPLE__
     int opt = 1;
     addrlen = sizeof(address);
@@ -291,6 +293,7 @@ class RaisimServer final {
    * start spinning. */
   inline void launchServer(int port = 8080) {
     raisimPort_ = port;
+    tryingToLock_ = false;
 
     threadResult_ = std::async(std::launch::async, [this] {
       serverThread_ = std::thread(&raisim::RaisimServer::loop, this);
@@ -423,6 +426,15 @@ class RaisimServer final {
     delete as;
   }
 
+  /**
+   *
+   * @param name
+   * @param type
+   * @param size
+   * @param color1
+   * @param color2
+   * @return
+   */
   inline InstancedVisuals *addInstancedVisuals(const std::string &name,
                                                Shape::Type type,
                                                const Vec<3> &size,
@@ -764,10 +776,9 @@ class RaisimServer final {
   inline bool waitForMessageToClient(int seconds) {
 #if defined __linux__ || __APPLE__
     struct pollfd fds[2];
-    int ret;
     fds[0].fd = client_;
     fds[0].events = POLLOUT;
-    ret = poll(fds, 2, seconds * 1000);
+    int ret = poll(fds, 2, seconds * 1000);
     if ( ret == 0) {
       RSWARN("The client failed to respond in " << seconds << " seconds. Looking for a new client");
       return false;
@@ -967,7 +978,7 @@ class RaisimServer final {
       // set server request
       char* toBeFocusedPtr = nullptr;
       data_ = set(data_, state_);
-      data_ = set(data_, (uint64_t) serverRequest_.size());
+      data_ = set(data_, (int32_t) serverRequest_.size());
       for (const auto &sr: serverRequest_) {
         data_ = set(data_, (int) sr);
 
@@ -1006,7 +1017,7 @@ class RaisimServer final {
 
       unlockVisualizationServerMutex();
     } else {
-      RSWARN("Version mismatch. Make sure you have the correct visualizer version")
+      RSWARN("Version mismatch. Raisim protocol version: "<<version_<<", Visualizer protocol version: "<<clientVersion)
       return false;
     }
 
@@ -1016,6 +1027,10 @@ class RaisimServer final {
     if (needsSensorUpdate_) {
       if (!receiveData(5))
         return false;
+
+      /// send dummy data to let visualizer know that receive is done
+      data_ = set(&send_buffer[0] + sizeof(int), version_);
+      sendData();
 
       updateSensorMeasurements();
       needsSensorUpdate_ = false;
@@ -1111,25 +1126,32 @@ class RaisimServer final {
     }
 
     data_ = set(data_, (int32_t) as->getSensors().size());
+
     // add sensors to be updated
     for (auto &sensor: as->getSensors()) {
       if (!initialized) data_ = sensor.second->serializeProp(data_);
+
+      data_ = set(data_, sensor.second->getMeasurementSource());
 
       if (sensor.second->getMeasurementSource() == Sensor::MeasurementSource::VISUALIZER &&
           sensor.second->getUpdateTimeStamp() + 1. / sensor.second->getUpdateRate()
               < world_->getWorldTime() + 1e-10) {
         sensor.second->setUpdateTimeStamp(world_->getWorldTime());
-        sensor.second->updatePose();
-        Vec<4> quat;
-        auto &pos = sensor.second->getPosition();
-        auto &rot = sensor.second->getOrientation();
-        rotMatToQuat(rot, quat);
         data_ = set(data_, true);
-        data_ = setInFloat(data_, pos, quat);
         needsSensorUpdate_ = true;
       } else {
         data_ = set(data_, false);
       }
+
+      sensor.second->updatePose();
+      Vec<4> quat;
+      auto &pos = sensor.second->getPosition();
+      auto &rot = sensor.second->getOrientation();
+      rotMatToQuat(rot, quat);
+      data_ = setInFloat(data_, pos, quat);
+
+      if (sensor.second->getMeasurementSource() != Sensor::MeasurementSource::VISUALIZER)
+        data_ = sensor.second->serializeMeasurements(data_);
     }
   }
 
@@ -1234,6 +1256,7 @@ class RaisimServer final {
               data_ = setInFloat(data_, hm->getCenterX(), hm->getCenterY(), hm->getXSize(), hm->getYSize());
               data_ = set(data_, (int32_t) hm->getXSamples(), (int32_t) hm->getYSamples());
               data_ = setInFloat(data_, hm->getHeightVector());
+              data_ = set(data_, hm->getColorMap());
             }
             case COMPOUND:
             case ARTICULATED_SYSTEM:
@@ -1243,8 +1266,20 @@ class RaisimServer final {
           data_ = set(data_, Masking::SB_OBJ, int32_t(0));
         }
         auto *sob = dynamic_cast<SingleBodyObject *>(ob);
-
         auto tempAdd = data_;
+
+        // if heightmap, check if update is necessary
+        if (ob->getObjectType() == ObjectType::HEIGHTMAP) {
+          auto hm = dynamic_cast<HeightMap *>(ob);
+          data_ = set(data_, int(hm->isUpdated()));
+          if (hm->isUpdated()) {
+            data_ = setInFloat(data_, hm->getCenterX(), hm->getCenterY(), hm->getXSize(), hm->getYSize());
+            data_ = set(data_, (int32_t) hm->getXSamples(), (int32_t) hm->getYSamples());
+            data_ = setInFloat(data_, hm->getHeightVector());
+            data_ = set(data_, hm->getColorMap());
+          }
+        }
+
         data_ = set(data_, sob->getAppearance());
 
         switch (ob->getObjectType()) {
@@ -1310,7 +1345,7 @@ class RaisimServer final {
       pos = (sw->getP1() + sw->getP2()) / 2.0;
       raisim::zaxisToRotMat(diff_norm, rot);
       raisim::rotMatToQuat(rot, quat);
-      data_ = set(data_, 0.02f, 0.02f, (float)diff.norm(), 0.f);
+      data_ = set(data_, float(sw->getVisualizationWidth()), float(sw->getVisualizationWidth()), (float)diff.norm(), 0.f);
       data_ = setInFloat(data_, pos, quat);
       data_ = set(data_, (int32_t) 0);
     }
@@ -1580,7 +1615,6 @@ class RaisimServer final {
       std::string name;
       Sensor::Type type;
       rData_ = get(rData_, &visualTag, &type, &name);
-
       ArticulatedSystem *as = dynamic_cast<ArticulatedSystem*>(*std::find_if(obList.begin(), obList.end(),
                                                                              [visualTag](const Object* i){ return i->visualTag == visualTag; }));
       auto sensor = as->getSensors()[name];
@@ -1627,7 +1661,7 @@ class RaisimServer final {
   std::mutex serverMutex_;
   std::atomic_bool tryingToLock_;
 
-  uint64_t visualConfiguration_ = 0;
+  int32_t visualConfiguration_ = 0;
   void updateVisualConfig() { visualConfiguration_++; }
 
   int raisimPort_ = 8080;
@@ -1635,7 +1669,7 @@ class RaisimServer final {
   int screenShotWidth_, screenShotHeight_;
 
   // version
-  constexpr static int version_ = 10011;
+  constexpr static int version_ = 10015;
 
   // visual tag counter
   uint32_t visTagCounter = 30;
@@ -1643,7 +1677,7 @@ class RaisimServer final {
   // hanging object
   uint32_t hangingObjVisTag_ = 0;
   Object* interactingOb_;
-  double wireStiffness_;
+  double wireStiffness_ = 0.;
   int hangingObjLocalId_ = -1;
   Vec<3> hangingObjPos_, hangingObjLocalPos_, hangingObjTargetPos_;
 

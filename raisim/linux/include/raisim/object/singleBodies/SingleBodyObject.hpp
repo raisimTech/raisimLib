@@ -429,7 +429,7 @@ class SingleBodyObject : public Object {
 
   void preContactSolverUpdate1(const Vec<3> &gravity, double dt) final;
   void preContactSolverUpdate2(const Vec<3> &gravity, double dt, contact::ContactProblems& problems) final;
-  void integrate(double dt, const Vec<3>& gravity) final;
+  void integrate(double dt, const World* world) final;
   void getContactPointVel(size_t pointId, Vec<3> &vel) const final;
 
   void updateCollision() override;

@@ -5,7 +5,7 @@ Sensors
 **This documentation is only for the internal alpha testers.**
 
 This module provides a way to specify sensor properties using a URDF-like format.
-We provide a few implementation examples for depth and RGB cameras.
+We provide a few implementation examples for depth camera, RGB camera, and IMU.
 Please note that the API of this module will likely change in the future.
 
 We use RaiSim to interface with the real hardware.

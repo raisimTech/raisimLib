@@ -133,25 +133,25 @@ Interaction
 =================
 
 Object deletion
-------------------
+*********************
 You can delete the focused object using ``del`` key.
 You can focus on an object using either by left-clicking the object or by selecting an object in the object list menu.
 
 Object spawning
-------------------
+*********************
 You can find an object spawner menu by pressing ``m`` key a few times.
 There are 8 different objects you can spawn.
 Click on the object you want to spawn and fill in the other parameters that are activated in the object spawner menu.
 Press ``enter`` or just click on the button to spawn the object.
 
 Apply force
----------------
+*********************
 You can apply external forces by pressing ``shift`` and dragging the object.
 The force model is a spring so it will apply the force proportional to the distance you dragged.
 Once you release the left-mouse-button, it will stop applying the force.
 
 Measure position or distance
-------------------------------
+*********************
 You can press ``alt`` and ``left-click`` on an object to specify a *point of interest*.
 If there is one *point of interest*, the ruler will measure a position.
 If there are two, the ruler will measure the displacement.

@@ -37,7 +37,7 @@ class TimeSeriesGraph : public Chart {
  protected:
    // You should create time series graph using RaisimServer
   TimeSeriesGraph(std::string title, std::vector<std::string> names, std::string xAxis, std::string yAxis) :
-      size_(names.size()), xAxis_(std::move(xAxis)), yAxis_(std::move(yAxis)), names_(std::move(names)) {
+      size_(int32_t(names.size())), xAxis_(std::move(xAxis)), yAxis_(std::move(yAxis)), names_(std::move(names)) {
     title_ = std::move(title);
     type_ = Type::TIME_SERIES;
   }
@@ -77,12 +77,12 @@ protected:
   char* serialize(char* data) final {
     using namespace server;
     std::lock_guard<std::mutex> guard(mtx_);
-    data = set(data, (uint64_t)timeStamp_.size( ));
+    data = set(data, (int32_t)timeStamp_.size( ));
     while (!timeStamp_.empty()) {
       data = set(data, timeStamp_.front());
       timeStamp_.pop();
     }
-    data = set(data, (uint64_t)data_.size( ));
+    data = set(data, (int32_t)data_.size( ));
     while (!data_.empty()) {
       data = set(data, data_.front());
       data_.pop();
@@ -91,10 +91,10 @@ protected:
     return data;
   }
 
-  [[nodiscard]] uint64_t size() const { return size_; }
+  [[nodiscard]] int32_t size() const { return size_; }
 
  private:
-  uint64_t size_;
+  int32_t size_;
   std::mutex mtx_;
   std::string xAxis_, yAxis_;
   std::vector<std::string> names_;
@@ -108,7 +108,7 @@ class BarChart : public Chart {
 
  protected:
   BarChart(std::string title, std::vector<std::string> names) :
-      size_(names.size()), names_(std::move(names)) {
+      size_(int32_t(names.size())), names_(std::move(names)) {
     title_ = std::move(title);
     type_ = Type::BAR_CHART;
   }
@@ -139,7 +139,7 @@ class BarChart : public Chart {
   }
 
  private:
-  uint64_t size_;
+  int32_t size_;
   std::mutex mtx_;
   std::vector<std::string> names_;
   std::vector<float> data_;

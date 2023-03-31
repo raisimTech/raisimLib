@@ -7,7 +7,7 @@
     <key>CFBundleExecutable</key>
     <string>RaiSimUnity</string>
     <key>CFBundleGetInfoString</key>
-    <string>Unity Player version 2021.3.13f1 (9e7d58001ecf). (c) 2022 Unity Technologies ApS. All rights reserved.</string>
+    <string>Unity Player version 2021.3.15f1 (e8e88683f834). (c) 2022 Unity Technologies ApS. All rights reserved.</string>
     <key>CFBundleIconFile</key>
     <string>PlayerIcon.icns</string>
     <key>CFBundleIdentifier</key>
@@ -40,6 +40,6 @@
     <key>NSPrincipalClass</key>
     <string>PlayerApplication</string>
     <key>UnityBuildNumber</key>
-    <string>9e7d58001ecf</string>
+    <string>e8e88683f834</string>
   </dict>
 </plist>

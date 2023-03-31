@@ -1126,25 +1126,32 @@ class RaisimServer final {
     }
 
     data_ = set(data_, (int32_t) as->getSensors().size());
+
     // add sensors to be updated
     for (auto &sensor: as->getSensors()) {
       if (!initialized) data_ = sensor.second->serializeProp(data_);
+
+      data_ = set(data_, sensor.second->getMeasurementSource());
 
       if (sensor.second->getMeasurementSource() == Sensor::MeasurementSource::VISUALIZER &&
           sensor.second->getUpdateTimeStamp() + 1. / sensor.second->getUpdateRate()
               < world_->getWorldTime() + 1e-10) {
         sensor.second->setUpdateTimeStamp(world_->getWorldTime());
-        sensor.second->updatePose();
-        Vec<4> quat;
-        auto &pos = sensor.second->getPosition();
-        auto &rot = sensor.second->getOrientation();
-        rotMatToQuat(rot, quat);
         data_ = set(data_, true);
-        data_ = setInFloat(data_, pos, quat);
         needsSensorUpdate_ = true;
       } else {
         data_ = set(data_, false);
       }
+
+      sensor.second->updatePose();
+      Vec<4> quat;
+      auto &pos = sensor.second->getPosition();
+      auto &rot = sensor.second->getOrientation();
+      rotMatToQuat(rot, quat);
+      data_ = setInFloat(data_, pos, quat);
+
+      if (sensor.second->getMeasurementSource() != Sensor::MeasurementSource::VISUALIZER)
+        data_ = sensor.second->serializeMeasurements(data_);
     }
   }
 
@@ -1662,7 +1669,7 @@ class RaisimServer final {
   int screenShotWidth_, screenShotHeight_;
 
   // version
-  constexpr static int version_ = 10014;
+  constexpr static int version_ = 10015;
 
   // visual tag counter
   uint32_t visTagCounter = 30;
