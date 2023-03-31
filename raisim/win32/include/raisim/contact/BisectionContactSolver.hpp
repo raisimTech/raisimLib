@@ -50,7 +50,7 @@ class Single3DContactProblem {
     Vec<3> axis;
   };
   raisim::Mat<3, 2> MappInv_red;
-  double mu, n2_mu, muinv, negMuSquared, coeffRes, bounceThres, bouceVel=0., Mapp_iInv11, impact_vel=0., depth=0., tempE=0.;
+  double mu, n2_mu, muinv, coeffRes, bounceThres, bouceVel=0., Mapp_iInv11, impact_vel=0., depth=0., tempE=0.;
   Object *obA = nullptr, *obB = nullptr;
   int rank = 3;
   union {

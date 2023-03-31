@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <asset>
+    <contributor>
+      <author>Blender User</author>
+      <authoring_tool>Blender 2.80.57 commit date:2019-04-14, commit time:19:18, hash:860a9f979d60</authoring_tool>
+    </contributor>
+    <created>2019-05-24T15:54:58</created>
+    <modified>2019-05-24T15:54:58</modified>
+    <unit name="meter" meter="1"/>
+    <up_axis>Z_UP</up_axis>
+  </asset>
+  <library_images/>
+  <library_geometries>
+    <geometry id="_69331_00-Face_lowpoly-mesh" name="069331 00-Face lowpoly">
+      <mesh>
+        <source id="_69331_00-Face_lowpoly-mesh-positions">
+          <float_array id="_69331_00-Face_lowpoly-mesh-positions-array" count="72">0 0.1559979 0.05413657 0.09006679 0.1559979 0.05413657 0.09006679 0.1559979 -0.00713706 0 0.1559979 -0.00713706 0.09073179 0.1528844 -0.01054042 0.03499954 0.08201956 -0.08799886 0 0.08201956 -0.08799886 0.03499954 -0.08201956 -0.08799886 0 -0.08201956 -0.08799886 0.09399878 0.1375891 -0.005999922 0.09399878 -0.1375891 -0.005999922 0.09073179 -0.1528844 -0.01054042 0.0963537 0.1265636 0.07102239 0.1109985 0.05799925 0.06699913 0.1109985 -0.05799925 0.06699913 0.01999974 0.08999884 0.09199881 0 0.08999884 0.09199881 0.01999974 -0.08999884 0.09199881 0.0963537 -0.1265636 0.07102239 0 -0.08999884 0.09199881 0 -0.1559979 -0.00713706 0 -0.1559979 0.05413657 0.09006679 -0.1559979 0.05413657 0.09006679 -0.1559979 -0.00713706</float_array>
+          <technique_common>
+            <accessor source="#_69331_00-Face_lowpoly-mesh-positions-array" count="24" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="_69331_00-Face_lowpoly-mesh-normals">
+          <float_array id="_69331_00-Face_lowpoly-mesh-normals-array" count="105">0 1 0 0 0.7378125 -0.6750058 0 0.7378093 -0.6750093 0 0.7378123 -0.6750059 0 0 -1 0.811722 0 -0.584044 0.811722 0 -0.5840439 0.8117222 3.76355e-7 -0.5840438 0.8117222 -5.01807e-7 -0.5840438 0.9779412 0.2088806 -1.28997e-6 0.9779412 0.2088801 0 0.9779411 0.2088808 0 0.9779412 0.2088806 0 0.9739395 0 -0.2268078 0.9739396 0 -0.2268078 0 0.4976086 0.8674017 0 0.4976085 0.8674017 0 0.4976083 0.8674018 0.2649101 0 0.9642732 0.2649102 0 0.9642731 0.2649102 0 0.9642731 0.2649102 0 0.9642731 0 0 1 -1 0 0 0.9779411 -0.2088807 0 0.9779412 -0.2088806 0 0.9779412 -0.2088806 -8.5998e-7 0.9779413 -0.20888 0 0 -0.7378123 -0.6750059 0 -0.7378125 -0.6750057 0 -0.73781 -0.6750084 0 -0.4976083 0.867402 1.39991e-7 -0.4976086 0.8674017 0 -0.4976085 0.8674017 0 -1 0</float_array>
+          <technique_common>
+            <accessor source="#_69331_00-Face_lowpoly-mesh-normals-array" count="35" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="_69331_00-Face_lowpoly-mesh-vertices">
+          <input semantic="POSITION" source="#_69331_00-Face_lowpoly-mesh-positions"/>
+        </vertices>
+        <triangles count="44">
+          <input semantic="VERTEX" source="#_69331_00-Face_lowpoly-mesh-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#_69331_00-Face_lowpoly-mesh-normals" offset="1"/>
+          <p>0 0 1 0 2 0 2 0 3 0 0 0 3 1 4 1 5 1 3 2 2 2 4 2 5 3 6 3 3 3 5 4 7 4 8 4 8 4 6 4 5 4 9 5 10 5 7 5 7 6 5 6 9 6 5 7 4 7 9 7 10 8 11 8 7 8 9 9 4 9 2 9 9 10 1 10 12 10 12 11 13 11 9 11 2 12 1 12 9 12 10 13 9 13 13 13 13 14 14 14 10 14 0 15 15 15 12 15 0 16 16 16 15 16 12 17 1 17 0 17 15 18 17 18 14 18 14 19 13 19 15 19 17 20 18 20 14 20 13 21 12 21 15 21 15 22 16 22 19 22 19 22 17 22 15 22 16 23 0 23 3 23 19 23 16 23 6 23 6 23 8 23 19 23 19 23 8 23 20 23 20 23 21 23 19 23 3 23 6 23 16 23 10 24 14 24 18 24 10 25 22 25 23 25 23 26 11 26 10 26 18 27 22 27 10 27 20 28 8 28 7 28 7 29 11 29 20 29 11 30 23 30 20 30 21 31 22 31 18 31 18 32 17 32 21 32 17 33 19 33 21 33 20 34 23 34 22 34 22 34 21 34 20 34</p>
+        </triangles>
+      </mesh>
+    </geometry>
+  </library_geometries>
+  <library_visual_scenes>
+    <visual_scene id="Scene" name="Scene">
+      <node id="_69331_00-Face_lowpoly" name="069331 00-Face lowpoly" type="NODE">
+        <matrix sid="transform">1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+        <instance_geometry url="#_69331_00-Face_lowpoly-mesh" name="069331 00-Face lowpoly"/>
+      </node>
+    </visual_scene>
+  </library_visual_scenes>
+  <scene>
+    <instance_visual_scene url="#Scene"/>
+  </scene>
+</COLLADA>

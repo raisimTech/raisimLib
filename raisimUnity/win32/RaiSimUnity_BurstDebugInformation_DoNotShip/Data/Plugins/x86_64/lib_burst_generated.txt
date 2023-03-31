@@ -7,7 +7,7 @@ Library: lib_burst_generated
 --float-precision=Standard
 --format=Coff
 --disable-warnings=BC1370
---compilation-defines=UNITY_2021_3_11
+--compilation-defines=UNITY_2021_3_15
 --compilation-defines=UNITY_2021_3
 --compilation-defines=UNITY_2021
 --compilation-defines=UNITY_5_3_OR_NEWER
@@ -39,7 +39,6 @@ Library: lib_burst_generated
 --compilation-defines=USE_SEARCH_MODULE
 --compilation-defines=USE_PROPERTY_DATABASE
 --compilation-defines=USE_SEARCH_EXTENSION_API
---compilation-defines=SCENE_TEMPLATE_MODULE
 --compilation-defines=ENABLE_AR
 --compilation-defines=ENABLE_AUDIO
 --compilation-defines=ENABLE_CACHING
@@ -93,6 +92,7 @@ Library: lib_burst_generated
 --compilation-defines=ENABLE_NETWORK
 --compilation-defines=ENABLE_NVIDIA
 --compilation-defines=ENABLE_CRUNCH_TEXTURE_COMPRESSION
+--compilation-defines=ENABLE_UNITY_GAME_SERVICES_ANALYTICS_SUPPORT
 --compilation-defines=ENABLE_OUT_OF_PROCESS_CRASH_HANDLER
 --compilation-defines=ENABLE_CLUSTER_SYNC
 --compilation-defines=ENABLE_CLUSTERINPUT
@@ -179,7 +179,7 @@ Library: lib_burst_generated
 --float-precision=Standard
 --format=Coff
 --disable-warnings=BC1370
---compilation-defines=UNITY_2021_3_11
+--compilation-defines=UNITY_2021_3_15
 --compilation-defines=UNITY_2021_3
 --compilation-defines=UNITY_2021
 --compilation-defines=UNITY_5_3_OR_NEWER
@@ -211,7 +211,6 @@ Library: lib_burst_generated
 --compilation-defines=USE_SEARCH_MODULE
 --compilation-defines=USE_PROPERTY_DATABASE
 --compilation-defines=USE_SEARCH_EXTENSION_API
---compilation-defines=SCENE_TEMPLATE_MODULE
 --compilation-defines=ENABLE_AR
 --compilation-defines=ENABLE_AUDIO
 --compilation-defines=ENABLE_CACHING
@@ -265,6 +264,7 @@ Library: lib_burst_generated
 --compilation-defines=ENABLE_NETWORK
 --compilation-defines=ENABLE_NVIDIA
 --compilation-defines=ENABLE_CRUNCH_TEXTURE_COMPRESSION
+--compilation-defines=ENABLE_UNITY_GAME_SERVICES_ANALYTICS_SUPPORT
 --compilation-defines=ENABLE_OUT_OF_PROCESS_CRASH_HANDLER
 --compilation-defines=ENABLE_CLUSTER_SYNC
 --compilation-defines=ENABLE_CLUSTERINPUT

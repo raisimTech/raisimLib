@@ -335,6 +335,25 @@ The following methods are used to obtain dynamic quantities
 * :code:`getNonlinearities()`
 * :code:`getInverseMassMatrix()`
 
+Inverse Dynamics
+==================
+Raisim can compute Inverse Dynamics using the recursive newton euler algorithm.
+It is the only option for computing the force and torque acting at joints.
+Joint force/torque are sum of the constraint joint force/torque and actuation force/torque.
+For example, a revolute joint constrains motions in 5 degrees of freedom, which means that there are 5-dimensional constraint forces/torque and 1-dimensional joint actuation torque acting at a revolute joint.
+
+In minimal coordinate simulation (such as Raisim), these constraint forces/torques are not computed in the simulation loop.
+These forces/torques can be computed after a simulation loop using the inverse dynamics pipeline.
+
+To enable inverse dynamics, you should call ``raisim::ArticulatedSystem::setComputeInverseDynamics(true)``.
+**This flag is set automatically if the robot has an IMU sensor**.
+Note that the inverse dynamics pipeline will slow down the simulation by about 10\%.
+
+After a simulation loop, you can call ``raisim::ArticulatedSystem::getForceAtJointInWorldFrame()`` and ``raisim::ArticulatedSystem::getTorqueAtJointInWorldFrame()`` to get forces and torque acting at the specified joint.
+
+Assuming that there are no joint position/velocity limit forces acting at the joint, you can compute the joint actuation as a dot product of the joint axis and the joint torque.
+An example can be found in ``examples/server/inverseDynamics.cpp``.
+
 PD Controller
 =============================
 When naively implemented, a PD controller can often make a robot unstable.

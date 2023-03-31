@@ -36,6 +36,7 @@ int main(int argc, char* argv[]) {
   anymal->setPdGains(jointPgain, jointDgain);
   anymal->setPdTarget(jointConfig, jointVelocityTarget);
   anymal->setGeneralizedForce(Eigen::VectorXd::Zero(anymal->getDOF()));
+//  anymal->setComputeInverseDynamics(true);
 
   begin = std::chrono::steady_clock::now();
 

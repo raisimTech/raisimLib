@@ -15,7 +15,7 @@ cmake --build . --config Release
 
 conda activate python39
 Set-Location C:\Users\jemin\source\repos\raisimLib\build
-cmake .. -DRAISIM_EXAMPLE=OFF -DRAISIM_PY=ON -DRAISIM_MATLAB=OFF -DPYTHON_EXECUTABLE:FILEPATH=C:\Users\jemin\anaconda3\envs\python39\python
+cmake .. -DRAISIM_EXAMPLE=OFF -DRAISIM_PY=ON -DRAISIM_MATLAB=ON -DPYTHON_EXECUTABLE:FILEPATH=C:\Users\jemin\anaconda3\envs\python39\python
 cmake --build . --config Release
 
 

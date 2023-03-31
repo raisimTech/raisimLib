@@ -239,8 +239,6 @@ class HeightMap final : public SingleBodyObject {
     double xPercent = normalizedX - double(gridX);
     double yPercent = normalizedY - double(gridY);
 
-    RSFATAL_IF(gridX >= xSamples_ || gridX < 0, "Requested grid position out of bound")
-    RSFATAL_IF(gridY >= ySamples_ || gridY < 0, "Requested grid position out of bound")
     RSFATAL_IF(colorMap_.size() != height_.size(), "Color map is not specified")
 
     ColorRGB colorxy = colorMap_[gridY * xSamples_ + gridX];
