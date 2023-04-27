@@ -1660,6 +1660,48 @@ inline void rotationIntegration(Mat<3,3>& rotationMatrix, double dt, const Vec<3
   rotationMatrix = temp;
 }
 
+inline void rotationIntegration(const Mat<3,3>& initial, Mat<3,3>& final, double dt, const Vec<3>& angVel) {
+
+  /// exponential map
+  const double norm = angVel.norm();
+  const double angle = norm*dt;
+  if (angle < 1e-11) {
+    final = initial;
+    return;
+  }
+  const double normInv = 1.0/norm;
+
+  const double x = angVel[0] * normInv;
+  const double y = angVel[1] * normInv;
+  const double z = angVel[2] * normInv;
+
+  const double s = sin(angle);
+  const double c = 1.0 - cos(angle);
+
+  const double t2 = c*x*y;
+  const double t3 = z*z;
+  const double t4 = s*y;
+  const double t5 = c*x*z;
+  const double t6 = c*y*z;
+  const double t7 = x*x;
+  const double t8 = y*y;
+
+  Mat<3,3> expM;
+
+  expM[0] = -c*t3-c*t8+1.0;
+  expM[3] = t2-s*z;
+  expM[6] = t4+t5;
+  expM[1] = t2+s*z;
+  expM[4] = -c*t3-c*t7+1.0;
+  expM[7] = t6-s*x;
+  expM[2] = -t4+t5;
+  expM[5] = t6+s*x;
+  expM[8] = -c*t7-c*t8+1.0;
+
+  /// TODO:: figure out where you want to normalize the rotation
+  matmul(expM, initial, final);
+}
+
 inline void rotationIntegration(Mat<3,3>& rotationMatrix, double dt, const double* angVel) {
 
   /// exponential map
