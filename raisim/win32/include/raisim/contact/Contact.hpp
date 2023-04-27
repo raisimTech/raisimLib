@@ -148,7 +148,7 @@ public:
   }
 
   /**
-   * returns the impulse. You have to multiply this number by the time step to get the force
+   * returns the impulse. You have to divide this number by the time step to get the force
    * @return impulse
    */
   [[nodiscard]] const Vec<3> &getImpulse() const {
