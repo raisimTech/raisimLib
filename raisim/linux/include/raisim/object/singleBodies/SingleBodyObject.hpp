@@ -436,13 +436,13 @@ class SingleBodyObject : public Object {
 
   /**
    * Set the linear damping that the object experiences due to air
-   * @param[in] damping the damping coefficient
+   * @param[in] damping the damping coefficient in the body frame
    */
   void setLinearDamping(double damping);
 
   /**
-   * Set the angular damping that the object experiences due to air (proportional to the angular velocity)
-   * @param[in] damping the damping coefficient
+   * Set the angular damping that the object experiences due to air (proportional to the angular velocity).
+   * @param[in] damping the damping coefficient in the body frame
    */
   void setAngularDamping(Vec<3> damping);
 
@@ -510,6 +510,10 @@ class SingleBodyObject : public Object {
   void updateTimeStep(double dt) final {};
   void updateTimeStepIfNecessary(double dt) final {};
   void updateOrientation();
+  void eulerIntegrate(double dt,
+                      const Mat<3,3>& initialRotMat,
+                      const Vec<3>& initialAngVel,
+                      Vec<3>& finalAngVel);
 
 
   dGeomID collisionObject_;

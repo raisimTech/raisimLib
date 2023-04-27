@@ -119,9 +119,7 @@ To build raisimPy for the correct python version, activate your conda environmen
 .. note::
     **For Linux users**
     To use (vulkan version) RaiSimUnity in Linux, you need to install ``minizip``, ``ffmpeg`` and ``vulkan``.
-    To install vulkan, follow this link https://linuxconfig.org/install-and-test-vulkan-on-linux
-    **Do not install nvidia-graphics-drivers-396 as the link says**.
-    If you are going to use raisimGym, install the version recommended by pytorch.
+    If you are going to use raisimGym, install the recommended version of gpu driver by pytorch.
     If not, install the latest version.
 
     To install ``minizip`` and ``ffmpeg``,
@@ -130,7 +128,18 @@ To build raisimPy for the correct python version, activate your conda environmen
 
         sudo apt install minizip ffmpeg
 
-    If you still cannot use raisimUnity, this probably means that your driver does not support vulkan so well.
+    Vulkan installation depends on your OS distribution.
+    You can easily find instructions online.
+
+    Ubuntu 22.04 users should run the following command before running RaisimUnity.
+
+    .. code-block:: bash
+
+        sudo ln -s /usr/lib/x86_64-linux-gnu/libdl.so.2 /usr/lib/x86_64-linux-gnu/libdl.so
+
+    For other versions of Ubuntu, the symlink is provided by Ubuntu automatically.
+
+    If you still cannot use raisimUnity, this probably means that your driver does not support vulkan.
     In that case, you should use raisimUnityOpengl.
     It only supports minimalistic graphics.
 

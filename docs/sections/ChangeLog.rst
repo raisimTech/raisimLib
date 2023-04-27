@@ -9,6 +9,7 @@ Other peripheral codes are not tracked here.
 Inverse dynamics pipeline using the recursive newton euler algorithm added.
 This allows users to compute the constrained forces and torques at the joints.
 IMU implementation added (check ``sensors`` example).
+Raisim is compiled with clang15
 
 **v1.1.6**
 ========================================
