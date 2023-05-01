@@ -44,6 +44,11 @@ The (multiple) tag means that there can be multiple elements for the same parent
 Object XML Description
 ----------------------------
 
+Collision groups and masks can be written as ``collision[1]`` or ``collision[1|4|6]``.
+The first one represents the collision group 1.
+The second one is a collision mask that collides with the collision group 1, 4 and 6.
+The collision mask ``collision[-1]`` means that it can collide with any collision group (note that the collision is AND logic and two mask and group pairs should agree).
+
 sphere
 ^^^^^^^^^^^^^
 `EXAMPLES <https://github.com/raisimTech/raisimLib/blob/master/rsc/xmlScripts/objects/SingleBodies.xml>`_
