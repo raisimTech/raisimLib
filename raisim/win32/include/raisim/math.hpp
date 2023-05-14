@@ -672,57 +672,40 @@ static inline void cholInv(const double * A, double * AInv) {
       AInv[i + n * j] = AInv[j + n * i];
 }
 
-template<size_t n>
+template<int n>
 static inline void cholInv2(const double * A, double * AInv) {
-  size_t i, j, k;
+  int i, j, k;
   Mat<18,18> Mtemp;
   Vec<18> temp2;
   memcpy(Mtemp.ptr(), A, n * n * sizeof(double));
 
-  for (i = n - size_t(1); i != size_t(-1); --i) {
-    size_t idof = i * n;
-    size_t iidof = idof + i;
+  for (i = n - int(1); i != int(-1); --i) {
+    const int idof = i * n;
+    const int iidof = idof + i;
     Mtemp[iidof] = std::sqrt(Mtemp[iidof]);
     temp2[i] = 1. / Mtemp[iidof];
 
-//    j = i-1;
-//    while (j != size_t(-1)) {
-//      Mtemp[j + idof] = Mtemp[j + idof] * temp2[i];
-//      j = j-1;
-//    }
+    for (j=0; j<i; ++j)
+      Mtemp[j + idof] *= temp2[i];
 
-    for (j=i-1; j!=size_t(-1); --j)
-      Mtemp[j + idof] = Mtemp[j + idof] * temp2[i];
-
-//    j = i-1;
-//    while (j != size_t(-1)) {
-//      k = j;
-//      while (k != size_t(-1)) {
-//        Mtemp[k + j * n] -= Mtemp[j + idof] * Mtemp[k + idof];
-//        k = k-1;
-//      }
-//      j = j-1;
-//    }
-
-    for (j=i-1; j!=size_t(-1); --j)
-      for (k=j; k!=size_t(-1); --k)
+    for (j=0; j<i; ++j)
+      for (k=0; k<j+1; ++k)
         Mtemp[k + j * n] -= Mtemp[j + idof] * Mtemp[k + idof];
-
   }
 
   AInv[0] = 0.;
-  for (j = size_t(0); j < n; ++j) {
-    size_t jdof = j * n;
-    size_t jjdof = j * n + j;
+  for (j = int(0); j < n; ++j) {
+    const int jdof = j * n;
+    const int jjdof = j * n + j;
     AInv[jjdof] = temp2[j] - Mtemp[jdof] * AInv[jdof];
     for (k = 1; k < j; k++)
       AInv[jjdof] -= Mtemp[k + jdof] * AInv[k + jdof];
 
     AInv[jjdof] *= temp2[j];
-    for (i = j + size_t(1); i < n; ++i) {
-      size_t idof = i * n;
+    for (i = j + int(1); i < n; ++i) {
+      const int idof = i * n;
       AInv[i + jdof] = -Mtemp[idof] * AInv[jdof];
-      for (k = size_t(1); k < i; ++k)
+      for (k = int(1); k < i; ++k)
         AInv[i + jdof] -= Mtemp[k + idof] * AInv[k + jdof];
 
       AInv[i + jdof] *= temp2[i];

@@ -1548,8 +1548,8 @@ class ArticulatedSystem : public Object {
   /**
    * @return sensors on the robot
    */
-  [[nodiscard]] std::unordered_map<std::string, std::shared_ptr<Sensor>>& getSensors() { return sensors_; }
-  [[nodiscard]] const std::unordered_map<std::string, std::shared_ptr<Sensor>>& getSensors() const { return sensors_; }
+  [[nodiscard]] auto& getSensors() { return sensors_; }
+  [[nodiscard]] const auto& getSensors() const { return sensors_; }
 
   // not recommended for users. only for developers
   void addConstraints(const std::vector<PinConstraintDefinition>& pinDef);

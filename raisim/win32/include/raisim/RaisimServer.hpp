@@ -1528,7 +1528,7 @@ class RaisimServer final {
       }
     }
     set(contactSizeLocation, contactIncrement);
-    data_ = set(data_, int32_t(3));
+
     // object information
     auto found = std::find_if(world_->getObjList().begin(), world_->getObjList().end(),
                               [this](const Object * ptr) { return ptr->visualTag == this->objectId_; });
