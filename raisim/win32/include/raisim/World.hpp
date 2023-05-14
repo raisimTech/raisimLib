@@ -52,7 +52,7 @@ namespace raisim {
  * @param[in] group Collision group ID
  * @return Collision group. Can also be used as a collision mask.
  */
-static CollisionGroup COLLISION(unsigned int group) { return CollisionGroup(1) << group; }
+static CollisionGroup COLLISION(CollisionGroup group) { return CollisionGroup(1) << group; }
 
 class World {
 
