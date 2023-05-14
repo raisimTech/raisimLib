@@ -22,7 +22,7 @@ int main(int argc, char* argv[]) {
   server.launchServer();
   for (int i=0; i<10000000; i++) {
     RS_TIMED_LOOP(int(world.getTimeStep()*1e6))
-    world.integrate();
+    server.integrateWorldThreadSafe();
   }
 
   server.stopRecordingVideo();
