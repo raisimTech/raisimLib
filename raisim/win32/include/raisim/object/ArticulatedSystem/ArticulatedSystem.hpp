@@ -1786,7 +1786,7 @@ class ArticulatedSystem : public Object {
   std::vector<PinConstraintDefinition> pinDef_;
 
   /// ABA
-  Eigen::Matrix<double, 6, 6> MaInv_base;
+  Mat<6,6> MaInv_base;
   std::vector<Eigen::Matrix<double, 3, 3>, AlignedAllocator<Eigen::Matrix<double, 3, 3>, 32>> joint2Com_w_Skew;
 
   struct AbaData {
