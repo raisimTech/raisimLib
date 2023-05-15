@@ -10,7 +10,7 @@
 		</data>
 		<key>Resources/Data/Managed/Assembly-CSharp.dll</key>
 		<data>
-		g8Opj2wCY4mkJvhqFrE78arrFds=
+		Z+DW3sJa7BV4w89sMTgI3k/RjbE=
 		</data>
 		<key>Resources/Data/Managed/AssimpNet.dll</key>
 		<data>
@@ -60,10 +60,6 @@
 		<data>
 		qw3HWHh2nyeTW5vb35tm9oMKbTk=
 		</data>
-		<key>Resources/Data/Managed/System.Diagnostics.StackTrace.dll</key>
-		<data>
-		bFzumljc9JP5TfJ7feF/Gb3wIeM=
-		</data>
 		<key>Resources/Data/Managed/System.Drawing.dll</key>
 		<data>
 		9HTLb0kYacqkF3McoeU1RSNcY/0=
@@ -71,10 +67,6 @@
 		<key>Resources/Data/Managed/System.EnterpriseServices.dll</key>
 		<data>
 		b3oSPKcSOBHZc9cBEGUP6pgixjw=
-		</data>
-		<key>Resources/Data/Managed/System.Globalization.Extensions.dll</key>
-		<data>
-		RL/x8ksjX3QvhOTxUukS+gRS7J8=
 		</data>
 		<key>Resources/Data/Managed/System.Globalization.dll</key>
 		<data>
@@ -100,10 +92,6 @@
 		<data>
 		5dHOSlCBAIwK3dDkJ0Zb3L6ctJg=
 		</data>
-		<key>Resources/Data/Managed/System.Numerics.Vectors.dll</key>
-		<data>
-		wuZ95AczBpjxPuWTFAAyjQnSxuc=
-		</data>
 		<key>Resources/Data/Managed/System.Numerics.dll</key>
 		<data>
 		Xrf55md4SU3flZN4ZrtnX9RjkEM=
@@ -127,10 +115,6 @@
 		<key>Resources/Data/Managed/System.Runtime.InteropServices.dll</key>
 		<data>
 		Vs5u7ObEPVxx3KySd265GdmzN8w=
-		</data>
-		<key>Resources/Data/Managed/System.Runtime.Serialization.Xml.dll</key>
-		<data>
-		0srTtegP4BBWYTsNlCwXfMbQzKE=
 		</data>
 		<key>Resources/Data/Managed/System.Runtime.Serialization.dll</key>
 		<data>
@@ -163,10 +147,6 @@
 		<key>Resources/Data/Managed/System.Xml.Linq.dll</key>
 		<data>
 		rL9dMYZww3e61zRZVyHhFkxQtAs=
-		</data>
-		<key>Resources/Data/Managed/System.Xml.XPath.XDocument.dll</key>
-		<data>
-		0wN2Wbb5ERsTKBQWJfmarwrzX5Y=
 		</data>
 		<key>Resources/Data/Managed/System.Xml.dll</key>
 		<data>
@@ -452,10 +432,6 @@
 		<data>
 		/gMLXg6pOyBkgqp0u7cv4TdcIh8=
 		</data>
-		<key>Resources/Data/Managed/UnityEngine.TextCoreModule.dll</key>
-		<data>
-		jpFTYXlYIZOhI9QIk9jkZfVONQg=
-		</data>
 		<key>Resources/Data/Managed/UnityEngine.TextCoreTextEngineModule.dll</key>
 		<data>
 		YbL4hljizVJKfIk/DyCuRlw3VN8=
@@ -602,7 +578,7 @@
 		</data>
 		<key>Resources/Data/globalgamemanagers</key>
 		<data>
-		9tpgHQafiFHpw1kzjhzs9f6lp9A=
+		LrSnjrgWph8lCaKlLUsb9k2j44A=
 		</data>
 		<key>Resources/Data/globalgamemanagers.assets</key>
 		<data>
@@ -614,11 +590,7 @@
 		</data>
 		<key>Resources/Data/level0</key>
 		<data>
-		8oYK14wQEGs9T9vwdZHHHn08oqY=
-		</data>
-		<key>Resources/Data/level0.resS</key>
-		<data>
-		UqFXukzaXQzd5r45U2USUO3AxFM=
+		wy5t2MANGo+ZtL9IK6/EpaXYeTA=
 		</data>
 		<key>Resources/Data/resources.assets</key>
 		<data>
@@ -821,10 +793,10 @@
 		<dict>
 			<key>cdhash</key>
 			<data>
-			KZV+3RmtiBOzpeNHBDAYH53p2A8=
+			Mz2yiZ+yidijRE620qy16bBuz7o=
 			</data>
 			<key>requirement</key>
-			<string>cdhash H"29957edd19ad8813b3a5e3470430181f9de9d80f" or cdhash H"a3175360af200840727551d47f15843e3b20234a"</string>
+			<string>cdhash H"333db2899fb289d8a3444eb6d2acb5e9b06ecfba" or cdhash H"7e0afc37ac4f04bf3beb01733ec5bf0b9a2cd757"</string>
 		</dict>
 		<key>PlugIns/libassimp.bundle</key>
 		<dict>
@@ -846,7 +818,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			+tNJ3K+PVDAvoH4QkliwuEDNvPd7cU9sjeRa4DoKREE=
+			/cwjeqZ4zwvlxdY8nHyrdMFbco0uvrQsYfQ2o9q14Mg=
 			</data>
 		</dict>
 		<key>Resources/Data/Managed/AssimpNet.dll</key>
@@ -933,13 +905,6 @@
 			hv4UH9cDi66mUCsX2SQdzJnDzJ5u3w3Ni+EsGVxoNqA=
 			</data>
 		</dict>
-		<key>Resources/Data/Managed/System.Diagnostics.StackTrace.dll</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			RwHoQwWWdKzMHIcDjsQfPOy63OKmV1X1J8i2WwzryM4=
-			</data>
-		</dict>
 		<key>Resources/Data/Managed/System.Drawing.dll</key>
 		<dict>
 			<key>hash2</key>
@@ -952,13 +917,6 @@
 			<key>hash2</key>
 			<data>
 			QKRyQJ7cLDoyw5D7GlrR2mk2GgY2ZFVGvUEynqcGr1w=
-			</data>
-		</dict>
-		<key>Resources/Data/Managed/System.Globalization.Extensions.dll</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			Toxa00UEULprxqR0MA8kRQlIcPK8ycoWRy+y8624jr0=
 			</data>
 		</dict>
 		<key>Resources/Data/Managed/System.Globalization.dll</key>
@@ -1003,13 +961,6 @@
 			msApTw47XtVXHOrrU85Cl+/Yqkbev29LNnfxquWJWRE=
 			</data>
 		</dict>
-		<key>Resources/Data/Managed/System.Numerics.Vectors.dll</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			ixjHjfct3mhlYtapKvcVjPei5y4GucTa9Ln45jIIOOc=
-			</data>
-		</dict>
 		<key>Resources/Data/Managed/System.Numerics.dll</key>
 		<dict>
 			<key>hash2</key>
@@ -1050,13 +1001,6 @@
 			<key>hash2</key>
 			<data>
 			42cVMcLHL9PJI9SjYU/rRor0VuUVF8t1dLm5H/ck340=
-			</data>
-		</dict>
-		<key>Resources/Data/Managed/System.Runtime.Serialization.Xml.dll</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			I5Tf8gmVThQ3lb7bqOycc34X7NluOjoC3m18JjHwQVI=
 			</data>
 		</dict>
 		<key>Resources/Data/Managed/System.Runtime.Serialization.dll</key>
@@ -1113,13 +1057,6 @@
 			<key>hash2</key>
 			<data>
 			mddYBr1SVt/GB2D34LFwt5Xnu6ZcMiBRi8SWtfdKFpg=
-			</data>
-		</dict>
-		<key>Resources/Data/Managed/System.Xml.XPath.XDocument.dll</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			xTMH7WXhC+fyUu6Mk6YmGvenxEtQBmMfV5UGJMPwb14=
 			</data>
 		</dict>
 		<key>Resources/Data/Managed/System.Xml.dll</key>
@@ -1619,13 +1556,6 @@
 			AmVW515JZkETNkCOqzFnd6nve0B2oYX3dlMPiHQKqmE=
 			</data>
 		</dict>
-		<key>Resources/Data/Managed/UnityEngine.TextCoreModule.dll</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			qQowKvzQn02MPpikzI6xWMXGODrAxD0rbH5IOpFXgJo=
-			</data>
-		</dict>
 		<key>Resources/Data/Managed/UnityEngine.TextCoreTextEngineModule.dll</key>
 		<dict>
 			<key>hash2</key>
@@ -1882,7 +1812,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			e7jHCB+PSL5XpzdEIU3DlQiKbyZz7ZKeQNVjsOyeex4=
+			8K8A2GaiWU/0EWOz3As5Xqp8t3YN9dvzV/muYJoQ/Xc=
 			</data>
 		</dict>
 		<key>Resources/Data/globalgamemanagers.assets</key>
@@ -1903,14 +1833,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			SPifjxzEifkEsESI9CK8iuLwaars5hZeagORLsuUHug=
-			</data>
-		</dict>
-		<key>Resources/Data/level0.resS</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			blFCy4unzNB+0C3VYE1Xcdqb91eYjracx2OdQc7qF9U=
+			VbJEGT2lb4cNQnYRtciECxYHZdYUL3ezqOm6NF4JcXg=
 			</data>
 		</dict>
 		<key>Resources/Data/resources.assets</key>
