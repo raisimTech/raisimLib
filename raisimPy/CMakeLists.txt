@@ -15,8 +15,9 @@ target_link_libraries(raisimpy PRIVATE raisim::raisim)
 # header files
 target_include_directories(raisimpy PUBLIC include ${EIGEN3_INCLUDE_DIRS})
 
+find_package(PythonInterp REQUIRED)
 execute_process(
-        COMMAND "${PYTHON_EXECUTABLE}" -c "if True:
+        COMMAND python -c "if True:
     from distutils import sysconfig as sc
     print(sc.get_python_lib(prefix='', plat_specific=True))"
         OUTPUT_VARIABLE PYTHON_SITE
