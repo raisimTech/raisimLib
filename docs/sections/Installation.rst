@@ -84,7 +84,7 @@ The following options are available
 
 * ``RAISIM_EXAMPLE`` : Compile C++ RaiSim examples
 * ``RAISIM_MATLAB`` : Compile raisimMatlab (compiled binary is also provided). You need MATLAB for this option
-* ``RAISIM_PY`` : Compile raisimPy.
+* ``RAISIM_PY`` : Compile raisimPy. When installed, it will copy raisimpy files to your python site-packages directory
 
 You can generate build files using CMake as following
 
