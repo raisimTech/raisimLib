@@ -17,7 +17,7 @@ target_link_libraries(raisimpy PRIVATE raisim::raisim)
 target_include_directories(raisimpy PUBLIC include ${EIGEN3_INCLUDE_DIRS})
 
 execute_process(
-        COMMAND python -c "if True:
+        COMMAND ${PYTHON_EXECUTABLE} -c "if True:
     from distutils import sysconfig as sc
     print(sc.get_python_lib(prefix='', plat_specific=True))"
         OUTPUT_VARIABLE PYTHON_SITE
@@ -49,7 +49,7 @@ endif ()
 
 # Install precompiled Python modules (raisimpy)
 execute_process(
-        COMMAND python -c "if True:
+        COMMAND ${PYTHON_EXECUTABLE} -c "if True:
     import site
     print(site.getsitepackages()[-1])"
         OUTPUT_VARIABLE PYTHON_SITE
