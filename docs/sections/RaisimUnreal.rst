@@ -151,7 +151,7 @@ The force model is a spring so it will apply the force proportional to the dista
 Once you release the left-mouse-button, it will stop applying the force.
 
 Measure position or distance
-*********************
+************************************
 You can press ``alt`` and ``left-click`` on an object to specify a *point of interest*.
 If there is one *point of interest*, the ruler will measure a position.
 If there are two, the ruler will measure the displacement.

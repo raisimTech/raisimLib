@@ -1548,8 +1548,8 @@ class ArticulatedSystem : public Object {
   /**
    * @return sensors on the robot
    */
-  [[nodiscard]] std::unordered_map<std::string, std::shared_ptr<Sensor>>& getSensors() { return sensors_; }
-  [[nodiscard]] const std::unordered_map<std::string, std::shared_ptr<Sensor>>& getSensors() const { return sensors_; }
+  [[nodiscard]] auto& getSensors() { return sensors_; }
+  [[nodiscard]] const auto& getSensors() const { return sensors_; }
 
   // not recommended for users. only for developers
   void addConstraints(const std::vector<PinConstraintDefinition>& pinDef);
@@ -1786,7 +1786,7 @@ class ArticulatedSystem : public Object {
   std::vector<PinConstraintDefinition> pinDef_;
 
   /// ABA
-  Mat<6, 6> MaInv_base;
+  Mat<6,6> MaInv_base;
   std::vector<Eigen::Matrix<double, 3, 3>, AlignedAllocator<Eigen::Matrix<double, 3, 3>, 32>> joint2Com_w_Skew;
 
   struct AbaData {
