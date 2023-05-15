@@ -258,6 +258,24 @@ public:
     return bool(result);
   }
 
+  template <typename T>
+  bool getAttributeIfExists(const std::string& arg, const std::string& arg2, T &attribute) {
+    if (getAttributeIfExists(arg, attribute)) {
+      return true;
+    } else {
+      return getAttributeIfExists(arg2, attribute);
+    }
+  }
+
+  template <typename T>
+  bool getAttributeIfExists(const std::string& arg, const std::string& arg2, const std::string& arg3, T &attribute) {
+    if (getAttributeIfExists(arg, attribute)) {
+      return true;
+    } else {
+      return getAttributeIfExists(arg2, arg3, attribute);
+    }
+  }
+
   [[nodiscard]] std::string getFullTree() const {
     std::string tree;
 

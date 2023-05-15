@@ -9,7 +9,7 @@
 
 namespace raisim {
 
-typedef unsigned long CollisionGroup;
+typedef uint64_t CollisionGroup;
 
 #ifdef WIN32
 #define RAISIM_STATIC_COLLISION_GROUP CollisionGroup(1)<<31

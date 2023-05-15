@@ -618,65 +618,6 @@ struct Transformation {
 
 
 template<size_t n>
-static inline void cholInvFast(const double * A, double * AInv) {
-  size_t i, j, k;
-  double sum;
-  double p[n], Mtemp_[n*n];
-  memcpy(AInv, A, n * n * sizeof(double));
-
-  p[0] = 1. / std::sqrt(AInv[0]);
-
-  for (j = 1; j < n; j++)
-    AInv[j] = AInv[n * j] * p[0];
-
-  for (i = 1; i < n; i++) {
-    sum = AInv[i * n + i];
-    for (k = i - 1; k >= 1; k--)
-      sum -= AInv[i + n * k] * AInv[i + n * k];
-    sum -= AInv[i] * AInv[i];
-    p[i] = 1. / std::sqrt(sum);
-    for (j = i + 1; j < n; j++) {
-      sum = AInv[i + n * j];
-      for (k = i - 1; k >= 1; k--)
-        sum -= AInv[i + n * k] * AInv[j + n * k];
-      sum -= AInv[i] * AInv[j];
-      AInv[j + n * i] = sum * p[i];
-    }
-  }
-
-//  for (i = 0; i < n; i++) {
-//    AInv[i + n * i] = 1./p[i];
-//  }
-
-//  memcpy(Mtemp_, AInv, n * n * sizeof(double));
-
-  /// Matrix inversion using forward substitution
-  AInv[0] = 0.;
-  for (j = size_t(0); j < n; ++j) {
-    size_t jdof = j * n;
-    size_t jjdof = j * n + j;
-
-    ///diagonal terms
-    AInv[jjdof] = p[j] - AInv[jdof] * AInv[jdof];
-    for (k = 1; k < j; k++)
-      AInv[jjdof] -= AInv[k + jdof] * AInv[k + jdof];
-
-    AInv[jjdof] *= p[j];
-    ///off - diagonal terms
-    for (i = j + size_t(1); i < n; ++i) {
-      size_t idof = i * n;
-      AInv[i + jdof] = -AInv[idof] * AInv[jdof];
-      for (k = size_t(1); k < i; ++k)
-        AInv[i + jdof] -= AInv[k + idof] * AInv[k + jdof];
-
-      AInv[i + jdof] *= p[i];
-      AInv[j + idof] = AInv[i + jdof];
-    }
-  }
-}
-
-
-template<size_t n>
 static inline void cholInv(const double * A, double * AInv) {
   size_t i, j, k;
   double sum;
@@ -731,70 +672,47 @@ static inline void cholInv(const double * A, double * AInv) {
       AInv[i + n * j] = AInv[j + n * i];
 }
 
+template<int n>
+static inline void cholInv2(const double * A, double * AInv) {
+  int i, j, k;
+  Mat<18,18> Mtemp;
+  Vec<18> temp2;
+  memcpy(Mtemp.ptr(), A, n * n * sizeof(double));
 
-template<size_t n>
-static inline void cholInv(const raisim::Vec<(n*n+n)/2>& A,  raisim::Vec<(n*n+n)/2>& result) {
-  size_t i, j, k;
-  double sum;
-  Vec<n> p;
-  Mat<n,n> AInv;
+  for (i = n - int(1); i != int(-1); --i) {
+    const int idof = i * n;
+    const int iidof = idof + i;
+    Mtemp[iidof] = std::sqrt(Mtemp[iidof]);
+    temp2[i] = 1. / Mtemp[iidof];
 
-  k=0;
-  for(i=0; i<n; i++) {
-    AInv[i + n * i] = A[k++];
-    for(j=i+1; j<n; j++) {
-      AInv[i + n * j] = A[k];
-      AInv[j + n * i] = A[k++];
-    }
+    for (j=0; j<i; ++j)
+      Mtemp[j + idof] *= temp2[i];
+
+    for (j=0; j<i; ++j)
+      for (k=0; k<j+1; ++k)
+        Mtemp[k + j * n] -= Mtemp[j + idof] * Mtemp[k + idof];
   }
 
-  p[0] = 1. / std::sqrt(AInv[0]);
+  AInv[0] = 0.;
+  for (j = int(0); j < n; ++j) {
+    const int jdof = j * n;
+    const int jjdof = j * n + j;
+    AInv[jjdof] = temp2[j] - Mtemp[jdof] * AInv[jdof];
+    for (k = 1; k < j; k++)
+      AInv[jjdof] -= Mtemp[k + jdof] * AInv[k + jdof];
 
-  for (j = 1; j < n; j++)
-    AInv[j] *= p[0];
+    AInv[jjdof] *= temp2[j];
+    for (i = j + int(1); i < n; ++i) {
+      const int idof = i * n;
+      AInv[i + jdof] = -Mtemp[idof] * AInv[jdof];
+      for (k = int(1); k < i; ++k)
+        AInv[i + jdof] -= Mtemp[k + idof] * AInv[k + jdof];
 
-  for (i = 1; i < n; i++) {
-    sum = AInv[i * n + i];
-    for (k = i - 1; k >= 1; k--)
-      sum -= AInv[i + n * k] * AInv[i + n * k]; // lower
-    sum -= AInv[i] * AInv[i];
-    p[i] = 1. / std::sqrt(sum);
-    for (j = i + 1; j < n; j++) {
-      sum = AInv[i + n * j]; // upper
-      for (k = i - 1; k >= 1; k--)
-        sum -= AInv[i + n * k] * AInv[j + n * k]; //lower
-      sum -= AInv[i] * AInv[j]; // lower
-      AInv[j + n * i] = sum * p[i];
-    }
-  }
-
-  for (i = 0; i < n; i++) {
-    AInv[i + n * i] = p[i];
-    for (j = i + 1; j < n; j++) {
-      sum = 0.0;
-      for (k = i; k < j; k++) {
-        sum -= AInv[j + n * k] * AInv[k + n * i];
-      }
-      AInv[j + n * i] = sum * p[j];
-    }
-  }
-
-  size_t c=0;
-  for (i = 0; i < n; i++) {
-    result[c] = AInv[i + n * i] * AInv[i + n * i];
-    for (k = i + 1; k < n; k++)
-      result[c] += AInv[k + n * i] * AInv[k + n * i];
-
-    ++c;
-    for (j = i + 1; j < n; j++) {
-      result[c] = AInv[j + n * i] * AInv[j + n * j];
-      for (k = j + 1; k < n; k++)
-        result[c] += AInv[k + n * i] * AInv[k + n * j];
-      ++c;
+      AInv[i + jdof] *= temp2[i];
+      AInv[j + idof] = AInv[i + jdof];
     }
   }
 }
-
 
 inline void quatToRotMat(const Vec<4> &q, Mat<3, 3> &R) {
   R[0] = q[0] * q[0] + q[1] * q[1] - q[2] * q[2] - q[3] * q[3];
@@ -1658,6 +1576,48 @@ inline void rotationIntegration(Mat<3,3>& rotationMatrix, double dt, const Vec<3
   /// TODO:: figure out where you want to normalize the rotation
   matmul(expM, rotationMatrix, temp);
   rotationMatrix = temp;
+}
+
+inline void rotationIntegration(const Mat<3,3>& initial, Mat<3,3>& final, double dt, const Vec<3>& angVel) {
+
+  /// exponential map
+  const double norm = angVel.norm();
+  const double angle = norm*dt;
+  if (angle < 1e-11) {
+    final = initial;
+    return;
+  }
+  const double normInv = 1.0/norm;
+
+  const double x = angVel[0] * normInv;
+  const double y = angVel[1] * normInv;
+  const double z = angVel[2] * normInv;
+
+  const double s = sin(angle);
+  const double c = 1.0 - cos(angle);
+
+  const double t2 = c*x*y;
+  const double t3 = z*z;
+  const double t4 = s*y;
+  const double t5 = c*x*z;
+  const double t6 = c*y*z;
+  const double t7 = x*x;
+  const double t8 = y*y;
+
+  Mat<3,3> expM;
+
+  expM[0] = -c*t3-c*t8+1.0;
+  expM[3] = t2-s*z;
+  expM[6] = t4+t5;
+  expM[1] = t2+s*z;
+  expM[4] = -c*t3-c*t7+1.0;
+  expM[7] = t6-s*x;
+  expM[2] = -t4+t5;
+  expM[5] = t6+s*x;
+  expM[8] = -c*t7-c*t8+1.0;
+
+  /// TODO:: figure out where you want to normalize the rotation
+  matmul(expM, initial, final);
 }
 
 inline void rotationIntegration(Mat<3,3>& rotationMatrix, double dt, const double* angVel) {

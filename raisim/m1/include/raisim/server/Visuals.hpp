@@ -77,11 +77,9 @@ struct ArticulatedSystemVisual {
 
 struct Visuals {
   friend class raisim::RaisimServer;
-
   Shape::Type type;
   std::string name;
   std::string material;
-  std::string meshFileName;
   bool glow = true;
   bool shadow = false;
 
@@ -170,7 +168,31 @@ struct Visuals {
 
  protected:
   uint32_t visualTag = 0;
+
 };
+
+struct VisualMesh : public Visuals {
+  friend class raisim::RaisimServer;
+
+  void updateMesh (const std::vector<float>& vertexArray,
+                   const std::vector<uint8_t>& colorArray) {
+    updateMesh_ = true;
+    vertexArray_ = vertexArray;
+    colorArray_ = colorArray;
+  }
+
+  [[nodiscard]] bool isUpdated () const {
+    return updateMesh_;
+  };
+
+ protected:
+  std::string meshFileName_;
+  std::vector<float> vertexArray_;
+  std::vector<uint8_t> colorArray_;
+  std::vector<int32_t> indexArray_;
+  bool updateMesh_ = false;
+};
+
 
 struct InstancedVisuals {
   friend class raisim::RaisimServer;

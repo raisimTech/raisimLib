@@ -458,7 +458,7 @@ class ArticulatedSystem : public Object {
   [[nodiscard]] const VecDyn &getNonlinearities(const Vec<3>& gravity) {
     VecDyn ga(dof);
     ga.setZero();
-    recursiveNewtonEuler(gravity, false, ga, h_);
+    recursiveNewtonEuler(gravity, false, false, ga, h_);
     return h_;
   }
 
@@ -1610,13 +1610,9 @@ class ArticulatedSystem : public Object {
   void integrate(double dt, const World* world) final;
 
   void addContactPointVel(size_t pointId, Vec<3> &vel) final;
-
   void subContactPointVel(size_t pointId, Vec<3> &vel) final;
-
   void addContactPointVel2(size_t pointId, Vec<3> &vel) final;
-
   void subContactPointVel2(size_t pointId, Vec<3> &vel) final;
-
   void updateGenVelWithImpulse(size_t pointId, const Vec<3> &imp) final;
 
   void updateTimeStep(double dt) final;
@@ -1639,7 +1635,7 @@ class ArticulatedSystem : public Object {
    * @param ga[in] The generalized acceleration
    * @param b[out] The generalized force
    */
-  void recursiveNewtonEuler(const Vec<3> &gravity, bool includeExternalForces, const VecDyn& ga, VecDyn &b);
+  void recursiveNewtonEuler(const Vec<3> &gravity, bool includeExternalForces, bool updateJointForces, const VecDyn& ga, VecDyn &b);
 
  private:
 
@@ -1790,7 +1786,7 @@ class ArticulatedSystem : public Object {
   std::vector<PinConstraintDefinition> pinDef_;
 
   /// ABA
-  Mat<6, 6> MaInv_base;
+  Mat<6,6> MaInv_base;
   std::vector<Eigen::Matrix<double, 3, 3>, AlignedAllocator<Eigen::Matrix<double, 3, 3>, 32>> joint2Com_w_Skew;
 
   struct AbaData {
