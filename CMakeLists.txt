@@ -48,34 +48,11 @@ else()
     set(RAISIM_BIN_DIR ${RAISIM_OS})
 endif()
 
-
 install(
         DIRECTORY
         ${CMAKE_CURRENT_LIST_DIR}/raisim/${RAISIM_BIN_DIR}/include
         DESTINATION
         ${CMAKE_INSTALL_PREFIX}
-)
-
-
-if(WIN32)
-    file(GLOB_RECURSE RAISIM_PY_LIBS "${CMAKE_CURRENT_LIST_DIR}/raisim/${RAISIM_BIN_DIR}/bin/Release/raisimpy.*")
-else ()
-    file(GLOB_RECURSE RAISIM_PY_LIBS "${CMAKE_CURRENT_LIST_DIR}/raisim/${RAISIM_BIN_DIR}/lib/raisimpy.*")
-endif ()
-
-# Install precompiled Python modules (raisimpy)
-find_package(PythonInterp REQUIRED)
-execute_process(
-        COMMAND python -c "if True:
-    import site
-    print(site.getsitepackages()[-1])"
-        OUTPUT_VARIABLE PYTHON_SITE
-        OUTPUT_STRIP_TRAILING_WHITESPACE)
-install(
-        FILES
-        ${RAISIM_PY_LIBS}
-        DESTINATION
-        ${PYTHON_SITE}
 )
 
 install(FILES package.xml DESTINATION "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}")

@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 14)
 # find the various packages
 find_package(Eigen3 REQUIRED)
 find_package(raisim CONFIG REQUIRED)
+find_package(PythonInterp REQUIRED)
 
 # source files
 file(GLOB SOURCES "src/*.cpp")
@@ -15,7 +16,6 @@ target_link_libraries(raisimpy PRIVATE raisim::raisim)
 # header files
 target_include_directories(raisimpy PUBLIC include ${EIGEN3_INCLUDE_DIRS})
 
-find_package(PythonInterp REQUIRED)
 execute_process(
         COMMAND python -c "if True:
     from distutils import sysconfig as sc
@@ -40,3 +40,23 @@ else()
             RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../raisim/${RAISIM_OS}/bin"
             )
 endif()
+
+if(WIN32)
+    file(GLOB_RECURSE RAISIM_PY_LIBS "${CMAKE_CURRENT_LIST_DIR}/../raisim/${RAISIM_BIN_DIR}/bin/Release/raisimpy.*")
+else ()
+    file(GLOB_RECURSE RAISIM_PY_LIBS "${CMAKE_CURRENT_LIST_DIR}/../raisim/${RAISIM_BIN_DIR}/lib/raisimpy.*")
+endif ()
+
+# Install precompiled Python modules (raisimpy)
+execute_process(
+        COMMAND python -c "if True:
+    import site
+    print(site.getsitepackages()[-1])"
+        OUTPUT_VARIABLE PYTHON_SITE
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+install(
+        FILES
+        ${RAISIM_PY_LIBS}
+        DESTINATION
+        ${PYTHON_SITE}
+)
