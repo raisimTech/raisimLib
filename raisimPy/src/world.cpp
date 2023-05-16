@@ -109,6 +109,14 @@ void init_world(py::module &m) {
             x: radius.
 	    )mydelimiter", py::arg("radius"));
 
+  py::class_<raisim::VisualMesh, raisim::Visuals>(m, "VisualMesh")
+      .def("updateMesh", &raisim::VisualMesh::updateMesh, R"mydelimiter(
+      Set new mesh vertices and colors
+        Args:
+          vertex array: new vertex array
+          color array: new color array
+      )mydelimiter", py::arg("vertexArray"), py::arg("colorArray"));
+
   py::class_<raisim::RaisimServer>(m, "RaisimServer")
       .def(py::init<raisim::World *>())
       .def("launchServer", &raisim::RaisimServer::launchServer)
@@ -145,6 +153,9 @@ void init_world(py::module &m) {
             colorG: green value (max:1),
             colorB: blue value (max:1),
             colorA: alpha value (max:1)
+
+          Returns:
+              pointer to the visual articulated system
 	    )mydelimiter",
            py::arg("name"),
            py::arg("urdfFile"),
@@ -166,8 +177,11 @@ void init_world(py::module &m) {
             colorB: blue value (max:1),
             colorA: alpha value (max:1),
             material = "",
-            glow = false
-            shadow = false
+            glow(not supported) = false
+            shadow(not supported) = false
+
+          Returns:
+              pointer to the visual capsule
 	    )mydelimiter",
            py::arg("name"),
            py::arg("radius"),
@@ -193,8 +207,11 @@ void init_world(py::module &m) {
             colorB: blue value (max:1),
             colorA: alpha value (max:1),
             material = "",
-            glow = false
-            shadow = false
+            glow(not supported) = false
+            shadow(not supported) = false
+
+        Returns:
+            pointer to the visual cylinder
 	    )mydelimiter",
            py::arg("name"),
            py::arg("radius"),
@@ -221,8 +238,11 @@ void init_world(py::module &m) {
             colorB: blue value (max:1),
             colorA: alpha value (max:1),
             material = "",
-            glow = false
-            shadow = false
+            glow(not supported) = false
+            shadow(not supported) = false
+
+        Returns:
+            pointer to the visual box
 	    )mydelimiter",
            py::arg("name"),
            py::arg("x"),
@@ -248,8 +268,10 @@ void init_world(py::module &m) {
             colorB: blue value (max:1),
             colorA: alpha value (max:1),
             material = "",
-            glow = false
-            shadow = false
+            glow(not supported) = false
+            shadow(not supported) = false
+        Returns:
+            pointer to the visual sphere
 	    )mydelimiter",
            py::arg("name"),
            py::arg("radius"),
@@ -265,7 +287,31 @@ void init_world(py::module &m) {
 	    Add a visual polyline without physics
         Args:
             name: name
-	    )mydelimiter", py::arg("name"));
+
+        Returns:
+            pointer to the visual polyline
+	    )mydelimiter", py::arg("name")
+
+      .def("addVisualMesh", py::overload_cast<const std::string &, const std::string &,
+                                              const raisim::Vec<3> &, double, double, double, double, bool, bool>
+                                              (&raisim::RaisimServer::addVisualMesh), R"mydelimiter(
+      Add a visual mesh without physics
+        Args:
+            name: name of the visual object
+            file: location of the mesh file
+            scale: scale of the visual mesh
+            colorR: red color value
+            colorG: green color value
+            colorB: blue color value
+            colorA: alpha color value
+            glow(not supported): if glow
+            shadow(not supported): if casts shadow
+
+        Returns:
+            pointer to the visual mesh
+      )mydelimiter")
+
+      );
 
   /*********/
   /* World */
