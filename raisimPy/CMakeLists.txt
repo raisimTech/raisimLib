@@ -16,15 +16,7 @@ target_link_libraries(raisimpy PRIVATE raisim::raisim)
 # header files
 target_include_directories(raisimpy PUBLIC include ${EIGEN3_INCLUDE_DIRS})
 
-execute_process(
-        COMMAND ${PYTHON_EXECUTABLE} -c "if True:
-    from distutils import sysconfig as sc
-    print(sc.get_python_lib(prefix='', plat_specific=True))"
-        OUTPUT_VARIABLE PYTHON_SITE
-        OUTPUT_STRIP_TRAILING_WHITESPACE)
-
 if(UNIX)
-    install(TARGETS raisimpy DESTINATION ${CMAKE_INSTALL_PREFIX}/${PYTHON_SITE})
     set_target_properties(raisimpy
             PROPERTIES
             ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../raisim/${RAISIM_OS}/lib"
@@ -41,22 +33,15 @@ else()
             )
 endif()
 
-if(WIN32)
-    file(GLOB_RECURSE RAISIM_PY_LIBS "${CMAKE_CURRENT_LIST_DIR}/../raisim/${RAISIM_BIN_DIR}/bin/Release/raisimpy.*")
-else ()
-    file(GLOB_RECURSE RAISIM_PY_LIBS "${CMAKE_CURRENT_LIST_DIR}/../raisim/${RAISIM_BIN_DIR}/lib/raisimpy.*")
-endif ()
-
 # Install precompiled Python modules (raisimpy)
 execute_process(
-        COMMAND ${PYTHON_EXECUTABLE} -c "if True:
-    import site
-    print(site.getsitepackages()[-1])"
+        COMMAND ${PYTHON_EXECUTABLE} -c "import sysconfig; print(sysconfig.get_paths()[\"purelib\"])"
         OUTPUT_VARIABLE PYTHON_SITE
         OUTPUT_STRIP_TRAILING_WHITESPACE)
+message("-- Installing raisimpy in ${PYTHON_SITE}")
 install(
-        FILES
-        ${RAISIM_PY_LIBS}
+        TARGETS
+        raisimpy
         DESTINATION
         ${PYTHON_SITE}
 )
