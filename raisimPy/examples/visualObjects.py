@@ -4,7 +4,8 @@ import raisimpy as raisim
 import math
 import time
 
-raisim.World.setLicenseFile(os.path.dirname(os.path.abspath(__file__)) + "/../../rsc/activation.raisim")
+rscDir = os.path.dirname(os.path.abspath(__file__)) + "/../../rsc/"
+raisim.World.setLicenseFile(rscDir + "activation.raisim")
 world = raisim.World()
 
 # ground
@@ -24,10 +25,9 @@ visCylinder.setPosition(np.array([0, 2, 0]))
 visCapsule.setPosition(np.array([2, 2, 0]))
 
 # articulated system
-laikago = server.addVisualArticulatedSystem("v_laikago", os.path.dirname(os.path.abspath(__file__)) + "/../../rsc/laikago/laikago.urdf")
+laikago = server.addVisualArticulatedSystem("v_laikago", rscDir + "laikago/laikago.urdf")
 laikago.setGeneralizedCoordinate(np.array([0, 0, 3.54, 1.0, 0.0, 0.0, 0.0, 0.03, 0.4, -0.8, -0.03, 0.4, -0.8, 0.03, -0.4, 0.8, -0.03, -0.4, 0.8]))
 laikago.setColor(0.5, 0.0, 0.0, 0.5)
-
 
 # polyline
 lines = server.addVisualPolyLine("lines")
@@ -40,7 +40,7 @@ for i in range(0, 100):
 vertex = np.array([0.5,0.5,0., 0.0,-1.,0., -0.5,0.5,0., 0.,0.,1.], type=np.float32)
 index = np.array([0,3,1, 1,3,2, 2,3,0, 0,1,2], type=np.int)
 color = np.array([255,0,0, 0,255,0, 0,0,255, 0,0,126], type=np.uint8)
-
+raisim.addVisualMesh("dynamicMesh", vertex, color, index)
 
 # visualization
 counter = 0

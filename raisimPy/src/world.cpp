@@ -122,6 +122,8 @@ void init_world(py::module &m) {
       .def("launchServer", &raisim::RaisimServer::launchServer)
       .def("killServer", &raisim::RaisimServer::killServer)
       .def("integrateWorldThreadSafe", &raisim::RaisimServer::integrateWorldThreadSafe)
+      .def("lockVisualizationServerMutex", &raisim::RaisimServer::lockVisualizationServerMutex)
+      .def("unlockVisualizationServerMutex", &raisim::RaisimServer::unlockVisualizationServerMutex)
 
       .def("startRecordingVideo", &raisim::RaisimServer::startRecordingVideo, R"mydelimiter(
           Start recording RaisimUnity visualization. RaisimUnity only supports video recording in linux.
@@ -290,11 +292,14 @@ void init_world(py::module &m) {
 
         Returns:
             pointer to the visual polyline
-	    )mydelimiter", py::arg("name")
+	    )mydelimiter", py::arg("name"))
 
-      .def("addVisualMesh", py::overload_cast<const std::string &, const std::string &,
-                                              const raisim::Vec<3> &, double, double, double, double, bool, bool>
-                                              (&raisim::RaisimServer::addVisualMesh), R"mydelimiter(
+      .def("addVisualMesh", [](raisim::RaisimServer &self, const std::string & name, const std::string & file,
+                               py::array_t<double> scale, double R, double G, double B, double A, bool glow, bool shadow)
+      {
+        raisim::Vec<3> sc = convert_np_to_vec<3>(scale);
+        self.addVisualMesh(name, file, sc, R, G, B, A, glow, shadow);
+        }, R"mydelimiter(
       Add a visual mesh without physics
         Args:
             name: name of the visual object
@@ -309,8 +314,47 @@ void init_world(py::module &m) {
 
         Returns:
             pointer to the visual mesh
-      )mydelimiter")
+      )mydelimiter",
+           py::arg("name"),
+           py::arg("file"),
+           py::arg("scale") = raisim::Vec<3>{1,1,1},
+           py::arg("colorR") = 0,
+           py::arg("colorG") = 0,
+           py::arg("colorB") = 0,
+           py::arg("colorA") = 1,
+           py::arg("glow") = false,
+           py::arg("shadow") = false
+      )
 
+      .def("addVisualMesh", py::overload_cast<const std::string &,
+          const std::vector<float>&, const std::vector<uint8_t>&, const std::vector<int32_t>&,
+          double, double, double, double, bool, bool>(&raisim::RaisimServer::addVisualMesh), R"mydelimiter(
+      Add a visual mesh without physics
+        Args:
+            name: name of the visual object
+            vertex: vertex array which contains the positions of the vertices
+            color: color array which contains the colors of the vertices
+            index: index array which contains the vertex index triplets that form a triangle
+            colorR: red color value
+            colorG: green color value
+            colorB: blue color value
+            colorA: alpha color value
+            glow(not supported): if glow
+            shadow(not supported): if casts shadow
+
+        Returns:
+            pointer to the visual mesh
+      )mydelimiter",
+           py::arg("name"),
+           py::arg("vertex"),
+           py::arg("color"),
+           py::arg("index"),
+           py::arg("colorR") = 0,
+           py::arg("colorG") = 0,
+           py::arg("colorB") = 0,
+           py::arg("colorA") = 1,
+           py::arg("glow") = false,
+           py::arg("shadow") = false
       );
 
   /*********/

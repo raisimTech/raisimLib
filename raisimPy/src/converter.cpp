@@ -106,6 +106,26 @@ raisim::MatDyn convert_np_to_matdyn(const py::array_t<double> &array) {
 }
 
 
+/// \brief: convert from np.array[float[n,m]] to raisim::Vec<3>
+raisim::Vec<3> convert_np_to_vec3(const py::array_t<double> &array) {
+  // check dimensions and shape
+  if (array.size() != 3) {
+    std::ostringstream s;
+    s << "error: the vector should have 3 elements"
+      << array.ndim() << ".";
+    throw std::domain_error(s.str());
+  }
+
+  // create raisim matrix
+  raisim::Vec<3> vec;
+  vec[0] = *array.data(0);
+  vec[1] = *array.data(1);
+  vec[2] = *array.data(2);
+
+  // return matrix
+  return vec;
+}
+
 /// \brief: convert from raisim::Transformation to np.array[float[4,4]]
 py::array_t<double> convert_transformation_to_np(const raisim::Transformation &transfo) {
 
