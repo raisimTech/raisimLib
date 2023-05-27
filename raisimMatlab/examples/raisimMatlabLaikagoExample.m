@@ -6,7 +6,7 @@ if ismac
 elseif isunix
     addpath('../../raisim/linux/lib')
 elseif ispc
-    addpath('../../raisim/win32/bin/Release')
+    addpath('../../raisim/win32/bin')
 else
     disp('Platform not supported')
 end
@@ -14,7 +14,7 @@ end
 %%
 % set license file
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-raisim('license',  strcat(pwd, '/../../rsc/activation.raisim'));
+% raisim('license',  strcat(pwd, '/../../rsc/activation.raisim'));
 
 %%
 % initialize the world with a 

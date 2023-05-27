@@ -89,7 +89,7 @@ PYBIND11_MODULE(raisimpy, m) {
     /*********************/
 	/* raisim.constraint */
 	/*********************/
-    init_constraints(m);
+  init_constraints(m);
 
     /*********/
 	/* World */

@@ -109,11 +109,21 @@ void init_world(py::module &m) {
             x: radius.
 	    )mydelimiter", py::arg("radius"));
 
+  py::class_<raisim::VisualMesh, raisim::Visuals>(m, "VisualMesh")
+      .def("updateMesh", &raisim::VisualMesh::updateMesh, R"mydelimiter(
+      Set new mesh vertices and colors
+        Args:
+          vertex array: new vertex array
+          color array: new color array
+      )mydelimiter", py::arg("vertexArray"), py::arg("colorArray"));
+
   py::class_<raisim::RaisimServer>(m, "RaisimServer")
       .def(py::init<raisim::World *>())
       .def("launchServer", &raisim::RaisimServer::launchServer)
       .def("killServer", &raisim::RaisimServer::killServer)
       .def("integrateWorldThreadSafe", &raisim::RaisimServer::integrateWorldThreadSafe)
+      .def("lockVisualizationServerMutex", &raisim::RaisimServer::lockVisualizationServerMutex)
+      .def("unlockVisualizationServerMutex", &raisim::RaisimServer::unlockVisualizationServerMutex)
 
       .def("startRecordingVideo", &raisim::RaisimServer::startRecordingVideo, R"mydelimiter(
           Start recording RaisimUnity visualization. RaisimUnity only supports video recording in linux.
@@ -145,13 +155,17 @@ void init_world(py::module &m) {
             colorG: green value (max:1),
             colorB: blue value (max:1),
             colorA: alpha value (max:1)
+
+          Returns:
+              pointer to the visual articulated system
 	    )mydelimiter",
            py::arg("name"),
            py::arg("urdfFile"),
            py::arg("colorR") = 0,
            py::arg("colorG") = 0,
            py::arg("colorB") = 0,
-           py::arg("colorA") = 0)
+           py::arg("colorA") = 0,
+           py::return_value_policy::reference_internal)
 
       .def("addVisualCapsule",
            &raisim::RaisimServer::addVisualCapsule,
@@ -166,8 +180,11 @@ void init_world(py::module &m) {
             colorB: blue value (max:1),
             colorA: alpha value (max:1),
             material = "",
-            glow = false
-            shadow = false
+            glow(not supported) = false
+            shadow(not supported) = false
+
+          Returns:
+              pointer to the visual capsule
 	    )mydelimiter",
            py::arg("name"),
            py::arg("radius"),
@@ -178,7 +195,8 @@ void init_world(py::module &m) {
            py::arg("colorA") = 1,
            py::arg("material") = "",
            py::arg("glow") = false,
-           py::arg("shadow") = false)
+           py::arg("shadow") = false,
+           py::return_value_policy::reference_internal)
 
       .def("addVisualCylinder",
            &raisim::RaisimServer::addVisualCylinder,
@@ -193,8 +211,11 @@ void init_world(py::module &m) {
             colorB: blue value (max:1),
             colorA: alpha value (max:1),
             material = "",
-            glow = false
-            shadow = false
+            glow(not supported) = false
+            shadow(not supported) = false
+
+        Returns:
+            pointer to the visual cylinder
 	    )mydelimiter",
            py::arg("name"),
            py::arg("radius"),
@@ -205,7 +226,37 @@ void init_world(py::module &m) {
            py::arg("colorA") = 1,
            py::arg("material") = "",
            py::arg("glow") = false,
-           py::arg("shadow") = false)
+           py::arg("shadow") = false,
+           py::return_value_policy::reference_internal)
+
+      .def("addVisualArrow",
+           &raisim::RaisimServer::addVisualArrow,
+           R"mydelimiter(
+	    Add a visual cylinder without physics
+        Args:
+            name: name
+            radius: radius
+            height: length
+            colorR: red value (max:1),
+            colorG: green value (max:1),
+            colorB: blue value (max:1),
+            colorA: alpha value (max:1),
+            glow(not supported) = false
+            shadow(not supported) = false
+
+        Returns:
+            pointer to the visual cylinder
+	    )mydelimiter",
+           py::arg("name"),
+           py::arg("radius"),
+           py::arg("height"),
+           py::arg("colorR") = 0,
+           py::arg("colorG") = 0,
+           py::arg("colorB") = 0,
+           py::arg("colorA") = -1,
+           py::arg("glow") = false,
+           py::arg("shadow") = false,
+           py::return_value_policy::reference_internal)
 
       .def("addVisualBox",
            &raisim::RaisimServer::addVisualBox,
@@ -221,8 +272,11 @@ void init_world(py::module &m) {
             colorB: blue value (max:1),
             colorA: alpha value (max:1),
             material = "",
-            glow = false
-            shadow = false
+            glow(not supported) = false
+            shadow(not supported) = false
+
+        Returns:
+            pointer to the visual box
 	    )mydelimiter",
            py::arg("name"),
            py::arg("x"),
@@ -234,7 +288,8 @@ void init_world(py::module &m) {
            py::arg("colorA") = 1,
            py::arg("material") = "",
            py::arg("glow") = false,
-           py::arg("shadow") = false)
+           py::arg("shadow") = false,
+           py::return_value_policy::reference_internal)
 
       .def("addVisualSphere",
            &raisim::RaisimServer::addVisualSphere,
@@ -248,8 +303,10 @@ void init_world(py::module &m) {
             colorB: blue value (max:1),
             colorA: alpha value (max:1),
             material = "",
-            glow = false
-            shadow = false
+            glow(not supported) = false
+            shadow(not supported) = false
+        Returns:
+            pointer to the visual sphere
 	    )mydelimiter",
            py::arg("name"),
            py::arg("radius"),
@@ -259,13 +316,85 @@ void init_world(py::module &m) {
            py::arg("colorA") = 1,
            py::arg("material") = "",
            py::arg("glow") = false,
-           py::arg("shadow") = false)
+           py::arg("shadow") = false,
+           py::return_value_policy::reference_internal)
 
       .def("addVisualPolyLine", &raisim::RaisimServer::addVisualPolyLine, R"mydelimiter(
 	    Add a visual polyline without physics
         Args:
             name: name
-	    )mydelimiter", py::arg("name"));
+
+        Returns:
+            pointer to the visual polyline
+	    )mydelimiter", py::arg("name"), py::return_value_policy::reference_internal)
+
+      .def("addVisualMesh", [](raisim::RaisimServer &self, const std::string & name, const std::string & file,
+                               double scale, double R, double G, double B, double A, bool glow, bool shadow)
+      {
+        raisim::Vec<3> sc; sc.setConstant(scale);
+        return self.addVisualMesh(name, file, sc, R, G, B, A, glow, shadow);
+        }, R"mydelimiter(
+      Add a visual mesh without physics
+        Args:
+            name: name of the visual object
+            file: location of the mesh file
+            scale: scale of the visual mesh
+            colorR: red color value
+            colorG: green color value
+            colorB: blue color value
+            colorA: alpha color value
+            glow(not supported): if glow
+            shadow(not supported): if casts shadow
+
+        Returns:
+            pointer to the visual mesh
+      )mydelimiter",
+           py::arg("name"),
+           py::arg("file"),
+           py::arg("scale") = 1,
+           py::arg("colorR") = 0,
+           py::arg("colorG") = 0,
+           py::arg("colorB") = 0,
+           py::arg("colorA") = 1,
+           py::arg("glow") = false,
+           py::arg("shadow") = false,
+           py::return_value_policy::reference_internal
+      )
+
+      .def("addVisualMesh", [](raisim::RaisimServer &self, const std::string & name, const std::vector<float>& vertex,
+                               const std::vector<uint8_t>& color, const std::vector<int32_t>& index,
+                               double R, double G, double B, double A, bool glow, bool shadow)
+           {
+             return self.addVisualMesh(name, vertex, color, index, R, G, B, A, glow, shadow);
+           }, R"mydelimiter(
+      Add a visual mesh without physics
+        Args:
+            name: name of the visual object
+            vertex: vertex array which contains the positions of the vertices
+            color: color array which contains the colors of the vertices
+            index: index array which contains the vertex index triplets that form a triangle
+            colorR: red color value
+            colorG: green color value
+            colorB: blue color value
+            colorA: alpha color value
+            glow(not supported): if glow
+            shadow(not supported): if casts shadow
+
+        Returns:
+            pointer to the visual mesh
+      )mydelimiter",
+           py::arg("name"),
+           py::arg("vertex"),
+           py::arg("color"),
+           py::arg("index"),
+           py::arg("colorR") = 0,
+           py::arg("colorG") = 0,
+           py::arg("colorB") = 0,
+           py::arg("colorA") = 1,
+           py::arg("glow") = false,
+           py::arg("shadow") = false,
+           py::return_value_policy::reference_internal
+      );
 
   /*********/
   /* World */

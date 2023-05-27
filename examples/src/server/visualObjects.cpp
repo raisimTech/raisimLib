@@ -11,13 +11,8 @@ int main(int argc, char* argv[]) {
   raisim::World world;
   world.setTimeStep(0.003);
 
-  /// launch raisim server
+  /// create and launch raisim server
   raisim::RaisimServer server(&world);
-  raisim::Vec<4> quat = {0.6, 0.2, -0.6, 0.1};
-  quat = quat / quat.norm();
-  raisim::Mat<3, 3> inertia;
-  inertia.setIdentity();
-  const raisim::Vec<3> com = {0, 0, 0};
 
   /// ground
   auto ground = world.addGround();
@@ -27,11 +22,18 @@ int main(int argc, char* argv[]) {
   auto visBox = server.addVisualBox("v_box", 1, 1, 1, 1, 1, 1, 1);
   auto visCylinder = server.addVisualCylinder("v_cylinder", 1, 1, 0, 1, 0, 1);
   auto visCapsule = server.addVisualCapsule("v_capsule", 1, 0.5, 0, 0, 1, 1);
+  raisim::Mat<3, 3> inertia;
+  inertia.setIdentity();
+  const raisim::Vec<3> com = {0, 0, 0};
   auto mesh = world.addMesh(binaryPath.getDirectory() + "/rsc/monkey/monkey.obj", 1, inertia, com);
   auto visMesh = server.addVisualMesh("v_mesh", binaryPath.getDirectory() + "/rsc/monkey/monkey.obj");
   auto varrow_x = server.addVisualArrow("v_arrow_x", 1, 2, 1, 0, 0, 1);
   auto varrow_y = server.addVisualArrow("v_arrow_y", 1, 2, 0, 1, 0, 1);
   auto varrow_z = server.addVisualArrow("v_arrow_z", 1, 2, 0, 0, 1, 1);
+
+  /// positions and orientations
+  raisim::Vec<4> quat = {0.6, 0.2, -0.6, 0.1};
+  quat = quat / quat.norm();
   mesh->setOrientation(quat);
   visMesh->setOrientation(quat.e());
   mesh->setPosition(2,-2,1.1);
@@ -42,7 +44,6 @@ int main(int argc, char* argv[]) {
   varrow_x->setPosition(0,0,4);
   varrow_y->setPosition(0,0,4);
   varrow_z->setPosition(0,0,4);
-
   Eigen::Vector4d xDir = {0.70710678118, 0, 0.70710678118, 0};
   Eigen::Vector4d yDir = {0.70710678118, -0.70710678118, 0, 0};
   varrow_x->setOrientation(xDir);
