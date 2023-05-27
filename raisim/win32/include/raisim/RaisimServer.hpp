@@ -1182,7 +1182,6 @@ class RaisimServer final {
       if (sensor.second->getMeasurementSource() == Sensor::MeasurementSource::VISUALIZER &&
           sensor.second->getUpdateTimeStamp() + 1. / sensor.second->getUpdateRate()
               < world_->getWorldTime() + 1e-10) {
-        sensor.second->setUpdateTimeStamp(world_->getWorldTime());
         data_ = set(data_, true);
         needsSensorUpdate_ = true;
       } else {
@@ -1684,14 +1683,15 @@ class RaisimServer final {
         auto &img = std::static_pointer_cast<RGBCamera>(sensor)->getImageBuffer();
         RSFATAL_IF(width * height * 4 != img.size(), "Image size mismatch. Sensor module not working properly")
         rData_ = getN(rData_, img.data(), width * height * 4);
+        sensor->setUpdateTimeStamp(world_->getWorldTime());
       } else if (type == Sensor::Type::DEPTH) {
         int width, height;
         rData_ = get(rData_, &width, &height);
         auto &depthArray = std::static_pointer_cast<DepthCamera>(sensor)->getDepthArray();
         RSFATAL_IF(width * height != depthArray.size(), "Image size mismatch. Sensor module not working properly")
         rData_ = getN(rData_, depthArray.data(), width * height);
+        sensor->setUpdateTimeStamp(world_->getWorldTime());
       }
-
     }
 
     return true;
