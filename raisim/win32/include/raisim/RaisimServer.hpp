@@ -127,8 +127,9 @@ class RaisimServer final {
   /**
    * Setup the port so that it can accept (acceptConnection) incoming connections
    */
-  void setupSocket() {
+  void setupSocket(int port = 8080) {
     tryingToLock_ = false;
+    raisimPort_ = port;
 
 #if __linux__ || __APPLE__
     int opt = 1;
