@@ -125,10 +125,12 @@ class RaisimServer final {
   ~RaisimServer() = default;
 
   /**
+   * @param[in] port the port number to open the socket
    * Setup the port so that it can accept (acceptConnection) incoming connections
    */
-  void setupSocket() {
+  void setupSocket(int port = 8080) {
     tryingToLock_ = false;
+    raisimPort_ = port;
 
 #if __linux__ || __APPLE__
     int opt = 1;
@@ -255,8 +257,8 @@ class RaisimServer final {
     unlockVisualizationServerMutex();
   }
 
-  inline void loop() {
-    setupSocket();
+  inline void loop(int port = 8080) {
+    setupSocket(port);
 
     while (!terminateRequested_) {
       acceptConnection(2);
@@ -296,7 +298,7 @@ class RaisimServer final {
     tryingToLock_ = false;
 
     threadResult_ = std::async(std::launch::async, [this] {
-      serverThread_ = std::thread(&raisim::RaisimServer::loop, this);
+      serverThread_ = std::thread(&raisim::RaisimServer::loop, this, raisimPort_);
       return true;
     });
   }
