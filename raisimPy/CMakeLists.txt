@@ -19,18 +19,29 @@ target_include_directories(raisimpy PUBLIC include ${EIGEN3_INCLUDE_DIRS})
 # Install precompiled Python modules (raisimpy)
 execute_process(
         COMMAND "${PYTHON_EXECUTABLE}" -c "if True:
-    from distutils import sysconfig as sc
-    print(sc.get_python_lib(prefix='', plat_specific=True))"
+            import sysconfig
+            print(sysconfig.get_paths()[\"purelib\"])"
         OUTPUT_VARIABLE PYTHON_SITE
         OUTPUT_STRIP_TRAILING_WHITESPACE)
+message("python site is ${PYTHON_SITE}")
 
 if(UNIX)
-    install(TARGETS raisimpy DESTINATION ${CMAKE_INSTALL_PREFIX}/${PYTHON_SITE})
     set(INSTALL_SITE "${CMAKE_CURRENT_SOURCE_DIR}/../raisim/${RAISIM_OS}/lib")
-else()
+elseif(WIN32)
     target_link_libraries(raisimpy PRIVATE Ws2_32)
+    file(GLOB_RECURSE DLL_FILES "${CMAKE_CURRENT_SOURCE_DIR}/../raisim/win32/bin/*.dll")
+    install(FILES ${DLL_FILES}
+            DESTINATION ${PYTHON_SITE}
+    )
     set(INSTALL_SITE "${CMAKE_CURRENT_SOURCE_DIR}/../raisim/${RAISIM_OS}/bin")
 endif()
+
+install(
+        TARGETS
+        raisimpy
+        DESTINATION
+        "${PYTHON_SITE}"
+)
 
 install(
         TARGETS
