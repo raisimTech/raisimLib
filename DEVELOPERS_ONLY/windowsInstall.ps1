@@ -40,5 +40,7 @@ cd build
 cmake .. -DRAISIM_EXAMPLE=OFF -DRAISIM_PY=ON -DRAISIM_MATLAB=ON -DCMAKE_INSTALL_PREFIX=C:\Users\jemin\source\repos\raisim_install
 cmake --build . --target install --config Release
 
+Set-Location C:\Users\jemin\source\repos\raisimLib\raisim\win32\bin
+cp ./*.dll C:\Users\jemin\source\repos\raisimLib\raisimGymTorch\raisimGymTorch\env\bin
 
 cd C:\Users\jemin
