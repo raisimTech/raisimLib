@@ -98,7 +98,7 @@ To build raisimPy for the correct python version, activate your conda environmen
       cd $WORKSPACE/raisimLib
       mkdir build
       cd build
-      cmake .. -DCMAKE_INSTALL_PREFIX=$LOCAL_INSTALL -DRAISIM_EXAMPLE=ON -DRAISIM_PY=ON
+      cmake .. -DCMAKE_INSTALL_PREFIX=$LOCAL_INSTALL -DRAISIM_EXAMPLE=ON -DRAISIM_PY=ON -DPYTHON_EXECUTABLE=$(which python)
       make install -j4
 
   .. group-tab:: Windows
@@ -112,7 +112,7 @@ To build raisimPy for the correct python version, activate your conda environmen
       cd $WORKSPACE/raisimLib
       mkdir build
       cd build
-      cmake .. -DCMAKE_INSTALL_PREFIX=$LOCAL_INSTALL -DRAISIM_EXAMPLE=ON -DRAISIM_PY=ON
+      cmake .. -DCMAKE_INSTALL_PREFIX=$LOCAL_INSTALL -DRAISIM_EXAMPLE=ON -DRAISIM_PY=ON -DPYTHON_EXECUTABLE=$(which python)
       cmake --build . --target install --config Release
 
 
