@@ -3,6 +3,7 @@ from raisimGymTorch.env.RaisimGymVecEnv import RaisimGymVecEnv as VecEnv
 from raisimGymTorch.helper.raisim_gym_helper import ConfigurationSaver, load_param, tensorboard_launcher
 from raisimGymTorch.env.bin.rsg_anymal import NormalSampler
 from raisimGymTorch.env.bin.rsg_anymal import RaisimGymEnv
+from raisimGymTorch.env.RewardAnalyzer import RewardAnalyzer
 import os
 import math
 import time
@@ -78,13 +79,15 @@ ppo = PPO.PPO(actor=actor,
               shuffle_batch=False,
               )
 
+reward_analyzer = RewardAnalyzer(env, ppo.writer)
+
 if mode == 'retrain':
     load_param(weight_path, env, actor, critic, ppo.optimizer, saver.data_dir)
 
 for update in range(1000000):
     start = time.time()
     env.reset()
-    reward_ll_sum = 0
+    reward_sum = 0
     done_sum = 0
     average_dones = 0.
 
@@ -107,8 +110,9 @@ for update in range(1000000):
             with torch.no_grad():
                 frame_start = time.time()
                 obs = env.observe(False)
-                action_ll = loaded_graph.architecture(torch.from_numpy(obs).cpu())
-                reward_ll, dones = env.step(action_ll.cpu().detach().numpy())
+                action = loaded_graph.architecture(torch.from_numpy(obs).cpu())
+                reward, dones = env.step(action.cpu().detach().numpy())
+                reward_analyzer.add_reward_info(env.get_reward_info())
                 frame_end = time.time()
                 wait_time = cfg['environment']['control_dt'] - (frame_end-frame_start)
                 if wait_time > 0.:
@@ -127,12 +131,12 @@ for update in range(1000000):
         reward, dones = env.step(action)
         ppo.step(value_obs=obs, rews=reward, dones=dones)
         done_sum = done_sum + np.sum(dones)
-        reward_ll_sum = reward_ll_sum + np.sum(reward)
+        reward_sum = reward_sum + np.sum(reward)
 
     # take st step to get value obs
     obs = env.observe()
     ppo.update(actor_obs=obs, value_obs=obs, log_this_iteration=update % 10 == 0, update=update)
-    average_ll_performance = reward_ll_sum / total_steps
+    average_ll_performance = reward_sum / total_steps
     average_dones = done_sum / total_steps
     avg_rewards.append(average_ll_performance)
 
