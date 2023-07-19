@@ -148,6 +148,14 @@ public:
   }
 
   /**
+   * returns the impulse pointer. You have to divide this number by the time step to get the force
+   * @return impulse
+   */
+    [[nodiscard]] const Vec<3> *getImpulsePtr() const {
+      return impulse_;
+    }
+
+  /**
    * returns the impulse. You have to divide this number by the time step to get the force
    * @return impulse
    */
@@ -253,7 +261,7 @@ protected:
   Vec<3> position_;             // position of A = position of B
   Vec<3> normal_;               // normal of A (normal of B = - normalA)
   Mat<3, 3> Minv_;               // inverse apparent inertia matrix
-  Vec<3> *impulse_;
+  Vec<3> *impulse_ = nullptr;
   double impactVel_;
   double depth_;
   size_t contactIndexInObject_;
