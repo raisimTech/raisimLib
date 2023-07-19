@@ -106,7 +106,7 @@ for update in range(1000000):
         env.turn_on_visualization()
         env.start_video_recording(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + "policy_"+str(update)+'.mp4')
 
-        for step in range(n_steps*2):
+        for step in range(n_steps):
             with torch.no_grad():
                 frame_start = time.time()
                 obs = env.observe(False)
@@ -121,6 +121,7 @@ for update in range(1000000):
         env.stop_video_recording()
         env.turn_off_visualization()
 
+        reward_analyzer.analyze_and_plot(cfg['environment']['eval_every_n'])
         env.reset()
         env.save_scaling(saver.data_dir, str(update))
 

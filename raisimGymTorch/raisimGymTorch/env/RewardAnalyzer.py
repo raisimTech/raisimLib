@@ -20,17 +20,19 @@ class RewardAnalyzer:
     def add_reward_info(self, info):
         self.data_size += len(info)
 
-        for i in range(len(self.data_tags)):
-            for rewards in info:
-                self.data_mean[i] += rewards[self.data_tags[i]]
-                self.data_min[i] = min(self.data_min[i], rewards[self.data_tags[i]])
-                self.data_max[i] = max(self.data_max[i], rewards[self.data_tags[i]])
+        for i in range(len(self.data_tags)-1):
+            for j in range(len(info)-1):
+                self.data_square_sum[i] += info[j][self.data_tags[i]]*info[j][self.data_tags[i]]
+                self.data_mean[i] += info[i][self.data_tags[i]]
+                self.data_min[i] = min(self.data_min[i], info[j][self.data_tags[i]])
+                self.data_max[i] = max(self.data_max[i], info[j][self.data_tags[i]])
 
     def analyze_and_plot(self, step):
+        self.data_mean /= self.data_size
         data_std = np.sqrt((self.data_square_sum - self.data_size * self.data_mean * self.data_mean) / (self.data_size - 1 + 1e-16))
 
         for data_id in range(len(self.data_tags)):
-            self.writer.add_scalar(self.data_tags[data_id]+'/mean', self.data_mean[data_id]/self.data_size, global_step=step)
+            self.writer.add_scalar(self.data_tags[data_id]+'/mean', self.data_mean[data_id], global_step=step)
             self.writer.add_scalar(self.data_tags[data_id]+'/std', data_std[data_id], global_step=step)
             self.writer.add_scalar(self.data_tags[data_id]+'/min', self.data_min[data_id], global_step=step)
             self.writer.add_scalar(self.data_tags[data_id]+'/max', self.data_max[data_id], global_step=step)
