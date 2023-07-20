@@ -11,6 +11,7 @@ using Dtype=float;
 using EigenRowMajorMat=Eigen::Matrix<Dtype, -1, -1, Eigen::RowMajor>;
 using EigenVec=Eigen::Matrix<Dtype, -1, 1>;
 using EigenBoolVec=Eigen::Matrix<bool, -1, 1>;
+using EigenDoubleVec = Eigen::Matrix<double, -1, 1>;
 
 extern int threadCount;
 

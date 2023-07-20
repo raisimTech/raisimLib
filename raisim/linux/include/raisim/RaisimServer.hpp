@@ -1310,7 +1310,10 @@ class RaisimServer final {
             case UNRECOGNIZED:
               break;
           }
-          data_ = set(data_, Masking::SB_OBJ, int32_t(0));
+          if (ob->getObjectType() == HALFSPACE || ob->getObjectType() == HEIGHTMAP)
+            data_ = set(data_, Masking::VIS_OBJ, int32_t(0));
+          else
+            data_ = set(data_, Masking::SB_OBJ, int32_t(0));
         }
         auto *sob = dynamic_cast<SingleBodyObject *>(ob);
         auto tempAdd = data_;
@@ -1512,6 +1515,9 @@ class RaisimServer final {
     for (auto *obj: world_->getObjList()) {
       for (auto &contact: obj->getContacts()) {
         if (!contact.isObjectA() && contact.getPairObjectBodyType()==BodyType::DYNAMIC)
+          continue;
+
+        if (!contact.getImpulsePtr())
           continue;
 
         contactIncrement++;

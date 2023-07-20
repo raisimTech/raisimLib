@@ -46,6 +46,7 @@ In the raisimGymTorch directory,
 
 .. code-block:: bash
 
+    pip install numpy tensorboard ruamel.yaml
     python setup.py develop
     python raisimGymTorch/env/envs/rsg_anymal/runner.py
 

@@ -76,6 +76,7 @@ create_executable(synchronousServerUpdate src/server/synchronousServerUpdate.cpp
 create_executable(deletion src/server/deletion.cpp)
 create_executable(inverseDynamics src/server/inverseDynamics.cpp)
 create_executable(dzhanibekovEffect src/server/dzhanibekovEffect.cpp)
+create_executable(go1 src/server/go1.cpp)
 
 # xml reader
 create_executable(xmlRader src/xml/xmlReader.cpp)

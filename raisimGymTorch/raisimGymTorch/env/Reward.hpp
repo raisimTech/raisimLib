@@ -81,7 +81,6 @@ class Reward {
   const std::map<std::string, float>& getStdMap() {
     for(auto& rw: rewards_)
       rewardMap_[rw.first] = rw.second.reward;
-    rewardMap_["reward_sum"] = sum();
 
     return rewardMap_;
   }
