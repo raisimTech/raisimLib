@@ -12,9 +12,9 @@
 
 其次，我说一下本版本相较于作者的原版本的区别
 
-1. 添加了更相信的`log`系统，在`gym`文件夹的`helper`里添加了`logging`系统，使用起来能够在对应的`saver.dir`中生成名为`train.log`的文件，方便后期查询自己的日志
+1. 添加了更详细的`log`系统，在`gym`文件夹的`helper`里添加了`logging`系统，使用起来能够在对应的`saver.dir`中生成名为`train.log`的文件，方便后期查询自己的日志
 2. 训练过程中自动保存最优的模型，后期会修改把之前的弱鸡模型给删除
-3. 完善了`test`模块，在`gymtorch`文件夹中，你的`runner`可以直接通过运行`python yourfilepath(imply it use your path)/runner.py --mode test --weight yourweightpath`在`unity`等渲染引擎中展示你的模型
+3. 完善了`runner.py --mode test`模块，在`gymtorch`文件夹中，你的`runner`可以直接通过运行`python yourfilepath(imply it use your path)/runner.py --mode test --weight yourweightpath`在`unity`等渲染引擎中展示你的模型
 
 ## 怎么使用
 
