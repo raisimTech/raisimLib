@@ -18,6 +18,8 @@ class Actor:
     def sample(self, obs):
         self.action_mean = self.architecture.architecture(obs).cpu().numpy()
         actions, log_prob = self.distribution.sample(self.action_mean)
+        # actions = (actions - actions.min()) / (actions.max() - actions.min()) * np.pi
+        actions = np.clip(actions, -1, 1)
         return actions, log_prob
 
     def evaluate(self, obs, actions):

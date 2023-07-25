@@ -4,7 +4,7 @@ project(raisim_examples LANGUAGES CXX)
 #==
 # Dependencies
 #==
-
+#set(raisim /home/lr-2002/code/raisimLib/raisim/linux/lib/cmake/raisim/)
 find_package(raisim CONFIG REQUIRED)
 find_package(Eigen3 REQUIRED HINTS ${Eigen3_HINT})
 
@@ -77,6 +77,7 @@ create_executable(deletion src/server/deletion.cpp)
 create_executable(inverseDynamics src/server/inverseDynamics.cpp)
 create_executable(dzhanibekovEffect src/server/dzhanibekovEffect.cpp)
 create_executable(go1 src/server/go1.cpp)
+create_executable(leg src/server/leg.cpp)
 
 # xml reader
 create_executable(xmlRader src/xml/xmlReader.cpp)

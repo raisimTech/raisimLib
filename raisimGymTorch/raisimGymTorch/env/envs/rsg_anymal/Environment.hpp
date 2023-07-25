@@ -100,7 +100,7 @@ class ENVIRONMENT : public RaisimGymEnv {
     updateObservation();
 
     rewards_.record("torque", anymal_->getGeneralizedForce().squaredNorm());
-    rewards_.record("forwardVel", std::min(4.0, bodyLinearVel_[0]));
+    rewards_.record("forwardVel", -bodyLinearVel_[0]);
 
     return rewards_.sum();
   }
