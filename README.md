@@ -6,6 +6,9 @@ Click to watch the video
 
 Documentation available on the [RaiSim Tech website](http://raisim.com).
 
+Click here to read chinese version [中文简体](./Readme_zh.md)
+
+
 ## New update!
 
 RaisimUnreal (Alpha version) is now released. You can get it [here](https://github.com/raisimTech/raisimLib/releases).
