@@ -28,7 +28,7 @@ def tensorboard_launcher(directory_path):
     tb.configure(argv=[None, '--logdir', directory_path])
     url = tb.launch()
     print("[RAISIM_GYM] Tensorboard session created: "+url)
-    webbrowser.open_new(url)
+    # webbrowser.open_new(url)
 
 
 def load_param(weight_path, env, actor, critic, optimizer, data_dir):

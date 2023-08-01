@@ -21,7 +21,7 @@ environment:
   learnning_rate: 5e-4
   reward:
     forwardVel:
-      coeff: 0.3
+      coeff: 0.0
     torque:
       coeff: -4e-5
     Stable:
