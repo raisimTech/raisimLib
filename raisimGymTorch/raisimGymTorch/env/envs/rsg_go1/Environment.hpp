@@ -36,12 +36,59 @@ void map_from_origin_to_limit(std::vector<raisim::Vec<2>>  join, Eigen::VectorXd
     }
 }
 
+//void angle_generator(Eigen::VectorXd& angle_list, int idx, float T, float rate=1.f)
+//{
+////    std::cout<< "size is "<<  angle_list.size() << std::endl;
+//    double base1= 0.82, base3=0.0;
+//    double base2 = -2 * base1;
+//    double ang = abs(sin( float(idx) / T  * PI)) * rate;
+//
+//    int idx_base = 0;
+////    std::cout<<idx_base+0 << " " << idx_base + 11 << std::endl;
+////    jointNominalConfig <<  0.03, 0.4, -0.8, -0.03, 0.4, -0.8, 0.03, -0.4, 0.8, -0.03, -0.4, 0.8;
+//    if ( (int(idx/T) % 2 ) == 1)
+//    {
+//
+//        angle_list[idx_base+1] = ang + base1;
+//        angle_list[idx_base+2] = -2 * ang + base2;
+//
+//        angle_list[idx_base+4] = base1;
+//        angle_list[idx_base+5] = base2;
+//
+//        angle_list[idx_base+7] = base1;
+//        angle_list[idx_base+8] = base2;
+//        angle_list[idx_base+10] = ang + base1;
+//        angle_list[idx_base+11] = - 2 * ang + base2;
+//    }
+//    else
+//    {
+//
+//        angle_list[idx_base+1] = base1;
+//        angle_list[idx_base+2] = base2;
+//
+//        angle_list[idx_base+10] = base1;
+//        angle_list[idx_base+11] = base2;
+//        angle_list[idx_base+4] = ang + base1;
+//        angle_list[idx_base+5] = -2 * ang + base2;
+//
+//        angle_list[idx_base+7] = ang + base1;
+//        angle_list[idx_base+8] = -2 * ang + base2;
+//    }
+//    angle_list[idx_base+0] = base3;
+//    angle_list[idx_base+3] = base3;
+//    angle_list[idx_base+6] = base3;
+//    angle_list[idx_base+9] = base3;
+//
+//}
 void angle_generator(Eigen::VectorXd& angle_list, int idx, float T, float rate=1.f)
 {
+    // todo ang2, rate, ang
 //    std::cout<< "size is "<<  angle_list.size() << std::endl;
-    double base1= 0.4, base2 = -0.8, base3=0.0;
-    double ang = abs(sin( float(idx) / T  * PI)) * rate;
-
+    double base1= 0.8, base3=0.0;
+    double base2 = -2 * base1;
+    double ang = -abs(sin( float(idx) / T  * PI)) * rate;
+    double ang2 = -0.15 * ang;
+    double ang3 = ang2 * 1.2;
     int idx_base = 0;
 //    std::cout<<idx_base+0 << " " << idx_base + 11 << std::endl;
 //    jointNominalConfig <<  0.03, 0.4, -0.8, -0.03, 0.4, -0.8, 0.03, -0.4, 0.8, -0.03, -0.4, 0.8;
@@ -49,37 +96,36 @@ void angle_generator(Eigen::VectorXd& angle_list, int idx, float T, float rate=1
     {
 
         angle_list[idx_base+1] = ang + base1;
-        angle_list[idx_base+2] = -2 * ang + base2;
+        angle_list[idx_base+2] =  base2;
 
-        angle_list[idx_base+4] = base1;
-        angle_list[idx_base+5] = base2;
+        angle_list[idx_base+4] = base1 + ang2;
+        angle_list[idx_base+5] = base2 + ang3;
 
-        angle_list[idx_base+7] = - base1;
-        angle_list[idx_base+8] = - base2;
-        angle_list[idx_base+10] = -ang - base1;
-        angle_list[idx_base+11] = 2 * ang - base2;
+        angle_list[idx_base+7] = base1 + ang2;
+        angle_list[idx_base+8] = base2 + ang3;
+        angle_list[idx_base+10] = ang + base1;
+        angle_list[idx_base+11] =  base2;
     }
     else
     {
 
-        angle_list[idx_base+1] = base1;
-        angle_list[idx_base+2] = base2;
+        angle_list[idx_base+1] = base1 + ang2;
+        angle_list[idx_base+2] = base2 + ang3;
 
-        angle_list[idx_base+10] = - base1;
-        angle_list[idx_base+11] = - base2;
+        angle_list[idx_base+10] = base1 + ang2;
+        angle_list[idx_base+11] = base2 + ang3;
         angle_list[idx_base+4] = ang + base1;
-        angle_list[idx_base+5] = -2 * ang + base2;
+        angle_list[idx_base+5] =  base2;
 
-        angle_list[idx_base+7] = -ang - base1;
-        angle_list[idx_base+8] = 2 * ang - base2;
+        angle_list[idx_base+7] = ang + base1;
+        angle_list[idx_base+8] =  base2;
     }
     angle_list[idx_base+0] = base3;
-    angle_list[idx_base+3] = -base3;
+    angle_list[idx_base+3] = base3;
     angle_list[idx_base+6] = base3;
-    angle_list[idx_base+9] = -base3;
+    angle_list[idx_base+9] = base3;
 
 }
-
 
 void angle_mulit(Eigen::VectorXd& angle, Eigen::VectorXd& idx, float rate)
 {
@@ -110,7 +156,7 @@ class ENVIRONMENT : public RaisimGymEnv {
       READ_YAML(bool, float_base, cfg_["float_base"]);
       READ_YAML(float,schedule_T, cfg_["schedule"]);
     /// add objects
-    anymal_ = world_->addArticulatedSystem(resourceDir_+"/go1/go1.urdf");
+    anymal_ = world_->addArticulatedSystem(resourceDir_+"/a1/urdf/a1.urdf");
     anymal_->setName("dog");
     anymal_->setControlMode(raisim::ControlMode::PD_PLUS_FEEDFORWARD_TORQUE);
     world_->addGround();
@@ -130,12 +176,18 @@ class ENVIRONMENT : public RaisimGymEnv {
 //    gc_init_ << 0, 0, 0.50, 1.0, 0.0, 0.0, 0.0, 0.03, 0.4, -0.8, -0.03, 0.4, -0.8, 0.03, -0.4, 0.8, -0.03, -0.4, 0.8;
 //    gc_init_ << 3, 3, 0.54, 1.0, 0.0, 0.0, 0.0, 0.03, 0.4, -0.8, -0.03, 0.4, -0.8, 0.03, -0.4, 0.8, -0.03, -0.4, 0.8;
 //    anymal_1->setGeneralizedCoordinate(gc_init_);
-    gc_init_ << 0, 0, 0.54, 1.0, 0.0, 0.0, 0.0, 0.03, 0.4, -0.8, -0.03, 0.4, -0.8, 0.03, -0.4, 0.8, -0.03, -0.4, 0.8;
+      gc_init_<< 0, 0, 0.30, 1.0, 0.0, 0.0, 0.0, 0.03, 0.4, -0.8, -0.03, 0.4, -0.8, 0.03, -0.4, 0.8, -0.03, -0.4, 0.8;
+
+//  jointNominalConfig.tail(12).setZero();
+      Eigen::VectorXd tmp(12);
+      tmp.setZero();
+      angle_generator(tmp, 0, 80.f);
+      gc_init_.tail(12) = tmp;
 
     /// set pd gains
     Eigen::VectorXd jointPgain(gvDim_), jointDgain(gvDim_);
-    jointPgain.setZero(); jointPgain.tail(nJoints_).setConstant(200.0);
-    jointDgain.setZero(); jointDgain.tail(nJoints_).setConstant(4);
+    jointPgain.setZero(); jointPgain.tail(nJoints_).setConstant(120.0);
+    jointDgain.setZero(); jointDgain.tail(nJoints_).setConstant(3);
     anymal_->setPdGains(jointPgain, jointDgain);
     anymal_->setGeneralizedForce(Eigen::VectorXd::Zero(gvDim_));
     anymal_->setGeneralizedForce(Eigen::VectorXd::Zero(gvDim_));
@@ -166,10 +218,10 @@ class ENVIRONMENT : public RaisimGymEnv {
     rewards_.initializeFromConfigurationFile (cfg["reward"]);
 
     /// indices of links that should not make contact with ground
-    footIndices_.insert(anymal_->getBodyIdx("LF_SHANK"));
-    footIndices_.insert(anymal_->getBodyIdx("RF_SHANK"));
-    footIndices_.insert(anymal_->getBodyIdx("LH_SHANK"));
-    footIndices_.insert(anymal_->getBodyIdx("RH_SHANK"));
+    footIndices_.insert(anymal_->getBodyIdx("FL_calf"));
+    footIndices_.insert(anymal_->getBodyIdx("FR_calf"));
+    footIndices_.insert(anymal_->getBodyIdx("RL_calf"));
+    footIndices_.insert(anymal_->getBodyIdx("RR_calf"));
 
     /// visualize if it is the first environment
     if (visualizable_) {
@@ -271,11 +323,12 @@ class ENVIRONMENT : public RaisimGymEnv {
     {
         rrr += abs(gc_[i] - gc_init_[i]) * stable_reward_rate ;
     }
-      for(int i=0; i<=1; i++)
-      {
-          rrr += abs(gc_[i] - gc_init_[i]) * stable_reward_rate ;
-      }
-      rrr += abs(gc_[5] - gc_init_[5]) * 2 * stable_reward_rate;
+//    rrr *= float(COUNT )/ schedule_T);
+//      for(int i=0; i<=1; i++)
+//      {
+//          rrr += abs(gc_[i] - gc_init_[i]) * stable_reward_rate ;
+//      }
+//      rrr += abs(gc_[5] - gc_init_[5]) * 2 * stable_reward_rate;
 //    if(COUNT != 0)
 //    {
 //        rrr += (gc_ - gc_init_).norm() * reference_rate *0.1;
@@ -292,8 +345,8 @@ class ENVIRONMENT : public RaisimGymEnv {
 
 //    rewards_.record("torque", anymal_->getGeneralizedForce().squaredNorm());
 //    rewards_.record("forwardVel", std::mi);
-rewards_.record("Stable", 1 - rrr, false);
-rewards_.record("forwardVel", bodyLinearVel_[0], false);
+    rewards_.record("Stable", 1 - rrr, false);
+    rewards_.record("forwardVel", bodyLinearVel_[0], false);
 
     gc_old = gc_.tail(12);
     ref_old = angle_list;
@@ -308,7 +361,7 @@ rewards_.record("forwardVel", bodyLinearVel_[0], false);
     raisim::quatToRotMat(quat, rot);
     bodyLinearVel_ = rot.e().transpose() * gv_.segment(0, 3);
     bodyAngularVel_ = rot.e().transpose() * gv_.segment(3, 3);
-
+//    std::cout<< rot.e().row(2).transpose().size() << "   "  <<bodyLinearVel_.size()  << "  " << bodyAngularVel_.size() << std::endl;
     obDouble_ << double(COUNT)/schedule_T,
         rot.e().row(2).transpose(), /// body orientation
         bodyLinearVel_, bodyAngularVel_, /// body linear&angular velocity
@@ -324,18 +377,18 @@ rewards_.record("forwardVel", bodyLinearVel_[0], false);
   bool isTerminalState(float& terminalReward) final {
     terminalReward = float(terminalRewardCoeff_);
 
-    /// if the contact body is not feet
+//    / if the contact body is not feet
     for(auto& contact: anymal_->getContacts())
       if(footIndices_.find(contact.getlocalBodyIndex()) == footIndices_.end())
       {// if there is any contact body was not in the footIndices the over
 //          std::cout<<"terminate "<<std::endl;
-//          rewards_.record("Stable", -10, false);
+          rewards_.record("Stable", -10, false);
           return true;
       }
-    if(abs(gc_[2]-gc_init_[2]) >0.3 )
-    {
-        return true;
-    }
+//    if(abs(gc_[2]-gc_init_[2]) >0.3 )
+//    {
+//        return true;
+//    }
 //    if(abs(gc_[9]) > 1.8 || abs(gc_[12]) > 1.8 || abs(gc_[15]) > 1.8 || abs(gc_[18]) > 1.8)
 //        return true;
 

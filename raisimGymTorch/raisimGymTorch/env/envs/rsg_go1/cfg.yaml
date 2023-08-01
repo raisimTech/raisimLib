@@ -1,0 +1,32 @@
+seed: 1
+record_video: false
+
+environment:
+  render: true
+# just testing commenting
+  num_envs: 100
+  eval_every_n: 100
+  num_threads: 30
+  simulation_dt: 0.0025
+  control_dt: 0.01
+  max_time: 8.0
+  action_std: 0.018
+  show_ref: false
+  angle_rate: 0.3
+  stable: 1
+  reference: 0
+  schedule: 60
+  for_work: 1
+  float_base: false
+  learnning_rate: 5e-4
+  reward:
+    forwardVel:
+      coeff: 3
+    torque:
+      coeff: -4e-5
+    Stable:
+      coeff: 0.9
+
+architecture:
+  policy_net: [128, 128]
+  value_net: [128, 128]
