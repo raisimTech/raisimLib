@@ -1,21 +1,12 @@
 import onnxruntime as ort
-import onnx
+# import onnx
 # from mlprodict.onnxrt import OnnxInference
 from math import cos,pi
 import numpy as np
+from angle_utils import deg_rad, rad_deg
 # 加载模型
 
-def deg_rad(x):
-    if isinstance(x, list):
-        return [deg_rad(a) for a in x]
-    else:
-        return x / 180 * pi
 
-def rad_deg(x):
-    if isinstance(x, list):
-        return [rad_deg(a) for a in x]
-    else:
-        return x * pi / 180
 def ang_trans(lower, upper, x):
     """
     trans the rate x to the angle between lower and upper

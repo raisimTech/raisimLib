@@ -78,6 +78,13 @@ class VectorizedEnvironment {
       env->reset();
   }
 
+  void init_position(Eigen::Ref<EigenRowMajorMat> &posi)
+  {
+#pragma omp parallel for schedule(auto)
+      for(int i = 0; i < num_envs_; i++)
+          environments_[i]->init_position(posi.row(i));
+  }
+
   void observe(Eigen::Ref<EigenRowMajorMat> &ob, bool updateStatistics) {
 #pragma omp parallel for schedule(auto)
     for (int i = 0; i < num_envs_; i++)

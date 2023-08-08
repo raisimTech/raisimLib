@@ -100,6 +100,7 @@ int main(int argc, char* argv[]) {
     Eigen::Vector3d pos(0,0, 3);
     Eigen::VectorXd ob_(24);
     ob_.setZero();
+    size_t dof = go1->getDOF();
   for (int i=0; i<2000000; i++) {
       go1->getState(jointNominalConfig,jointVelocityTarget);
       Eigen::VectorXd tmp1(12), tmp2(12);
@@ -113,10 +114,12 @@ int main(int argc, char* argv[]) {
       {
           swap(ob_, i, 12 +i);
       }
-
+      raisim::Vec<3> acc_;
+      go1->getFrameAcceleration("ROOT", acc_);
+      std::cout<<acc_ <<std::endl;
 
       RS_TIMED_LOOP(int(world.getTimeStep()*1e6))
-      std::cout<< ob_ << std::endl<<std::endl;
+//      std::cout<< ob_ << std::endl<<std::endl;
       sleep(1);
 //      go1->setBasePos(pos);
 //      angle_generator(tmp, i, 50.f, 0.3);
@@ -127,7 +130,7 @@ int main(int argc, char* argv[]) {
 //      }
 //    jointNominalConfig.tail(12) = tmp;
 //    std::cout<< tmp << std::endl;
-//    go1->setPdTarget(jointNominalConfig, jointVelocityTarget);
+    go1->setPdTarget(jointNominalConfig, jointVelocityTarget);
 
 
     server.integrateWorldThreadSafe();

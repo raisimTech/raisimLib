@@ -9,7 +9,7 @@ from ruamel.yaml import YAML, dump, RoundTripDumper
 from raisimGymTorch.env.bin.rsg_go1 import NormalSampler
 from robot import Robot
 import torch.nn as nn
-from sine_generator import sine_generator
+from angle_utils import sine_generator
 
 robot = Robot()
 

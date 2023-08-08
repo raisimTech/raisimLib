@@ -76,6 +76,8 @@ find_package(raisim CONFIG REQUIRED)
 SUBDIRLIST(SUBDIRS ${CMAKE_CURRENT_SOURCE_DIR}/raisimGymTorch/env/envs)
 set(RAISIMGYM_ENV_DIR ${CMAKE_CURRENT_SOURCE_DIR}/raisimGymTorch/env/envs)
 
+set(SUBDIRS rsg) # only build for rsg
+
 ######## Env ##########
 FOREACH(subdir ${SUBDIRS})
     pybind11_add_module(${subdir} raisimGymTorch/env/raisim_gym.cpp raisimGymTorch/env/Yaml.cpp)

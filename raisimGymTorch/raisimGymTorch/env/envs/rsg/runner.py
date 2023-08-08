@@ -1,12 +1,12 @@
 from ruamel.yaml import YAML, dump, RoundTripDumper
 from raisimGymTorch.env.RaisimGymVecEnv import RaisimGymVecEnv as VecEnv
 from raisimGymTorch.helper.raisim_gym_helper import ConfigurationSaver, load_param, tensorboard_launcher, RaisimLogger
-from raisimGymTorch.env.bin.rsg_go1 import NormalSampler
-from raisimGymTorch.env.bin.rsg_go1 import RaisimGymEnv
+from raisimGymTorch.env.bin.rsg import NormalSampler
+from raisimGymTorch.env.bin.rsg import RaisimGymEnv
 from raisimGymTorch.env.RewardAnalyzer import RewardAnalyzer
 import raisimGymTorch.algo.ppo.module as ppo_module
 import raisimGymTorch.algo.ppo.ppo as PPO
-
+from raisimGymTorch.env.deploy.angle_utils import transfer
 
 import os
 import math
@@ -16,11 +16,22 @@ import numpy as np
 import torch
 import datetime
 import argparse
+from sine_generator import sine_generator
 
 
 
 # task specification
-task_name = "go1_locomotion"
+task_name = "rsg_test"
+
+
+"""
+todo:
+    1. init model 
+    2. change p-d info 
+    3. debug and add_on sine_gait
+
+"""
+
 
 # configuration
 parser = argparse.ArgumentParser()
@@ -46,6 +57,7 @@ if cfg_path is not None:
     cfg = YAML().load(open(cfg_path, 'r'))
 else:
     cfg = YAML().load(open(task_path + "/cfg.yaml", 'r'))
+print(cfg['environment'])
 
 # create environment from the configuration file
 env = VecEnv(RaisimGymEnv(home_path + "/rsc", dump(cfg['environment'], Dumper=RoundTripDumper)))
@@ -78,7 +90,7 @@ logger = RaisimLogger(saver.data_dir+"/train.log")
 
 if mode =='train' or mode == 'retrain':
     tensorboard_launcher(saver.data_dir+"/..")  # press refresh (F5) after the first ppo update
-
+num_envs = cfg['environment']['num_envs']
 ppo = PPO.PPO(actor=actor,
               critic=critic,
               num_envs=cfg['environment']['num_envs'],
@@ -99,14 +111,20 @@ biggest_iter = 0
 if mode == 'retrain':
     load_param(weight_path, env, actor, critic, ppo.optimizer, saver.data_dir)
 
+check_done = lambda a, b: a + 1 if not b else 0
 # if load_best == True:
 #     weight_path = ""
 print = logger.info
 
-mode == 'test'
+mode == 'train'
 
 total_update = args.update
 if mode =='train' or mode == 'retrain':
+    # print('start train')
+    schedule = cfg['environment']['schedule']
+    angle_rate = cfg['environment']['angle_rate']
+    act_rate = cfg['environment']['action_std'] # how many action generated use for work
+    act_rate = float(act_rate)
     for update in range(total_update):
         start = time.time()
         env.reset()
@@ -128,7 +146,7 @@ if mode =='train' or mode == 'retrain':
 
             env.turn_on_visualization()
             env.start_video_recording(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + "policy_"+str(update)+'.mp4')
-
+            envs_idx = [0] * num_envs
             for step in range(n_steps):
                 with torch.no_grad():
                     frame_start = time.time()
@@ -136,8 +154,12 @@ if mode =='train' or mode == 'retrain':
 
                     # action = ppo.act(torch.from_numpy(obs).cpu())
                     action = loaded_graph.architecture(torch.from_numpy(obs).cpu())
+                    action = action.cpu().detach().numpy()
+                    sine = sine_generator(envs_idx, schedule, angle_rate)
+                    action = transfer(action, sine, act_rate).astype(np.float32)
                     # print(action.min())
-                    reward, dones = env.step(action.cpu().detach().numpy())
+                    reward, dones = env.step(action)
+                    envs_idx = list(map(check_done, envs_idx, dones))
                     reward_analyzer.add_reward_info(env.get_reward_info())
                     frame_end = time.time()
                     wait_time = cfg['environment']['control_dt'] - (frame_end-frame_start)
@@ -152,10 +174,18 @@ if mode =='train' or mode == 'retrain':
             env.save_scaling(saver.data_dir, str(update))
 
         # actual training
+        # sine = [0] * 12
+        envs_idx = [0] * num_envs
         for step in range(n_steps):
             obs = env.observe()
             action = ppo.act(obs)
+
+
+            sine = sine_generator(envs_idx, schedule, angle_rate)
+            action = transfer(action, sine, act_rate).astype(np.float32)
+            # todo the transfer has bug
             reward, dones = env.step(action)
+            envs_idx = list(map(check_done, envs_idx, dones))
             ppo.step(value_obs=obs, rews=reward, dones=dones)
             done_sum = done_sum + np.sum(dones)
             reward_sum = reward_sum + np.sum(reward)
@@ -205,7 +235,7 @@ else:
     for step in range(n_steps * 10):
         time.sleep(0.01)
         obs = env.observe()
-        print(obs.shape)
+        # print(obs.shape)
         if onnx_flag:
             action = onnx_deploy.run_model(obs, cnt_onnx, 50)
             action = np.array(action)[0]

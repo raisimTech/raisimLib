@@ -10,7 +10,7 @@ environment:
   simulation_dt: 0.0025
   control_dt: 0.01
   max_time: 8.0
-  action_std: 0.01
+  action_std: 0.03
   show_ref: false
   angle_rate: 0.3
   stable: 1
@@ -19,9 +19,12 @@ environment:
   for_work: 1
   float_base: false
   learnning_rate: 5e-4
+  p_gain: 180
+  d_gain: 8
+  urdf_path: /home/lr-2002/code/raisimLib/rsc/a1_description/urdf/a1.urdf
   reward:
     forwardVel:
-      coeff: 3
+      coeff: 0
     torque:
       coeff: -4e-5
     Stable:

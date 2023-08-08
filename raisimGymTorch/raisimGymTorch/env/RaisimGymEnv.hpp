@@ -28,6 +28,7 @@ class RaisimGymEnv {
 
   /////// implement these methods /////////
   virtual void init() = 0;
+  virtual void init_position(const Eigen::Ref<EigenVec>& posi) = 0;
   virtual void reset() = 0;
   virtual void observe(Eigen::Ref<EigenVec> ob) = 0;
   virtual float step(const Eigen::Ref<EigenVec>& action) = 0;
@@ -48,6 +49,7 @@ class RaisimGymEnv {
   double getSimulationTimeStep() { return simulation_dt_; }
   raisim::World* getWorld() { return world_.get(); }
   void turnOffVisualization() { server_->hibernate(); }
+//  void init_position() {}
   void turnOnVisualization() { server_->wakeup(); }
   void startRecordingVideo(const std::string& videoName ) { server_->startRecordingVideo(videoName); }
   void stopRecordingVideo() { server_->stopRecordingVideo(); }

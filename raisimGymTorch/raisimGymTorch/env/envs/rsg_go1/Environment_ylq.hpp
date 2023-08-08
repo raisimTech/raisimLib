@@ -82,7 +82,6 @@ void map_from_origin_to_limit(std::vector<raisim::Vec<2>>  join, Eigen::VectorXd
 //}
 void angle_generator(Eigen::VectorXd& angle_list, int idx, float T, float rate=1.f)
 {
-    // todo ang2, rate, ang
 //    std::cout<< "size is "<<  angle_list.size() << std::endl;
     double base1= 0.8, base3=0.0;
     double base2 = -2 * base1;
