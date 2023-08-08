@@ -197,61 +197,24 @@ else:
     env.reset()
     start = time.time()
     onnx_flag = True
-    debug = True
     if onnx_flag:
         cnt_onnx = 0
         from raisimGymTorch.env.deploy import onnx_deploy
-    T = 50
-    np.set_printoptions(threshold=np.inf)
-    draw_line =[]
+
     # load_param(weight_path, env, actor, critic, ppo.optimizer, saver.data_dir)
     for step in range(n_steps * 10):
         time.sleep(0.01)
-        obs = env.observe(False)
-
-        if debug:
-            angle = obs[0][[0,1,2,4,5,6]]
-            angle[0] *= 100
-            angle[1] *= 100
-            angle[2] *= 100
-            draw_line.append(angle.copy())
-
-            if cnt_onnx == 100:
-                import matplotlib.pyplot as plt
-                # print(obs)
-                colo = ['r','g','b','y','magenta','cyan']
-                # colo = ['r','g','b','y']
-                # print(angle)
-                ttt = np.array(draw_line).transpose()
-                leen = ttt.shape[1]
-                ze = [0 for x in range(leen)]
-                xx = [x for x in range(leen)]
-                t = 0
-                for i in ttt:
-                    plt.plot(xx, i, color=colo[t])
-                    t += 1
-                plt.plot(xx, ze)
-                print(ttt)
-                plt.show()
-                input('wait')
-
-        # input('?')
-        # print(obs.shape)
+        obs = env.observe()
+        print(obs.shape)
         if onnx_flag:
-            if cnt_onnx >= 2 * T:
-                cnt_onnx =0
-            action = onnx_deploy.run_model(obs, cnt_onnx, T)
+            action = onnx_deploy.run_model(obs, cnt_onnx, 50)
             action = np.array(action)[0]
             cnt_onnx += 1
             # action = np.array([act for x in range(100)])
         else:
             action = ppo.act(obs)
-        # if cnt_onnx == 1:
-        #     print(action)
-        reward, dones = env.step(action)
-        if dones[0]:
-            cnt_onnx = 0
 
+        reward, dones = env.step(action)
 
 print(f'biggest:{biggest_reward},rate = {biggest_iter}')
 

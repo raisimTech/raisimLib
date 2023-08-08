@@ -78,6 +78,7 @@ create_executable(inverseDynamics src/server/inverseDynamics.cpp)
 create_executable(dzhanibekovEffect src/server/dzhanibekovEffect.cpp)
 create_executable(go1 src/server/go1.cpp)
 create_executable(leg src/server/leg.cpp)
+create_executable(quat src/server/quat_m.cpp)
 
 # xml reader
 create_executable(xmlRader src/xml/xmlReader.cpp)

@@ -4,9 +4,9 @@ record_video: false
 environment:
   render: true
 # just testing commenting
-  num_envs: 1
+  num_envs: 100
   eval_every_n: 100
-  num_threads: 1
+  num_threads: 30
   simulation_dt: 0.0025
   control_dt: 0.01
   max_time: 8.0
@@ -17,7 +17,7 @@ environment:
   reference: 0
   schedule: 50
   for_work: 1
-  float_base: False
+  float_base: false
   learnning_rate: 5e-4
   reward:
     forwardVel:

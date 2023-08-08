@@ -37,6 +37,8 @@ def sine_generator(angle_list, idx, T, rate=1):
     return angle_list
 
 
+
+
 if __name__=='__main__':
     angle_list = [0 for x in range(12)]
     sine_generator(angle_list, 2, 40, 0.3)

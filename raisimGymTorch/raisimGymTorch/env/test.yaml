@@ -4,24 +4,24 @@ record_video: false
 environment:
   render: true
 # just testing commenting
-  num_envs: 1
-  eval_every_n: 100
-  num_threads: 1
+  num_envs: 100
+  eval_every_n: 40
+  num_threads: 30
   simulation_dt: 0.0025
   control_dt: 0.01
   max_time: 8.0
-  action_std: 0.01
+  action_std: 0.03
   show_ref: false
   angle_rate: 0.3
-  stable: 1
+  stable: 5
   reference: 0
-  schedule: 50
+  schedule: 40
   for_work: 1
-  float_base: False
+  float_base: false
   learnning_rate: 5e-4
   reward:
     forwardVel:
-      coeff: 3
+      coeff: 0.0
     torque:
       coeff: -4e-5
     Stable:

@@ -97,7 +97,7 @@ int main(int argc, char* argv[]) {
   /// create objects
   auto ground = world.addGround(0, "gnd");
   ground->setAppearance("hidden");
-  auto anymalC = world.addArticulatedSystem(binaryPath.getDirectory() + "\\rsc\\anymal_c\\urdf\\anymal.urdf");
+  auto anymalC = world.addArticulatedSystem(binaryPath.getDirectory() + "\\rsc\\go1\\go1.urdf");
 
   /// anymalC joint PD controller
   Eigen::VectorXd jointNominalConfig(anymalC->getGeneralizedCoordinateDim()), jointVelocityTarget(anymalC->getDOF());
@@ -162,11 +162,10 @@ int main(int argc, char* argv[]) {
 //      std::cout<< i<<std::endl;
 //  }
 
-
   for (int i=0; i<200000000; i++) {
     RS_TIMED_LOOP(int(world.getTimeStep()*1e6))
     server.integrateWorldThreadSafe();
-//    anymalC->setBasePos(pose);
+    anymalC->setBasePos(pose);
     angle_generator(angle_list, i, 30.f, 0.3);
 
     jointNominalConfig.tail(12) = angle_list;

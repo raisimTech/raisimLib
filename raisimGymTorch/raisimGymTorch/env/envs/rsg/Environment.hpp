@@ -18,7 +18,7 @@ void swap(Eigen::VectorXd &ob, int a, int b)
 {
     double tmp = ob[a];
     ob[a] = ob[b];
-    ob[b] = tmp;
+    ob[b] = ob[a];
 }
 
 double rad_deg(double rad)
@@ -187,14 +187,8 @@ class ENVIRONMENT : public RaisimGymEnv {
 //    gc_init_ << 0, 0, 0.50, 1.0, 0.0, 0.0, 0.0, 0.03, 0.4, -0.8, -0.03, 0.4, -0.8, 0.03, -0.4, 0.8, -0.03, -0.4, 0.8;
 //    gc_init_ << 3, 3, 0.54, 1.0, 0.0, 0.0, 0.0, 0.03, 0.4, -0.8, -0.03, 0.4, -0.8, 0.03, -0.4, 0.8, -0.03, -0.4, 0.8;
 //    anymal_1->setGeneralizedCoordinate(gc_init_);
-//      gc_init_<< 0, 0, 0.41, 1.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+      gc_init_<< 0, 0, 0.41, 1.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
 
-//      gc_init_ << 0, 0, 0.36, 1.0, 0.0, 0, 0, 0, -0.4, 0.8529411764705883, 0.0, -0.4, 0.8529411764705883, 0.0, -0.4, 0.8529411764705883, 0.0, -0.4, 0.8529411764705883; // todo implement in python using list
-
-//      gc_init_ << 0, 0, 0.36, 1.0, 0.0, 0, 0, 0, 0.4, -0.8529411764705883, 0.0, 0.4, -0.8529411764705883, 0.0, 0.4, -0.8529411764705883, 0.0, 0.4, -0.8529411764705883; // todo implement in python using list
-//      gc_init_<< 0, 0, 0.41, 1.0, 0.0, -0.4, 0.8529411764705883, 0.0, -0.4, 0.8529411764705883, 0.0, -0.4, 0.8529411764705883, 0.0, -0.4, 0.8529411764705883; // todo implement in python using list
-
-      gc_init_<< 0, 0, 0.36, 1.0, 0.0, 0, 0, 0, 0.5235987755982988, -1.0471975511965976, 0.0, 0.5235987755982988, -1.0471975511965976, 0.0, 0.5235987755982988, -1.0471975511965976, 0.0, 0.5235987755982988, -1.0471975511965976 ; // todo implement in python using list
 //  jointNominalConfig.tail(12).setZero();
 //      Eigen::VectorXd tmp(12);
 //      tmp.setZero();
@@ -375,7 +369,6 @@ class ENVIRONMENT : public RaisimGymEnv {
 
   void updateObservation() {
     anymal_->getState(gc_, gv_);
-//    std::cout<<gc_.tail(12) << std::endl  << std::endl;
     raisim::Vec<4> quat;
     raisim::Mat<3,3> rot;
     quat[0] = gc_[3]; quat[1] = gc_[4]; quat[2] = gc_[5]; quat[3] = gc_[6];
@@ -383,79 +376,28 @@ class ENVIRONMENT : public RaisimGymEnv {
     bodyLinearVel_ = rot.e().transpose() * gv_.segment(0, 3);
     bodyAngularVel_ = rot.e().transpose() * gv_.segment(3, 3);
 //    std::cout<< rot.e().row(2).transpose().size() << "   "  <<bodyLinearVel_.size()  << "  " << bodyAngularVel_.size() << std::endl;
-//    std::cout<< "gv_segment "<< gv_.segment(3,3) << std::endl;
-
-    // todo transfer between z-up-right-hand and y-up-left-hand
-
-      double sqr2 = sqrt(2);
-    Eigen::Quaterniond ori_quat(quat[0], quat[1], quat[2], quat[3]);
-    Eigen::Quaterniond y_up(sqr2/2, sqr2/2, 0, 0);
-    Eigen::Quaterniond z_fron(sqr2/2, 0, sqr2/2,0);
-    Eigen::Quaterniond new_quat = y_up.inverse() * ori_quat * y_up ;
-//    Eigen::VectorXd vec_quat(4);
-//    vec_quat<<
-//        -new_quat.x(),
-//        -new_quat.y(),
-//        new_quat.z(),
-//        new_quat.w();
-
-    new_quat.x() = -new_quat.x();
-    new_quat.y() = -new_quat.y();
-    new_quat = z_fron.inverse() * new_quat;
-//    raisim::Vec<4> left_q(vec_quat);
-//    left_q[3] = sqr2 * (quat[0] - quat[1]); // -w
-//    left_q[0] = -sqr2 * (quat[0] + quat[1]); // x
-//    left_q[1] = -sqr2 * (quat[2] - quat[3]); // z
-//    left_q[2] = sqr2 * (quat[2] + quat[3]); // y
-//      raisim::Mat<3,3> left_rot;
-//      quat[0] = gc_[3]; quat[1] = gc_[4]; quat[2] = gc_[5]; quat[3] = gc_[6];
-//      raisim::quatToRotMat(new_quat, left_rot);
-    Eigen::Matrix3d left_rot(new_quat);
-      bodyLinearVel_ = -left_rot.transpose() * gv_.segment(0, 3); // minus was added to test todo
-      bodyAngularVel_ = -left_rot.transpose() * gv_.segment(3, 3);
-//      bodyAngularVel_[0] = -bodyAngularVel_[0];
-//      double tt = bodyAngularVel_[1];
-//      bodyAngularVel_[1] = -bodyAngularVel_[2];
-//      bodyAngularVel_[2] = -tt;
-
-
-//    std::cout<< "left " << left_q << "right" << quat << std::endl;
-
-    Eigen::VectorXd tmp1(12), tmp2(12);
-    tmp1 = gc_.tail(12);
-    tmp2 = gv_.tail(12);
-    for(auto i=0;i<=2;i++) bodyAngularVel_[i] = rad_deg(bodyAngularVel_[i]); // to be deg
-
-//    for(auto i=0;i<=11;i++) tmp1[i] = rad_deg(tmp1[i]); // to be deg
-//    for(auto i=0;i<=11;i++) tmp2[i] = rad_deg(tmp2[i]); // to be deg
-    obDouble_ << new_quat.x(),
-        new_quat.y(),
-        new_quat.z(),
-        new_quat.w(),
+    obDouble_ << quat,
 //        rot.e().row(2).transpose(), /// body orientation
         bodyAngularVel_,
         bodyLinearVel_; /// body linear&angular velocity
-//        tmp1, /// joint angles
-//        tmp2; /// joint velocity
-
+//        gc_.tail(12), /// joint angles
+//        gv_.tail(12); /// joint velocity
+    Eigen::VectorXd tmp1(12), tmp2(12);
+    tmp1 = gc_.tail(12);
+    tmp2 = gv_.tail(12);
     for(auto i=0; i<12; i++){
-//        std::cout<<2*i + 10 << "   " << tmp1[i] << "   " << tmp2[i] <<std::endl;
-          obDouble_[2*i+10] = tmp1[i]; // todo revese the angle because the unity was left-hand but raisim is right-hand
-          obDouble_[2 * i+11] =  tmp2[i];
-      }
-//     std::cout<< "before swap \n" << obDouble_<<std::endl;
+        obDouble_ << tmp1[i], tmp2[i];
+    }
     for(auto i=0;i <12; i++)
     {
         swap(obDouble_, 10 + i, 10 + 12 +i);
     }
-//    std::cout<<"after swap\n" << obDouble_ << std::endl;
+
   }
 
   void observe(Eigen::Ref<EigenVec> ob) final {
     /// convert it to float
     ob = obDouble_.cast<float>();
-//    std::cout<<"observe in c++\n" <<  ob <<std::endl <<std::endl;
-    
   }
 
   bool isTerminalState(float& terminalReward) final {

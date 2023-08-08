@@ -14,17 +14,6 @@
 double cal(double low, double upp, double now){
     return (now + 1)/2  * (upp- low) + low;
 }
-void swap(Eigen::VectorXd &ob, int a, int b)
-{
-    double tmp = ob[a];
-    ob[a] = ob[b];
-    ob[b] = tmp;
-}
-
-double rad_deg(double rad)
-{
-    return rad / PI * 180;
-}
 
 void map_from_origin_to_limit(std::vector<raisim::Vec<2>>  join, Eigen::VectorXd& limit_list, Eigen::VectorXd& gen_list)
 {
@@ -97,9 +86,9 @@ void angle_generator(Eigen::VectorXd& angle_list, int idx, float T, float rate=1
 //    std::cout<< "size is "<<  angle_list.size() << std::endl;
     double base1= 0.8, base3=0.0;
     double base2 = -2 * base1;
-    double ang = abs(sin( float(idx) / T  * PI)) * rate;
-//    double ang2 = -0.15 * ang;
-//    double ang3 = ang2 * 1.2;
+    double ang = -abs(sin( float(idx) / T  * PI)) * rate;
+    double ang2 = -0.15 * ang;
+    double ang3 = ang2 * 1.2;
     int idx_base = 0;
 //    std::cout<<idx_base+0 << " " << idx_base + 11 << std::endl;
 //    jointNominalConfig <<  0.03, 0.4, -0.8, -0.03, 0.4, -0.8, 0.03, -0.4, 0.8, -0.03, -0.4, 0.8;
@@ -107,29 +96,29 @@ void angle_generator(Eigen::VectorXd& angle_list, int idx, float T, float rate=1
     {
 
         angle_list[idx_base+1] = ang + base1;
-        angle_list[idx_base+2] =  -2 * ang + base2;
+        angle_list[idx_base+2] =  base2;
 
-        angle_list[idx_base+4] = base1;
-        angle_list[idx_base+5] = base2;
+        angle_list[idx_base+4] = base1 + ang2;
+        angle_list[idx_base+5] = base2 + ang3;
 
-        angle_list[idx_base+7] = base1;
-        angle_list[idx_base+8] = base2;
+        angle_list[idx_base+7] = base1 + ang2;
+        angle_list[idx_base+8] = base2 + ang3;
         angle_list[idx_base+10] = ang + base1;
-        angle_list[idx_base+11] =  -2 * ang + base2;
+        angle_list[idx_base+11] =  base2;
     }
     else
     {
 
-        angle_list[idx_base+1] = base1 ;
-        angle_list[idx_base+2] = base2 ;
+        angle_list[idx_base+1] = base1 + ang2;
+        angle_list[idx_base+2] = base2 + ang3;
 
-        angle_list[idx_base+10] = base1 ;
-        angle_list[idx_base+11] = base2 ;
+        angle_list[idx_base+10] = base1 + ang2;
+        angle_list[idx_base+11] = base2 + ang3;
         angle_list[idx_base+4] = ang + base1;
-        angle_list[idx_base+5] =  -2 * ang + base2;
+        angle_list[idx_base+5] =  base2;
 
         angle_list[idx_base+7] = ang + base1;
-        angle_list[idx_base+8] = -2 * ang +  base2;
+        angle_list[idx_base+8] =  base2;
     }
     angle_list[idx_base+0] = base3;
     angle_list[idx_base+3] = base3;
@@ -167,7 +156,7 @@ class ENVIRONMENT : public RaisimGymEnv {
       READ_YAML(bool, float_base, cfg_["float_base"]);
       READ_YAML(float,schedule_T, cfg_["schedule"]);
     /// add objects
-    anymal_ = world_->addArticulatedSystem(resourceDir_+"/a1_description/urdf/a1.urdf");
+    anymal_ = world_->addArticulatedSystem(resourceDir_+"/a1/urdf/a1.urdf");
     anymal_->setName("dog");
     anymal_->setControlMode(raisim::ControlMode::PD_PLUS_FEEDFORWARD_TORQUE);
     world_->addGround();
@@ -187,24 +176,18 @@ class ENVIRONMENT : public RaisimGymEnv {
 //    gc_init_ << 0, 0, 0.50, 1.0, 0.0, 0.0, 0.0, 0.03, 0.4, -0.8, -0.03, 0.4, -0.8, 0.03, -0.4, 0.8, -0.03, -0.4, 0.8;
 //    gc_init_ << 3, 3, 0.54, 1.0, 0.0, 0.0, 0.0, 0.03, 0.4, -0.8, -0.03, 0.4, -0.8, 0.03, -0.4, 0.8, -0.03, -0.4, 0.8;
 //    anymal_1->setGeneralizedCoordinate(gc_init_);
-//      gc_init_<< 0, 0, 0.41, 1.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+      gc_init_<< 0, 0, 0.30, 1.0, 0.0, 0.0, 0.0, 0.03, 0.4, -0.8, -0.03, 0.4, -0.8, 0.03, -0.4, 0.8, -0.03, -0.4, 0.8;
 
-//      gc_init_ << 0, 0, 0.36, 1.0, 0.0, 0, 0, 0, -0.4, 0.8529411764705883, 0.0, -0.4, 0.8529411764705883, 0.0, -0.4, 0.8529411764705883, 0.0, -0.4, 0.8529411764705883; // todo implement in python using list
-
-//      gc_init_ << 0, 0, 0.36, 1.0, 0.0, 0, 0, 0, 0.4, -0.8529411764705883, 0.0, 0.4, -0.8529411764705883, 0.0, 0.4, -0.8529411764705883, 0.0, 0.4, -0.8529411764705883; // todo implement in python using list
-//      gc_init_<< 0, 0, 0.41, 1.0, 0.0, -0.4, 0.8529411764705883, 0.0, -0.4, 0.8529411764705883, 0.0, -0.4, 0.8529411764705883, 0.0, -0.4, 0.8529411764705883; // todo implement in python using list
-
-      gc_init_<< 0, 0, 0.36, 1.0, 0.0, 0, 0, 0, 0.5235987755982988, -1.0471975511965976, 0.0, 0.5235987755982988, -1.0471975511965976, 0.0, 0.5235987755982988, -1.0471975511965976, 0.0, 0.5235987755982988, -1.0471975511965976 ; // todo implement in python using list
 //  jointNominalConfig.tail(12).setZero();
-//      Eigen::VectorXd tmp(12);
-//      tmp.setZero();
-//      angle_generator(tmp, 0, 80.f);
-//      gc_init_.tail(12) = tmp;
+      Eigen::VectorXd tmp(12);
+      tmp.setZero();
+      angle_generator(tmp, 0, 80.f);
+      gc_init_.tail(12) = tmp;
 
     /// set pd gains
     Eigen::VectorXd jointPgain(gvDim_), jointDgain(gvDim_);
-    jointPgain.setZero(); jointPgain.tail(nJoints_).setConstant(2000.0);
-    jointDgain.setZero(); jointDgain.tail(nJoints_).setConstant(100);
+    jointPgain.setZero(); jointPgain.tail(nJoints_).setConstant(120.0);
+    jointDgain.setZero(); jointDgain.tail(nJoints_).setConstant(3);
     anymal_->setPdGains(jointPgain, jointDgain);
     anymal_->setGeneralizedForce(Eigen::VectorXd::Zero(gvDim_));
     anymal_->setGeneralizedForce(Eigen::VectorXd::Zero(gvDim_));
@@ -259,9 +242,9 @@ class ENVIRONMENT : public RaisimGymEnv {
 
   float step(const Eigen::Ref<EigenVec>& action) final {
     /// action scaling
-//    COUNT ++;
+    COUNT ++;
 //    std::cout<<COUNT<<std::endl;
-//    angle_generator(angle_list, COUNT, schedule_T, angle_rate);
+    angle_generator(angle_list, COUNT, schedule_T, angle_rate);
     if (show_ref)
     {
         Eigen::Vector3d po(3, 3 ,10);
@@ -289,32 +272,29 @@ class ENVIRONMENT : public RaisimGymEnv {
     }
     //    angle_list *= 0.3;
 //    angle_list.setZero();
-//    Eigen::VectorXd idx1(8), idx2(4);
-//    idx1.setZero();idx2.setZero();
-//    idx1<<1, 2, 4, 5, 7,8,10,11;
-//    idx2<<0, 3, 6, 9;
+    Eigen::VectorXd idx1(8), idx2(4);
+    idx1.setZero();idx2.setZero();
+    idx1<<1, 2, 4, 5, 7,8,10,11;
+    idx2<<0, 3, 6, 9;
 
     pTarget12_ = action.cast<double>();
-//    Eigen::VectorXd ttmp =action.cast<double>();
-//      map_from_origin_to_limit(join_limit, pTarget12_,ttmp);
+    Eigen::VectorXd ttmp =action.cast<double>();
+      map_from_origin_to_limit(join_limit, pTarget12_,ttmp);
     //    pTarget12_ = pTarget12_.cwiseProduct(actionStd_);
 //    pTarget12_ += actionMean_;
 //    pTarget12_ = angle_list;
 
 
-//    angle_mulit(pTarget12_, idx1, action_std);
-//    angle_mulit(pTarget12_, idx2, action_std);
-//
-//
-//    angle_list_for_work = angle_list * for_work_rate;
+    angle_mulit(pTarget12_, idx1, action_std);
+    angle_mulit(pTarget12_, idx2, action_std);
+
+
+    angle_list_for_work = angle_list * for_work_rate;
 
 
 
 
-//    pTarget12_ = angle_list_for_work + pTarget12_;
-
-
-
+    pTarget12_ = angle_list_for_work + pTarget12_;
 //    pTarget12_[11] = pTarget12_[10] *-2;
 //    pTarget12_[8] = pTarget12_[7] * -2;
 //    pTarget12_[1] = -pTarget12_[10];
@@ -375,7 +355,6 @@ class ENVIRONMENT : public RaisimGymEnv {
 
   void updateObservation() {
     anymal_->getState(gc_, gv_);
-//    std::cout<<gc_.tail(12) << std::endl  << std::endl;
     raisim::Vec<4> quat;
     raisim::Mat<3,3> rot;
     quat[0] = gc_[3]; quat[1] = gc_[4]; quat[2] = gc_[5]; quat[3] = gc_[6];
@@ -383,79 +362,16 @@ class ENVIRONMENT : public RaisimGymEnv {
     bodyLinearVel_ = rot.e().transpose() * gv_.segment(0, 3);
     bodyAngularVel_ = rot.e().transpose() * gv_.segment(3, 3);
 //    std::cout<< rot.e().row(2).transpose().size() << "   "  <<bodyLinearVel_.size()  << "  " << bodyAngularVel_.size() << std::endl;
-//    std::cout<< "gv_segment "<< gv_.segment(3,3) << std::endl;
-
-    // todo transfer between z-up-right-hand and y-up-left-hand
-
-      double sqr2 = sqrt(2);
-    Eigen::Quaterniond ori_quat(quat[0], quat[1], quat[2], quat[3]);
-    Eigen::Quaterniond y_up(sqr2/2, sqr2/2, 0, 0);
-    Eigen::Quaterniond z_fron(sqr2/2, 0, sqr2/2,0);
-    Eigen::Quaterniond new_quat = y_up.inverse() * ori_quat * y_up ;
-//    Eigen::VectorXd vec_quat(4);
-//    vec_quat<<
-//        -new_quat.x(),
-//        -new_quat.y(),
-//        new_quat.z(),
-//        new_quat.w();
-
-    new_quat.x() = -new_quat.x();
-    new_quat.y() = -new_quat.y();
-    new_quat = z_fron.inverse() * new_quat;
-//    raisim::Vec<4> left_q(vec_quat);
-//    left_q[3] = sqr2 * (quat[0] - quat[1]); // -w
-//    left_q[0] = -sqr2 * (quat[0] + quat[1]); // x
-//    left_q[1] = -sqr2 * (quat[2] - quat[3]); // z
-//    left_q[2] = sqr2 * (quat[2] + quat[3]); // y
-//      raisim::Mat<3,3> left_rot;
-//      quat[0] = gc_[3]; quat[1] = gc_[4]; quat[2] = gc_[5]; quat[3] = gc_[6];
-//      raisim::quatToRotMat(new_quat, left_rot);
-    Eigen::Matrix3d left_rot(new_quat);
-      bodyLinearVel_ = -left_rot.transpose() * gv_.segment(0, 3); // minus was added to test todo
-      bodyAngularVel_ = -left_rot.transpose() * gv_.segment(3, 3);
-//      bodyAngularVel_[0] = -bodyAngularVel_[0];
-//      double tt = bodyAngularVel_[1];
-//      bodyAngularVel_[1] = -bodyAngularVel_[2];
-//      bodyAngularVel_[2] = -tt;
-
-
-//    std::cout<< "left " << left_q << "right" << quat << std::endl;
-
-    Eigen::VectorXd tmp1(12), tmp2(12);
-    tmp1 = gc_.tail(12);
-    tmp2 = gv_.tail(12);
-    for(auto i=0;i<=2;i++) bodyAngularVel_[i] = rad_deg(bodyAngularVel_[i]); // to be deg
-
-//    for(auto i=0;i<=11;i++) tmp1[i] = rad_deg(tmp1[i]); // to be deg
-//    for(auto i=0;i<=11;i++) tmp2[i] = rad_deg(tmp2[i]); // to be deg
-    obDouble_ << new_quat.x(),
-        new_quat.y(),
-        new_quat.z(),
-        new_quat.w(),
-//        rot.e().row(2).transpose(), /// body orientation
-        bodyAngularVel_,
-        bodyLinearVel_; /// body linear&angular velocity
-//        tmp1, /// joint angles
-//        tmp2; /// joint velocity
-
-    for(auto i=0; i<12; i++){
-//        std::cout<<2*i + 10 << "   " << tmp1[i] << "   " << tmp2[i] <<std::endl;
-          obDouble_[2*i+10] = tmp1[i]; // todo revese the angle because the unity was left-hand but raisim is right-hand
-          obDouble_[2 * i+11] =  tmp2[i];
-      }
-//     std::cout<< "before swap \n" << obDouble_<<std::endl;
-    for(auto i=0;i <12; i++)
-    {
-        swap(obDouble_, 10 + i, 10 + 12 +i);
-    }
-//    std::cout<<"after swap\n" << obDouble_ << std::endl;
+    obDouble_ << double(COUNT)/schedule_T,
+        rot.e().row(2).transpose(), /// body orientation
+        bodyLinearVel_, bodyAngularVel_, /// body linear&angular velocity
+        gc_.tail(12); /// joint angles
+        gv_.tail(12); /// joint velocity
   }
 
   void observe(Eigen::Ref<EigenVec> ob) final {
     /// convert it to float
     ob = obDouble_.cast<float>();
-//    std::cout<<"observe in c++\n" <<  ob <<std::endl <<std::endl;
-    
   }
 
   bool isTerminalState(float& terminalReward) final {
@@ -467,19 +383,12 @@ class ENVIRONMENT : public RaisimGymEnv {
       {// if there is any contact body was not in the footIndices the over
 //          std::cout<<"terminate "<<std::endl;
           rewards_.record("Stable", -10, false);
-          return true;}
-//      }if(abs(gc_[3]-gc_init_[3]) >0.3 )
-//      {
-//          return true;
-//      }
-//    if(abs(gc_[4]-gc_init_[4]) >0.2 )
+          return true;
+      }
+//    if(abs(gc_[2]-gc_init_[2]) >0.3 )
 //    {
 //        return true;
 //    }
-//    if(abs(gc_[6]-gc_init_[6]) >0.2 )
-//      {
-//          return true;
-//      }
 //    if(abs(gc_[9]) > 1.8 || abs(gc_[12]) > 1.8 || abs(gc_[15]) > 1.8 || abs(gc_[18]) > 1.8)
 //        return true;
 
@@ -516,9 +425,3 @@ class ENVIRONMENT : public RaisimGymEnv {
 thread_local std::mt19937 raisim::ENVIRONMENT::gen_;
 
 }
-
-//int main()
-//{
-//    raisim::ENVIRONMENT a("../rsc/","/home/lr-2002/code/raisimLib/raisimGymTorch/raisimGymTorch/env/envs/rsg_anymal_modified/cfg.yaml",
-//                          true);
-//}
