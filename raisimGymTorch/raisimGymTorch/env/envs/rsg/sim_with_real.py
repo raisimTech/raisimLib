@@ -18,7 +18,12 @@ import datetime
 import argparse
 from sine_generator import sine_generator
 
-from raisimGymTorch.env.deploy.py.api import robot as rbt
+""""
+todo 
+    1. add rbt 
+    2. modify lib rbt
+
+"""
 
 
 
