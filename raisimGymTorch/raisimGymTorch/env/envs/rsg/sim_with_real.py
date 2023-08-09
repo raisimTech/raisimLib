@@ -16,14 +16,15 @@ import numpy as np
 import torch
 import datetime
 import argparse
-from sine_generator import sine_generator
-
+# from sine_generator import sine_generator
+from unitree_deploy.sine_generator import  sine_generator
 """"
 todo 
     1. add rbt 
     2. modify lib rbt
 
 """
+
 
 
 
@@ -128,7 +129,6 @@ check_done = lambda a, b: a + 1 if not b else 0
 
 print = logger.info
 
-mode == 'train'
 
 total_update = args.update
 
@@ -136,6 +136,25 @@ schedule = cfg['environment']['schedule']
 angle_rate = cfg['environment']['angle_rate']
 act_rate = cfg['environment']['action_std'] # how many action generated use for work
 act_rate = float(act_rate)
+
+
+
+# NOTE : a1 init
+moving_robot = False
+if moving_robot:
+    from robot_utils import *
+
+    init_robot()
+
+    ori_posi = sine_generator(0, schedule, rate=angle_rate) # initial position
+    # a1.kp = cfg['environment']['kp']
+
+    init_position(ori_posi)
+
+    input('Are you sure to go on?')
+
+
+
 
 
 env.reset()
@@ -148,11 +167,14 @@ else:
     load_param(weight_path, env, actor, critic, ppo.optimizer, saver.data_dir)
 
 envs_idx = [0] * num_envs
+if moving_robot :
+    real_idx = 0
 
 for step in range(n_steps * 10):
     time.sleep(0.01)
     obs = env.observe(False)
-
+    if moving_robot:
+        real_obs = a1.observe()
     if onnx_flag:
         action = onnx_deploy.run_model(obs, cnt_onnx, 50)
         action = np.array(action)[0]
@@ -161,6 +183,11 @@ for step in range(n_steps * 10):
         action = ppo.act(obs)
         sine = sine_generator(envs_idx, schedule, angle_rate)
         action = transfer(action, sine, act_rate).astype(np.float32)
+    if moving_robot:
+        real_action = ppo.act(real_obs)
+        sine = sine_generator(real_idx, schedule, angle_rate)
+        real_action = transfer(real_action, sine, act_rate).astype(np.float32)
+        a1.take_action(real_action)
     reward, dones = env.step(action)
     envs_idx = list(map(check_done, envs_idx, dones))
 
