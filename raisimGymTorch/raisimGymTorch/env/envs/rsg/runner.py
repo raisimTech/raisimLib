@@ -16,7 +16,7 @@ import numpy as np
 import torch
 import datetime
 import argparse
-from sine_generator import sine_generator
+from unitree_deploy.sine_generator import sine_generator
 
 
 
@@ -132,44 +132,44 @@ if mode =='train' or mode == 'retrain':
         done_sum = 0
         average_dones = 0.
 
-        if update % cfg['environment']['eval_every_n'] == 0:
-            print("Visualizing and evaluating the current policy")
-            torch.save({
-                'actor_architecture_state_dict': actor.architecture.state_dict(),
-                'actor_distribution_state_dict': actor.distribution.state_dict(),
-                'critic_architecture_state_dict': critic.architecture.state_dict(),
-                'optimizer_state_dict': ppo.optimizer.state_dict(),
-            }, saver.data_dir+"/full_"+str(update)+'.pt')
-            # we create another graph just to demonstrate the save/load method
-            loaded_graph = ppo_module.MLP(cfg['architecture']['policy_net'], nn.LeakyReLU, ob_dim, act_dim)
-            loaded_graph.load_state_dict(torch.load(saver.data_dir+"/full_"+str(update)+'.pt')['actor_architecture_state_dict'])
-
-            env.turn_on_visualization()
-            env.start_video_recording(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + "policy_"+str(update)+'.mp4')
-            envs_idx = [0] * num_envs
-            for step in range(n_steps):
-                with torch.no_grad():
-                    frame_start = time.time()
-                    obs = env.observe(False)
-                    action = loaded_graph.architecture(torch.from_numpy(obs).cpu())
-                    action = action.cpu().detach().numpy()
-                    sine = sine_generator(envs_idx, schedule, angle_rate)
-                    action = transfer(action, sine, act_rate).astype(np.float32)
-
-                    reward, dones = env.step(action)
-                    envs_idx = list(map(check_done, envs_idx, dones))
-                    reward_analyzer.add_reward_info(env.get_reward_info())
-                    frame_end = time.time()
-                    wait_time = cfg['environment']['control_dt'] - (frame_end-frame_start)
-                    if wait_time > 0.:
-                        time.sleep(wait_time)
-
-            env.stop_video_recording()
-            env.turn_off_visualization()
-
-            reward_analyzer.analyze_and_plot(update)
-            env.reset()
-            env.save_scaling(saver.data_dir, str(update))
+        # if update % cfg['environment']['eval_every_n'] == 0:
+        #     print("Visualizing and evaluating the current policy")
+        #     torch.save({
+        #         'actor_architecture_state_dict': actor.architecture.state_dict(),
+        #         'actor_distribution_state_dict': actor.distribution.state_dict(),
+        #         'critic_architecture_state_dict': critic.architecture.state_dict(),
+        #         'optimizer_state_dict': ppo.optimizer.state_dict(),
+        #     }, saver.data_dir+"/full_"+str(update)+'.pt')
+        #     # we create another graph just to demonstrate the save/load method
+        #     loaded_graph = ppo_module.MLP(cfg['architecture']['policy_net'], nn.LeakyReLU, ob_dim, act_dim)
+        #     loaded_graph.load_state_dict(torch.load(saver.data_dir+"/full_"+str(update)+'.pt')['actor_architecture_state_dict'])
+        #
+        #     env.turn_on_visualization()
+        #     env.start_video_recording(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + "policy_"+str(update)+'.mp4')
+        #     envs_idx = [0] * num_envs
+        #     for step in range(n_steps):
+        #         with torch.no_grad():
+        #             frame_start = time.time()
+        #             obs = env.observe(False)
+        #             action = loaded_graph.architecture(torch.from_numpy(obs).cpu())
+        #             action = action.cpu().detach().numpy()
+        #             sine = sine_generator(envs_idx, schedule, angle_rate)
+        #             action = transfer(action, sine, act_rate).astype(np.float32)
+        #
+        #             reward, dones = env.step(action)
+        #             envs_idx = list(map(check_done, envs_idx, dones))
+        #             reward_analyzer.add_reward_info(env.get_reward_info())
+        #             frame_end = time.time()
+        #             wait_time = cfg['environment']['control_dt'] - (frame_end-frame_start)
+        #             if wait_time > 0.:
+        #                 time.sleep(wait_time)
+        #
+        #     env.stop_video_recording()
+        #     env.turn_off_visualization()
+        #
+        #     reward_analyzer.analyze_and_plot(update)
+        #     env.reset()
+        #     env.save_scaling(saver.data_dir, str(update))
 
         # actual training
         # sine = [0] * 12

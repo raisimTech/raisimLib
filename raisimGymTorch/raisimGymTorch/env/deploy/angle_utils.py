@@ -54,13 +54,14 @@ def sine_generator(angle_list, idx, T, rate=1):
     angle_list[idx_base+9] = base3
     return angle_list
 
-def transfer(act_gen, sine, k):
+def transfer(act_gen, sine, k) ->np.array:
     """
     clip, lerp, generate the final action
     params: act_gen: [12 * (-1, 1)]  np.array
     params: sine: [12 * rad_target]  np.array
     """
-
+    if act_gen.shape[0] == 1:
+        act_gen = act_gen[0]
     action = act_gen * k + sine * (1-k)
     action = np.clip(action, low, upp)
     return action

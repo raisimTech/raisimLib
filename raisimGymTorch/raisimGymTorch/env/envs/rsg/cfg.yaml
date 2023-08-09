@@ -10,9 +10,9 @@ environment:
   simulation_dt: 0.0025
   control_dt: 0.01
   max_time: 8.0
-  action_std: 0.010
+  action_std: 0.01
   show_ref: false
-  angle_rate: 0.3
+  angle_rate: 0.15
   stable: 1
   reference: 0
   schedule: 40

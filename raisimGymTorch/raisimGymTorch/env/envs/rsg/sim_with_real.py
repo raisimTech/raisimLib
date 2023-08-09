@@ -16,12 +16,13 @@ import numpy as np
 import torch
 import datetime
 import argparse
+# import pandas as pd
 # from sine_generator import sine_generator
 from unitree_deploy.sine_generator import  sine_generator
 """"
 todo 
-    1. add rbt 
-    2. modify lib rbt
+    1. left-hand right-hand check
+    2. raisim data check 
 
 """
 
@@ -77,6 +78,7 @@ print(cfg['environment'])
 env = VecEnv(RaisimGymEnv(home_path + "/rsc", dump(cfg['environment'], Dumper=RoundTripDumper)))
 env.seed(cfg['seed'])
 
+dt = cfg['environment']['control_dt']
 # shortcuts
 ob_dim = env.num_obs
 act_dim = env.num_acts
@@ -140,18 +142,22 @@ act_rate = float(act_rate)
 
 
 # NOTE : a1 init
-moving_robot = False
+moving_robot = True
 if moving_robot:
     from robot_utils import *
 
-    init_robot()
+    init_robot(dt)
 
-    ori_posi = sine_generator(0, schedule, rate=angle_rate) # initial position
+    ori_posi = sine_generator(0, schedule, rate=angle_rate).tolist() # initial position
     # a1.kp = cfg['environment']['kp']
-
+    # ori_posi = a1.position
     init_position(ori_posi)
-
-    input('Are you sure to go on?')
+    print(f"""
+        now_posi: {a1.position},
+        angle_rate : {angle_rate}
+        schedule: {schedule}
+    """)
+    # input('Are you sure to go on?')
 
 
 
@@ -167,14 +173,24 @@ else:
     load_param(weight_path, env, actor, critic, ppo.optimizer, saver.data_dir)
 
 envs_idx = [0] * num_envs
-if moving_robot :
+if moving_robot:
     real_idx = 0
 
 for step in range(n_steps * 10):
-    time.sleep(0.01)
+    # time.sleep(0.01)
     obs = env.observe(False)
+
+    print(f"""
+    virtual_observation:
+        {obs}
+    """)
+
     if moving_robot:
         real_obs = a1.observe()
+        print(f"""
+        real_observation
+            {real_obs}
+        """)
     if onnx_flag:
         action = onnx_deploy.run_model(obs, cnt_onnx, 50)
         action = np.array(action)[0]
@@ -186,8 +202,11 @@ for step in range(n_steps * 10):
     if moving_robot:
         real_action = ppo.act(real_obs)
         sine = sine_generator(real_idx, schedule, angle_rate)
-        real_action = transfer(real_action, sine, act_rate).astype(np.float32)
-        a1.take_action(real_action)
+        real_action = transfer(real_action, sine, act_rate)
+        # real_action = real_action
+        a1.take_action(real_action.tolist())
+        real_idx += 1
+
     reward, dones = env.step(action)
     envs_idx = list(map(check_done, envs_idx, dones))
 
