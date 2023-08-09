@@ -41,7 +41,7 @@ class ENVIRONMENT : public RaisimGymEnv {
     world_->addGround();
 
     /// get robot data
-    gcDim_ = anymal_->getGeneralizedCoordinateDim();
+    gcDim_ = anymal_->getGeneralizedCoordinateDim(); // 19
     gvDim_ = anymal_->getDOF(); // 18
     nJoints_ = gvDim_ - 6;
 
@@ -53,7 +53,7 @@ class ENVIRONMENT : public RaisimGymEnv {
     acc_.setZero();//1
 
 //      init_position();
-    gc_init_<< 0, 0, 0.33, 1.0, 0.0, 0.0, 0.0, 0.0,  0.5233, -1.046, 0.0,  0.5233, -1.046, 0.0, 0.523, -1.046, 0.0, 0.523, -1.046;
+    gc_init_<< 0, 0, 0.32, 1.0, 0.0, 0.0, 0.0, 0.0,  0.5233, -1.046, 0.0,  0.5233, -1.046, 0.0, 0.523, -1.046, 0.0, 0.523, -1.046;
 //      init_position(gc_init_);
     init();
 
@@ -188,22 +188,31 @@ class ENVIRONMENT : public RaisimGymEnv {
     raisim::Vec<4> quat;
     raisim::Mat<3,3> rot;
     quat[0] = gc_[3]; quat[1] = gc_[4]; quat[2] = gc_[5]; quat[3] = gc_[6];
+    quat /= quat.norm();
+//    std::cout << quat << std::endl;
     raisim::quatToRotMat(quat, rot);
     bodyLinearVel_ = rot.e().transpose() * gv_.segment(0, 3);
     bodyAngularVel_ = rot.e().transpose() * gv_.segment(3, 3);
     Eigen::VectorXd gcc = gc_.tail(12);
     Eigen::VectorXd gvv = gv_.tail(12);
+//    std::cout << "gcc_ : \n " << gcc << std::endl << "gvv : \n" << gvv << std::endl;
     Eigen::VectorXd c_v(24);
+    c_v.setZero(24);
     for(auto i = 0; i <12 ; i++ )
     {
-        c_v <<  gcc[i], gvv[i];
+        c_v[i*2] = gcc[i];
+        c_v[i*2 + 1] = gvv[i];
     }
-    obDouble_ << quat,   // quaternion
-        bodyAngularVel_, // ras/s
-        acc_,  // m/s^2
-//        gc_.tail(12), // rad/s
-//        gv_.tail(12); // rad/s^2
+//    std::cout << "quat" << quat << "\n body angular vel" <<  bodyAngularVel_ << "\n  acc " << acc_   << "\nc_v "<< c_v << std::endl;
+    obDouble_ << quat[0], quat[1], quat[2], quat[3],   // quaternion
+        bodyAngularVel_[0], // ras/s
+            bodyAngularVel_[1], // ras/s
+            bodyAngularVel_[2], // ras/s
+        acc_[0],  // m/s^2
+            acc_[1],  // m/s^2
+            acc_[2],  // m/s^2
         c_v;
+//    std::cout<< "obdouble \n" << obDouble_ << std::endl;
 
   }
 

@@ -142,7 +142,8 @@ act_rate = float(act_rate)
 
 
 # NOTE : a1 init
-moving_robot = True
+moving_robot = False
+
 if moving_robot:
     from robot_utils import *
 
@@ -175,15 +176,17 @@ else:
 envs_idx = [0] * num_envs
 if moving_robot:
     real_idx = 0
+    for i in range(schedule):
+        a1.hold_on()
 
 for step in range(n_steps * 10):
-    # time.sleep(0.01)
+    time.sleep(0.01)
     obs = env.observe(False)
 
-    print(f"""
-    virtual_observation:
-        {obs}
-    """)
+    # print(f"""
+    # virtual_observation:
+    #     {obs}
+    # """)
 
     if moving_robot:
         real_obs = a1.observe()
@@ -191,6 +194,11 @@ for step in range(n_steps * 10):
         real_observation
             {real_obs}
         """)
+        # for i in range(schedule):
+        #     a1.hold_on()
+            # print(a1.observe())
+        # real_obs = a1.observe()
+        # print(real_obs)
     if onnx_flag:
         action = onnx_deploy.run_model(obs, cnt_onnx, 50)
         action = np.array(action)[0]

@@ -37,7 +37,7 @@ todo:
 parser = argparse.ArgumentParser()
 parser.add_argument('-m', '--mode', help='set mode either train or test', type=str, default='train')
 parser.add_argument('-w', '--weight', help='pre-trained weight path', type=str, default='')
-parser.add_argument('-u', '--update', help='update times', type=int, default=120)
+parser.add_argument('-u', '--update', help='update times', type=int, default=300)
 parser.add_argument('-p', '--cfg_path', help='where to find the path', type=str, default=None)
 # parser.add_argument('-b', '--load_best', help='load best file in last train', type=bool, default=False)
 args = parser.parse_args()
@@ -47,7 +47,7 @@ cfg_path = args.cfg_path
 # load_best = args.load_best
 # check if gpu is available
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
+print(device)
 # directories
 task_path = os.path.dirname(os.path.realpath(__file__))
 home_path = task_path + "/../../../../.."
@@ -132,50 +132,55 @@ if mode =='train' or mode == 'retrain':
         done_sum = 0
         average_dones = 0.
 
-        # if update % cfg['environment']['eval_every_n'] == 0:
-        #     print("Visualizing and evaluating the current policy")
-        #     torch.save({
-        #         'actor_architecture_state_dict': actor.architecture.state_dict(),
-        #         'actor_distribution_state_dict': actor.distribution.state_dict(),
-        #         'critic_architecture_state_dict': critic.architecture.state_dict(),
-        #         'optimizer_state_dict': ppo.optimizer.state_dict(),
-        #     }, saver.data_dir+"/full_"+str(update)+'.pt')
-        #     # we create another graph just to demonstrate the save/load method
-        #     loaded_graph = ppo_module.MLP(cfg['architecture']['policy_net'], nn.LeakyReLU, ob_dim, act_dim)
-        #     loaded_graph.load_state_dict(torch.load(saver.data_dir+"/full_"+str(update)+'.pt')['actor_architecture_state_dict'])
-        #
-        #     env.turn_on_visualization()
-        #     env.start_video_recording(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + "policy_"+str(update)+'.mp4')
-        #     envs_idx = [0] * num_envs
-        #     for step in range(n_steps):
-        #         with torch.no_grad():
-        #             frame_start = time.time()
-        #             obs = env.observe(False)
-        #             action = loaded_graph.architecture(torch.from_numpy(obs).cpu())
-        #             action = action.cpu().detach().numpy()
-        #             sine = sine_generator(envs_idx, schedule, angle_rate)
-        #             action = transfer(action, sine, act_rate).astype(np.float32)
-        #
-        #             reward, dones = env.step(action)
-        #             envs_idx = list(map(check_done, envs_idx, dones))
-        #             reward_analyzer.add_reward_info(env.get_reward_info())
-        #             frame_end = time.time()
-        #             wait_time = cfg['environment']['control_dt'] - (frame_end-frame_start)
-        #             if wait_time > 0.:
-        #                 time.sleep(wait_time)
-        #
-        #     env.stop_video_recording()
-        #     env.turn_off_visualization()
-        #
-        #     reward_analyzer.analyze_and_plot(update)
-        #     env.reset()
-        #     env.save_scaling(saver.data_dir, str(update))
+        if update % cfg['environment']['eval_every_n'] == 0:
+            print("Visualizing and evaluating the current policy")
+            torch.save({
+                'actor_architecture_state_dict': actor.architecture.state_dict(),
+                'actor_distribution_state_dict': actor.distribution.state_dict(),
+                'critic_architecture_state_dict': critic.architecture.state_dict(),
+                'optimizer_state_dict': ppo.optimizer.state_dict(),
+            }, saver.data_dir+"/full_"+str(update)+'.pt')
+            # we create another graph just to demonstrate the save/load method
+            loaded_graph = ppo_module.MLP(cfg['architecture']['policy_net'], nn.LeakyReLU, ob_dim, act_dim)
+            loaded_graph.load_state_dict(torch.load(saver.data_dir+"/full_"+str(update)+'.pt')['actor_architecture_state_dict'])
+
+            env.turn_on_visualization()
+            env.start_video_recording(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + "policy_"+str(update)+'.mp4')
+            envs_idx = [0] * num_envs
+            for step in range(n_steps):
+                with torch.no_grad():
+                    frame_start = time.time()
+                    obs = env.observe(False)
+                    action = loaded_graph.architecture(torch.from_numpy(obs).cpu())
+                    action = action.cpu().detach().numpy()
+                    sine = sine_generator(envs_idx, schedule, angle_rate)
+                    action = transfer(action, sine, act_rate).astype(np.float32)
+
+                    reward, dones = env.step(action)
+                    envs_idx = list(map(check_done, envs_idx, dones))
+                    reward_analyzer.add_reward_info(env.get_reward_info())
+                    frame_end = time.time()
+                    wait_time = cfg['environment']['control_dt'] - (frame_end-frame_start)
+                    if wait_time > 0.:
+                        time.sleep(wait_time)
+
+            env.stop_video_recording()
+            env.turn_off_visualization()
+
+            reward_analyzer.analyze_and_plot(update)
+            env.reset()
+            env.save_scaling(saver.data_dir, str(update))
 
         # actual training
         # sine = [0] * 12
         envs_idx = [0] * num_envs
         for step in range(n_steps):
-            obs = env.observe()
+            obs = env.observe(False)
+            """
+                1. z轴方向的加速度的处理方法
+                2. 为什么后边的轴没有速度？
+            
+            """
             action = ppo.act(obs)
 
 
@@ -188,7 +193,7 @@ if mode =='train' or mode == 'retrain':
             done_sum = done_sum + np.sum(dones)
             reward_sum = reward_sum + np.sum(reward)
         # take st step to get value obs
-        obs = env.observe()
+        obs = env.observe(False)
         ppo.update(actor_obs=obs, value_obs=obs, log_this_iteration=update % 10 == 0, update=update)
         average_ll_performance = reward_sum / total_steps
         if average_ll_performance > biggest_reward:
@@ -241,6 +246,7 @@ else:
             # action = np.array([act for x in range(100)])
         else:
             action = ppo.act(obs)
+
 
         reward, dones = env.step(action)
 

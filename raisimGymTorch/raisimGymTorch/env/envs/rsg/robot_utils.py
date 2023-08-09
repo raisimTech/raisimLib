@@ -31,7 +31,8 @@ def init_robot(dt):
 if __name__=='__main__':
     init_robot(0.01)
     print(a1.observe())
-    # init_position(position=sine_generator(0, 40, 0.14))
+    init_position(position=sine_generator(0, 40, 0.14).tolist())
     #
-    # while True:
-    #     a1.hold_on()
+    while True:
+        # print(a1.observe())
+        a1.hold_on()
