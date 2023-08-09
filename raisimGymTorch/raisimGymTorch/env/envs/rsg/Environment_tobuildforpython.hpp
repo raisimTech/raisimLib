@@ -11,11 +11,7 @@
 #include "../../RaisimGymEnv.hpp"
 #include <iostream>
 #define PI 3.1415926
-/*todo
- * 1. test the acceleration
- * 2. change the terminator
- * 3. change reward
- */
+
 namespace raisim {
 
 class ENVIRONMENT : public RaisimGymEnv {
@@ -57,7 +53,7 @@ class ENVIRONMENT : public RaisimGymEnv {
     acc_.setZero();//1
 
 //      init_position();
-    gc_init_<< 0, 0, 0.33, 1.0, 0.0, 0.0, 0.0, 0.0, 0.4, -0.8529411764705883, 0.0, 0.4, -0.8529411764705883, 0.0, 0.4, -0.8529411764705883, 0.0, 0.4, -0.8529411764705883; // todo implement in python using list
+    gc_init_<< 0, 0, 0.33, 1.0, 0.0, 0.0, 0.0, 0.0, 0.4, -0.8529411764705883, 0.0, 0.4, -0.8529411764705883, 0.0, 0.4, -0.8529411764705883, 0.0, 0.4, -0.8529411764705883;
 //      init_position(gc_init_);
     init();
 
@@ -161,7 +157,7 @@ class ENVIRONMENT : public RaisimGymEnv {
 
 //  auto get_orientation()
 //  {
-//      // todo return the orientation
+//
 //      raisim::Vec<4> quat;
 //
 //      quat[0] = gc_[3]; quat[1] = gc_[4]; quat[2] = gc_[5]; quat[3] = gc_[6];
@@ -188,7 +184,7 @@ class ENVIRONMENT : public RaisimGymEnv {
   void updateObservation() {
     anymal_->getState(gc_, gv_);
     std::string root_name = "ROOT";
-    anymal_->getFrameAcceleration(root_name , acc_);   // todo find the acc
+    anymal_->getFrameAcceleration(root_name , acc_);
     raisim::Vec<4> quat;
     raisim::Mat<3,3> rot;
     quat[0] = gc_[3]; quat[1] = gc_[4]; quat[2] = gc_[5]; quat[3] = gc_[6];

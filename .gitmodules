@@ -1,0 +1,3 @@
+[submodule "raisimGymTorch/A1_raspi_py"]
+	path = raisimGymTorch/A1_raspi_py
+	url = https://github.com/Lr-2002/A1_raspi_py.git
