@@ -2,9 +2,9 @@ from math import sin,pi
 import numpy as np
 def sine_generator(idx, T, rate=1):
     if isinstance(idx, int):
-        base1= 0.82
+        base1= 0.4
         base3= 0.0
-        base2 = -2 * base1
+        base2 = -0.8529411764705883
         ang = abs(sin( float(idx) / T  * pi)) * rate
         angle_list = [0] * 12
         idx_base = 0

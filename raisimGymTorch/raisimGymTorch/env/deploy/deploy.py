@@ -11,7 +11,6 @@ from robot import Robot
 import torch.nn as nn
 from angle_utils import sine_generator
 
-robot = Robot()
 
 
 

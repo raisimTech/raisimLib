@@ -151,13 +151,11 @@ if mode =='train' or mode == 'retrain':
                 with torch.no_grad():
                     frame_start = time.time()
                     obs = env.observe(False)
-
-                    # action = ppo.act(torch.from_numpy(obs).cpu())
                     action = loaded_graph.architecture(torch.from_numpy(obs).cpu())
                     action = action.cpu().detach().numpy()
                     sine = sine_generator(envs_idx, schedule, angle_rate)
                     action = transfer(action, sine, act_rate).astype(np.float32)
-                    # print(action.min())
+
                     reward, dones = env.step(action)
                     envs_idx = list(map(check_done, envs_idx, dones))
                     reward_analyzer.add_reward_info(env.get_reward_info())
@@ -226,7 +224,7 @@ if mode =='train' or mode == 'retrain':
 else:
     env.reset()
     start = time.time()
-    onnx_flag = True
+    onnx_flag = False
     if onnx_flag:
         cnt_onnx = 0
         from raisimGymTorch.env.deploy import onnx_deploy
@@ -234,7 +232,7 @@ else:
     # load_param(weight_path, env, actor, critic, ppo.optimizer, saver.data_dir)
     for step in range(n_steps * 10):
         time.sleep(0.01)
-        obs = env.observe()
+        obs = env.observe(False)
         # print(obs.shape)
         if onnx_flag:
             action = onnx_deploy.run_model(obs, cnt_onnx, 50)

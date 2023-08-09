@@ -32,6 +32,9 @@ class RaisimGymVecEnv:
     def seed(self, seed=None):
         self.wrapper.setSeed(seed)
 
+    def init_position(self, position):
+        self.wrapper.init_position(position)
+
     def turn_on_visualization(self):
         self.wrapper.turnOnVisualization()
 
