@@ -63,17 +63,17 @@ class RaisimLogger():
     def __init__(self, path):
         self.logger = logging.getLogger(__file__)
         self.logger.setLevel(logging.INFO)
-        self.fh = logging.FileHandler(path)
+        # self.fh = logging.FileHandler(path)
         self.ch = logging.StreamHandler()
-        self.fh.setLevel(logging.INFO)
+        # self.fh.setLevel(logging.INFO)
         self.ch.setLevel(logging.INFO)
 
-        self.formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-                                  datefmt="%Y-%m-%d %H:%M:%S")
+        self.formatter = logging.Formatter("%(asctime)s.%(msecs)03d - %(levelname)s - %(message)s",
+                                           datefmt='%Y-%m-%d,%H:%M:%S')
         self.ch.setFormatter(self.formatter)
-        self.fh.setFormatter(self.formatter)
+        # self.fh.setFormatter(self.formatter)
         self.logger.addHandler(self.ch)
-        self.logger.addHandler(self.fh)
+        # self.logger.addHandler(self.fh)
 
     def info(self, msg):
         self.logger.info(msg)

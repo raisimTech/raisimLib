@@ -178,7 +178,6 @@ if mode =='train' or mode == 'retrain':
             obs = env.observe(False)
             """
                 1. z轴方向的加速度的处理方法
-                2. 为什么后边的轴没有速度？
             
             """
             action = ppo.act(obs)

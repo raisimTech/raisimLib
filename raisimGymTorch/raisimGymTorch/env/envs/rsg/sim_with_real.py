@@ -61,7 +61,7 @@ weight_path = args.weight
 cfg_path = args.cfg_path
 # load_best = args.load_best
 # check if gpu is available
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cpu')
 
 # directories
 task_path = os.path.dirname(os.path.realpath(__file__))
@@ -139,10 +139,23 @@ angle_rate = cfg['environment']['angle_rate']
 act_rate = cfg['environment']['action_std'] # how many action generated use for work
 act_rate = float(act_rate)
 
+input(f"Are you sure to execute the action in schedule: {schedule}, angle_rate: {angle_rate}, act_rate(how many action generated from NN used for work): {act_rate}")
+
+# init virtual part
+env.reset()
+start = time.time()
+onnx_flag = False
+if onnx_flag:
+    cnt_onnx = 0
+    from raisimGymTorch.env.deploy import onnx_deploy
+else:
+    load_param(weight_path, env, actor, critic, ppo.optimizer, saver.data_dir)
+
+envs_idx = [0] * num_envs
 
 
 # NOTE : a1 init
-moving_robot = False
+moving_robot = True
 
 if moving_robot:
     from robot_utils import *
@@ -164,59 +177,53 @@ if moving_robot:
 
 
 
-env.reset()
-start = time.time()
-onnx_flag = False
-if onnx_flag:
-    cnt_onnx = 0
-    from raisimGymTorch.env.deploy import onnx_deploy
-else:
-    load_param(weight_path, env, actor, critic, ppo.optimizer, saver.data_dir)
 
-envs_idx = [0] * num_envs
+
 if moving_robot:
     real_idx = 0
     for i in range(schedule):
         a1.hold_on()
+    # print(f"before work {a1.position}")
 
 for step in range(n_steps * 10):
-    time.sleep(0.01)
+    if not moving_robot:
+        print('moving?')
+        time.sleep(0.01)
     obs = env.observe(False)
 
-    # print(f"""
-    # virtual_observation:
-    #     {obs}
-    # """)
 
+    #virtual bot part
+    # if onnx_flag:
+    #     action = onnx_deploy.run_model(obs, cnt_onnx, 50)
+    #     action = np.array(action)[0]
+    #     cnt_onnx += 1
+    # else:
+    #     gen_action = ppo.act(obs)
+    #     sine = sine_generator(envs_idx, schedule, angle_rate)
+    #     action = transfer(gen_action, sine, act_rate).astype(np.float32)
+    #     print(f"virtual_obs:{obs} \n virtual_gen_action:{gen_action} \n virtual_action:{action}")
+    #     if real_idx == 0:
+    #         a1.hold_on()
+
+    # real bot part
     if moving_robot:
+        print('b-observe')
         real_obs = a1.observe()
-        print(f"""
-        real_observation
-            {real_obs}
-        """)
-        # for i in range(schedule):
-        #     a1.hold_on()
-            # print(a1.observe())
-        # real_obs = a1.observe()
-        # print(real_obs)
-    if onnx_flag:
-        action = onnx_deploy.run_model(obs, cnt_onnx, 50)
-        action = np.array(action)[0]
-        cnt_onnx += 1
-    else:
-        action = ppo.act(obs)
-        sine = sine_generator(envs_idx, schedule, angle_rate)
-        action = transfer(action, sine, act_rate).astype(np.float32)
-    if moving_robot:
-        real_action = ppo.act(real_obs)
+        print('b-ppo')
+        gen_action = ppo.act(real_obs)
+        print('b-sin')
         sine = sine_generator(real_idx, schedule, angle_rate)
-        real_action = transfer(real_action, sine, act_rate)
+        print('b-trans')
+        real_action = transfer(gen_action, sine, act_rate)
         # real_action = real_action
+        print(f"real_obs:{real_obs} \n gen_action : {gen_action}\n for work_action:{real_action}")
+
         a1.take_action(real_action.tolist())
         real_idx += 1
 
-    reward, dones = env.step(action)
-    envs_idx = list(map(check_done, envs_idx, dones))
+    # update virtual bot
+    # reward, dones = env.step(action)
+    # envs_idx = list(map(check_done, envs_idx, dones))
 
 print(f'biggest:{biggest_reward},rate = {biggest_iter}')
 
