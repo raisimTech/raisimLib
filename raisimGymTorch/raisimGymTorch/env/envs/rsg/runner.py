@@ -111,13 +111,17 @@ biggest_iter = 0
 if mode == 'retrain':
     load_param(weight_path, env, actor, critic, ppo.optimizer, saver.data_dir)
 
+his_util=[0, 0.523, -1.046] * 4
 check_done = lambda a, b: a + 1 if not b else 0
+check_history = lambda a, b: a if not b else his_util
+# need_to_review = lambda a,b: a if not b else  np.array([[0, 0.523, -1.046] * 4]) # todo make sure the shape
 # if load_best == True:
 #     weight_path = ""
+
 print = logger.info
 
 mode == 'train'
-
+history_act = np.array([his_util] * 100)
 total_update = args.update
 if mode =='train' or mode == 'retrain':
     # print('start train')
@@ -147,6 +151,7 @@ if mode =='train' or mode == 'retrain':
             env.turn_on_visualization()
             env.start_video_recording(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + "policy_"+str(update)+'.mp4')
             envs_idx = [0] * num_envs
+
             for step in range(n_steps):
                 with torch.no_grad():
                     frame_start = time.time()
@@ -154,10 +159,11 @@ if mode =='train' or mode == 'retrain':
                     action = loaded_graph.architecture(torch.from_numpy(obs).cpu())
                     action = action.cpu().detach().numpy()
                     sine = sine_generator(envs_idx, schedule, angle_rate)
-                    action = transfer(action, sine, act_rate).astype(np.float32)
-
+                    action = transfer(action, sine, act_rate, history_act=history_act).astype(np.float32)
                     reward, dones = env.step(action)
                     envs_idx = list(map(check_done, envs_idx, dones))
+                    history_act = np.array([ check_history(history_act[i], dones[i]) for i in range(num_envs)] )
+
                     reward_analyzer.add_reward_info(env.get_reward_info())
                     frame_end = time.time()
                     wait_time = cfg['environment']['control_dt'] - (frame_end-frame_start)
@@ -184,9 +190,15 @@ if mode =='train' or mode == 'retrain':
 
 
             sine = sine_generator(envs_idx, schedule, angle_rate)
-            action = transfer(action, sine, act_rate).astype(np.float32)
+            action = transfer(action, sine, act_rate, history_act=history_act).astype(np.float32)
             # todo the transfer has bug
             reward, dones = env.step(action)
+            history_act = sine
+            envs_idx = list(map(check_done, envs_idx, dones))
+            history_act = np.array([check_history(history_act[i], dones[i]) for i in range(num_envs)])
+
+            reward = reward * envs_idx / n_steps * 2
+
             envs_idx = list(map(check_done, envs_idx, dones))
             ppo.step(value_obs=obs, rews=reward, dones=dones)
             done_sum = done_sum + np.sum(dones)

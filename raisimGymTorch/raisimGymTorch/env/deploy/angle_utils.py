@@ -18,8 +18,9 @@ low = [-46, -60, -154.5, -46, -60, -154.5, -46, -60, -154.5, -46, -60, -154.5]
 upp = [46, 240, -52.5, 46, 240, -52.5, 46, 240, -52.5, 46, 240, -52.5]
 low = deg_rad(low)
 upp = deg_rad(upp)
+bund = [upp[i] - low[i] for i in range(12)]
 def sine_generator(angle_list, idx, T, rate=1):
-    base1= 0.82
+    base1= 0.523
     base3= 0.0
     base2 = -2 * base1
     ang = abs(sin( float(idx) / T  * pi)) * rate
@@ -54,12 +55,20 @@ def sine_generator(angle_list, idx, T, rate=1):
     angle_list[idx_base+9] = base3
     return angle_list
 
-def transfer(act_gen, sine, k) ->np.array:
+def transfer(act_gen, sine, k, history_act = None) ->np.array:
     """
     clip, lerp, generate the final action
     params: act_gen: [12 * (-1, 1)]  np.array
     params: sine: [12 * rad_target]  np.array
     """
+    # act_gen = (act_gen + 1) /2 # 0-1
+    act_gen = act_gen * bund  # - +
+    act_gen = np.clip(act_gen, low, upp)
+    if history_act is not None:
+        kk = 0.9
+        # act_gen = (1-kk) * act_gen
+        act_gen = act_gen * (1-kk) + history_act * kk
+        act_gen = np.clip(act_gen, low, upp)
     if act_gen.shape[0] == 1:
         act_gen = act_gen[0]
     action = act_gen * k + sine * (1-k)
@@ -67,12 +76,25 @@ def transfer(act_gen, sine, k) ->np.array:
     return action
 
 if __name__=='__main__':
-    angle_list = [0 for x in range(12)]
-
-    sine_generator(angle_list, 2, 40, 0.3)
-    angle_list = np.array(angle_list)
-    act = transfer(np.random.random((100,12)), angle_list, 0.3)
-    print('sine:', angle_list)
-    print('low:', low)
-    print('upp:', upp)
-    print(act.shape, type(act))
+    # angle_list = [0 for x in range(12)]
+    #
+    # sine_generator(angle_list, 0, 40, 0.3)
+    # angle_list = np.array(angle_list)
+    # act = transfer(np.zeros((100,12)), angle_list, 1)
+    # print('sine:', angle_list)
+    # print('low:', low)
+    # print('upp:', upp)
+    # print('bound', bund)
+    # print(act[0])
+    his_util = [0, 0.523, -1.046] * 4
+    check_done = lambda a, b: a + 1 if not b else 0
+    check_history = lambda a, b: a if not b else his_util
+    check_zero = lambda a:1 if a!=0 else 0
+    tmp1 = np.zeros((100,12))
+    idx = np.random.rand(100)
+    idx[1:10] = False
+    idx = list(map(check_zero, idx))
+    print(idx)
+    tmp = np.array([check_history(tmp1[i], idx[i]) for i in range(100) ])
+    assert tmp1.shape == tmp.shape
+    print(tmp)

@@ -11,10 +11,10 @@ def change_data(path, flag, data):
     with open(path, 'w') as f :
         dump(y, f, Dumper=RoundTripDumper)
 
-test_list = [x/1000 for x in range(2,20,2)]
-test_T = [x for x in range(40, 70, 10)]
+test_list = [x/10 for x in range(1,20,4)]
+test_T = [40]
 # print(test_list)
-length = 300
+length = 500
 for j in test_T:
     for i in test_list:
         change_data('/home/lr-2002/code/raisimLib/raisimGymTorch/raisimGymTorch/env/envs/rsg/cfg.yaml',['action_std','schedule'], [i, j])

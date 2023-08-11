@@ -14,7 +14,28 @@
 
 namespace raisim {
 
-class ENVIRONMENT : public RaisimGymEnv {
+    auto ToEulerAngles(Eigen::Quaterniond q) {
+        Eigen::Vector3d angles;
+
+        // roll (x-axis rotation)
+        double sinr_cosp = 2 * (q.w() * q.x() + q.y() * q.z());
+        double cosr_cosp = 1 - 2 * (q.x ()* q.x() + q.y() * q.y());
+        angles[0] = std::atan2(sinr_cosp, cosr_cosp);
+
+        // pitch (y-axis rotation)
+        double sinp = std::sqrt(1 + 2 * (q.w ()* q.y ()- q.x() * q.z()));
+        double cosp = std::sqrt(1 - 2 * (q.w ()* q.y() - q.x() * q.z()));
+        angles[1] = 2 * std::atan2(sinp, cosp) - M_PI / 2;
+
+        // yaw (z-axis rotation)
+        double siny_cosp = 2 * (q.w() * q.z() + q.x() * q.y());
+        double cosy_cosp = 1 - 2 * (q.y() * q.y() + q.z() * q.z());
+        angles[2] = std::atan2(siny_cosp, cosy_cosp);
+
+        return angles;
+    }
+
+    class ENVIRONMENT : public RaisimGymEnv {
 
  public:
 
@@ -47,17 +68,18 @@ class ENVIRONMENT : public RaisimGymEnv {
 
     gc_.setZero(gcDim_); gc_init_.setZero(gcDim_);
     gv_.setZero(gvDim_); gv_init_.setZero(gvDim_);
+    euler_angle.setZero();
     pTarget_.setZero(gcDim_); vTarget_.setZero(gvDim_); pTarget12_.setZero(nJoints_);
     angle_list.setZero(nJoints_);angle_list_for_work.setZero(nJoints_);
     gc_old.setZero(nJoints_) ; ref_old.setZero(nJoints_);
     acc_.setZero();//1
 
 //      init_position();
-    gc_init_<< 0, 0, 0.32, 1.0, 0.0, 0.0, 0.0, 0.0,  0.5233, -1.046, 0.0,  0.5233, -1.046, 0.0, 0.523, -1.046, 0.0, 0.523, -1.046;
+    gc_init_<< 0, 0, 0.37, 1.0, 0.0, 0.0, 0.0, 0.0,  0.5233, -1.046, 0.0,  0.5233, -1.046, 0.0, 0.523, -1.046, 0.0, 0.523, -1.046;
 //      init_position(gc_init_);
     init();
 
-    obDim_ = 34;
+    obDim_ = 31;
     actionDim_ = nJoints_; actionMean_.setZero(actionDim_); actionStd_.setZero(actionDim_);
     obDouble_.setZero(obDim_);
 
@@ -85,9 +107,20 @@ class ENVIRONMENT : public RaisimGymEnv {
 
   void init() final {
       Eigen::VectorXd jointPgain(gvDim_), jointDgain(gvDim_);
-      jointPgain.setZero(); jointPgain.tail(nJoints_).setConstant(p_gain);
-      jointDgain.setZero(); jointDgain.tail(nJoints_).setConstant(d_gain);
+      jointPgain.setZero();
+      jointPgain.tail(nJoints_).setConstant(p_gain);
+      jointPgain.tail(nJoints_)[2] = 300;
+      jointPgain.tail(nJoints_)[5] = 300;
+      jointPgain.tail(nJoints_)[8] = 300;
+      jointPgain.tail(nJoints_)[11] = 300;
+      jointDgain.setZero();
+      jointDgain.tail(nJoints_).setConstant(d_gain);
+      jointDgain.tail(nJoints_)[2] = 15;
+      jointDgain.tail(nJoints_)[5] = 15;
+      jointDgain.tail(nJoints_)[8] = 15;
+      jointDgain.tail(nJoints_)[11] = 15;
       anymal_->setPdGains(jointPgain, jointDgain);
+//      std::cout<<jointPgain;
       anymal_->setGeneralizedForce(Eigen::VectorXd::Zero(gvDim_));
       anymal_->setGeneralizedForce(Eigen::VectorXd::Zero(gvDim_));
       if(show_ref)
@@ -98,7 +131,7 @@ class ENVIRONMENT : public RaisimGymEnv {
           anymal_1->setControlMode(raisim::ControlMode::PD_PLUS_FEEDFORWARD_TORQUE);
           anymal_1->setPdGains(jointPgain,jointDgain);
       }
-      std::cout<<"position inited\n";
+//      std::cout<<"position inited\n";
   }
 
   void init_position(const Eigen::Ref<EigenVec>& posi) final
@@ -142,16 +175,20 @@ class ENVIRONMENT : public RaisimGymEnv {
     }
     updateObservation();
     double rrr =0;
-    for(int i=4; i<=6 ; i++)
-    {
-        rrr += abs(gc_[i] - gc_init_[i]) * stable_reward_rate ;
-    }
-//    rrr += (gc_.tail(12) - angle_list).norm() * reference_rate;
-    rewards_.record("Stable", 1 - rrr, false);
-    rewards_.record("forwardVel", bodyLinearVel_[0], false);
+//    for(int i=4; i<=6 ; i++)
+//    {
+//        rrr += abs(gc_[i] - gc_init_[i]) * stable_reward_rate ;
+//    }
+//    for(int i =0;i<=2; i++)rrr += abs(bodyAngularVel_[i]);
+//std::cout<<euler_angle;
+    for(int i=0;i<=2;i++) rrr += abs(euler_angle[i]) * stable_reward_rate;
 
-    gc_old = gc_.tail(12);
-    ref_old = angle_list;
+    rrr += (gc_.tail(12) - pTarget12_).norm() * reference_rate;
+    rewards_.record("Stable", 1 - rrr, true);
+//    rewards_.record("forwardVel", bodyLinearVel_[0], false);
+
+//    gc_old = gc_.tail(12);
+//    ref_old = angle_list;
     return rewards_.sum();
   }
 
@@ -183,8 +220,8 @@ class ENVIRONMENT : public RaisimGymEnv {
 //  }
   void updateObservation() {
     anymal_->getState(gc_, gv_);
-    std::string root_name = "ROOT";
-    anymal_->getFrameAcceleration(root_name , acc_);
+//    std::string root_name = "ROOT";
+//    anymal_->getFrameAcceleration(root_name , acc_);
     raisim::Vec<4> quat;
     raisim::Mat<3,3> rot;
     quat[0] = gc_[3]; quat[1] = gc_[4]; quat[2] = gc_[5]; quat[3] = gc_[6];
@@ -208,9 +245,9 @@ class ENVIRONMENT : public RaisimGymEnv {
         bodyAngularVel_[0], // ras/s
             bodyAngularVel_[1], // ras/s
             bodyAngularVel_[2], // ras/s
-        acc_[0],  // m/s^2
-            acc_[1],  // m/s^2
-            acc_[2],  // m/s^2
+//        acc_[0],  // m/s^2
+//            acc_[1],  // m/s^2
+//            acc_[2],  // m/s^2 # todo recall acc
         c_v;
 //    std::cout<< "obdouble \n" << obDouble_ << std::endl;
 
@@ -223,16 +260,23 @@ class ENVIRONMENT : public RaisimGymEnv {
   bool isTerminalState(float& terminalReward) final {
     terminalReward = float(terminalRewardCoeff_);
 
-    Eigen::Quaternion<double> quat(gc_[3], gc_[4], gc_[5], gc_[6]);
-    Eigen::Vector3d euler = quat.toRotationMatrix().eulerAngles(0,1,2);
+    Eigen::Quaterniond quat(gc_[3], gc_[4], gc_[5], gc_[6]);
+//    std::cout<<"quat" << quat.w()  << " " <<quat.x() << " "<< quat.y() << " " << quat.z() <<std::endl;
+
+    euler_angle = ToEulerAngles(quat);
     for(auto& contact: anymal_->getContacts())
       if(footIndices_.find(contact.getlocalBodyIndex()) == footIndices_.end())
       {// if there is any contact body was not in the footIndices the over
-          rewards_.record("Stable", -10, false);
+          rewards_.record("Stable", -10, true);
           return true;}
-      if(abs(gc_[2] - gc_init_[2]) < 0.5) return false;
-      if(fmin(abs(euler[1]), abs(euler[1] - 360.0)) > 0.175) return false;
-      if(fmin(abs(euler[0]), abs(euler[0] - 360.0)) > 0.175) return false;
+      if(abs(gc_[2] - gc_init_[2]) > 0.3){ return true;}
+      if(fmin(abs(euler_angle[1]), abs(euler_angle[1] + 2 * PI)) > 0.1){ return true;}
+      if(fmin(abs(euler_angle[0]), abs(euler_angle[0] + 2 * PI)) > 0.1){ return true;}
+      if(fmin(abs(euler_angle[2]), abs(euler_angle[2] + 2 * PI)) > 0.1){ return true;}
+      if(abs(gc_.tail(12)[0]) >0.17) return true;
+      if(abs(gc_.tail(12)[3]) >0.17) return true;
+      if(abs(gc_.tail(12)[6]) >0.17) return true;
+      if(abs(gc_.tail(12)[9]) >0.17) return true;
     terminalReward = 0.f;
     return false;
   }
@@ -258,6 +302,7 @@ class ENVIRONMENT : public RaisimGymEnv {
   double action_std, angle_rate, reference_rate, stable_reward_rate,for_work_rate;
   Eigen::VectorXd angle_list, angle_list_for_work;
   Eigen::VectorXd gc_old, ref_old;
+  Eigen::Vector3d euler_angle;
   /// these variables are not in use. They are placed to show you how to create a random number sampler.
   bool float_base;
   std::normal_distribution<double> normDist_;
