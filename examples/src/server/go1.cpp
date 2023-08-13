@@ -176,6 +176,8 @@ int main(int argc, char* argv[]) {
     ma.setZero();
   for (int i=0; i<2000000; i++) {
       go1->getState(gc,gv);
+      raisim::Vec<4> qu{1+double(i)/500 , 0, 0, 0 + double(i)/500};
+    go1->setBaseOrientation(qu);
       Eigen::VectorXd tmp1(12), tmp2(12);
       tmp1 = gc.tail(12);
       tmp2 = gv.tail(12);
@@ -189,17 +191,17 @@ int main(int argc, char* argv[]) {
       }
 
       raisim::Vec<3> vel_temp;
-      go1->getFrameVelocity("ROOT", vel_temp);
+//      go1->getFrameVelocity("ROOT", vel_temp);
 //      for(auto i =0;i <2; i++)
 //      {
-      acc = (vel_temp - vel) / 0.01;
+//      acc = (vel_temp - vel) / 0.01;
       vel = vel_temp;
 //          acc[i] = vel_temp
 //      }
 //      std::cout << "vel \n" << vel  << std::endl << "acc\n " << acc << std::endl;
       usleep(10000);
-      angle_generator(position, i, 40, 0.15);
-      jointNominalConfig.tail(12) = position;
+//      angle_generator(position, i, 40, 0.15);
+//      jointNominalConfig.tail(12) = position;
 
       Eigen::Quaterniond quat(gc[3], gc[4], gc[5], gc[6]);
       Eigen::Vector3d angle = ToEulerAngles(quat);
@@ -225,7 +227,7 @@ int main(int argc, char* argv[]) {
 //    jointNominalConfig.tail(12) = tmp;
 //    std::cout<< tmp << std::endl;
 
-go1->setPdTarget(jointNominalConfig, jointVelocityTarget);
+//go1->setPdTarget(jointNominalConfig, jointVelocityTarget);
 
 
     server.integrateWorldThreadSafe();

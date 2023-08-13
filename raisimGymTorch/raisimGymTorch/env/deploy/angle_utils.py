@@ -65,13 +65,14 @@ def transfer(act_gen, sine, k, history_act = None) ->np.array:
     act_gen = act_gen * bund  # - +
     act_gen = np.clip(act_gen, low, upp)
     if history_act is not None:
-        kk = 0.9
+        kk = 0.8
         # act_gen = (1-kk) * act_gen
         act_gen = act_gen * (1-kk) + history_act * kk
         act_gen = np.clip(act_gen, low, upp)
     if act_gen.shape[0] == 1:
         act_gen = act_gen[0]
     action = act_gen * k + sine * (1-k)
+    # print(np.abs(act_gen).max(), sine.max())
     action = np.clip(action, low, upp)
     return action
 

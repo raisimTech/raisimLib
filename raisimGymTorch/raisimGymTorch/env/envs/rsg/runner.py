@@ -197,7 +197,7 @@ if mode =='train' or mode == 'retrain':
             envs_idx = list(map(check_done, envs_idx, dones))
             history_act = np.array([check_history(history_act[i], dones[i]) for i in range(num_envs)])
 
-            reward = reward * envs_idx / n_steps * 2
+            # reward = reward * envs_idx / n_steps * 2
 
             envs_idx = list(map(check_done, envs_idx, dones))
             ppo.step(value_obs=obs, rews=reward, dones=dones)

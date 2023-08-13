@@ -48,9 +48,6 @@ namespace raisim {
       READ_YAML(bool, show_ref, cfg_["show_ref"]);
       if (show_ref == 0) show_ref = false;
       READ_YAML(double, angle_rate, cfg_["angle_rate"]);
-      READ_YAML(double, stable_reward_rate, cfg_["stable"]);
-      READ_YAML(double, reference_rate, cfg_["reference"]);
-      READ_YAML(double, for_work_rate, cfg_["for_work"]);
       READ_YAML(bool, float_base, cfg_["float_base"]);
       READ_YAML(float,schedule_T, cfg_["schedule"]);
       READ_YAML(std::string, urdf_path, cfg_["urdf_path"]);
@@ -68,7 +65,7 @@ namespace raisim {
 
     gc_.setZero(gcDim_); gc_init_.setZero(gcDim_);
     gv_.setZero(gvDim_); gv_init_.setZero(gvDim_);
-    euler_angle.setZero();
+    euler_angle.setZero();euler_angle_old.setZero();
     pTarget_.setZero(gcDim_); vTarget_.setZero(gvDim_); pTarget12_.setZero(nJoints_);
     angle_list.setZero(nJoints_);angle_list_for_work.setZero(nJoints_);
     gc_old.setZero(nJoints_) ; ref_old.setZero(nJoints_);
@@ -79,7 +76,7 @@ namespace raisim {
 //      init_position(gc_init_);
     init();
 
-    obDim_ = 31;
+    obDim_ = 30;
     actionDim_ = nJoints_; actionMean_.setZero(actionDim_); actionStd_.setZero(actionDim_);
     obDouble_.setZero(obDim_);
 
@@ -144,6 +141,7 @@ namespace raisim {
     anymal_->setState(gc_init_, gv_init_);
     rewards_.setZero();
     COUNT=0;
+    euler_angle_old.setZero();
     updateObservation();
   }
 
@@ -162,7 +160,7 @@ namespace raisim {
         anymal_->setBasePos(po);
 
     }
-
+    COUNT ++;
     pTarget12_ = action.cast<double>();
     pTarget_.tail(nJoints_) = pTarget12_;
 
@@ -175,64 +173,37 @@ namespace raisim {
     }
     updateObservation();
     double rrr =0;
-//    for(int i=4; i<=6 ; i++)
-//    {
-//        rrr += abs(gc_[i] - gc_init_[i]) * stable_reward_rate ;
-//    }
-//    for(int i =0;i<=2; i++)rrr += abs(bodyAngularVel_[i]);
-//std::cout<<euler_angle;
-    for(int i=0;i<=2;i++) rrr += abs(euler_angle[i]) * stable_reward_rate;
-
-    rrr += (gc_.tail(12) - pTarget12_).norm() * reference_rate;
-    rewards_.record("Stable", 1 - rrr, true);
-//    rewards_.record("forwardVel", bodyLinearVel_[0], false);
-
-//    gc_old = gc_.tail(12);
-//    ref_old = angle_list;
+//    for(int i=0;i<=2;i++) rrr += abs(euler_angle[i]) ;
+    rrr = abs(euler_angle[0]) + abs(euler_angle[1]);
+//    rrr += (gc_.tail(12) - pTarget12_).norm() ;
+    bool accu = true;
+    rewards_.record("Stable", - rrr, accu);
+    rewards_.record("Live", 1, accu);
+    rewards_.record("forwardVel", bodyLinearVel_[0], accu);
+    rewards_.record("Mimic", (gc_.tail(12) - pTarget12_).norm(), accu);
+    rewards_.record("Wheel", euler_angle[2] * double(COUNT) / 400, accu);
+    euler_angle_old = euler_angle;
+//    rewards_.record("torque", )
     return rewards_.sum();
   }
 
-//  auto get_orientation()
-//  {
-//
-//      raisim::Vec<4> quat;
-//
-//      quat[0] = gc_[3]; quat[1] = gc_[4]; quat[2] = gc_[5]; quat[3] = gc_[6];
-//      return quat.e();
-//  }
-//
-//  auto get_body_linear_velocity(){
-//      return bodyLinearVel_;
-//  }
-//  auto get_body_angular_velocity()
-//  {
-//      return bodyAngularVel_;
-//  }
-//
-//  auto get_joint_coordinate()
-//  {
-//      return gc_;
-//  }
-//
-//  auto get_joint_velocity()
-//  {
-//      return gv_;
-//  }
   void updateObservation() {
     anymal_->getState(gc_, gv_);
-//    std::string root_name = "ROOT";
-//    anymal_->getFrameAcceleration(root_name , acc_);
     raisim::Vec<4> quat;
     raisim::Mat<3,3> rot;
     quat[0] = gc_[3]; quat[1] = gc_[4]; quat[2] = gc_[5]; quat[3] = gc_[6];
     quat /= quat.norm();
-//    std::cout << quat << std::endl;
     raisim::quatToRotMat(quat, rot);
     bodyLinearVel_ = rot.e().transpose() * gv_.segment(0, 3);
     bodyAngularVel_ = rot.e().transpose() * gv_.segment(3, 3);
+    Eigen::Quaterniond qua(gc_[3], gc_[4], gc_[5], gc_[6]);
+    euler_angle = ToEulerAngles(qua);
+      if(euler_angle[1] > PI) euler_angle[1] -= 2*PI;
+      if(euler_angle[0] > PI) euler_angle[0] -= 2*PI;
+      if(euler_angle[1] < -PI) euler_angle[1] += 2 * PI;
+      if(euler_angle[0] < -PI) euler_angle[0] += 2 * PI;
     Eigen::VectorXd gcc = gc_.tail(12);
     Eigen::VectorXd gvv = gv_.tail(12);
-//    std::cout << "gcc_ : \n " << gcc << std::endl << "gvv : \n" << gvv << std::endl;
     Eigen::VectorXd c_v(24);
     c_v.setZero(24);
     for(auto i = 0; i <12 ; i++ )
@@ -240,16 +211,11 @@ namespace raisim {
         c_v[i*2] = gcc[i];
         c_v[i*2 + 1] = gvv[i];
     }
-//    std::cout << "quat" << quat << "\n body angular vel" <<  bodyAngularVel_ << "\n  acc " << acc_   << "\nc_v "<< c_v << std::endl;
-    obDouble_ << quat[0], quat[1], quat[2], quat[3],   // quaternion
+    obDouble_ << euler_angle,   // quaternion
         bodyAngularVel_[0], // ras/s
             bodyAngularVel_[1], // ras/s
             bodyAngularVel_[2], // ras/s
-//        acc_[0],  // m/s^2
-//            acc_[1],  // m/s^2
-//            acc_[2],  // m/s^2 # todo recall acc
         c_v;
-//    std::cout<< "obdouble \n" << obDouble_ << std::endl;
 
   }
 
@@ -260,23 +226,24 @@ namespace raisim {
   bool isTerminalState(float& terminalReward) final {
     terminalReward = float(terminalRewardCoeff_);
 
-    Eigen::Quaterniond quat(gc_[3], gc_[4], gc_[5], gc_[6]);
-//    std::cout<<"quat" << quat.w()  << " " <<quat.x() << " "<< quat.y() << " " << quat.z() <<std::endl;
-
-    euler_angle = ToEulerAngles(quat);
     for(auto& contact: anymal_->getContacts())
       if(footIndices_.find(contact.getlocalBodyIndex()) == footIndices_.end())
       {// if there is any contact body was not in the footIndices the over
-          rewards_.record("Stable", -10, true);
+          rewards_.record("Live", -10, true);
           return true;}
       if(abs(gc_[2] - gc_init_[2]) > 0.3){ return true;}
-      if(fmin(abs(euler_angle[1]), abs(euler_angle[1] + 2 * PI)) > 0.1){ return true;}
-      if(fmin(abs(euler_angle[0]), abs(euler_angle[0] + 2 * PI)) > 0.1){ return true;}
-      if(fmin(abs(euler_angle[2]), abs(euler_angle[2] + 2 * PI)) > 0.1){ return true;}
-      if(abs(gc_.tail(12)[0]) >0.17) return true;
-      if(abs(gc_.tail(12)[3]) >0.17) return true;
-      if(abs(gc_.tail(12)[6]) >0.17) return true;
-      if(abs(gc_.tail(12)[9]) >0.17) return true;
+
+
+      if(fmin(abs(euler_angle[1]), abs(euler_angle[1] + 2 * PI)) > 0.17)
+      {
+//      std::cout<<"y angle done" << std::endl;
+       return true;
+       }
+      if(fmin(abs(euler_angle[0]), abs(euler_angle[0] + 2 * PI)) > 0.17)
+      {
+//      std::cout<<"x angle done" << std::endl;
+        return true;
+        }
     terminalReward = 0.f;
     return false;
   }
@@ -288,7 +255,7 @@ namespace raisim {
  bool visualizable_ = false;
   raisim::ArticulatedSystem* anymal_, *anymal_1;
   Eigen::VectorXd gc_init_, gv_init_, gc_, gv_, pTarget_, pTarget12_, vTarget_;
-  double terminalRewardCoeff_ = -10.;
+  double terminalRewardCoeff_ = -30.;
   Eigen::VectorXd actionMean_, actionStd_, obDouble_;
   Vec<3> acc_;
   Eigen::Vector3d bodyLinearVel_, bodyAngularVel_;
@@ -299,10 +266,10 @@ namespace raisim {
   int COUNT = 0;
   float schedule_T;
   bool show_ref= true;
-  double action_std, angle_rate, reference_rate, stable_reward_rate,for_work_rate;
+  double action_std, angle_rate;
   Eigen::VectorXd angle_list, angle_list_for_work;
   Eigen::VectorXd gc_old, ref_old;
-  Eigen::Vector3d euler_angle;
+  Eigen::Vector3d euler_angle, euler_angle_old;
   /// these variables are not in use. They are placed to show you how to create a random number sampler.
   bool float_base;
   std::normal_distribution<double> normDist_;
