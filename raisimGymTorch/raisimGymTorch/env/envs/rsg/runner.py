@@ -6,7 +6,7 @@ from raisimGymTorch.env.bin.rsg import RaisimGymEnv
 from raisimGymTorch.env.RewardAnalyzer import RewardAnalyzer
 import raisimGymTorch.algo.ppo.module as ppo_module
 import raisimGymTorch.algo.ppo.ppo as PPO
-from raisimGymTorch.env.deploy.angle_utils import transfer
+from raisimGymTorch.env.deploy.angle_utils import transfer,get_last_position
 
 import os
 import math
@@ -16,8 +16,8 @@ import numpy as np
 import torch
 import datetime
 import argparse
-from unitree_deploy.sine_generator import sine_generator
-
+from unitree_deploy.angle_utils import sine_generator
+from unitree_utils.Waiter import Waiter
 
 
 # task specification
@@ -137,6 +137,7 @@ if mode =='train' or mode == 'retrain':
         average_dones = 0.
 
         if update % cfg['environment']['eval_every_n'] == 0:
+            waiter = Waiter(0.01)
             print("Visualizing and evaluating the current policy")
             torch.save({
                 'actor_architecture_state_dict': actor.architecture.state_dict(),
@@ -151,24 +152,34 @@ if mode =='train' or mode == 'retrain':
             env.turn_on_visualization()
             env.start_video_recording(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + "policy_"+str(update)+'.mp4')
             envs_idx = [0] * num_envs
-
+            waiter.update_start()
             for step in range(n_steps):
                 with torch.no_grad():
+                    waiter.wait()
                     frame_start = time.time()
                     obs = env.observe(False)
+
+                    # history_act = get_last_position(obs)
+                    # history_act = np.array([ check_history(history_act[i], dones[i]) for i in range(num_envs)] )
+
+
                     action = loaded_graph.architecture(torch.from_numpy(obs).cpu())
                     action = action.cpu().detach().numpy()
                     sine = sine_generator(envs_idx, schedule, angle_rate)
                     action = transfer(action, sine, act_rate, history_act=history_act).astype(np.float32)
                     reward, dones = env.step(action)
+
+                    history_act = sine
+                    # envs_idx = list(map(check_done, envs_idx, dones))
+                    history_act = np.array([check_history(history_act[i], dones[i]) for i in range(num_envs)])
+
                     envs_idx = list(map(check_done, envs_idx, dones))
-                    history_act = np.array([ check_history(history_act[i], dones[i]) for i in range(num_envs)] )
 
                     reward_analyzer.add_reward_info(env.get_reward_info())
                     frame_end = time.time()
                     wait_time = cfg['environment']['control_dt'] - (frame_end-frame_start)
-                    if wait_time > 0.:
-                        time.sleep(wait_time)
+                    # if wait_time > 0.:
+                    #     time.sleep(wait_time)
 
             env.stop_video_recording()
             env.turn_off_visualization()
@@ -186,6 +197,8 @@ if mode =='train' or mode == 'retrain':
                 1. z轴方向的加速度的处理方法
             
             """
+            # history_act = get_last_position(obs)
+
             action = ppo.act(obs)
 
 
@@ -193,6 +206,7 @@ if mode =='train' or mode == 'retrain':
             action = transfer(action, sine, act_rate, history_act=history_act).astype(np.float32)
             # todo the transfer has bug
             reward, dones = env.step(action)
+
             history_act = sine
             envs_idx = list(map(check_done, envs_idx, dones))
             history_act = np.array([check_history(history_act[i], dones[i]) for i in range(num_envs)])

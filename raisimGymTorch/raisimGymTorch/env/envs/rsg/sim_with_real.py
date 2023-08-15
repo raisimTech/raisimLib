@@ -18,7 +18,7 @@ import datetime
 import argparse
 # import pandas as pd
 # from sine_generator import sine_generator
-from unitree_deploy.sine_generator import  sine_generator
+from unitree_deploy.angle_utils import  sine_generator
 """"
 todo 
     1. left-hand right-hand check
@@ -160,7 +160,7 @@ if virtual:
 
 if moving_robot:
     from robot_utils import *
-
+    a1.torque_limit = 33.15
     init_robot(dt)
 
     ori_posi = sine_generator(0, schedule, rate=angle_rate).tolist() # initial position
@@ -175,6 +175,9 @@ if moving_robot:
     real_idx = 0
     for i in range(schedule):
         a1.hold_on()
+    a1.kp = [100] * 12
+    a1.kd = [7] * 12
+    a1.init_k(a1.kp, a1.kd)
 
 for step in range(n_steps * 10):
     if not moving_robot:
@@ -221,7 +224,7 @@ for step in range(n_steps * 10):
         print('b-trans')
         real_action = transfer(gen_action, real_sine, act_rate, history_act=real_history_act)
         # real_action = real_action
-        print(f"real_obs:{real_obs} \n gen_action : {gen_action}\n for work_action:{real_action}")
+        print(f"real_obs:{real_obs} \n gen_action : {gen_action}\n for work_action:{real_action} \n now_tau_est:{a1.tau}")
         # waiter.wait()
         if real_action.shape[0] == 1:
             real_action = real_action[0]
@@ -236,7 +239,7 @@ for step in range(n_steps * 10):
         waiter.wait()
         reward, dones = env.step(action)
         print('exec')
-        envs_idx = list(map(check_done, envs_idx, dones))
+        # envs_idx = list(map(check_done, envs_idx, dones))
         history_act = sine
         envs_idx = list(map(check_done, envs_idx, dones))
         history_act = np.array([check_history(history_act[i], dones[i]) for i in range(num_envs)])

@@ -1,5 +1,5 @@
 from unitree_api import robot as rbt
-from unitree_deploy.sine_generator import sine_generator
+from unitree_deploy.angle_utils import sine_generator
 import signal
 import sys
 a1 = rbt.Robot()

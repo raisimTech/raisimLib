@@ -65,7 +65,7 @@ def transfer(act_gen, sine, k, history_act = None) ->np.array:
     act_gen = act_gen * bund  # - +
     act_gen = np.clip(act_gen, low, upp)
     if history_act is not None:
-        kk = 0.8
+        kk = 0.6
         # act_gen = (1-kk) * act_gen
         act_gen = act_gen * (1-kk) + history_act * kk
         act_gen = np.clip(act_gen, low, upp)
@@ -75,6 +75,18 @@ def transfer(act_gen, sine, k, history_act = None) ->np.array:
     # print(np.abs(act_gen).max(), sine.max())
     action = np.clip(action, low, upp)
     return action
+
+def get_last_position(obs):
+    if isinstance(obs, list):
+        x = [obs[-2 * i] for i in range(1, 13)]
+        x.reverse()
+        return x
+    elif isinstance(obs, np.ndarray):
+        x = []
+        for i in range(1, 13):
+            x.append(obs[:, -2*i])
+        x.reverse()
+        return np.stack(x, axis=1)
 
 if __name__=='__main__':
     # angle_list = [0 for x in range(12)]
@@ -87,15 +99,18 @@ if __name__=='__main__':
     # print('upp:', upp)
     # print('bound', bund)
     # print(act[0])
-    his_util = [0, 0.523, -1.046] * 4
-    check_done = lambda a, b: a + 1 if not b else 0
-    check_history = lambda a, b: a if not b else his_util
-    check_zero = lambda a:1 if a!=0 else 0
-    tmp1 = np.zeros((100,12))
-    idx = np.random.rand(100)
-    idx[1:10] = False
-    idx = list(map(check_zero, idx))
-    print(idx)
-    tmp = np.array([check_history(tmp1[i], idx[i]) for i in range(100) ])
-    assert tmp1.shape == tmp.shape
-    print(tmp)
+    # his_util = [0, 0.523, -1.046] * 4
+    # check_done = lambda a, b: a + 1 if not b else 0
+    # check_history = lambda a, b: a if not b else his_util
+    # check_zero = lambda a:1 if a!=0 else 0
+    # tmp1 = np.zeros((100,12))
+    # idx = np.random.rand(100)
+    # idx[1:10] = False
+    # idx = list(map(check_zero, idx))
+    # print(idx)
+    # tmp = np.array([check_history(tmp1[i], idx[i]) for i in range(100) ])
+    # assert tmp1.shape == tmp.shape
+    # print(tmp)
+    a = np.random.rand(2,30)
+    print(a)
+    print(get_last_position(a).shape)

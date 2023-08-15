@@ -132,23 +132,24 @@ int main(int argc, char* argv[]) {
 
   /// create objects
   auto ground = world.addGround();
-  auto go1 = world.addArticulatedSystem(binaryPath.getDirectory() + "\\rsc\\a1_description\\urdf\\a1.urdf");
+  auto go1 = world.addArticulatedSystem(binaryPath.getDirectory() + "\\rsc\\a1\\urdf\\a1.urdf");
 
   /// go1 joint PD controller
   Eigen::VectorXd jointNominalConfig(go1->getGeneralizedCoordinateDim()), jointVelocityTarget(go1->getDOF());
 //  jointNominalConfig << 0, 0, 0.41, 1.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
 
     jointNominalConfig << 0, 0, 0.33, 1.0, 0.0, 0, 0, 0, 0.5235987755982988, -1.0471975511965976, 0.0, 0.5235987755982988, -1.0471975511965976, 0.0, 0.5235987755982988, -1.0471975511965976, 0.0, 0.5235987755982988, -1.0471975511965976 ; // todo implement in python using list
+//    jointNominalConfig << 0, 0, 0.33, 1.0, 0.0, 0, 0, 0, 1, -2.2, 0.0, 1, -2.2, 0.0, 1, -2.2, 0.0, 1, -2.2; // todo implement in python using list
 //  jointNominalConfig.tail(12).setZero();
 //  Eigen::VectorXd tmp(12);
 //  tmp.setZero();
 //    angle_generator(tmp, 0, 80.f);
 //    jointNominalConfig.tail(12) = tmp;
   jointVelocityTarget.setZero();
-
+    go1->setControlMode(raisim::ControlMode::FORCE_AND_TORQUE);
   Eigen::VectorXd jointPgain(go1->getDOF()), jointDgain(go1->getDOF());
-  jointPgain.tail(12).setConstant(2000.0);
-  jointDgain.tail(12).setConstant(100);
+  jointPgain.tail(12).setConstant(80);
+  jointDgain.tail(12).setConstant(4);
 
   go1->setGeneralizedCoordinate(jointNominalConfig);
   go1->setGeneralizedForce(Eigen::VectorXd::Zero(go1->getDOF()));
@@ -176,8 +177,8 @@ int main(int argc, char* argv[]) {
     ma.setZero();
   for (int i=0; i<2000000; i++) {
       go1->getState(gc,gv);
-      raisim::Vec<4> qu{1+double(i)/500 , 0, 0, 0 + double(i)/500};
-    go1->setBaseOrientation(qu);
+//      raisim::Vec<4> qu{1+double(i)/500 , 0, 0, 0 + double(i)/500};
+//    go1->setBaseOrientation(qu);
       Eigen::VectorXd tmp1(12), tmp2(12);
       tmp1 = gc.tail(12);
       tmp2 = gv.tail(12);
@@ -199,9 +200,9 @@ int main(int argc, char* argv[]) {
 //          acc[i] = vel_temp
 //      }
 //      std::cout << "vel \n" << vel  << std::endl << "acc\n " << acc << std::endl;
-      usleep(10000);
-//      angle_generator(position, i, 40, 0.15);
-//      jointNominalConfig.tail(12) = position;
+      usleep(5000);
+      angle_generator(position, i, 40, 0.35);
+      jointNominalConfig.tail(12) = position;
 
       Eigen::Quaterniond quat(gc[3], gc[4], gc[5], gc[6]);
       Eigen::Vector3d angle = ToEulerAngles(quat);
@@ -227,7 +228,7 @@ int main(int argc, char* argv[]) {
 //    jointNominalConfig.tail(12) = tmp;
 //    std::cout<< tmp << std::endl;
 
-//go1->setPdTarget(jointNominalConfig, jointVelocityTarget);
+go1->setPdTarget(jointNominalConfig, jointVelocityTarget);
 
 
     server.integrateWorldThreadSafe();

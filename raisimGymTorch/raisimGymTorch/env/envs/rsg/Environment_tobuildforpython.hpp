@@ -175,13 +175,15 @@ namespace raisim {
     double rrr =0;
 //    for(int i=0;i<=2;i++) rrr += abs(euler_angle[i]) ;
     rrr = abs(euler_angle[0]) + abs(euler_angle[1]);
+    rrr = abs(gc_[0]) + abs(gc_[1]);
 //    rrr += (gc_.tail(12) - pTarget12_).norm() ;
-    bool accu = true;
+    bool accu = false;
     rewards_.record("Stable", - rrr, accu);
     rewards_.record("Live", 1, accu);
     rewards_.record("forwardVel", bodyLinearVel_[0], accu);
     rewards_.record("Mimic", (gc_.tail(12) - pTarget12_).norm(), accu);
-    rewards_.record("Wheel", euler_angle[2] * double(COUNT) / 400, accu);
+//    rewards_.record("Wheel", euler_angle[2] * double(COUNT) / 400, accu);
+    rewards_.record("Wheel", euler_angle[2] * 0.1 + (bodyAngularVel_[2] * 1), accu);
     euler_angle_old = euler_angle;
 //    rewards_.record("torque", )
     return rewards_.sum();
@@ -198,10 +200,10 @@ namespace raisim {
     bodyAngularVel_ = rot.e().transpose() * gv_.segment(3, 3);
     Eigen::Quaterniond qua(gc_[3], gc_[4], gc_[5], gc_[6]);
     euler_angle = ToEulerAngles(qua);
-      if(euler_angle[1] > PI) euler_angle[1] -= 2*PI;
-      if(euler_angle[0] > PI) euler_angle[0] -= 2*PI;
-      if(euler_angle[1] < -PI) euler_angle[1] += 2 * PI;
-      if(euler_angle[0] < -PI) euler_angle[0] += 2 * PI;
+//      if(euler_angle[1] > PI) euler_angle[1] -= 2*PI;
+//      if(euler_angle[0] > PI) euler_angle[0] -= 2*PI;
+//      if(euler_angle[1] < -PI) euler_angle[1] += 2 * PI;
+//      if(euler_angle[0] < -PI) euler_angle[0] += 2 * PI;
     Eigen::VectorXd gcc = gc_.tail(12);
     Eigen::VectorXd gvv = gv_.tail(12);
     Eigen::VectorXd c_v(24);
@@ -211,7 +213,8 @@ namespace raisim {
         c_v[i*2] = gcc[i];
         c_v[i*2 + 1] = gvv[i];
     }
-    obDouble_ << euler_angle,   // quaternion
+    obDouble_ << euler_angle[0],
+       euler_angle[1],// quaternion
         bodyAngularVel_[0], // ras/s
             bodyAngularVel_[1], // ras/s
             bodyAngularVel_[2], // ras/s
@@ -229,21 +232,33 @@ namespace raisim {
     for(auto& contact: anymal_->getContacts())
       if(footIndices_.find(contact.getlocalBodyIndex()) == footIndices_.end())
       {// if there is any contact body was not in the footIndices the over
-          rewards_.record("Live", -10, true);
+          rewards_.record("Live", -10, false);
           return true;}
       if(abs(gc_[2] - gc_init_[2]) > 0.3){ return true;}
 
 
-      if(fmin(abs(euler_angle[1]), abs(euler_angle[1] + 2 * PI)) > 0.17)
+      if(fmin(abs(euler_angle[1]), abs(euler_angle[1] + 2 * PI)) > 0.2)
       {
 //      std::cout<<"y angle done" << std::endl;
-       return true;
+        return true;
        }
-      if(fmin(abs(euler_angle[0]), abs(euler_angle[0] + 2 * PI)) > 0.17)
+      if(fmin(abs(euler_angle[0]), abs(euler_angle[0] + 2 * PI)) > 0.2)
       {
 //      std::cout<<"x angle done" << std::endl;
-        return true;
+            return true;
         }
+       if (abs(gc_[0] - gc_init_[0]) >= 0.4)
+       {
+            return true;
+       }
+       if (abs(gc_[1] - gc_init_[1]) >= 0.4)
+       {
+            return true;
+       }
+       if(euler_angle[2] < -0.3)
+       {
+            return true;
+       }
     terminalReward = 0.f;
     return false;
   }
@@ -255,7 +270,7 @@ namespace raisim {
  bool visualizable_ = false;
   raisim::ArticulatedSystem* anymal_, *anymal_1;
   Eigen::VectorXd gc_init_, gv_init_, gc_, gv_, pTarget_, pTarget12_, vTarget_;
-  double terminalRewardCoeff_ = -30.;
+  double terminalRewardCoeff_ = -10.;
   Eigen::VectorXd actionMean_, actionStd_, obDouble_;
   Vec<3> acc_;
   Eigen::Vector3d bodyLinearVel_, bodyAngularVel_;
