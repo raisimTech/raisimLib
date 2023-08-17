@@ -7,7 +7,7 @@ from raisimGymTorch.env.RewardAnalyzer import RewardAnalyzer
 import raisimGymTorch.algo.ppo.module as ppo_module
 import raisimGymTorch.algo.ppo.ppo as PPO
 from raisimGymTorch.env.deploy.angle_utils import transfer_f ,get_last_position
-from raisimGymTorch.env.deploy.onnx_deploy import run_model_with_pt_input_modify, list_pt
+from raisimGymTorch.env.deploy.onnx_deploy import run_model_with_pt_input_modify, list_pt, run_model_with_pt_input
 import os
 import math
 import time
@@ -225,8 +225,12 @@ if mode =='train' or mode == 'retrain':
             # sine = sine_generator(envs_idx, schedule, angle_rate)
             # action, history_act = transfer_f(action, sine, act_rate, history_act=history_act)
             # action = action.astype(np.float32)
+            # action1, history_act1 = run_model_with_pt_input(action,envs_idx,schedule,history_act)
             action, history_act = run_model_with_pt_input_modify(action, envs_idx, schedule, history_act)
-
+            # print(f'action1 {action1}\n action{action}')
+            # print(f'history1 {history_act1} \n history{history_act}')
+            # input()
+            # print(f'3{time.time()}')
             # todo the transfer has bug
             reward, dones = env.step(action)
             # input('1')

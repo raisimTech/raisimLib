@@ -73,11 +73,13 @@ namespace raisim {
     ang_vel_.setZero();
 
 //      init_position();
-    gc_init_<< 0, 0, 0.37, 1.0, 0.0, 0.0, 0.0, 0.0,  0.5233, -1.046, 0.0,  0.5233, -1.046, 0.0, 0.523, -1.046, 0.0, 0.523, -1.046;
+double aa = double(30) /180*PI, bb = double(-60) /180*PI;
+    gc_init_<< 0, 0, 0.33, 1.0, 0.0, 0.0, 0.0, 0.0,  aa, bb, 0.0, aa, bb, 0.0,aa,bb, 0.0, aa,bb;
+//    gc_init_<< 0, 0, 0.37, 1.0, 0.0, 0.0, 0.0, 0.0,  0.5233, -1.046, 0.0,  0.5233, -1.046, 0.0, 0.523, -1.046, 0.0, 0.523, -1.046;
 //      init_position(gc_init_);
     init();
 
-    obDim_ = 29;
+    obDim_ = 26;
     actionDim_ = nJoints_; actionMean_.setZero(actionDim_); actionStd_.setZero(actionDim_);
     obDouble_.setZero(obDim_);
 
@@ -107,16 +109,16 @@ namespace raisim {
       Eigen::VectorXd jointPgain(gvDim_), jointDgain(gvDim_);
       jointPgain.setZero();
       jointPgain.tail(nJoints_).setConstant(p_gain);
-      jointPgain.tail(nJoints_)[2] = 300;
-      jointPgain.tail(nJoints_)[5] = 300;
-      jointPgain.tail(nJoints_)[8] = 300;
-      jointPgain.tail(nJoints_)[11] = 300;
+//      jointPgain.tail(nJoints_)[2] = 300;
+//      jointPgain.tail(nJoints_)[5] = 300;
+//      jointPgain.tail(nJoints_)[8] = 300;
+//      jointPgain.tail(nJoints_)[11] = 300;
       jointDgain.setZero();
       jointDgain.tail(nJoints_).setConstant(d_gain);
-      jointDgain.tail(nJoints_)[2] = 15;
-      jointDgain.tail(nJoints_)[5] = 15;
-      jointDgain.tail(nJoints_)[8] = 15;
-      jointDgain.tail(nJoints_)[11] = 15;
+//      jointDgain.tail(nJoints_)[2] = 15;
+//      jointDgain.tail(nJoints_)[5] = 15;
+//      jointDgain.tail(nJoints_)[8] = 15;
+//      jointDgain.tail(nJoints_)[11] = 15;
       anymal_->setPdGains(jointPgain, jointDgain);
 //      std::cout<<jointPgain;
       anymal_->setGeneralizedForce(Eigen::VectorXd::Zero(gvDim_));
@@ -219,9 +221,9 @@ namespace raisim {
     obDouble_ <<
         euler_angle[0],
        euler_angle[1],// quaternion
-        ang_vel_[0],
-        ang_vel_[1],
-        ang_vel_[2],
+//        ang_vel_[0],
+//        ang_vel_[1],
+//        ang_vel_[2],
        c_v;
 //    std::cout<<"ang_vel : " << ang_vel_ << std::endl;
 

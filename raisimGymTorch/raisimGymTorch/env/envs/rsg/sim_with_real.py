@@ -196,17 +196,19 @@ for step in range(n_steps * 2):
         # if step%1    ==0 :
         #     input()
         if step == 0:
-            draw_vir_obs = Drawer('vir_obs1')
+            draw_vir_obs = Drawer('vir_obs')
             draw_vir_action = Drawer('vir_sent_act')
             draw_vir_recv_action = Drawer('vir_recv_act')
             waiter.update_start()
             # save_gen_act = CSV_saver('virtual_gen_act', './')
             save_obs = CSV_saver('virtual_obs', './')
-            save_for_work = CSV_saver('virtual_for_work', './')
+            save_for_work = CSV_saver('virtual_sent', './')
+            save_recv = CSV_saver('virtual_recv', './')
         obs = env.observe(False)
         print('saving')
         last_p = get_last_position(obs)
         print(f'last{last_p}')
+        save_recv.add_list(last_p[0])
         draw_vir_recv_action.add_map_list(last_p[0])
         if onnx_flag:
             # obs = rad_deg(obs)
@@ -295,6 +297,7 @@ if virtual:
     draw_vir_obs.draw()
     draw_vir_action.draw()
     draw_vir_recv_action.draw()
+    save_recv.save()
     # save_gen_act.save()
 else:
     a1.back_safe()

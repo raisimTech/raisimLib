@@ -1,3 +1,5 @@
+import time
+
 import onnxruntime as ort
 # import onnx
 # from mlprodict.onnxrt import OnnxInference
@@ -49,6 +51,8 @@ def deg_normalize(lower, upper, x):
 low = [-46, -60, -154.5, -46, -60, -154.5, -46, -60, -154.5, -46, -60, -154.5]
 upp = [46, 240, -52.5, 46, 240, -52.5, 46, 240, -52.5, 46, 240, -52.5]
 u0 = [0, 30, -60,0, 30, -60,0, 30, -60,0, 30, -60]
+low_np = np.array(low)
+upp_np = np.array(upp)
 # u0_rad = deg_rad(u0)
 # u0 = [0] * 12 # todo sure ? u0 = 0
 # low_rad = deg_rad(low)
@@ -60,7 +64,7 @@ u0 = deg_normalize(low, upp, u0)
 history_u = [0] * 12
 # history_u_rad = [0] * 12/
 # history_u = u0.copy()
-model = ort.InferenceSession('/home/lr-2002/code/raisimLib/raisimGymTorch/raisimGymTorch/env/deploy/walk.onnx')
+model = ort.InferenceSession('/home/lr-2002/code/raisimLib/raisimGymTorch/raisimGymTorch/env/deploy/2203.onnx')
 
 idx_local = 0
 
@@ -103,21 +107,32 @@ print(input_name, output_name)
 
 
 def sine_gene(idx, T):
-    # if isinstance(idx, np.ndarray):
-    #
+    # print(idx)
+    if isinstance(idx, np.ndarray) or isinstance(idx, list):
+        mat = np.zeros((len(idx), 12))
+        i_set = set(idx)
+        idd = {}
+        for i in i_set:
+            idd[i] = sine_gene(i, 40)
+        for i in range(len(idx)):
+            mat[i] = idd[idx[i]]
+        return mat
     if not isinstance(idx, list):
         angle_list = [0 for i in range(12)]
         if idx >= 2 * T:
             idx = 0
-        dh = 0.8 # todo for test
+        dh = 1.6 # todo for test
+
         if idx >= 0 and idx <= T:
             tp0 =idx - 0
             y1 = dh * 10 * (-cos(pi * 2 * tp0 / T) + 1 ) / 2
             y2 = 0
+            y2 = y1
         elif idx>T and idx<=2*T:
             tp0 =idx - T
             y2 = dh * 10 * (-cos(pi * 2 * tp0 / T) + 1 ) / 2
             y1 = 0
+            y1 = y2
 
 
         angle_list[0] = 0
@@ -176,28 +191,41 @@ def add_list(act_gen, sine, history=None):
         assert len(act_gen) == 12
     kk = 0.9
     kf = 1
-    kb = 0.2
+    kb = 0.4
     if history is None:
         global history_u
 
         # print(history_u, act_gen)
         history_u = [history_u[i] * kk + (1-kk) * act_gen[i] for i in range(12)] # todo the act_gen[i] is to big
+        # print("11111", history_u, act_gen)
 
         ans = [rate_to_act(low[i], upp[i], clip(kb * history_u[i] + kf * sine[i], -1, 1)) for i in range(12)]
         ans = [deg_rad(x) for x in ans]
         # todo swap the ans
-
+        # print(ans)
+        # input()/
         return ans
     else:
         # history_u = history
         history = [history[i] * kk + (1-kk) * act_gen[i] for i in range(12)] # todo the act_gen[i] is to big
-
         ans = [rate_to_act(low[i], upp[i], clip(kb * history[i] + kf * sine[i], -1, 1)) for i in range(12)]
         ans = [deg_rad(x) for x in ans]
         # todo swap the ans
 
         return ans, history
 
+def lerp_np(a, b, c):
+    return a* (1-c) + b*c
+
+def add_list_np(act_gen, sine, history):
+    kk = 0.9
+    kf = 1
+    kb = 0.2
+    history = history*kk + (1-kk) * act_gen
+    ans = np.clip(kb*history + kf * sine, -1, 1)
+    ans = (ans + 1) /2  # 100 * 12
+    ans = lerp_np(low_np, upp_np, ans)
+    return ans, history
 
 def run_model_with_pt_input(act_gen, idx, T, history):
     if isinstance(idx, list):
@@ -219,20 +247,18 @@ def run_model_with_pt_input(act_gen, idx, T, history):
 def run_model_with_pt_input_modify(act_gen, idx, T, history):
     if isinstance(idx, list):
         idx = np.array(idx)
-        print(idx.shape)
+        # print(idx.shape)
         idx = idx%(2*T)
     else:
         idx = idx % (2 * T)
 
     sine = sine_gene(idx, T)
-    ans = []
-    new_his = []
-    for i in range(act_gen.shape[0]):
-        tmp, tmp_his= add_list(act_gen[i], sine[i], history[i])
-        ans.append(tmp)
-        new_his.append(tmp_his)
 
-    return np.array(ans).astype(np.float32),np.array(new_his).astype(np.float32)
+    ans, history = add_list_np(act_gen, sine, history)
+    ans = ans / 180 * 3.14
+
+
+    return ans.astype(np.float32), history.astype(np.float32)
 
 
 
@@ -263,7 +289,7 @@ def run_model(observation, idx, T, save_gen=None):
         offset = 3
     else:
         offset = 5
-    print('offset' ,offset)
+    # print('offset' ,offset)
     be_obe =[5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28]
     aft_obs = [23,24,25,26,27,28,17,18,19,20,21,22,11,12,13,14,15,16,5,6,7,8,9,10]
     be_obe = [i -offset for i in be_obe]
@@ -279,16 +305,18 @@ def run_model(observation, idx, T, save_gen=None):
     # minu = np.array([0, 0, deg_rad(30), 0, deg_rad(-60), 0] * 4)  # 6
     # observation[:, -24:] -= minu
 
-    # act_gen = np.zeros((1,12))
+    act_gen = np.zeros((1,12))
     if save_gen is not None:
         save_gen.add_list(act_gen[0])
 
     sine = sine_gene(idx, T)
-
+    # print(sine)
     ans = []
     for act in act_gen:
         ans.append(add_list(act, sine))
     ans = np.array(ans).astype(np.float32)
+    # print(ans)
+    # input()
     # be_ans =
     ans[:, [0,1,2,3,4,5,6,7,8,9,10,11]] = \
     ans[:, [9,10,11,6,7,8,3,4,5,0,1,2]]
@@ -340,21 +368,39 @@ def run_model1(observation):
     #     # print("ang_list ", angle_list)
     #     return angle_list
 
-def sine_gen(idx, T):
-    """
-    idx : 0~ 2*T
-    iter ?
-    """
-    angle_list = np.zeros((idx.shape[0], 12))
-
-
 
 
 if __name__=="__main__":
     # sine_gen(np.zeros(100), 40)
-    mat = np.zeros((100,12))
-    mat = np.where(np.indices(mat)>20, 1,  0)
-    print(mat)
+    # idx = [3,2,1,4,1,3,2,3,2,3,1,2,3,2,3,1]
+    # a = [0,2,3,0]
+    # b= [ 5, 3, 5,0]
+    # a= np.array(a)
+    # b= np.array(b)
+    # c = np.array([[0.2, 0.5, 0.3, 0.4], [0,0.3,0.2,0]])
+    # print(a * (1-c) + b * c)
+    z = []
+    minn = 100
+    minnn =[]
+    for i in range(100):
+        # x = run_model(np.zeros((1,26)).astype(np.float32), i, 40)[0][0][0]
+        x = add_list(np.zeros((12)), sine_gene(i, 40))
+        if i == 0:
+            print(x)
+        if x[1] <= minn:
+            print(x[1], minn)
+            minn = x[1]
+            minnn =x
+        z.append(x)
+    z = np.vstack(z)
+    print(minnn)
+    x= [i for i in range(z.shape[0])]
+    import matplotlib.pyplot as plt
+    plt.plot(x, z)
+    plt.show()
+    # mat = np.zeros((100,12))
+    # mat = np.where(np.indices(mat)>20, 1,  0)
+    # print(mat)
 """
 todo
 1. on action 的范围
