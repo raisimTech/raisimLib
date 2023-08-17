@@ -6,8 +6,8 @@ from raisimGymTorch.env.bin.rsg import RaisimGymEnv
 from raisimGymTorch.env.RewardAnalyzer import RewardAnalyzer
 import raisimGymTorch.algo.ppo.module as ppo_module
 import raisimGymTorch.algo.ppo.ppo as PPO
-from raisimGymTorch.env.deploy.angle_utils import transfer,get_last_position
-
+from raisimGymTorch.env.deploy.angle_utils import transfer_f ,get_last_position
+from raisimGymTorch.env.deploy.onnx_deploy import run_model_with_pt_input_modify, list_pt
 import os
 import math
 import time
@@ -18,6 +18,7 @@ import datetime
 import argparse
 from unitree_deploy.angle_utils import sine_generator
 from unitree_utils.Waiter import Waiter
+from raisimGymTorch.deploy_log.draw_map import Drawer
 
 
 # task specification
@@ -111,7 +112,8 @@ biggest_iter = 0
 if mode == 'retrain':
     load_param(weight_path, env, actor, critic, ppo.optimizer, saver.data_dir)
 
-his_util=[0, 0.523, -1.046] * 4
+# his_util=[0, 0.523, -1.046] * 4
+his_util=[0] * 12
 check_done = lambda a, b: a + 1 if not b else 0
 check_history = lambda a, b: a if not b else his_util
 # need_to_review = lambda a,b: a if not b else  np.array([[0, 0.523, -1.046] * 4]) # todo make sure the shape
@@ -121,7 +123,7 @@ check_history = lambda a, b: a if not b else his_util
 print = logger.info
 
 mode == 'train'
-history_act = np.array([his_util] * 100)
+history_act = np.array([his_util] * num_envs)
 total_update = args.update
 if mode =='train' or mode == 'retrain':
     # print('start train')
@@ -149,6 +151,9 @@ if mode =='train' or mode == 'retrain':
             loaded_graph = ppo_module.MLP(cfg['architecture']['policy_net'], nn.LeakyReLU, ob_dim, act_dim)
             loaded_graph.load_state_dict(torch.load(saver.data_dir+"/full_"+str(update)+'.pt')['actor_architecture_state_dict'])
 
+            # debug_draw_action = Drawer('debug_draw_action')
+            # debug_draw_history = Drawer('debug_draw_history')
+
             env.turn_on_visualization()
             env.start_video_recording(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + "policy_"+str(update)+'.mp4')
             envs_idx = [0] * num_envs
@@ -158,6 +163,7 @@ if mode =='train' or mode == 'retrain':
                     waiter.wait()
                     frame_start = time.time()
                     obs = env.observe(False)
+                    # print(obs.shape)
 
                     # history_act = get_last_position(obs)
                     # history_act = np.array([ check_history(history_act[i], dones[i]) for i in range(num_envs)] )
@@ -165,12 +171,23 @@ if mode =='train' or mode == 'retrain':
 
                     action = loaded_graph.architecture(torch.from_numpy(obs).cpu())
                     action = action.cpu().detach().numpy()
-                    sine = sine_generator(envs_idx, schedule, angle_rate)
-                    action = transfer(action, sine, act_rate, history_act=history_act).astype(np.float32)
+
+                    # sine = sine_generator(envs_idx, schedule, angle_rate)
+                    # action, history_act = transfer_f(action, sine, act_rate, history_act=history_act)
+                    # action = action.astype(np.float32)
+                    #
+
+                    action, history_act = run_model_with_pt_input_modify(action, envs_idx, schedule, history_act)
+
+
+                    # debug_draw_action.add_map_list(action[0])
+                    # debug_draw_history.add_map_list(history_act[0])
+
                     reward, dones = env.step(action)
 
-                    history_act = sine
+                    # history_act = sine
                     # envs_idx = list(map(check_done, envs_idx, dones))
+                    # history_act = action
                     history_act = np.array([check_history(history_act[i], dones[i]) for i in range(num_envs)])
 
                     envs_idx = list(map(check_done, envs_idx, dones))
@@ -183,10 +200,13 @@ if mode =='train' or mode == 'retrain':
 
             env.stop_video_recording()
             env.turn_off_visualization()
-
+            history_act = np.array([his_util] * num_envs)
             reward_analyzer.analyze_and_plot(update)
             env.reset()
             env.save_scaling(saver.data_dir, str(update))
+
+            # debug_draw_action.draw()
+            # debug_draw_history.draw()
 
         # actual training
         # sine = [0] * 12
@@ -202,13 +222,19 @@ if mode =='train' or mode == 'retrain':
             action = ppo.act(obs)
 
 
-            sine = sine_generator(envs_idx, schedule, angle_rate)
-            action = transfer(action, sine, act_rate, history_act=history_act).astype(np.float32)
+            # sine = sine_generator(envs_idx, schedule, angle_rate)
+            # action, history_act = transfer_f(action, sine, act_rate, history_act=history_act)
+            # action = action.astype(np.float32)
+            action, history_act = run_model_with_pt_input_modify(action, envs_idx, schedule, history_act)
+
             # todo the transfer has bug
             reward, dones = env.step(action)
+            # input('1')
+            # print(f"history : {history_act}")
 
-            history_act = sine
-            envs_idx = list(map(check_done, envs_idx, dones))
+            # history_act = sine
+            # envs_idx = list(map(check_done, envs_idx, dones))
+            # history_act = action
             history_act = np.array([check_history(history_act[i], dones[i]) for i in range(num_envs)])
 
             # reward = reward * envs_idx / n_steps * 2
@@ -217,6 +243,8 @@ if mode =='train' or mode == 'retrain':
             ppo.step(value_obs=obs, rews=reward, dones=dones)
             done_sum = done_sum + np.sum(dones)
             reward_sum = reward_sum + np.sum(reward)
+            reward_analyzer.add_reward_info(env.get_reward_info())
+            reward_analyzer.analyze_and_plot(update)
         # take st step to get value obs
         obs = env.observe(False)
         ppo.update(actor_obs=obs, value_obs=obs, log_this_iteration=update % 10 == 0, update=update)

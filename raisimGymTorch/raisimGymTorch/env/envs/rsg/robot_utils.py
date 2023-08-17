@@ -1,5 +1,6 @@
 from unitree_api import robot as rbt
 from unitree_deploy.angle_utils import sine_generator
+# from raisimGymTorch.deploy_log.draw_map import draw
 import signal
 import sys
 a1 = rbt.Robot()
@@ -12,6 +13,7 @@ def init_position(position, timing = 100):
 def quit_robot(robot):
     robot.back_safe()
     print('Task finished')
+    # draw()
     sys.exit(0)
 
 def signal_handler(signal, frame):

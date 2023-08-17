@@ -181,14 +181,14 @@ class VectorizedEnvironment {
                            Eigen::Ref<EigenVec> &reward,
                            Eigen::Ref<EigenBoolVec> &done) {
     reward[agentId] = environments_[agentId]->step(action.row(agentId));
-    rewardInformation_[agentId] = environments_[agentId]->getRewards().getStdMap();
 
     float terminalReward = 0;
     done[agentId] = environments_[agentId]->isTerminalState(terminalReward);
+    rewardInformation_[agentId] = environments_[agentId]->getRewards().getStdMap();
 
     if (done[agentId]) {
       environments_[agentId]->reset();
-      reward[agentId] += terminalReward;
+//      reward[agentId] += terminalReward;
     }
   }
 

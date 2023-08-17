@@ -1,6 +1,7 @@
 from math import sin,pi
 import numpy as np
 # from onnx_deploy import rad_deg, deg_rad
+from raisimGymTorch.deploy_log.draw_map import Drawer
 def deg_rad(x):
     if isinstance(x, list):
         return [deg_rad(a) for a in x]
@@ -11,7 +12,7 @@ def rad_deg(x):
     if isinstance(x, list):
         return [rad_deg(a) for a in x]
     else:
-        return x * pi / 180
+        return x / pi * 180
 
 
 low = [-46, -60, -154.5, -46, -60, -154.5, -46, -60, -154.5, -46, -60, -154.5]
@@ -63,18 +64,48 @@ def transfer(act_gen, sine, k, history_act = None) ->np.array:
     """
     # act_gen = (act_gen + 1) /2 # 0-1
     act_gen = act_gen * bund  # - +
+    # print(act_gen)
     act_gen = np.clip(act_gen, low, upp)
     if history_act is not None:
-        kk = 0.6
+        kk = 0.9
         # act_gen = (1-kk) * act_gen
         act_gen = act_gen * (1-kk) + history_act * kk
         act_gen = np.clip(act_gen, low, upp)
     if act_gen.shape[0] == 1:
         act_gen = act_gen[0]
-    action = act_gen * k + sine * (1-k)
+    action = act_gen * k + sine
     # print(np.abs(act_gen).max(), sine.max())
     action = np.clip(action, low, upp)
     return action
+
+def transfer_f(act_gen, sine, k, history_act = None) ->np.array:
+    """
+    clip, lerp, generate the final action
+    params: act_gen: [12 * (-1, 1)]  np.array
+    params: sine: [12 * rad_target]  np.array
+    """
+    # act_gen = (act_gen + 1) /2 # 0-1
+    act_gen = act_gen * bund / 2  # - +
+    # print(act_gen)
+    act_gen = np.clip(act_gen, low, upp)
+    if history_act is not None:
+        kk = 1-k
+        # act_gen = (1-kk) * act_gen
+        # print(f'his1 {history_act}\n act_gen{act_gen}')
+        history_act = act_gen * (1-kk) + history_act * kk
+        history_act = np.clip(history_act, low, upp)
+        # print(f'his2 {history_act}')
+
+    if history_act.shape[0] == 1:
+        tmp = history_act[0]
+    else:
+        tmp = history_act
+    action = tmp * 0.2 + sine
+    # print(np.abs(act_gen).max(), sine.max())
+    action = np.clip(action, low, upp)
+    # print(f'bound{bund}\n act_gen{act_gen}\n history_act{history_act}\n sine{sine} \naction{action}\nk{k} ')
+    # input('1')
+    return action, history_act
 
 def get_last_position(obs):
     if isinstance(obs, list):
@@ -89,28 +120,6 @@ def get_last_position(obs):
         return np.stack(x, axis=1)
 
 if __name__=='__main__':
-    # angle_list = [0 for x in range(12)]
-    #
-    # sine_generator(angle_list, 0, 40, 0.3)
-    # angle_list = np.array(angle_list)
-    # act = transfer(np.zeros((100,12)), angle_list, 1)
-    # print('sine:', angle_list)
-    # print('low:', low)
-    # print('upp:', upp)
-    # print('bound', bund)
-    # print(act[0])
-    # his_util = [0, 0.523, -1.046] * 4
-    # check_done = lambda a, b: a + 1 if not b else 0
-    # check_history = lambda a, b: a if not b else his_util
-    # check_zero = lambda a:1 if a!=0 else 0
-    # tmp1 = np.zeros((100,12))
-    # idx = np.random.rand(100)
-    # idx[1:10] = False
-    # idx = list(map(check_zero, idx))
-    # print(idx)
-    # tmp = np.array([check_history(tmp1[i], idx[i]) for i in range(100) ])
-    # assert tmp1.shape == tmp.shape
-    # print(tmp)
     a = np.random.rand(2,30)
     print(a)
     print(get_last_position(a).shape)

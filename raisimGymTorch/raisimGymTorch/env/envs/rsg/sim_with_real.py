@@ -8,6 +8,9 @@ import raisimGymTorch.algo.ppo.module as ppo_module
 import raisimGymTorch.algo.ppo.ppo as PPO
 from raisimGymTorch.env.deploy.angle_utils import transfer
 from unitree_utils.Waiter import Waiter
+from raisimGymTorch.env.deploy.angle_utils import get_last_position
+from raisimGymTorch.deploy_log.draw_map import  Drawer
+from raisimGymTorch.deploy_log.csv_saver import CSV_saver
 import os
 import math
 import time
@@ -19,6 +22,7 @@ import argparse
 # import pandas as pd
 # from sine_generator import sine_generator
 from unitree_deploy.angle_utils import  sine_generator
+from raisimGymTorch.env.deploy.angle_utils import  deg_rad, rad_deg
 """"
 todo 
     1. left-hand right-hand check
@@ -134,18 +138,20 @@ input(f"Are you sure to execute the action in schedule: {schedule}, angle_rate: 
 
 
 moving_robot = False
+onnx_flag = True
 virtual = True
 
+# his_util=[0, 0.523, -1.046] * 4
 his_util=[0, 0.523, -1.046] * 4
 # check_done = lambda a, b: a + 1 if not b else 0
 check_history = lambda a, b: a if not b else his_util
-history_act = np.array([his_util] * 100)
+history_act = np.array([his_util] * num_envs)
 # init virtual part
 if virtual:
     waiter= Waiter(0.01)
     env.reset()
     start = time.time()
-    onnx_flag = False
+    onnx_flag = True
     if onnx_flag:
         cnt_onnx = 0
         from raisimGymTorch.env.deploy import onnx_deploy
@@ -159,6 +165,10 @@ if virtual:
 
 
 if moving_robot:
+    history_obs = None
+    if onnx_flag:
+        cnt_onnx = 0
+        from raisimGymTorch.env.deploy import onnx_deploy
     from robot_utils import *
     a1.torque_limit = 33.15
     init_robot(dt)
@@ -166,7 +176,7 @@ if moving_robot:
     ori_posi = sine_generator(0, schedule, rate=angle_rate).tolist() # initial position
     # a1.kp = cfg['environment']['kp']
     # ori_posi = a1.position
-    init_position(ori_posi,200)
+    init_position(ori_posi,250)
     print(f"""
         now_posi: {a1.position},
         angle_rate : {angle_rate}
@@ -176,73 +186,123 @@ if moving_robot:
     for i in range(schedule):
         a1.hold_on()
     a1.kp = [100] * 12
-    a1.kd = [7] * 12
+    a1.kd = [3] * 12
     a1.init_k(a1.kp, a1.kd)
+    history_obs = a1.observe()[ :5]
 
-for step in range(n_steps * 10):
-    if not moving_robot:
-        if step == 0:
-            waiter.update_start()
-        print('moving?')
-        time.sleep(0.005)
-        obs = env.observe(False)
-
-
+for step in range(n_steps * 2):
     #virtual bot part
     if virtual:
+        # if step%1    ==0 :
+        #     input()
+        if step == 0:
+            draw_vir_obs = Drawer('vir_obs1')
+            draw_vir_action = Drawer('vir_sent_act')
+            draw_vir_recv_action = Drawer('vir_recv_act')
+            waiter.update_start()
+            # save_gen_act = CSV_saver('virtual_gen_act', './')
+            save_obs = CSV_saver('virtual_obs', './')
+            save_for_work = CSV_saver('virtual_for_work', './')
+        obs = env.observe(False)
+        print('saving')
+        last_p = get_last_position(obs)
+        print(f'last{last_p}')
+        draw_vir_recv_action.add_map_list(last_p[0])
         if onnx_flag:
-            action = onnx_deploy.run_model(obs, cnt_onnx, 50)
+            # obs = rad_deg(obs)
+            # print(obs.shape)
+            action, obs = onnx_deploy.run_model(obs, cnt_onnx, 40)
             action = np.array(action)[0]
             cnt_onnx += 1
         else:
             gen_action = ppo.act(obs)
             sine = sine_generator(envs_idx, schedule, angle_rate)
             action = transfer(gen_action, sine, act_rate, history_act=history_act).astype(np.float32)
-            print(f"virtual_obs:{obs} \n virtual_gen_action:{gen_action} \n virtual_action:{action}")
+            # history_act =
+        print(f"virtual_obs:{obs} \n virtual_action:{action}")
+        save_obs.add_list(obs[0])
+        # draw_vir_recv_action.add_map_list(action[0])
+        save_for_work.add_list(action[0])
 
-    # obs = np.zeros((1,31))
-    # gen_act = ppo.act(obs)
-    # sine = sine_generator(real_idx, schedule, angle_rate)
-    # act = transfer(gen_act, sine, act_rate)
 
 
 
     # real bot part
     if moving_robot:
+
         if step ==0:
+            draw_real_obs = Drawer('real_obs')
+            draw_sent_action = Drawer('real_sent_act')
+            draw_recv_action = Drawer('real_a_recv_act')
             real_history_act = np.array(his_util)
+            save_real_obs = CSV_saver('real_a_obs')
+            save_real_action = CSV_saver('real_a_action')
         print('b-observe')
-        real_obs = a1.observe()
+        obbs = a1.observe()
+        obbs[:5] -= history_obs
+        real_obs = np.array([obbs])
         # real_obs = np.array([a1.observe()])
         print(f"real_obs {real_obs}")
         # input('now cancel it ')
         # print()
         print('b-ppo')
-        gen_action = ppo.act(real_obs)
-        print('b-sin')
-        real_sine = sine_generator(real_idx, schedule, angle_rate)
-        print('b-trans')
-        real_action = transfer(gen_action, real_sine, act_rate, history_act=real_history_act)
+
+
+        if onnx_flag:
+            action, real_obs = onnx_deploy.run_model(real_obs, cnt_onnx, 40)
+            real_obs = real_obs[0]
+            real_action = np.array(action)[0]
+            cnt_onnx += 1
+
+        else:
+            gen_action = ppo.act(real_obs)
+            print('b-sin')
+            real_sine = sine_generator(real_idx, schedule, angle_rate)
+            print('b-trans')
+            real_action = transfer(gen_action, real_sine, act_rate, history_act=real_history_act)
+
+
+
         # real_action = real_action
-        print(f"real_obs:{real_obs} \n gen_action : {gen_action}\n for work_action:{real_action} \n now_tau_est:{a1.tau}")
+        # add_map_list(real_action)
+        draw_real_obs.add_map_list(real_obs[:5])
+        save_real_obs.add_list(real_obs)
+        save_real_action.add_list(a1.position)
+        draw_recv_action.add_map_list(a1.position)
+        draw_sent_action.add_map_list(real_action[0])
+        print(f"real_obs:{real_obs} \n for work_action:{real_action} ")
         # waiter.wait()
         if real_action.shape[0] == 1:
             real_action = real_action[0]
         a1.take_action(real_action.tolist())
-        real_history_act = real_sine
-        # envs_idx = list(map(check_done, real_idx, dones))
-        # history_act = np.array([check_history(history_act[i], 0) for i in range(num_envs)])
-        real_idx += 1
+        # real_history_act = real_sine
+        real_idx +=1
+
 
     # update virtual bot
     if virtual:
         waiter.wait()
         reward, dones = env.step(action)
-        print('exec')
-        # envs_idx = list(map(check_done, envs_idx, dones))
-        history_act = sine
         envs_idx = list(map(check_done, envs_idx, dones))
+
+        draw_vir_obs.add_map_list(obs[0][:5])
+        draw_vir_action.add_map_list(action[0])
         history_act = np.array([check_history(history_act[i], dones[i]) for i in range(num_envs)])
+# draw()
+if virtual:
+    save_obs.save()
+    save_for_work.save()
+    draw_vir_obs.draw()
+    draw_vir_action.draw()
+    draw_vir_recv_action.draw()
+    # save_gen_act.save()
+else:
+    a1.back_safe()
+    save_real_obs.save()
+    save_real_action.save()
+    draw_real_obs.draw()
+    draw_sent_action.draw()
+    draw_recv_action.draw()
 
 print(f'biggest:{biggest_reward},rate = {biggest_iter}')
 

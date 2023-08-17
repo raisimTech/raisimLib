@@ -11,7 +11,7 @@ def change_data(path, flag, data):
     with open(path, 'w') as f :
         dump(y, f, Dumper=RoundTripDumper)
 
-test_list = [x/10 for x in range(1,20,4)]
+test_list = [x/100 for x in range(4,20,4)]
 test_T = [40]
 # print(test_list)
 length = 500

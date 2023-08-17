@@ -79,6 +79,13 @@ void swap(Eigen::VectorXd &ob, int a, int b)
 //
 //}
 
+void rot2euler( const raisim::Mat<3,3>& mat, Eigen::Vector3d& euler)
+{
+    euler[0] = atan2(mat[2], mat[8]);
+    euler[1] = asin(- mat[5]);
+    euler[2] = atan2(mat[3], mat[4]);
+}
+
 void angle_generator(Eigen::VectorXd& angle_list, int idx, float T, float rate=1.f)
 {
 //    std::cout<< "size is "<<  angle_list.size() << std::endl;
@@ -125,14 +132,14 @@ void angle_generator(Eigen::VectorXd& angle_list, int idx, float T, float rate=1
 }
 int main(int argc, char* argv[]) {
   auto binaryPath = raisim::Path::setFromArgv(argv[0]);
-
+  char c;
   /// create raisim world
   raisim::World world;
   world.setTimeStep(0.01);
 
   /// create objects
   auto ground = world.addGround();
-  auto go1 = world.addArticulatedSystem(binaryPath.getDirectory() + "\\rsc\\a1\\urdf\\a1.urdf");
+  auto go1 = world.addArticulatedSystem(binaryPath.getDirectory() + "\\rsc\\a1_description\\urdf\\a1.urdf");
 
   /// go1 joint PD controller
   Eigen::VectorXd jointNominalConfig(go1->getGeneralizedCoordinateDim()), jointVelocityTarget(go1->getDOF());
@@ -175,9 +182,36 @@ int main(int argc, char* argv[]) {
     raisim::Vec<3> acc;
     Eigen::Vector3d ma;
     ma.setZero();
-  for (int i=0; i<2000000; i++) {
+    Eigen::VectorXd  bodyLinearVelocity, bodyAngularVelocity;
+    bodyAngularVelocity.setZero(3);
+    bodyLinearVelocity.setZero(3);
+    auto roott = go1->getBodyIdx("base");
+//    auto imu = go1->getSensor<raisim::InertialMeasurementUnit>("imu_joint");
+
+    for (int i=0; i<2000000; i++) {
+
+      std::cin.ignore();
+//        imu->getAngularVelocity()
+
+
       go1->getState(gc,gv);
-//      raisim::Vec<4> qu{1+double(i)/500 , 0, 0, 0 + double(i)/500};
+
+
+//      anymal_->getState(gc, gv);
+      raisim::Vec<4> quat;
+      raisim::Mat<3,3> rot;
+      quat[0] = gc[3]; quat[1] = gc[4]; quat[2] = gc[5]; quat[3] = gc[6];
+      quat /= quat.norm();
+      raisim::quatToRotMat(quat, rot);
+
+      bodyLinearVelocity = rot.e().transpose() * gv.segment(0, 3);
+      bodyAngularVelocity = rot.e().transpose() * gv.segment(3, 3);
+      Eigen::Vector3d eule;
+      rot2euler(rot, eule);
+      std::cout<<"euler " << bodyAngularVelocity<<std::endl;
+//      std::cout << "body angular "<< bodyAngularVelocity[2] << std::endl;
+//      std::cout << gv.segment(3,3) << std::endl;
+//      raisim::Vec<4> qu{1+double(i)/500 , 0 , 0, 0+ double(i) / 500 };
 //    go1->setBaseOrientation(qu);
       Eigen::VectorXd tmp1(12), tmp2(12);
       tmp1 = gc.tail(12);
@@ -203,16 +237,30 @@ int main(int argc, char* argv[]) {
       usleep(5000);
       angle_generator(position, i, 40, 0.35);
       jointNominalConfig.tail(12) = position;
+      for(auto n: go1->getBodyNames())
+      {
+          std::cout << n << std::endl;
+      }
+      Eigen::Quaterniond quata(gc[3], gc[4], gc[5], gc[6]);
+      Eigen::Vector3d angle = ToEulerAngles(quata);
+      Eigen::Matrix3d root(quata);
 
-      Eigen::Quaterniond quat(gc[3], gc[4], gc[5], gc[6]);
-      Eigen::Vector3d angle = ToEulerAngles(quat);
+      bodyLinearVelocity = root.transpose() * gv.segment(0, 3);
+      bodyAngularVelocity = root.transpose() * gv.segment(3, 3);
       if (abs(angle[0]) >abs(ma[0]) ) ma[0] = abs(angle[0]);
       if (abs(angle[1]) >abs(ma[1]) ) ma[1] = abs(angle[1]);
       if (abs(angle[2]) >abs(ma[2]) ) ma[2] = abs(angle[2]);
-
+      raisim::Vec<3> angvel;
+      go1->getAngularVelocity(roott, angvel);
 //      std::cout<<quat << std::endl;
-      std::cout<< "max" << ma << std::endl;
+      std::cout<< "angle" << bodyAngularVelocity << std::endl;
+        std::cout<<"GET " << angvel << std::endl;
+        go1->printOutFrameNamesInOrder();
+        go1->getFrameAcceleration("floating_base", angvel);
+        std::cout<<angle << std::endl;
+        std::cout <<"gravity " << world.getGravity();
 
+//        std::cout<<"imu ang " << imu->getAngularVelocity();
       RS_TIMED_LOOP(int(world.getTimeStep()*1e6))
 //      std::cout<< ob_ << std::endl<<std::endl;
  // todo acc is not easy to figure out
