@@ -99,11 +99,12 @@ ppo = PPO.PPO(actor=actor,
               num_learning_epochs=4,
               gamma=0.996,
               lam=0.95,
-              num_mini_batches=4,
+              num_mini_batches=16,
+              # learning_rate_schedule='',
               device=device,
               log_dir=saver.data_dir,
               shuffle_batch=False,
-              learning_rate=cfg['environment']['learnning_rate']
+              # learning_rate=cfg['environment']['learnning_rate']
               )
 
 reward_analyzer = RewardAnalyzer(env, ppo.writer)
@@ -124,6 +125,7 @@ print = logger.info
 
 mode == 'train'
 history_act = np.array([his_util] * num_envs)
+history_act_0 = np.array([his_util] * num_envs)
 total_update = args.update
 if mode =='train' or mode == 'retrain':
     # print('start train')
@@ -135,10 +137,13 @@ if mode =='train' or mode == 'retrain':
         start = time.time()
         env.reset()
         reward_sum = 0
+        envs_idx = [0] * num_envs
+        history_act=history_act_0
         done_sum = 0
         average_dones = 0.
 
         if update % cfg['environment']['eval_every_n'] == 0:
+            # draw_his = Drawer('history')
             waiter = Waiter(0.01)
             print("Visualizing and evaluating the current policy")
             torch.save({
@@ -148,15 +153,15 @@ if mode =='train' or mode == 'retrain':
                 'optimizer_state_dict': ppo.optimizer.state_dict(),
             }, saver.data_dir+"/full_"+str(update)+'.pt')
             # we create another graph just to demonstrate the save/load method
-            loaded_graph = ppo_module.MLP(cfg['architecture']['policy_net'], nn.LeakyReLU, ob_dim, act_dim)
-            loaded_graph.load_state_dict(torch.load(saver.data_dir+"/full_"+str(update)+'.pt')['actor_architecture_state_dict'])
+            # loaded_graph = ppo_module.MLP(cfg['architecture']['policy_net'], nn.LeakyReLU, ob_dim, act_dim)
+            # loaded_graph.load_state_dict(torch.load(saver.data_dir+"/full_"+str(update)+'.pt')['actor_architecture_state_dict'])
 
             # debug_draw_action = Drawer('debug_draw_action')
             # debug_draw_history = Drawer('debug_draw_history')
 
             env.turn_on_visualization()
             env.start_video_recording(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + "policy_"+str(update)+'.mp4')
-            envs_idx = [0] * num_envs
+            # envs_idx = [0] * num_envs
             waiter.update_start()
             for step in range(n_steps):
                 with torch.no_grad():
@@ -169,17 +174,24 @@ if mode =='train' or mode == 'retrain':
                     # history_act = np.array([ check_history(history_act[i], dones[i]) for i in range(num_envs)] )
 
 
-                    action = loaded_graph.architecture(torch.from_numpy(obs).cpu())
-                    action = action.cpu().detach().numpy()
+                    action = ppo.act(obs)
+                    # action = action.cpu().detach().numpy()
 
                     # sine = sine_generator(envs_idx, schedule, angle_rate)
                     # action, history_act = transfer_f(action, sine, act_rate, history_act=history_act)
                     # action = action.astype(np.float32)
                     #
-
+#todo
                     action, history_act = run_model_with_pt_input_modify(action, envs_idx, schedule, history_act)
 
 
+
+
+
+                    # draw_his.add_map_list(history_act[0])
+                    #
+                    # history_act = history_act_0
+                    # print(history_act)
                     # debug_draw_action.add_map_list(action[0])
                     # debug_draw_history.add_map_list(history_act[0])
 
@@ -188,8 +200,10 @@ if mode =='train' or mode == 'retrain':
                     # history_act = sine
                     # envs_idx = list(map(check_done, envs_idx, dones))
                     # history_act = action
-                    history_act = np.array([check_history(history_act[i], dones[i]) for i in range(num_envs)])
 
+
+                                        # todo
+                    history_act = np.array([check_history(history_act[i], dones[i]) for i in range(num_envs)])
                     envs_idx = list(map(check_done, envs_idx, dones))
 
                     reward_analyzer.add_reward_info(env.get_reward_info())
@@ -197,7 +211,7 @@ if mode =='train' or mode == 'retrain':
                     wait_time = cfg['environment']['control_dt'] - (frame_end-frame_start)
                     # if wait_time > 0.:
                     #     time.sleep(wait_time)
-
+            # draw_his.draw()
             env.stop_video_recording()
             env.turn_off_visualization()
             history_act = np.array([his_util] * num_envs)
@@ -211,6 +225,7 @@ if mode =='train' or mode == 'retrain':
         # actual training
         # sine = [0] * 12
         envs_idx = [0] * num_envs
+        history_act=history_act_0
         for step in range(n_steps):
             obs = env.observe(False)
             """
@@ -220,13 +235,18 @@ if mode =='train' or mode == 'retrain':
             # history_act = get_last_position(obs)
 
             action = ppo.act(obs)
-
+            # if step== 100:
+            #     print(action)
 
             # sine = sine_generator(envs_idx, schedule, angle_rate)
             # action, history_act = transfer_f(action, sine, act_rate, history_act=history_act)
             # action = action.astype(np.float32)
             # action1, history_act1 = run_model_with_pt_input(action,envs_idx,schedule,history_act)
+            #todo
             action, history_act = run_model_with_pt_input_modify(action, envs_idx, schedule, history_act)
+
+            # history_act = history_act_0
+
             # print(f'action1 {action1}\n action{action}')
             # print(f'history1 {history_act1} \n history{history_act}')
             # input()
@@ -239,6 +259,7 @@ if mode =='train' or mode == 'retrain':
             # history_act = sine
             # envs_idx = list(map(check_done, envs_idx, dones))
             # history_act = action
+
             history_act = np.array([check_history(history_act[i], dones[i]) for i in range(num_envs)])
 
             # reward = reward * envs_idx / n_steps * 2
@@ -251,7 +272,7 @@ if mode =='train' or mode == 'retrain':
             reward_analyzer.analyze_and_plot(update)
         # take st step to get value obs
         obs = env.observe(False)
-        ppo.update(actor_obs=obs, value_obs=obs, log_this_iteration=update % 10 == 0, update=update)
+        ppo.update(actor_obs=obs, value_obs=obs, log_this_iteration=update % 2 == 0, update=update)
         average_ll_performance = reward_sum / total_steps
         if average_ll_performance > biggest_reward:
             biggest_iter = update

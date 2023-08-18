@@ -4,9 +4,9 @@ record_video: true
 environment:
   render: true
 # just testing commenting
-  num_envs: 1
-  eval_every_n: 100
-  num_threads: 1
+  num_envs: 100
+  eval_every_n: 40
+  num_threads: 30
   simulation_dt: 0.0025
   control_dt: 0.01
   max_time: 4
@@ -27,11 +27,11 @@ environment:
 #    torque:
 #      coeff: -4e-5
     Stable:
-      coeff: 0.4
-    Live:
-      coeff: 1
-    Wheel:
       coeff: 0.3
+    Live:
+      coeff: 0
+    Wheel:
+      coeff: 0.2
 #    Mimic:
 #      coeff: 0.
 

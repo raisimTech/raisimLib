@@ -8,6 +8,7 @@
 
 #include "RaisimGymEnv.hpp"
 #include "omp.h"
+#include <iostream>
 #include "Yaml.hpp"
 
 namespace raisim {
@@ -188,7 +189,8 @@ class VectorizedEnvironment {
 
     if (done[agentId]) {
       environments_[agentId]->reset();
-//      reward[agentId] += terminalReward;
+      reward[agentId] += terminalReward;
+//       std::cout<<"agentid "<< agentId <<" reward " << reward[agentId] << std::endl;
     }
   }
 

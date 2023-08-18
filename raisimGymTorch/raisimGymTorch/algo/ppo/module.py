@@ -18,8 +18,8 @@ class Actor:
     def sample(self, obs):
         self.action_mean = self.architecture.architecture(obs).cpu().numpy()
         actions, log_prob = self.distribution.sample(self.action_mean)
-        # actions = (actions - actions.min()) / (actions.max() - actions.min()) * np.pi
-        actions = np.clip(actions, -1, 1)
+        # todo
+        # actions = (np.clip(actions, self.action_mean -np.pi, self.action_mean+np.pi) - self.action_mean)  / np.pi
         return actions, log_prob
 
     def evaluate(self, obs, actions):
@@ -112,6 +112,7 @@ class MultivariateGaussianDiagonalCovariance(nn.Module):
         self.std_np = self.std.detach().cpu().numpy()
 
     def update(self):
+        print(self.std)
         self.std_np = self.std.detach().cpu().numpy()
 
     def sample(self, logits):

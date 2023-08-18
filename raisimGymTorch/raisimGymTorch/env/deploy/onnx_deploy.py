@@ -157,6 +157,56 @@ def sine_gene(idx, T):
             ans.append(sine_gene(i, T))
         return ans
 
+def sine_gene_pt(idx, T):
+    # print(idx)
+    if isinstance(idx, np.ndarray) or isinstance(idx, list):
+        mat = np.zeros((len(idx), 12))
+        i_set = set(idx)
+        idd = {}
+        for i in i_set:
+            idd[i] = sine_gene_pt(i, 40)
+        for i in range(len(idx)):
+            mat[i] = idd[idx[i]]
+        return mat
+    if not isinstance(idx, list):
+        angle_list = [0 for i in range(12)]
+        if idx >= 2 * T:
+            idx = 0
+        dh = 0.8 # todo for test
+
+        if idx >= 0 and idx <= T:
+            tp0 =idx - 0
+            y1 = dh * 10 * (-cos(pi * 2 * tp0 / T) + 1 ) / 2
+            y2 = 0
+            # y2 = y1
+        elif idx>T and idx<=2*T:
+            tp0 =idx - T
+            y2 = dh * 10 * (-cos(pi * 2 * tp0 / T) + 1 ) / 2
+            y1 = 0
+            # y1 = y2
+
+
+        angle_list[0] = 0
+        angle_list[1] = y1
+        angle_list[2] = -2 * y1
+        angle_list[3] = 0
+        angle_list[4] = y2
+        angle_list[5] = -2 * y2
+        angle_list[6] = 0
+        angle_list[7] = y2
+        angle_list[8] = -2 * y2
+        angle_list[9] = 0
+        angle_list[10] = y1
+        angle_list[11] = -2 * y1
+        # print("ang_list ", angle_list)
+        angle_list = [deg_normalize(low[i], upp[i], angle_list[i] + ang_trans(low[i], upp[i], u0[i]) ) for i in range(12)]
+        # print("ang_list ", angle_list)
+        return angle_list
+    else:
+        ans = []
+        for i in idx:
+            ans.append(sine_gene_pt(i, T))
+        return ans
 
 
 def rate_to_act(lower, upper, rate):
@@ -221,10 +271,12 @@ def add_list_np(act_gen, sine, history):
     kk = 0.9
     kf = 1
     kb = 0.2
+    # print('be history ', history, 'act_gen ', act_gen)
     history = history*kk + (1-kk) * act_gen
     ans = np.clip(kb*history + kf * sine, -1, 1)
     ans = (ans + 1) /2  # 100 * 12
     ans = lerp_np(low_np, upp_np, ans)
+    # print('af history ', history)
     return ans, history
 
 def run_model_with_pt_input(act_gen, idx, T, history):
@@ -252,8 +304,8 @@ def run_model_with_pt_input_modify(act_gen, idx, T, history):
     else:
         idx = idx % (2 * T)
 
-    sine = sine_gene(idx, T)
-
+    sine = sine_gene_pt(idx, T)
+    # act_gen = np.zeros_like(act_gen)
     ans, history = add_list_np(act_gen, sine, history)
     ans = ans / 180 * 3.14
 

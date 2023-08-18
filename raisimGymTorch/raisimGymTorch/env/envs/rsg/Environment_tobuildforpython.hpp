@@ -79,7 +79,7 @@ double aa = double(30) /180*PI, bb = double(-60) /180*PI;
 //      init_position(gc_init_);
     init();
 
-    obDim_ = 26;
+    obDim_ = 29;
     actionDim_ = nJoints_; actionMean_.setZero(actionDim_); actionStd_.setZero(actionDim_);
     obDouble_.setZero(obDim_);
 
@@ -178,29 +178,31 @@ double aa = double(30) /180*PI, bb = double(-60) /180*PI;
     double rrr =0;
 //    for(int i=0;i<=2;i++) rrr += abs(euler_angle[i]) ;
     rrr = abs(euler_angle[0]) + abs(euler_angle[1]);
+    rrr += 0.1 * ( abs(ang_vel_[0]) + abs(ang_vel_[1]) );
 //    rrr = abs(gc_[0]) + abs(gc_[1]);
 //    rrr += (gc_.tail(12) - pTarget12_).norm() ;
     bool accu = false;
     rewards_.record("Stable",-rrr, accu);
+//    std::cout<<"eu 0 "<< euler_angle[0] << " eu1 " << euler_angle[1] << std::endl;
     rewards_.record("Live", 1, accu);
 //    rewards_.record("forwardVel", bodyLinearVel_[0], accu);
 //    rewards_.record("Mimic", (gc_.tail(12) - pTarget12_).norm(), accu);
 //    rewards_.record("Wheel", euler_angle[2] * double(COUNT) / 400, accu);
-    rewards_.record("Wheel", 0.3  - abs(ang_vel_[2]- 0.3), accu);
-    euler_angle_old = euler_angle;
+    rewards_.record("Wheel", 0.5  - abs(ang_vel_[2]- 0.5), accu);
+//    euler_angle_old = euler_angle;
 //    rewards_.record("torque", )
     return rewards_.sum();
   }
 
   void updateObservation() {
     anymal_->getState(gc_, gv_);
-    raisim::Vec<4> quat;
-    raisim::Mat<3,3> rot;
-    quat[0] = gc_[3]; quat[1] = gc_[4]; quat[2] = gc_[5]; quat[3] = gc_[6];
-    quat /= quat.norm();
-    raisim::quatToRotMat(quat, rot);
-    bodyLinearVel_ = rot.e().transpose() * gv_.segment(0, 3);
-    bodyAngularVel_ = rot.e().transpose() * gv_.segment(3, 3);
+//    raisim::Vec<4> quat;
+//    raisim::Mat<3,3> rot;
+//    quat[0] = gc_[3]; quat[1] = gc_[4]; quat[2] = gc_[5]; quat[3] = gc_[6];
+//    quat /= quat.norm();
+//    raisim::quatToRotMat(quat, rot);
+//    bodyLinearVel_ = rot.e().transpose() * gv_.segment(0, 3);
+//    bodyAngularVel_ = rot.e().transpose() * gv_.segment(3, 3);
     anymal_->getAngularVelocity(anymal_->getBodyIdx("base"), ang_vel_);
     Eigen::Quaterniond qua(gc_[3], gc_[4], gc_[5], gc_[6]);
     euler_angle = ToEulerAngles(qua);
@@ -221,9 +223,9 @@ double aa = double(30) /180*PI, bb = double(-60) /180*PI;
     obDouble_ <<
         euler_angle[0],
        euler_angle[1],// quaternion
-//        ang_vel_[0],
-//        ang_vel_[1],
-//        ang_vel_[2],
+        ang_vel_[0],
+        ang_vel_[1],
+        ang_vel_[2],
        c_v;
 //    std::cout<<"ang_vel : " << ang_vel_ << std::endl;
 
@@ -236,46 +238,36 @@ double aa = double(30) /180*PI, bb = double(-60) /180*PI;
 
   bool isTerminalState(float& terminalReward) final {
     terminalReward = float(terminalRewardCoeff_);
-
-//    for(auto& contact: anymal_->getContacts())
-//      if(footIndices_.find(contact.getlocalBodyIndex()) == footIndices_.end())
-//      {// if there is any contact body was not in the footIndices the over
-//          rewards_.record("Live", -10, false);
-//          return true;}
+    bool accu = true;
+    for(auto& contact: anymal_->getContacts())
+      if(footIndices_.find(contact.getlocalBodyIndex()) == footIndices_.end())
+      {// if there is any contact body was not in the footIndices the over
+//          rewards_.record("Live", terminalReward, accu);
+           std::cout<<"foot done " << std::endl;
+          return true;}
       if(abs(gc_[2] - gc_init_[2]) > 0.22){
 //      std::cout<<"z done" << std::endl;
-         rewards_.record("Live", terminalReward, false);
+//         rewards_.record("Live", terminalReward, accu);
 
        return true;
        }
 
 
-//      if(fmin(abs(euler_angle[1]), abs(euler_angle[1] + 2 * PI)) > 0.17)
-//      {
-////      std::cout<<"y angle done" << std::endl;
-//          rewards_.record("Live", terminalReward, false);
+      if(fmin(abs(euler_angle[1]), abs(euler_angle[1] + 2 * PI)) > 0.17)
+      {
+//      std::cout<<"y angle done" <<"  " << euler_angle[1]<< std::endl;
+//          rewards_.record("Live", terminalReward, accu);
+
+        return true;
+       }
+      if(fmin(abs(euler_angle[0]), abs(euler_angle[0] + 2 * PI)) > 0.17)
+      {
+//      std::cout<<"x angle done " << euler_angle[0] << std::endl;
+//          rewards_.record("Live", terminalReward, accu);
 //
-//        return true;
-//       }
-//      if(fmin(abs(euler_angle[0]), abs(euler_angle[0] + 2 * PI)) > 0.17)
-//      {
-////      std::cout<<"x angle done" << std::endl;
-//          rewards_.record("Live", terminalReward, false);
-//
-//            return true;
-//        }
-//       if (abs(gc_[0] - gc_init_[0]) >= 0.4)
-//       {
-//            return true;
-//       }
-//       if (abs(gc_[1] - gc_init_[1]) >= 0.4)
-//       {
-//            return true;
-//       }
-//       if(euler_angle[2] < -0.3)
-//       {
-//            return true;
-//       }
+            return true;
+        }
+
     terminalReward = 0.f;
     return false;
   }
@@ -287,7 +279,7 @@ double aa = double(30) /180*PI, bb = double(-60) /180*PI;
  bool visualizable_ = false;
   raisim::ArticulatedSystem* anymal_, *anymal_1;
   Eigen::VectorXd gc_init_, gv_init_, gc_, gv_, pTarget_, pTarget12_, vTarget_;
-  double terminalRewardCoeff_ = -100.;
+  double terminalRewardCoeff_ = -10.;
   Eigen::VectorXd actionMean_, actionStd_, obDouble_;
   Vec<3> acc_, ang_vel_;
   Eigen::Vector3d bodyLinearVel_, bodyAngularVel_;

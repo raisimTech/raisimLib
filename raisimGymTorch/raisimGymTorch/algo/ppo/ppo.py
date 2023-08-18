@@ -76,9 +76,7 @@ class PPO:
     def act(self, actor_obs):
         self.actor_obs = actor_obs
         with torch.no_grad():
-            # tmp = torch.from_numpy(actor_obs)
-            self.actions, self.actions_log_prob = self.actor.sample(torch.from_numpy(self.actor_obs).to(self.device))
-
+            self.actions, self.actions_log_prob = self.actor.sample(torch.from_numpy(actor_obs).to(self.device))
         return self.actions
 
     def forward(self, actor_obs):
@@ -111,6 +109,7 @@ class PPO:
     def _train_step(self, log_this_iteration):
         mean_value_loss = 0
         mean_surrogate_loss = 0
+        # cnnt = 0
         for epoch in range(self.num_learning_epochs):
             for actor_obs_batch, critic_obs_batch, actions_batch, old_sigma_batch, old_mu_batch, current_values_batch, advantages_batch, returns_batch, old_actions_log_prob_batch \
                     in self.batch_sampler(self.num_mini_batches):
@@ -170,5 +169,5 @@ class PPO:
             num_updates = self.num_learning_epochs * self.num_mini_batches
             mean_value_loss /= num_updates
             mean_surrogate_loss /= num_updates
-
+        # print('cnnt ', cnnt)
         return mean_value_loss, mean_surrogate_loss, locals()
