@@ -140,12 +140,15 @@ int main(int argc, char* argv[]) {
   /// create objects
   auto ground = world.addGround();
   auto go1 = world.addArticulatedSystem(binaryPath.getDirectory() + "\\rsc\\a1_description\\urdf\\a1.urdf");
-
+  auto board = world.addArticulatedSystem(binaryPath.getDirectory() +"\\rsc\\skate\\skate.urdf");
   /// go1 joint PD controller
   Eigen::VectorXd jointNominalConfig(go1->getGeneralizedCoordinateDim()), jointVelocityTarget(go1->getDOF());
 //  jointNominalConfig << 0, 0, 0.41, 1.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
-
-    jointNominalConfig << 0, 0, 0.33, 1.0, 0.0, 0, 0, 0, 0.5235987755982988, -1.0471975511965976, 0.0, 0.5235987755982988, -1.0471975511965976, 0.0, 0.5235987755982988, -1.0471975511965976, 0.0, 0.5235987755982988, -1.0471975511965976 ; // todo implement in python using list
+    Eigen::VectorXd board_posi(board->getGeneralizedCoordinateDim());
+    board_posi << 0,0,0.11, 0.707, 0,0, 0.707,0,0;
+    board->setGeneralizedCoordinate(board_posi);
+    board->setName("board");
+    jointNominalConfig << -0, 0, 0.49, 1.0, 0.0, 0, 0, 0, 0.5235987755982988, -1.0471975511965976, 0.0, 0.5235987755982988, -1.0471975511965976, 0.0, 0.5235987755982988, -1.0471975511965976, 0.0, 0.5235987755982988, -1.0471975511965976 ; // todo implement in python using list
 //    jointNominalConfig << 0, 0, 0.33, 1.0, 0.0, 0, 0, 0, 1, -2.2, 0.0, 1, -2.2, 0.0, 1, -2.2, 0.0, 1, -2.2; // todo implement in python using list
 //  jointNominalConfig.tail(12).setZero();
 //  Eigen::VectorXd tmp(12);
@@ -190,7 +193,7 @@ int main(int argc, char* argv[]) {
 
     for (int i=0; i<2000000; i++) {
 
-      std::cin.ignore();
+//      std::cin.ignore();
 //        imu->getAngularVelocity()
 
 
@@ -208,22 +211,22 @@ int main(int argc, char* argv[]) {
       bodyAngularVelocity = rot.e().transpose() * gv.segment(3, 3);
       Eigen::Vector3d eule;
       rot2euler(rot, eule);
-      std::cout<<"euler " << bodyAngularVelocity<<std::endl;
+//      std::cout<<"euler " << bodyAngularVelocity<<std::endl;
 //      std::cout << "body angular "<< bodyAngularVelocity[2] << std::endl;
 //      std::cout << gv.segment(3,3) << std::endl;
 //      raisim::Vec<4> qu{1+double(i)/500 , 0 , 0, 0+ double(i) / 500 };
 //    go1->setBaseOrientation(qu);
-      Eigen::VectorXd tmp1(12), tmp2(12);
-      tmp1 = gc.tail(12);
-      tmp2 = gv.tail(12);
-      for(auto i=0; i<12; i++){
-          ob_[2*i] = tmp1[i];
-          ob_[2 * i+1] = tmp2[i];
-      }
-      for(auto i=0;i <12; i++)
-      {
-          swap(ob_, i, 12 +i);
-      }
+//      Eigen::VectorXd tmp1(12), tmp2(12);
+//      tmp1 = gc.tail(12);
+//      tmp2 = gv.tail(12);
+//      for(auto i=0; i<12; i++){
+//          ob_[2*i] = tmp1[i];
+//          ob_[2 * i+1] = tmp2[i];
+//      }
+//      for(auto i=0;i <12; i++)
+//      {
+//          swap(ob_, i, 12 +i);
+//      }
 
       raisim::Vec<3> vel_temp;
 //      go1->getFrameVelocity("ROOT", vel_temp);
@@ -234,13 +237,19 @@ int main(int argc, char* argv[]) {
 //          acc[i] = vel_temp
 //      }
 //      std::cout << "vel \n" << vel  << std::endl << "acc\n " << acc << std::endl;
-      usleep(5000);
+      usleep(10000);
       angle_generator(position, i, 40, 0.35);
       jointNominalConfig.tail(12) = position;
-      for(auto n: go1->getBodyNames())
-      {
-          std::cout << n << std::endl;
-      }
+//      for(auto n: go1->getContacts())
+//      {
+//          std::cout << n.getPairContactIndexInPairObject()<< std::endl;
+//      }
+        for(auto obj:world.getObjList())
+        {
+            std::cout<<obj->getName()<<std::endl;
+        }
+//        world.getContactProblem()
+
       Eigen::Quaterniond quata(gc[3], gc[4], gc[5], gc[6]);
       Eigen::Vector3d angle = ToEulerAngles(quata);
       Eigen::Matrix3d root(quata);
@@ -253,12 +262,12 @@ int main(int argc, char* argv[]) {
       raisim::Vec<3> angvel;
       go1->getAngularVelocity(roott, angvel);
 //      std::cout<<quat << std::endl;
-      std::cout<< "angle" << bodyAngularVelocity << std::endl;
-        std::cout<<"GET " << angvel << std::endl;
-        go1->printOutFrameNamesInOrder();
+//      std::cout<< "angle" << b/odyAngularVelocity << std::endl;
+//        std::cout<<"GET " << angvel << std::endl;
+//        go1->printOutFrameNamesInOrder();
         go1->getFrameAcceleration("floating_base", angvel);
-        std::cout<<angle << std::endl;
-        std::cout <<"gravity " << world.getGravity();
+//        std::cout<<angle << std::endl;
+//        std::cout <<"gravity " << world.getGravity();
 
 //        std::cout<<"imu ang " << imu->getAngularVelocity();
       RS_TIMED_LOOP(int(world.getTimeStep()*1e6))
@@ -275,10 +284,17 @@ int main(int argc, char* argv[]) {
 //      }
 //    jointNominalConfig.tail(12) = tmp;
 //    std::cout<< tmp << std::endl;
-
+//    jointNominalConfig[8] =  - 0.01 * i ;
 go1->setPdTarget(jointNominalConfig, jointVelocityTarget);
 
-
+//        for(auto& contact : go1->getContacts())
+//        {
+////            if(contact.getPairContactIndexInPairObject() != raisim::BodyType::STATIC)
+////            {
+////                world.getObject(contact.getPairObjectIndex())->getContacts();
+////            }
+//        }
+//
     server.integrateWorldThreadSafe();
 
   }

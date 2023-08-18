@@ -15,8 +15,11 @@ def ang_trans(lower, upper, x):
     """
     trans the rate x to the angle
     """
-    x = (x+1)/2 #todo for test
-    return x * upper + (1-x) * lower
+    if isinstance(lower, list):
+        return [ang_trans(lower[i], upper[i], x[i]) for i in range(len(lower))]
+    else:
+        x = (x+1)/2 #todo for test
+        return x * upper + (1-x) * lower
 
 def norm(lower, upper, x):
     # print(lower, upper, x)
@@ -58,6 +61,7 @@ upp_np = np.array(upp)
 # low_rad = deg_rad(low)
 # upp_rad = deg_rad(upp)
 u0 = deg_normalize(low, upp, u0)
+u0_ang = ang_trans(low, upp, u0)
 # u0_rad = rad_normalize(low_rad, upp_rad, u0_rad)
 # u0 = [-deg_normalize(low, upp, u0)[i] if deg_normalize(low, upp, u0)[i]!=0 else 0 for i in range(12)]
 # print(u0)
@@ -172,7 +176,8 @@ def sine_gene_pt(idx, T):
         angle_list = [0 for i in range(12)]
         if idx >= 2 * T:
             idx = 0
-        dh = 0.8 # todo for test
+        dh =0.8 #:w
+
 
         if idx >= 0 and idx <= T:
             tp0 =idx - 0
@@ -199,7 +204,7 @@ def sine_gene_pt(idx, T):
         angle_list[10] = y1
         angle_list[11] = -2 * y1
         # print("ang_list ", angle_list)
-        angle_list = [deg_normalize(low[i], upp[i], angle_list[i] + ang_trans(low[i], upp[i], u0[i]) ) for i in range(12)]
+        angle_list = [deg_normalize(low[i], upp[i], angle_list[i] + u0_ang[i]) for i in range(12)]
         # print("ang_list ", angle_list)
         return angle_list
     else:

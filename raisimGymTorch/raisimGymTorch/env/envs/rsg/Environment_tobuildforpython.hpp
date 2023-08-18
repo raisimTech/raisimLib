@@ -144,7 +144,7 @@ double aa = double(30) /180*PI, bb = double(-60) /180*PI;
     anymal_->setState(gc_init_, gv_init_);
     rewards_.setZero();
     COUNT=0;
-    euler_angle_old.setZero();
+//    euler_angle_old.setZero();
     updateObservation();
   }
 
@@ -177,33 +177,35 @@ double aa = double(30) /180*PI, bb = double(-60) /180*PI;
     updateObservation();
     double rrr =0;
 //    for(int i=0;i<=2;i++) rrr += abs(euler_angle[i]) ;
-    rrr = abs(euler_angle[0]) + abs(euler_angle[1]);
-    rrr += 0.1 * ( abs(ang_vel_[0]) + abs(ang_vel_[1]) );
+    rrr = abs(euler_angle[0]) + abs(euler_angle[1]) + abs(euler_angle[2]);
+    rrr += 0.1 * ( abs(ang_vel_[0]) + abs(ang_vel_[1]) +abs(ang_vel_[2]));
 //    rrr = abs(gc_[0]) + abs(gc_[1]);
 //    rrr += (gc_.tail(12) - pTarget12_).norm() ;
     bool accu = false;
     rewards_.record("Stable",-rrr, accu);
 //    std::cout<<"eu 0 "<< euler_angle[0] << " eu1 " << euler_angle[1] << std::endl;
     rewards_.record("Live", 1, accu);
-//    rewards_.record("forwardVel", bodyLinearVel_[0], accu);
+    rewards_.record("forwardVel", bodyLinearVel_[0], accu);
 //    rewards_.record("Mimic", (gc_.tail(12) - pTarget12_).norm(), accu);
 //    rewards_.record("Wheel", euler_angle[2] * double(COUNT) / 400, accu);
-    rewards_.record("Wheel", 0.5  - abs(ang_vel_[2]- 0.5), accu);
+//    rewards_.record("Wheel", 0.5  - abs(ang_vel_[2]- 0.5), accu);
 //    euler_angle_old = euler_angle;
-//    rewards_.record("torque", )
+    rewards_.record("torque",anymal_->getGeneralizedForce().squaredNorm() );
     return rewards_.sum();
   }
 
   void updateObservation() {
     anymal_->getState(gc_, gv_);
-//    raisim::Vec<4> quat;
-//    raisim::Mat<3,3> rot;
-//    quat[0] = gc_[3]; quat[1] = gc_[4]; quat[2] = gc_[5]; quat[3] = gc_[6];
-//    quat /= quat.norm();
-//    raisim::quatToRotMat(quat, rot);
-//    bodyLinearVel_ = rot.e().transpose() * gv_.segment(0, 3);
-//    bodyAngularVel_ = rot.e().transpose() * gv_.segment(3, 3);
+    raisim::Vec<4> quat;
+    raisim::Mat<3,3> rot;
+    quat[0] = gc_[3]; quat[1] = gc_[4]; quat[2] = gc_[5]; quat[3] = gc_[6];
+    quat /= quat.norm();
+    raisim::quatToRotMat(quat, rot);
+    bodyLinearVel_ = rot.e().transpose() * gv_.segment(0, 3);
+    bodyAngularVel_ = rot.e().transpose() * gv_.segment(3, 3);
     anymal_->getAngularVelocity(anymal_->getBodyIdx("base"), ang_vel_);
+//    anymal_->getVelocity(anymal_->getBodyIdx("base"), bodyLinearVel_);
+//    anymal_->get
     Eigen::Quaterniond qua(gc_[3], gc_[4], gc_[5], gc_[6]);
     euler_angle = ToEulerAngles(qua);
 //      if(euler_angle[1] > PI) euler_angle[1] -= 2*PI;
@@ -243,9 +245,9 @@ double aa = double(30) /180*PI, bb = double(-60) /180*PI;
       if(footIndices_.find(contact.getlocalBodyIndex()) == footIndices_.end())
       {// if there is any contact body was not in the footIndices the over
 //          rewards_.record("Live", terminalReward, accu);
-           std::cout<<"foot done " << std::endl;
+//           std::cout<<"foot done " << std::endl;
           return true;}
-      if(abs(gc_[2] - gc_init_[2]) > 0.22){
+      if(abs(gc_[2] - gc_init_[2]) > 0.2){
 //      std::cout<<"z done" << std::endl;
 //         rewards_.record("Live", terminalReward, accu);
 

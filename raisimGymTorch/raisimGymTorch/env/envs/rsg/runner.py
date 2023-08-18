@@ -122,7 +122,7 @@ check_history = lambda a, b: a if not b else his_util
 #     weight_path = ""
 
 print = logger.info
-
+env_idx = np.zeros(100)
 mode == 'train'
 history_act = np.array([his_util] * num_envs)
 history_act_0 = np.array([his_util] * num_envs)
@@ -137,7 +137,7 @@ if mode =='train' or mode == 'retrain':
         start = time.time()
         env.reset()
         reward_sum = 0
-        envs_idx = [0] * num_envs
+        envs_idx = env_idx
         history_act=history_act_0
         done_sum = 0
         average_dones = 0.
@@ -161,7 +161,7 @@ if mode =='train' or mode == 'retrain':
 
             env.turn_on_visualization()
             env.start_video_recording(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + "policy_"+str(update)+'.mp4')
-            # envs_idx = [0] * num_envs
+            envs_idx = env_idx
             waiter.update_start()
             for step in range(n_steps):
                 with torch.no_grad():
@@ -175,6 +175,8 @@ if mode =='train' or mode == 'retrain':
 
 
                     action = ppo.act(obs)
+                    aa = action.copy()
+                    aa = np.clip(aa-1, -1, 1)  # todo
                     # action = action.cpu().detach().numpy()
 
                     # sine = sine_generator(envs_idx, schedule, angle_rate)
@@ -182,7 +184,7 @@ if mode =='train' or mode == 'retrain':
                     # action = action.astype(np.float32)
                     #
 #todo
-                    action, history_act = run_model_with_pt_input_modify(action, envs_idx, schedule, history_act)
+                    aa, history_act = run_model_with_pt_input_modify(aa, envs_idx, schedule, history_act)
 
 
 
@@ -195,7 +197,7 @@ if mode =='train' or mode == 'retrain':
                     # debug_draw_action.add_map_list(action[0])
                     # debug_draw_history.add_map_list(history_act[0])
 
-                    reward, dones = env.step(action)
+                    reward, dones = env.step(aa)
 
                     # history_act = sine
                     # envs_idx = list(map(check_done, envs_idx, dones))
@@ -204,8 +206,8 @@ if mode =='train' or mode == 'retrain':
 
                                         # todo
                     history_act = np.array([check_history(history_act[i], dones[i]) for i in range(num_envs)])
-                    envs_idx = list(map(check_done, envs_idx, dones))
-
+                    # envs_idx = list(map(check_done, envs_idx, dones))
+                    envs_idx     = np.where(dones  ==1, 0, envs_idx+1)
                     reward_analyzer.add_reward_info(env.get_reward_info())
                     frame_end = time.time()
                     wait_time = cfg['environment']['control_dt'] - (frame_end-frame_start)
@@ -224,7 +226,7 @@ if mode =='train' or mode == 'retrain':
 
         # actual training
         # sine = [0] * 12
-        envs_idx = [0] * num_envs
+        envs_idx = env_idx
         history_act=history_act_0
         for step in range(n_steps):
             obs = env.observe(False)
@@ -235,6 +237,8 @@ if mode =='train' or mode == 'retrain':
             # history_act = get_last_position(obs)
 
             action = ppo.act(obs)
+            aa = action.copy()
+            aa = np.clip(aa - 1, -1, 1)  # todo
             # if step== 100:
             #     print(action)
 
@@ -242,8 +246,8 @@ if mode =='train' or mode == 'retrain':
             # action, history_act = transfer_f(action, sine, act_rate, history_act=history_act)
             # action = action.astype(np.float32)
             # action1, history_act1 = run_model_with_pt_input(action,envs_idx,schedule,history_act)
-            #todo
-            action, history_act = run_model_with_pt_input_modify(action, envs_idx, schedule, history_act)
+
+            aa, history_act = run_model_with_pt_input_modify(aa, envs_idx, schedule, history_act)
 
             # history_act = history_act_0
 
@@ -251,8 +255,8 @@ if mode =='train' or mode == 'retrain':
             # print(f'history1 {history_act1} \n history{history_act}')
             # input()
             # print(f'3{time.time()}')
-            # todo the transfer has bug
-            reward, dones = env.step(action)
+
+            reward, dones = env.step(aa)
             # input('1')
             # print(f"history : {history_act}")
 
@@ -263,8 +267,9 @@ if mode =='train' or mode == 'retrain':
             history_act = np.array([check_history(history_act[i], dones[i]) for i in range(num_envs)])
 
             # reward = reward * envs_idx / n_steps * 2
+            envs_idx = np.where(dones == 1, 0, envs_idx + 1)
 
-            envs_idx = list(map(check_done, envs_idx, dones))
+            # envs_idx = list(map(check_done, envs_idx, dones))
             ppo.step(value_obs=obs, rews=reward, dones=dones)
             done_sum = done_sum + np.sum(dones)
             reward_sum = reward_sum + np.sum(reward)
