@@ -172,7 +172,7 @@ if mode =='train' or mode == 'retrain':
 
                     # history_act = get_last_position(obs)
                     # history_act = np.array([ check_history(history_act[i], dones[i]) for i in range(num_envs)] )
-
+                    # time.sleep(1)
 
                     action = ppo.act(obs)
                     aa = action.copy()

@@ -23,11 +23,13 @@ environment:
   urdf_path: /home/lr-2002/code/raisimLib/rsc/a1_description/urdf/a1.urdf
   reward:
     forwardVel:
-      coeff: 0.2
+      coeff: 0.5
     torque:
       coeff: -4e-5
     Stable:
-      coeff: 0.3
+      coeff: 0.01
+    height:
+      coeff: 0.
     Live:
       coeff: 0
     Wheel:

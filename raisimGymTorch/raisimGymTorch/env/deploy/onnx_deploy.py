@@ -23,7 +23,7 @@ def ang_trans(lower, upper, x):
 
 def norm(lower, upper, x):
     # print(lower, upper, x)
-    assert abs((x - lower) / (upper - lower) ) <= 1
+    assert abs((x - lower) / (upper - lower) ) <= 1, f"{abs((x - lower) / (upper - lower) )} {x, upper, lower} "
     return (x - lower) / (upper - lower)
 
 def rad_normalize(lower, upper,x):
@@ -53,7 +53,9 @@ def deg_normalize(lower, upper, x):
 
 low = [-46, -60, -154.5, -46, -60, -154.5, -46, -60, -154.5, -46, -60, -154.5]
 upp = [46, 240, -52.5, 46, 240, -52.5, 46, 240, -52.5, 46, 240, -52.5]
-u0 = [0, 30, -60,0, 30, -60,0, 30, -60,0, 30, -60]
+tha1,tha2 = 60,  30
+u0 = [0, tha2, -2*tha2, 0 ,tha1, -tha1 * 2, 0 , tha2, -2*tha2, 0, tha1,-2*tha1]
+
 low_np = np.array(low)
 upp_np = np.array(upp)
 # u0_rad = deg_rad(u0)
@@ -176,21 +178,22 @@ def sine_gene_pt(idx, T):
         angle_list = [0 for i in range(12)]
         if idx >= 2 * T:
             idx = 0
-        dh =0.8 #:w
+        dh =-0.5 #:w
 
 
-        if idx >= 0 and idx <= T:
-            tp0 =idx - 0
-            y1 = dh * 10 * (-cos(pi * 2 * tp0 / T) + 1 ) / 2
-            y2 = 0
-            # y2 = y1
-        elif idx>T and idx<=2*T:
-            tp0 =idx - T
-            y2 = dh * 10 * (-cos(pi * 2 * tp0 / T) + 1 ) / 2
-            y1 = 0
+        # if idx >= 0 and idx <= T:
+        #     tp0 =idx - 0
+        #     y1 = dh * 10 * (-cos(pi * 2 * tp0 / T) + 1 ) / 2
+        #     y2 = 0
+        #     # y2 = y1
+        # elif idx>T and idx<=2*T:
+        #     tp0 =idx - T
+        #     y2 = dh * 10 * (-cos(pi * 2 * tp0 / T) + 1 ) / 2
+        #     y1 = 0
             # y1 = y2
-
-
+        idx = idx % T
+        y1 = dh  * 10 * (-cos(pi * 2  *idx  /T) + 1)
+        y2  = deg_rad(60)
         angle_list[0] = 0
         angle_list[1] = y1
         angle_list[2] = -2 * y1
@@ -198,11 +201,11 @@ def sine_gene_pt(idx, T):
         angle_list[4] = y2
         angle_list[5] = -2 * y2
         angle_list[6] = 0
-        angle_list[7] = y2
-        angle_list[8] = -2 * y2
+        angle_list[7] = y1
+        angle_list[8] = -2 * y1
         angle_list[9] = 0
-        angle_list[10] = y1
-        angle_list[11] = -2 * y1
+        angle_list[10] = y2
+        angle_list[11] = -2 * y2
         # print("ang_list ", angle_list)
         angle_list = [deg_normalize(low[i], upp[i], angle_list[i] + u0_ang[i]) for i in range(12)]
         # print("ang_list ", angle_list)

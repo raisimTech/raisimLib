@@ -54,6 +54,7 @@ namespace raisim {
       READ_YAML(double, p_gain, cfg_["p_gain"]);
       READ_YAML(double, d_gain, cfg_["d_gain"]);
     anymal_ = world_->addArticulatedSystem(urdf_path);
+    skate = world_ ->addArticulatedSystem("/home/lr-2002/code/raisimLib/rsc/skate/skate.urdf");
     anymal_->setName("model");
     anymal_->setControlMode(raisim::ControlMode::PD_PLUS_FEEDFORWARD_TORQUE);
     world_->addGround();
@@ -62,7 +63,10 @@ namespace raisim {
     gcDim_ = anymal_->getGeneralizedCoordinateDim(); // 19
     gvDim_ = anymal_->getDOF(); // 18
     nJoints_ = gvDim_ - 6;
-
+    skate_posi_init.setZero(9);
+    skate_vel_init.setZero(8);
+    skate_posi_init << 0, 0.12, 0.11, 0.707, 0., 0, 0.707, 0 , 0;
+    skate ->setGeneralizedCoordinate(skate_posi_init);
     gc_.setZero(gcDim_); gc_init_.setZero(gcDim_);
     gv_.setZero(gvDim_); gv_init_.setZero(gvDim_);
     euler_angle.setZero();euler_angle_old.setZero();
@@ -71,10 +75,12 @@ namespace raisim {
     gc_old.setZero(nJoints_) ; ref_old.setZero(nJoints_);
     acc_.setZero();//1
     ang_vel_.setZero();
-
+    skate_vel_.setZero(8);
+    skate_posi_.setZero(9);
 //      init_position();
-double aa = double(30) /180*PI, bb = double(-60) /180*PI;
-    gc_init_<< 0, 0, 0.33, 1.0, 0.0, 0.0, 0.0, 0.0,  aa, bb, 0.0, aa, bb, 0.0,aa,bb, 0.0, aa,bb;
+double aa = double(30) /180*PI, bb = double(60) /180*PI;
+    gc_init_<< 0, 0, 0.35, 1.0, 0.0, 0.0, 0.0, 0.0,  aa, -2*aa, 0.0, bb, -2*bb, 0.0,aa,-2*aa, 0.0, bb, -2*bb;
+
 //    gc_init_<< 0, 0, 0.37, 1.0, 0.0, 0.0, 0.0, 0.0,  0.5233, -1.046, 0.0,  0.5233, -1.046, 0.0, 0.523, -1.046, 0.0, 0.523, -1.046;
 //      init_position(gc_init_);
     init();
@@ -142,6 +148,7 @@ double aa = double(30) /180*PI, bb = double(-60) /180*PI;
 
   void reset() final {
     anymal_->setState(gc_init_, gv_init_);
+    skate->setState(skate_posi_init, skate_vel_init);
     rewards_.setZero();
     COUNT=0;
 //    euler_angle_old.setZero();
@@ -185,7 +192,8 @@ double aa = double(30) /180*PI, bb = double(-60) /180*PI;
     rewards_.record("Stable",-rrr, accu);
 //    std::cout<<"eu 0 "<< euler_angle[0] << " eu1 " << euler_angle[1] << std::endl;
     rewards_.record("Live", 1, accu);
-    rewards_.record("forwardVel", bodyLinearVel_[0], accu);
+    rewards_.record("forwardVel", skate_vel_[0], accu);
+    rewards_.record("height", 0.45- abs(gc_[2] - 0.45) - abs(gc_[0] ) - abs(gc_[1]) , accu);
 //    rewards_.record("Mimic", (gc_.tail(12) - pTarget12_).norm(), accu);
 //    rewards_.record("Wheel", euler_angle[2] * double(COUNT) / 400, accu);
 //    rewards_.record("Wheel", 0.5  - abs(ang_vel_[2]- 0.5), accu);
@@ -196,6 +204,7 @@ double aa = double(30) /180*PI, bb = double(-60) /180*PI;
 
   void updateObservation() {
     anymal_->getState(gc_, gv_);
+    skate -> getState(skate_posi_, skate_vel_);
     raisim::Vec<4> quat;
     raisim::Mat<3,3> rot;
     quat[0] = gc_[3]; quat[1] = gc_[4]; quat[2] = gc_[5]; quat[3] = gc_[6];
@@ -241,13 +250,13 @@ double aa = double(30) /180*PI, bb = double(-60) /180*PI;
   bool isTerminalState(float& terminalReward) final {
     terminalReward = float(terminalRewardCoeff_);
     bool accu = true;
-    for(auto& contact: anymal_->getContacts())
-      if(footIndices_.find(contact.getlocalBodyIndex()) == footIndices_.end())
-      {// if there is any contact body was not in the footIndices the over
-//          rewards_.record("Live", terminalReward, accu);
-//           std::cout<<"foot done " << std::endl;
-          return true;}
-      if(abs(gc_[2] - gc_init_[2]) > 0.2){
+//    for(auto& contact: anymal_->getContacts())
+//      if(footIndices_.find(contact.getlocalBodyIndex()) == footIndices_.end())
+//      {// if there is any contact body was not in the footIndices the over
+////          rewards_.record("Live", terminalReward, accu);
+////           std::cout<<"foot done " << std::endl;
+//          return true;}
+      if(gc_[2] - gc_init_[2] > 0.3){
 //      std::cout<<"z done" << std::endl;
 //         rewards_.record("Live", terminalReward, accu);
 
@@ -255,14 +264,14 @@ double aa = double(30) /180*PI, bb = double(-60) /180*PI;
        }
 
 
-      if(fmin(abs(euler_angle[1]), abs(euler_angle[1] + 2 * PI)) > 0.17)
+      if(fmin(abs(euler_angle[1]), abs(euler_angle[1] + 2 * PI)) > 0.3)
       {
 //      std::cout<<"y angle done" <<"  " << euler_angle[1]<< std::endl;
 //          rewards_.record("Live", terminalReward, accu);
 
         return true;
        }
-      if(fmin(abs(euler_angle[0]), abs(euler_angle[0] + 2 * PI)) > 0.17)
+      if(fmin(abs(euler_angle[0]), abs(euler_angle[0] + 2 * PI)) > 0.3)
       {
 //      std::cout<<"x angle done " << euler_angle[0] << std::endl;
 //          rewards_.record("Live", terminalReward, accu);
@@ -279,7 +288,7 @@ double aa = double(30) /180*PI, bb = double(-60) /180*PI;
  private:
   int gcDim_, gvDim_, nJoints_;
  bool visualizable_ = false;
-  raisim::ArticulatedSystem* anymal_, *anymal_1;
+  raisim::ArticulatedSystem* anymal_, *anymal_1, *skate;
   Eigen::VectorXd gc_init_, gv_init_, gc_, gv_, pTarget_, pTarget12_, vTarget_;
   double terminalRewardCoeff_ = -10.;
   Eigen::VectorXd actionMean_, actionStd_, obDouble_;
@@ -298,6 +307,7 @@ double aa = double(30) /180*PI, bb = double(-60) /180*PI;
   Eigen::Vector3d euler_angle, euler_angle_old;
   /// these variables are not in use. They are placed to show you how to create a random number sampler.
   bool float_base;
+  Eigen::VectorXd  skate_vel_, skate_posi_,skate_posi_init, skate_vel_init;
   std::normal_distribution<double> normDist_;
   thread_local static std::mt19937 gen_;
 };
