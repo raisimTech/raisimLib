@@ -138,7 +138,7 @@ int main(int argc, char* argv[]) {
   world.setTimeStep(0.01);
 
   /// create objects
-  auto ground = world.addGround();
+  auto ground = world.addGround(0, "land");
   auto go1 = world.addArticulatedSystem(binaryPath.getDirectory() + "\\rsc\\a1_description\\urdf\\a1.urdf");
   auto board = world.addArticulatedSystem(binaryPath.getDirectory() +"\\rsc\\skate\\skate.urdf");
   /// go1 joint PD controller
@@ -167,6 +167,35 @@ int main(int argc, char* argv[]) {
   go1->setPdTarget(jointNominalConfig, jointVelocityTarget);
   go1->setName("go1");
   std::cout<< go1->getGeneralizedCoordinate();
+
+    for(auto n : go1->getCollisionBodies())
+    {
+        auto name = n.colObj->name;
+        go1->getCollisionBody(name).setMaterial("steel");
+//        go1->getCollisionBody()
+    }
+
+    for(auto n : board->getCollisionBodies())
+    {
+        auto name = n.colObj->name;
+        std::cout << name << std::endl;
+//        board->getCollisionBody(name).setMaterial("steel");
+//        go1->getCollisionBody()
+    }
+//    wrl
+    board->getCollisionBody("base/0").setMaterial("sandpaper");
+    board->getCollisionBody("rotater_r/0").setMaterial("rubber");
+    board->getCollisionBody("rotater_f/0").setMaterial("rubber");
+    go1->getCollisionBody("FL_foot/0").setMaterial("rubber");
+    go1->getCollisionBody("FR_foot/0").setMaterial("rubber");
+    go1->getCollisionBody("RR_foot/0").setMaterial("rubber");
+    go1->getCollisionBody("RL_foot/0").setMaterial("rubber");
+    world.setMaterialPairProp("steel", "rubber", 0.8, 0.15, 0.001);
+    world.setMaterialPairProp("rubber", "sandpaper", 0.99, 0.15, 0.001);
+    world.setMaterialPairProp("land", "rubber", 0.8, 0.1,0.001);
+    world.setMaterialPairProp("sandpaper", "land", 0.4, 0.15,0.001);
+    world.setMaterialPairProp("steel","land", 0.1, 0.05,0.001);
+//    world.updateMaterialProp();
   /// launch raisim server
   raisim::RaisimServer server(&world);
   server.focusOn(go1);
@@ -179,6 +208,8 @@ int main(int argc, char* argv[]) {
     position.setZero(12), velo.setZero(12);
     gc.setZero(19), gv.setZero(18);
     size_t dof = go1->getDOF();
+//    go1->set
+
 
     raisim::Vec<3> vel;
     vel.setZero();
@@ -189,6 +220,7 @@ int main(int argc, char* argv[]) {
     bodyAngularVelocity.setZero(3);
     bodyLinearVelocity.setZero(3);
     auto roott = go1->getBodyIdx("base");
+//    go1->getCollisionBodies();
 //    auto imu = go1->getSensor<raisim::InertialMeasurementUnit>("imu_joint");
 
     for (int i=0; i<2000000; i++) {
@@ -206,7 +238,15 @@ int main(int argc, char* argv[]) {
       quat[0] = gc[3]; quat[1] = gc[4]; quat[2] = gc[5]; quat[3] = gc[6];
       quat /= quat.norm();
       raisim::quatToRotMat(quat, rot);
-
+//      auto nn =go1->getCollisionBodies();
+//      int cnt = 0;
+//      for(auto n : nn )
+//      {
+//
+//          std::cout<< cnt ++ << "   " << n.getMaterial() << std::endl;
+//      }
+//      std::cout<<world.getMaterialPairProperties();
+//      std::cout<< go1->getCollisionBody("FL_FOOT/0").getMaterial();
       bodyLinearVelocity = rot.e().transpose() * gv.segment(0, 3);
       bodyAngularVelocity = rot.e().transpose() * gv.segment(3, 3);
       Eigen::Vector3d eule;
@@ -244,10 +284,10 @@ int main(int argc, char* argv[]) {
 //      {
 //          std::cout << n.getPairContactIndexInPairObject()<< std::endl;
 //      }
-        for(auto obj:world.getObjList())
-        {
-            std::cout<<obj->getName()<<std::endl;
-        }
+//        for(auto obj:world.getObjList())
+//        {
+//            std::cout<<obj->getName()<<std::endl;
+//        }
 //        world.getContactProblem()
 
       Eigen::Quaterniond quata(gc[3], gc[4], gc[5], gc[6]);

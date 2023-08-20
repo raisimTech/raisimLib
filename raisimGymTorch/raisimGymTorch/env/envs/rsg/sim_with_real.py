@@ -23,18 +23,6 @@ import argparse
 # from sine_generator import sine_generator
 from unitree_deploy.angle_utils import  sine_generator
 from raisimGymTorch.env.deploy.angle_utils import  deg_rad, rad_deg
-""""
-todo 
-    1. left-hand right-hand check
-    2. raisim data check 
-    
-    env cannot get linear-acc
-
-"""
-
-
-
-
 
 # task specification
 task_name = "sim2real"
@@ -52,8 +40,6 @@ args = parser.parse_args()
 mode = args.mode
 weight_path = args.weight
 cfg_path = args.cfg_path
-# load_best = args.load_best
-# check if gpu is available
 device = torch.device('cpu')
 
 # directories
@@ -97,8 +83,6 @@ saver = ConfigurationSaver(log_dir=home_path + "/raisimGymTorch/data/"+task_name
                            save_items=[task_path + "/cfg.yaml", task_path + "/Environment.hpp"])
 logger = RaisimLogger(saver.data_dir+"/train.log")
 
-if mode =='train' or mode == 'retrain':
-    tensorboard_launcher(saver.data_dir+"/..")  # press refresh (F5) after the first ppo update
 num_envs = cfg['environment']['num_envs']
 ppo = PPO.PPO(actor=actor,
               critic=critic,

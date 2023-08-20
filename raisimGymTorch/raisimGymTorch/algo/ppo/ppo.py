@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
 from .storage import RolloutStorage
-
+import numpy as np
 
 class PPO:
     def __init__(self,
@@ -77,6 +77,7 @@ class PPO:
         self.actor_obs = actor_obs
         with torch.no_grad():
             self.actions, self.actions_log_prob = self.actor.sample(torch.from_numpy(actor_obs).to(self.device))
+            # self.actions  = np.clip(self.actions -  1, -1, 1)
         return self.actions
 
     def forward(self, actor_obs):

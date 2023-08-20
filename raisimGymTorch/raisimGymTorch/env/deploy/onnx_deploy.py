@@ -23,7 +23,7 @@ def ang_trans(lower, upper, x):
 
 def norm(lower, upper, x):
     # print(lower, upper, x)
-    assert abs((x - lower) / (upper - lower) ) <= 1, f"{abs((x - lower) / (upper - lower) )} {x, upper, lower} "
+    # assert abs((x - lower) / (upper - lower) ) <= 1, f"{abs((x - lower) / (upper - lower) )} {x, upper, lower} "
     return (x - lower) / (upper - lower)
 
 def rad_normalize(lower, upper,x):
@@ -178,7 +178,7 @@ def sine_gene_pt(idx, T):
         angle_list = [0 for i in range(12)]
         if idx >= 2 * T:
             idx = 0
-        dh =-0.5 #:w
+        dh =-0.5#:w
 
 
         # if idx >= 0 and idx <= T:
@@ -206,9 +206,9 @@ def sine_gene_pt(idx, T):
         angle_list[9] = 0
         angle_list[10] = y2
         angle_list[11] = -2 * y2
-        # print("ang_list ", angle_list)
+
         angle_list = [deg_normalize(low[i], upp[i], angle_list[i] + u0_ang[i]) for i in range(12)]
-        # print("ang_list ", angle_list)
+
         return angle_list
     else:
         ans = []
@@ -228,8 +228,6 @@ def rate_to_act(lower, upper, rate):
         return lerp(lower, upper, norm_for_act(rate))
 
 def clip(a,b,c):
-    # print('before clip ', a, b, c)
-
     if isinstance(a, np.ndarray):
         return np.clip(a,b,c)
 
@@ -237,15 +235,12 @@ def clip(a,b,c):
         a = b
     if a >= c:
         a = c
-    # print('clip ', a)
     return a
 
 def add_list(act_gen, sine, history=None):
     if isinstance(act_gen, np.ndarray):
-        # print(act_gen)
         assert act_gen.shape[0] == 12
     else:
-        # print(act_gen)
         assert len(act_gen) == 12
     kk = 0.9
     kf = 1
@@ -259,17 +254,11 @@ def add_list(act_gen, sine, history=None):
 
         ans = [rate_to_act(low[i], upp[i], clip(kb * history_u[i] + kf * sine[i], -1, 1)) for i in range(12)]
         ans = [deg_rad(x) for x in ans]
-        # todo swap the ans
-        # print(ans)
-        # input()/
         return ans
     else:
-        # history_u = history
         history = [history[i] * kk + (1-kk) * act_gen[i] for i in range(12)] # todo the act_gen[i] is to big
         ans = [rate_to_act(low[i], upp[i], clip(kb * history[i] + kf * sine[i], -1, 1)) for i in range(12)]
         ans = [deg_rad(x) for x in ans]
-        # todo swap the ans
-
         return ans, history
 
 def lerp_np(a, b, c):
@@ -279,44 +268,25 @@ def add_list_np(act_gen, sine, history):
     kk = 0.9
     kf = 1
     kb = 0.2
-    # print('be history ', history, 'act_gen ', act_gen)
     history = history*kk + (1-kk) * act_gen
     ans = np.clip(kb*history + kf * sine, -1, 1)
     ans = (ans + 1) /2  # 100 * 12
     ans = lerp_np(low_np, upp_np, ans)
-    # print('af history ', history)
+
     return ans, history
 
-def run_model_with_pt_input(act_gen, idx, T, history):
-    if isinstance(idx, list):
-        idx = [i%(2*T) for i in idx]
-    else:
-        idx = idx % (2 * T)
-    # act_gen = act_gen/3.14 * 180
-    # act_gen = np.zeros_like(act_gen)
-    sine = sine_gene(idx, T)
-    ans = []
-    new_his = []
-    for i in range(act_gen.shape[0]):
-        tmp, tmp_his= add_list(act_gen[i], sine[i], history[i])
-        ans.append(tmp)
-        new_his.append(tmp_his)
-
-    return np.array(ans).astype(np.float32),np.array(new_his).astype(np.float32)
 
 def run_model_with_pt_input_modify(act_gen, idx, T, history):
+    act_gen = np.clip(act_gen- 1, -1, 1)
     if isinstance(idx, list):
         idx = np.array(idx)
-        # print(idx.shape)
         idx = idx%(2*T)
     else:
         idx = idx % (2 * T)
 
     sine = sine_gene_pt(idx, T)
-    # act_gen = np.zeros_like(act_gen)
     ans, history = add_list_np(act_gen, sine, history)
     ans = ans / 180 * 3.14
-
 
     return ans.astype(np.float32), history.astype(np.float32)
 
@@ -370,14 +340,10 @@ def run_model(observation, idx, T, save_gen=None):
         save_gen.add_list(act_gen[0])
 
     sine = sine_gene(idx, T)
-    # print(sine)
     ans = []
     for act in act_gen:
         ans.append(add_list(act, sine))
     ans = np.array(ans).astype(np.float32)
-    # print(ans)
-    # input()
-    # be_ans =
     ans[:, [0,1,2,3,4,5,6,7,8,9,10,11]] = \
     ans[:, [9,10,11,6,7,8,3,4,5,0,1,2]]
     ans = [ans]
@@ -388,57 +354,8 @@ def run_model(observation, idx, T, save_gen=None):
 def run_model1(observation):
     return model.run([output_name], input_feed={input_name: observation})
 
-# 运行模型
-
-# outputs = model.run([output_name], input_feed={input_name: input_data})
-# print(outputs)
-# x = run_model(input_data)
-# print(x)
-
-
-    # if not isinstance(idx, list):
-    #     angle_list = [0 for i in range(12)]
-    #     if idx >= 2 * T:
-    #         idx = 0
-    #     dh = 0.8 # todo for test
-    #     if idx >= 0 and idx <= T:
-    #         tp0 =idx - 0
-    #         y1 = dh * 10 * (-cos(pi * 2 * tp0 / T) + 1 ) / 2
-    #         y2 = 0
-    #     elif idx>T and idx<=2*T:
-    #         tp0 =idx - T
-    #         y2 = dh * 10 * (-cos(pi * 2 * tp0 / T) + 1 ) / 2
-    #         y1 = 0
-    #
-    #
-    #     angle_list[0] = 0
-    #     angle_list[1] = y1
-    #     angle_list[2] = -2 * y1
-    #     angle_list[3] = 0
-    #     angle_list[4] = y2
-    #     angle_list[5] = -2 * y2
-    #     angle_list[6] = 0
-    #     angle_list[7] = y2
-    #     angle_list[8] = -2 * y2
-    #     angle_list[9] = 0
-    #     angle_list[10] = y1
-    #     angle_list[11] = -2 * y1
-    #     # print("ang_list ", angle_list)
-    #     angle_list = [deg_normalize(low[i], upp[i], angle_list[i] + ang_trans(low[i], upp[i], u0[i]) ) for i in range(12)]
-    #     # print("ang_list ", angle_list)
-    #     return angle_list
-
-
-
 if __name__=="__main__":
-    # sine_gen(np.zeros(100), 40)
-    # idx = [3,2,1,4,1,3,2,3,2,3,1,2,3,2,3,1]
-    # a = [0,2,3,0]
-    # b= [ 5, 3, 5,0]
-    # a= np.array(a)
-    # b= np.array(b)
-    # c = np.array([[0.2, 0.5, 0.3, 0.4], [0,0.3,0.2,0]])
-    # print(a * (1-c) + b * c)
+
     z = []
     minn = 100
     minnn =[]
@@ -458,23 +375,7 @@ if __name__=="__main__":
     import matplotlib.pyplot as plt
     plt.plot(x, z)
     plt.show()
-    # mat = np.zeros((100,12))
-    # mat = np.where(np.indices(mat)>20, 1,  0)
-    # print(mat)
-"""
-todo
-1. on action 的范围
-2. 似乎是角度问题？应该是范围需要考虑是 角度还是弧度
 
-
-老师的输入是deg or rad
-what's my output
-
-
-using deg to get the rate 
-and feed the rate to the env
-
-"""
 
 
 def test_run_model():
