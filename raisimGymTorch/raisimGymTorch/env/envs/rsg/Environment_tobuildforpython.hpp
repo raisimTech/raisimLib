@@ -57,7 +57,7 @@ namespace raisim {
     skate = world_ ->addArticulatedSystem("/home/lr-2002/code/raisimLib/rsc/skate/skate.urdf");
     anymal_->setName("model");
     anymal_->setControlMode(raisim::ControlMode::PD_PLUS_FEEDFORWARD_TORQUE);
-    world_->addGround();
+    world_->addGround(0,"land");
 
     /// get robot data
     gcDim_ = anymal_->getGeneralizedCoordinateDim(); // 19
@@ -65,7 +65,7 @@ namespace raisim {
     nJoints_ = gvDim_ - 6;
     skate_posi_init.setZero(9);
     skate_vel_init.setZero(8);
-    skate_posi_init << 0, 0.12, 0.11, 0.707, 0., 0, 0.707, 0 , 0;
+    skate_posi_init << 0, 0.15, 0.11, 0.707, 0., 0, 0.707, 0 , 0;
     skate ->setGeneralizedCoordinate(skate_posi_init);
     gc_.setZero(gcDim_); gc_init_.setZero(gcDim_);
     gv_.setZero(gvDim_); gv_init_.setZero(gvDim_);
@@ -78,11 +78,9 @@ namespace raisim {
     skate_vel_.setZero(8);
     skate_posi_.setZero(9);
 //      init_position();
-double aa = double(30) /180*PI, bb = double(60) /180*PI;
+double aa =  0.5233 , bb = double(60) /180*PI;
     gc_init_<< 0, 0, 0.35, 1.0, 0.0, 0.0, 0.0, 0.0,  aa, -2*aa, 0.0, bb, -2*bb, 0.0,aa,-2*aa, 0.0, bb, -2*bb;
-
 //    gc_init_<< 0, 0, 0.37, 1.0, 0.0, 0.0, 0.0, 0.0,  0.5233, -1.046, 0.0,  0.5233, -1.046, 0.0, 0.523, -1.046, 0.0, 0.523, -1.046;
-//      init_position(gc_init_);
     init();
 
     obDim_ = 29;
@@ -101,7 +99,25 @@ double aa = double(30) /180*PI, bb = double(60) /180*PI;
     footIndices_.insert(anymal_->getBodyIdx("RL_calf"));
     footIndices_.insert(anymal_->getBodyIdx("RR_calf"));
 
-    /// visualize if it is the first environment
+      for(auto n : anymal_->getCollisionBodies())
+      {
+          auto name = n.colObj->name;
+          anymal_->getCollisionBody(name).setMaterial("steel");
+      }
+
+      skate->getCollisionBody("base/0").setMaterial("sandpaper");
+      skate->getCollisionBody("rotater_r/0").setMaterial("rubber");
+      skate->getCollisionBody("rotater_f/0").setMaterial("rubber");
+      anymal_->getCollisionBody("FL_foot/0").setMaterial("rubber");
+      anymal_->getCollisionBody("FR_foot/0").setMaterial("rubber");
+      anymal_->getCollisionBody("RR_foot/0").setMaterial("rubber");
+      anymal_->getCollisionBody("RL_foot/0").setMaterial("rubber");
+      world_->setMaterialPairProp("steel", "rubber", 0.8, 0.15, 0.001);
+      world_->setMaterialPairProp("rubber", "sandpaper", 0.99, 0.15, 0.001);
+      world_->setMaterialPairProp("land", "rubber", 0.8, 0.1,0.001);
+      world_->setMaterialPairProp("sandpaper", "land", 0.4, 0.15,0.001);
+      world_->setMaterialPairProp("steel","land", 0.1, 0.05,0.001);
+
     if (visualizable_) {
       server_ = std::make_unique<raisim::RaisimServer>(world_.get());
       server_->launchServer();
@@ -115,19 +131,9 @@ double aa = double(30) /180*PI, bb = double(60) /180*PI;
       Eigen::VectorXd jointPgain(gvDim_), jointDgain(gvDim_);
       jointPgain.setZero();
       jointPgain.tail(nJoints_).setConstant(p_gain);
-//      jointPgain.tail(nJoints_)[2] = 300;
-//      jointPgain.tail(nJoints_)[5] = 300;
-//      jointPgain.tail(nJoints_)[8] = 300;
-//      jointPgain.tail(nJoints_)[11] = 300;
       jointDgain.setZero();
       jointDgain.tail(nJoints_).setConstant(d_gain);
-//      jointDgain.tail(nJoints_)[2] = 15;
-//      jointDgain.tail(nJoints_)[5] = 15;
-//      jointDgain.tail(nJoints_)[8] = 15;
-//      jointDgain.tail(nJoints_)[11] = 15;
       anymal_->setPdGains(jointPgain, jointDgain);
-//      std::cout<<jointPgain;
-      anymal_->setGeneralizedForce(Eigen::VectorXd::Zero(gvDim_));
       anymal_->setGeneralizedForce(Eigen::VectorXd::Zero(gvDim_));
       if(show_ref)
       {
@@ -137,7 +143,6 @@ double aa = double(30) /180*PI, bb = double(60) /180*PI;
           anymal_1->setControlMode(raisim::ControlMode::PD_PLUS_FEEDFORWARD_TORQUE);
           anymal_1->setPdGains(jointPgain,jointDgain);
       }
-//      std::cout<<"position inited\n";
   }
 
   void init_position(const Eigen::Ref<EigenVec>& posi) final
@@ -183,21 +188,17 @@ double aa = double(30) /180*PI, bb = double(60) /180*PI;
     }
     updateObservation();
     double rrr =0;
-//    for(int i=0;i<=2;i++) rrr += abs(euler_angle[i]) ;
     rrr = abs(euler_angle[0]) + abs(euler_angle[1]) + abs(euler_angle[2]);
     rrr += 0.1 * ( abs(ang_vel_[0]) + abs(ang_vel_[1]) +abs(ang_vel_[2]));
-//    rrr = abs(gc_[0]) + abs(gc_[1]);
-//    rrr += (gc_.tail(12) - pTarget12_).norm() ;
+    rrr += abs(gc_[0] - skate_posi_[0]) + abs(gc_[1] - (skate_posi_[1] - 0.15));
     bool accu = false;
     rewards_.record("Stable",-rrr, accu);
-//    std::cout<<"eu 0 "<< euler_angle[0] << " eu1 " << euler_angle[1] << std::endl;
     rewards_.record("Live", 1, accu);
     rewards_.record("forwardVel", skate_vel_[0], accu);
     rewards_.record("height", 0.45- abs(gc_[2] - 0.45) - abs(gc_[0] ) - abs(gc_[1]) , accu);
 //    rewards_.record("Mimic", (gc_.tail(12) - pTarget12_).norm(), accu);
 //    rewards_.record("Wheel", euler_angle[2] * double(COUNT) / 400, accu);
 //    rewards_.record("Wheel", 0.5  - abs(ang_vel_[2]- 0.5), accu);
-//    euler_angle_old = euler_angle;
     rewards_.record("torque",anymal_->getGeneralizedForce().squaredNorm() );
     return rewards_.sum();
   }
@@ -205,6 +206,7 @@ double aa = double(30) /180*PI, bb = double(60) /180*PI;
   void updateObservation() {
     anymal_->getState(gc_, gv_);
     skate -> getState(skate_posi_, skate_vel_);
+
     raisim::Vec<4> quat;
     raisim::Mat<3,3> rot;
     quat[0] = gc_[3]; quat[1] = gc_[4]; quat[2] = gc_[5]; quat[3] = gc_[6];
@@ -213,14 +215,8 @@ double aa = double(30) /180*PI, bb = double(60) /180*PI;
     bodyLinearVel_ = rot.e().transpose() * gv_.segment(0, 3);
     bodyAngularVel_ = rot.e().transpose() * gv_.segment(3, 3);
     anymal_->getAngularVelocity(anymal_->getBodyIdx("base"), ang_vel_);
-//    anymal_->getVelocity(anymal_->getBodyIdx("base"), bodyLinearVel_);
-//    anymal_->get
     Eigen::Quaterniond qua(gc_[3], gc_[4], gc_[5], gc_[6]);
     euler_angle = ToEulerAngles(qua);
-//      if(euler_angle[1] > PI) euler_angle[1] -= 2*PI;
-//      if(euler_angle[0] > PI) euler_angle[0] -= 2*PI;
-//      if(euler_angle[1] < -PI) euler_angle[1] += 2 * PI;
-//      if(euler_angle[0] < -PI) euler_angle[0] += 2 * PI;
     Eigen::VectorXd gcc = gc_.tail(12);
     Eigen::VectorXd gvv = gv_.tail(12);
     Eigen::VectorXd c_v(24);
@@ -238,8 +234,6 @@ double aa = double(30) /180*PI, bb = double(60) /180*PI;
         ang_vel_[1],
         ang_vel_[2],
        c_v;
-//    std::cout<<"ang_vel : " << ang_vel_ << std::endl;
-
 
   }
 
@@ -253,16 +247,14 @@ double aa = double(30) /180*PI, bb = double(60) /180*PI;
 //    for(auto& contact: anymal_->getContacts())
 //      if(footIndices_.find(contact.getlocalBodyIndex()) == footIndices_.end())
 //      {// if there is any contact body was not in the footIndices the over
-////          rewards_.record("Live", terminalReward, accu);
-////           std::cout<<"foot done " << std::endl;
+//          rewards_.record("Live", terminalReward, accu);
+//           std::cout<<"foot done " << std::endl;
 //          return true;}
       if(gc_[2] - gc_init_[2] > 0.3){
 //      std::cout<<"z done" << std::endl;
 //         rewards_.record("Live", terminalReward, accu);
-
        return true;
        }
-
 
       if(fmin(abs(euler_angle[1]), abs(euler_angle[1] + 2 * PI)) > 0.3)
       {
@@ -276,6 +268,14 @@ double aa = double(30) /180*PI, bb = double(60) /180*PI;
 //      std::cout<<"x angle done " << euler_angle[0] << std::endl;
 //          rewards_.record("Live", terminalReward, accu);
 //
+            return true;
+        }
+        if(abs(gc_[0] - skate_posi_[0]) >0.2)
+        {
+            return true;
+        }
+        if(abs(gc_[1] - (skate_posi_[1] - 0.15)) >0.1)
+        {
             return true;
         }
 

@@ -6,8 +6,8 @@ from raisimGymTorch.env.bin.rsg import RaisimGymEnv
 from raisimGymTorch.env.RewardAnalyzer import RewardAnalyzer
 import raisimGymTorch.algo.ppo.module as ppo_module
 import raisimGymTorch.algo.ppo.ppo as PPO
-from raisimGymTorch.env.deploy.angle_utils import get_last_position
-from raisimGymTorch.env.deploy.onnx_deploy import run_model_with_pt_input_modify, list_pt
+from raisimGymTorch.deploy_utils.angle_utils import get_last_position
+from raisimGymTorch.deploy_utils.runner_util import run_model_with_pt_input_modify, list_pt
 import os
 import math
 import time

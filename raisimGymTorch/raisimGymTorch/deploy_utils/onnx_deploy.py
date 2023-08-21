@@ -1,11 +1,11 @@
 import time
 
 import onnxruntime as ort
-# import onnx
+# import onnx_file
 # from mlprodict.onnxrt import OnnxInference
 from math import cos,pi
 import numpy as np
-from raisimGymTorch.env.deploy.angle_utils import deg_rad, rad_deg
+from raisimGymTorch.deploy_utils.angle_utils import deg_rad, rad_deg
 from raisimGymTorch.deploy_log.draw_map import Drawer
 # 加载模型
 
@@ -70,7 +70,7 @@ u0_ang = ang_trans(low, upp, u0)
 history_u = [0] * 12
 # history_u_rad = [0] * 12/
 # history_u = u0.copy()
-model = ort.InferenceSession('/home/lr-2002/code/raisimLib/raisimGymTorch/raisimGymTorch/env/deploy/2203.onnx')
+model = ort.InferenceSession('/env/deploy_utils/onnx_file/2203.onnx')
 
 idx_local = 0
 

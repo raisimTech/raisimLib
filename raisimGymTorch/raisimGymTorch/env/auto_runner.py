@@ -23,4 +23,4 @@ for j in test_T:
         else:
             os.system(f'python /home/lr-2002/code/raisimLib/raisimGymTorch/raisimGymTorch/env/envs/rsg/runner.py -u {length} |grep biggest' )
 
-# os.system('python /home/lr-2002/code/raisimLib/raisimGymTorch/raisimGymTorch/env/envs/rsg_go1/runner.py -u 3 |grep biggest' )
+# os.system('python /home/lr-2002/code/raisimLib/raisimGymTorch/raisimGymTorch/env/envs/rsg_go1/runner_util.py -u 3 |grep biggest' )

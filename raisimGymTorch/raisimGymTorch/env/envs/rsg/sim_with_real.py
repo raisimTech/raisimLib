@@ -6,9 +6,9 @@ from raisimGymTorch.env.bin.rsg import RaisimGymEnv
 from raisimGymTorch.env.RewardAnalyzer import RewardAnalyzer
 import raisimGymTorch.algo.ppo.module as ppo_module
 import raisimGymTorch.algo.ppo.ppo as PPO
-from raisimGymTorch.env.deploy.angle_utils import transfer
+from raisimGymTorch.env.deploy_util.angle_utils import transfer
 from unitree_utils.Waiter import Waiter
-from raisimGymTorch.env.deploy.angle_utils import get_last_position
+from raisimGymTorch.deploy_utils.angle_utils import get_last_position
 from raisimGymTorch.deploy_log.draw_map import  Drawer
 from raisimGymTorch.deploy_log.csv_saver import CSV_saver
 import os
@@ -22,7 +22,7 @@ import argparse
 # import pandas as pd
 # from sine_generator import sine_generator
 from unitree_deploy.angle_utils import  sine_generator
-from raisimGymTorch.env.deploy.angle_utils import  deg_rad, rad_deg
+from raisimGymTorch.deploy_utils.angle_utils import  deg_rad, rad_deg
 
 # task specification
 task_name = "sim2real"
@@ -138,7 +138,7 @@ if virtual:
     onnx_flag = True
     if onnx_flag:
         cnt_onnx = 0
-        from raisimGymTorch.env.deploy import onnx_deploy
+        from raisimGymTorch.env.deploy_util import onnx_deploy
     else:
         load_param(weight_path, env, actor, critic, ppo.optimizer, saver.data_dir)
 
@@ -152,7 +152,7 @@ if moving_robot:
     history_obs = None
     if onnx_flag:
         cnt_onnx = 0
-        from raisimGymTorch.env.deploy import onnx_deploy
+        from raisimGymTorch.env.deploy_util import onnx_deploy
     from robot_utils import *
     a1.torque_limit = 33.15
     init_robot(dt)
