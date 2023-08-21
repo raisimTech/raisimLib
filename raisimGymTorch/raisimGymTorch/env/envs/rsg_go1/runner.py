@@ -200,7 +200,7 @@ else:
     debug = True
     if onnx_flag:
         cnt_onnx = 0
-        from raisimGymTorch.env.deploy import onnx_deploy
+        from raisimGymTorch.env.deploy_util import onnx_deploy
     T = 50
     np.set_printoptions(threshold=np.inf)
     draw_line =[]

@@ -19,8 +19,7 @@ import argparse
 
 from unitree_utils.Waiter import Waiter
 from raisimGymTorch.deploy_log.draw_map import Drawer
-
-
+from raisimGymTorch.deploy_log.csv_saver import CSV_saver
 
 # task specification
 task_name = "rsg_test"
@@ -109,6 +108,8 @@ his_util=[0] * 12
 check_done = lambda a, b: a + 1 if not b else 0
 check_history = lambda a, b: a if not b else his_util
 
+save_observe = CSV_saver('./observation_saver')
+save_act = CSV_saver('./act_saver')
 
 print = logger.info
 on_p_rate =cfg['on_policy']['rate']
@@ -119,79 +120,40 @@ history_act = np.array([his_util] * num_envs)
 history_act_0 = np.array([his_util] * num_envs)
 total_update = args.update
 if mode =='train' or mode == 'retrain':
+    env.turn_on_visualization()
     schedule = cfg['environment']['schedule']
+    envs_idx = 0
+    waiter = Waiter(0.01)
+    waiter.update_start()
     for update in range(total_update):
-        start = time.time()
-        env.reset()
+        # print('after update')
         reward_sum = 0
-        envs_idx = env_idx
-        history_act=history_act_0
-        done_sum = 0
-        average_dones = 0.
 
-        if update % cfg['environment']['eval_every_n'] == 0:
-            # draw_his = Drawer('history')
-            waiter = Waiter(0.01)
-            print("Visualizing and evaluating the current policy")
-            torch.save({
-                'actor_architecture_state_dict': actor.architecture.state_dict(),
-                'actor_distribution_state_dict': actor.distribution.state_dict(),
-                'critic_architecture_state_dict': critic.architecture.state_dict(),
-                'optimizer_state_dict': ppo.optimizer.state_dict(),
-            }, saver.data_dir+"/full_"+str(update)+'.pt')
-
-            env.turn_on_visualization()
-            env.start_video_recording(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + "policy_"+str(update)+'.mp4')
-            envs_idx = env_idx
-            waiter.update_start()
-            for step in range(n_steps):
-                with torch.no_grad():
-                    waiter.wait()
-                    frame_start = time.time()
-
-
-                    obs = env.observe(False)
-                    action = ppo.act(obs)
-                    action, history_act = run_model_with_pt_input_modify(action, envs_idx, schedule, history_act, kb=on_p_kb, rate=on_p_rate)
-                    reward, dones = env.step(action)
-
-
-                    history_act = np.array([check_history(history_act[i], dones[i]) for i in range(num_envs)])
-                    envs_idx     = np.where(dones  ==1, 0, envs_idx+1)
-                    reward_analyzer.add_reward_info(env.get_reward_info())
-                    frame_end = time.time()
-                    wait_time = cfg['environment']['control_dt'] - (frame_end-frame_start)
-
-            env.stop_video_recording()
-            env.turn_off_visualization()
-            history_act = np.array([his_util] * num_envs)
-            reward_analyzer.analyze_and_plot(update)
-            env.reset()
-            env.save_scaling(saver.data_dir, str(update))
-        envs_idx = env_idx
-        history_act=history_act_0
         for step in range(n_steps):
+            waiter.wait()
             obs = env.observe(False)
             action = ppo.act(obs)
             action, history_act = run_model_with_pt_input_modify(action, envs_idx, schedule, history_act, kb=on_p_kb, rate=on_p_rate)
-            reward, dones = env.step(action)
-            history_act = np.array([check_history(history_act[i], dones[i]) for i in range(num_envs)])
-            envs_idx = np.where(dones == 1, 0, envs_idx + 1)
-            ppo.step(value_obs=obs, rews=reward, dones=dones)
+            reward, _ = env.step(action)
 
+            envs_idx +=1
+            ppo.step(value_obs=obs, rews=reward, dones=_)
 
+            save_observe.add_list(obs[0])
+            save_act.add_list(action[0])
 
-            done_sum = done_sum + np.sum(dones)
             reward_sum = reward_sum + np.sum(reward)
             reward_analyzer.add_reward_info(env.get_reward_info())
             reward_analyzer.analyze_and_plot(update)
         # take st step to get value obs
+        print('before update')
         obs = env.observe(False)
         ppo.update(actor_obs=obs, value_obs=obs, log_this_iteration=update % 2 == 0, update=update)
         average_ll_performance = reward_sum / total_steps
 
+        print('before saving')
 
-        if average_ll_performance > biggest_reward:
+        if update % cfg['environment']['eval_every_n'] == 0:
             biggest_iter = update
             biggest_reward = average_ll_performance
             torch.save({
@@ -201,28 +163,27 @@ if mode =='train' or mode == 'retrain':
                 'optimizer_state_dict': ppo.optimizer.state_dict(),
             }, saver.data_dir+"/full_"+str(update)+'.pt')
             env.save_scaling(saver.data_dir, str(update))
-        average_dones = done_sum / total_steps
+            save_act.save()
+            save_observe.save()
+        print('after save')
+
         avg_rewards.append(average_ll_performance)
 
         actor.update()
         actor.distribution.enforce_minimum_std((torch.ones(12)).to(device))
-
-        # curriculum update. Implement it in Environment.hpp
-        env.curriculum_callback()
-
-        end = time.time()
+        print('after update')
 
         print('----------------------------------------------------')
         print('{:>6}th iteration'.format(update))
         print('{:<40} {:>6}'.format("average ll reward: ", '{:0.10f}'.format(average_ll_performance)))
-        print('{:<40} {:>6}'.format("dones: ", '{:0.6f}'.format(average_dones)))
-        print('{:<40} {:>6}'.format("time elapsed in this iteration: ", '{:6.4f}'.format(end - start)))
-        print('{:<40} {:>6}'.format("fps: ", '{:6.0f}'.format(total_steps / (end - start))))
-        print('{:<40} {:>6}'.format("real time factor: ", '{:6.0f}'.format(total_steps / (end - start)
-                                                                           * cfg['environment']['control_dt'])))
+        # print('{:<40} {:>6}'.format("dones: ", '{:0.6f}'.format(average_dones)))
+        # print('{:<40} {:>6}'.format("time elapsed in this iteration: ", '{:6.4f}'.format(end - start)))
+        # print('{:<40} {:>6}'.format("fps: ", '{:6.0f}'.format(total_steps / (end - start))))
+        # print('{:<40} {:>6}'.format("real time factor: ", '{:6.0f}'.format(total_steps / (end - start)
+        #                                                                    * cfg['environment']['control_dt'])))
         print('----------------------------------------------------\n')
-
-
+        print('after print')
+    env.turn_off_visualization()
 print(f'biggest:{biggest_reward},rate = {biggest_iter}')
 
 

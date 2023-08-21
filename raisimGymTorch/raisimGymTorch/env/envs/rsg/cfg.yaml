@@ -4,9 +4,9 @@ record_video: true
 environment:
   render: true
 # just testing commenting
-  num_envs: 100
+  num_envs: 1
   eval_every_n: 40
-  num_threads: 30
+  num_threads: 1
   simulation_dt: 0.0025
   control_dt: 0.01
   max_time: 4
@@ -23,20 +23,24 @@ environment:
   urdf_path: /home/lr-2002/code/raisimLib/rsc/a1_description/urdf/a1.urdf
   reward:
     forwardVel:
-      coeff: 0.5
+      coeff: 0.
     torque:
       coeff: -4e-5
     Stable:
-      coeff: 0.01
+      coeff: 0.4
     height:
       coeff: 0.
     Live:
-      coeff: 0
+      coeff: 1
     Wheel:
-      coeff: 0.
+      coeff: 0.3
 #    Mimic:
 #      coeff: 0.
 
 architecture:
   policy_net: [128, 128]
   value_net: [128, 128]
+
+on_policy:
+  rate: 0.6 # for sine A
+  kb: 0.05 # act_gen * kb
