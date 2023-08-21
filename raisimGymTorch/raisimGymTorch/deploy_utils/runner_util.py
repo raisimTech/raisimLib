@@ -3,9 +3,9 @@ from math import cos,pi
 def lerp_np(a, b, c):
     return a* (1-c) + b*c
 def add_list_np(act_gen, sine, history,kb):
-    kk = 0.9
+    kk = 0.95
     kf = 1
-    kb = kb
+    kb = np.array([0.2, 0.1, 0.1] * 4)
     history = history*kk + (1-kk) * act_gen
     ans = np.clip(kb*history + kf * sine, -1, 1)
     ans = (ans + 1) /2  # 100 * 12
@@ -50,14 +50,15 @@ def deg_normalize(lower, upper, x):
         # return 1 - 2* norm(lower, upper,x)
 low = [-46, -60, -154.5, -46, -60, -154.5, -46, -60, -154.5, -46, -60, -154.5]
 upp = [46, 240, -52.5, 46, 240, -52.5, 46, 240, -52.5, 46, 240, -52.5]
-tha1,tha2 = 30, 30
-u0 = [0, tha2, -2*tha2, 0 ,tha1, -tha1 * 2, 0 , tha2, -2*tha2, 0, tha1,-2*tha1]
+tha1,tha2 = 35,35
+u0 = [0, tha2, -2*tha2 + 10, 0 ,tha1, -tha1 * 2 +10 , 0 , tha2, -2*tha2 + 10, 0, tha1,-2*tha1 + 10]
 
 low_np = np.array(low)
 upp_np = np.array(upp)
+u0_rad = deg_rad(u0)
+
 u0 = deg_normalize(low, upp, u0)
 u0_ang = ang_trans(low, upp, u0)
-
 def sine_gene_pt(idx, T, rate):
     # print(idx)
     if isinstance(idx, np.ndarray) or isinstance(idx, list):
@@ -131,4 +132,4 @@ def run_model_with_pt_input_modify(act_gen, idx, T, history, kb, rate):
     return ans.astype(np.float32), history.astype(np.float32)
 
 if __name__=='__main__':
-    print(run_model_with_pt_input_modify(np.zeros((1,12)), 1, 50, np.zeros((1,12))))
+    print(run_model_with_pt_input_modify(np.zeros((1,12)), 1, 50, np.zeros((1,12)), 0.15, 0.6))

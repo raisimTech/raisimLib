@@ -67,7 +67,7 @@ n_steps = math.floor(cfg['environment']['max_time'] / cfg['environment']['contro
 total_steps = n_steps * env.num_envs
 
 avg_rewards = []
-
+print(env.num_envs)
 actor = ppo_module.Actor(ppo_module.MLP(cfg['architecture']['policy_net'], nn.LeakyReLU, ob_dim, act_dim),
                          ppo_module.MultivariateGaussianDiagonalCovariance(act_dim,
                                                                            env.num_envs,
@@ -81,8 +81,6 @@ critic = ppo_module.Critic(ppo_module.MLP(cfg['architecture']['value_net'], nn.L
 saver = ConfigurationSaver(log_dir=home_path + "/raisimGymTorch/data/"+task_name,
                            save_items=[task_path + "/cfg.yaml", task_path + "/Environment.hpp"])
 logger = RaisimLogger(saver.data_dir+"/train.log")
-
-
 
 def updating():
     obs = env.observe(False)
@@ -102,13 +100,10 @@ def updating():
         env.save_scaling(saver.data_dir, str(update))
         save_act.save()
         save_observe.save()
-
-
     avg_rewards.append(average_ll_performance)
 
     actor.update()
     actor.distribution.enforce_minimum_std((torch.ones(12)).to(device))
-
 
     print('----------------------------------------------------')
     print('{:>6}th iteration'.format(update))
@@ -146,9 +141,9 @@ print = logger.info
 
 on_p_rate =cfg['on_policy']['rate']
 on_p_kb = cfg['on_policy']['kb']
-
 mode == 'train'
-
+his_util = [0] * 12
+history_act = np.array([his_util] * num_envs)
 total_update = args.update
 if mode =='train' or mode == 'retrain':
     env.turn_on_visualization()
@@ -162,7 +157,9 @@ if mode =='train' or mode == 'retrain':
         for step in range(n_steps):
             waiter.wait()
             obs = env.observe(False)
+            # print(obs)
             action = ppo.act(obs)
+            # action = np.zeros_like(action)
             action, history_act = run_model_with_pt_input_modify(action, envs_idx, schedule, history_act, kb=on_p_kb, rate=on_p_rate)
             reward, _ = env.step(action)
 

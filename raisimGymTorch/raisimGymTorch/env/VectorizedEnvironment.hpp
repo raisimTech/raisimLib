@@ -237,7 +237,7 @@ class NormalSampler {
   }
 
   void seed(int seed) {
-    // this ensures that every thread gets a different seed
+    // this ensures that every thread gets a different see
 #pragma omp parallel for schedule(static, 1)
     for (int i = 0; i < THREAD_COUNT; i++)
       normal_[0].seed(i + seed);

@@ -78,12 +78,12 @@ namespace raisim {
 //    skate_vel_.setZero(8);
 //    skate_posi_.setZero(9);
 //      init_position();
-double aa =  0.5233 , bb = double(30) /180*PI;
-    gc_init_<< 0, 0, 0.33, 1.0, 0.0, 0.0, 0.0, 0.0,  aa, -2*aa, 0.0, bb, -2*bb, 0.0,aa,-2*aa, 0.0, bb, -2*bb;
+double aa =  double(35)/ 180 * PI , bb = double(35) /180*PI;
+    gc_init_<< 0, 0, cos(aa) * 2 * 0.2, 1.0, 0.0, 0.0, 0.0, 0.0,  aa, -2*aa, 0.0, bb, -2*bb, 0.0,aa,-2*aa, 0.0, bb, -2*bb;
 //    gc_init_<< 0, 0, 0.37, 1.0, 0.0, 0.0, 0.0, 0.0,  0.5233, -1.046, 0.0,  0.5233, -1.046, 0.0, 0.523, -1.046, 0.0, 0.523, -1.046;
     init();
 
-    obDim_ = 29;
+    obDim_ = 31;
     actionDim_ = nJoints_; actionMean_.setZero(actionDim_); actionStd_.setZero(actionDim_);
     obDouble_.setZero(obDim_);
 
@@ -188,13 +188,13 @@ double aa =  0.5233 , bb = double(30) /180*PI;
     }
     updateObservation();
     double rrr =0;
-    rrr = abs(euler_angle[0]) + abs(euler_angle[1]) ;
-    rrr += 0.1 * ( abs(ang_vel_[0]) + abs(ang_vel_[1]));
+    rrr = abs(euler_angle[0]) + abs(euler_angle[1]) + abs(euler_angle[2]) ;
+    rrr += 0.1 * ( abs(ang_vel_[0]) + abs(ang_vel_[1]) + abs(ang_vel_[2]));
 //    rrr += abs(gc_[0] - skate_posi_[0]) + abs(gc_[1] - (skate_posi_[1] - 0.15));
     bool accu = false;
     rewards_.record("Stable",-rrr, accu);
     rewards_.record("Live", 1, accu);
-//    rewards_.record("forwardVel", skate_vel_[0], accu);
+    rewards_.record("forwardVel", -abs(3- line_vel_[0]), accu);
 //    rewards_.record("height", 0.45- abs(gc_[2] - 0.45) - abs(gc_[0] ) - abs(gc_[1]) , accu);
 //    rewards_.record("Mimic", (gc_.tail(12) - pTarget12_).norm(), accu);
 //    rewards_.record("Wheel", euler_angle[2] * double(COUNT) / 400, accu);
@@ -204,6 +204,9 @@ double aa =  0.5233 , bb = double(30) /180*PI;
   }
 
   void updateObservation() {
+//  raisim::Vec<3> acc_w;
+
+//  std::cout<< "acc? " <<anymal_->getFrameAcceleration("base",acc_w);
     anymal_->getState(gc_, gv_);
 //    skate -> getState(skate_posi_, skate_vel_);
 
@@ -212,9 +215,10 @@ double aa =  0.5233 , bb = double(30) /180*PI;
     quat[0] = gc_[3]; quat[1] = gc_[4]; quat[2] = gc_[5]; quat[3] = gc_[6];
     quat /= quat.norm();
     raisim::quatToRotMat(quat, rot);
-    bodyLinearVel_ = rot.e().transpose() * gv_.segment(0, 3);
+//    bodyLinearVel_ = rot.e().transpose() * gv_.segment(0, 3);
     bodyAngularVel_ = rot.e().transpose() * gv_.segment(3, 3);
     anymal_->getAngularVelocity(anymal_->getBodyIdx("base"), ang_vel_);
+    anymal_->getFrameVelocity(anymal_->getBodyIdx("base"), line_vel_);
     Eigen::Quaterniond qua(gc_[3], gc_[4], gc_[5], gc_[6]);
     euler_angle = ToEulerAngles(qua);
     Eigen::VectorXd gcc = gc_.tail(12);
@@ -233,6 +237,8 @@ double aa =  0.5233 , bb = double(30) /180*PI;
         ang_vel_[0],
         ang_vel_[1],
         ang_vel_[2],
+        line_vel_[0],
+        line_vel_[1],
        c_v;
 
   }
@@ -292,7 +298,7 @@ double aa =  0.5233 , bb = double(30) /180*PI;
   Eigen::VectorXd gc_init_, gv_init_, gc_, gv_, pTarget_, pTarget12_, vTarget_;
   double terminalRewardCoeff_ = -10.;
   Eigen::VectorXd actionMean_, actionStd_, obDouble_;
-  Vec<3> acc_, ang_vel_;
+  Vec<3> acc_, ang_vel_, line_vel_;
   Eigen::Vector3d bodyLinearVel_, bodyAngularVel_;
   std::set<size_t> footIndices_;
   double p_gain,d_gain;
