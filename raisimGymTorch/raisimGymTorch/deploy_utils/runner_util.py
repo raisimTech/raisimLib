@@ -19,7 +19,7 @@ def ang_trans(lower, upper, x):
     if isinstance(lower, list):
         return [ang_trans(lower[i], upper[i], x[i]) for i in range(len(lower))]
     else:
-        x = (x+1)/2 #todo for test
+        x = (x+1)/2
         return x * upper + (1-x) * lower
 def norm(lower, upper, x):
     # print(lower, upper, x)
@@ -46,7 +46,7 @@ def deg_normalize(lower, upper, x):
             ans.append(deg_normalize(a,b,c))
         return ans
     else:
-        return 2 * norm(lower, upper, x) - 1 #todo for test
+        return 2 * norm(lower, upper, x) - 1
         # return 1 - 2* norm(lower, upper,x)
 low = [-46, -60, -154.5, -46, -60, -154.5, -46, -60, -154.5, -46, -60, -154.5]
 upp = [46, 240, -52.5, 46, 240, -52.5, 46, 240, -52.5, 46, 240, -52.5]
