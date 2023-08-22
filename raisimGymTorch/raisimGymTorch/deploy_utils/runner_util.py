@@ -5,7 +5,8 @@ def lerp_np(a, b, c):
 def add_list_np(act_gen, sine, history,kb):
     kk = 0.95
     kf = 1
-    kb = np.array([0.2, 0.1, 0.1] * 4)
+    # kb = np.array([0.2 ,0.1, 0.1] * 4)
+    kb = np.array([0.3, 0., 0.] * 4)
     history = history*kk + (1-kk) * act_gen
     ans = np.clip(kb*history + kf * sine, -1, 1)
     ans = (ans + 1) /2  # 100 * 12
@@ -50,8 +51,9 @@ def deg_normalize(lower, upper, x):
         # return 1 - 2* norm(lower, upper,x)
 low = [-46, -60, -154.5, -46, -60, -154.5, -46, -60, -154.5, -46, -60, -154.5]
 upp = [46, 240, -52.5, 46, 240, -52.5, 46, 240, -52.5, 46, 240, -52.5]
-tha1,tha2 = 35,35
-u0 = [0, tha2, -2*tha2 + 10, 0 ,tha1, -tha1 * 2 +10 , 0 , tha2, -2*tha2 + 10, 0, tha1,-2*tha1 + 10]
+tha1,tha2 = 40, 40
+for_r = -2.5
+u0 = [0, tha2, -2*tha2 , 0 ,tha1, -tha1 * 2  , 0 , tha2 + for_r , -2*tha2 - 2 * for_r , 0, tha1 + for_r  ,-2*tha1 -2 * for_r]
 
 low_np = np.array(low)
 upp_np = np.array(upp)

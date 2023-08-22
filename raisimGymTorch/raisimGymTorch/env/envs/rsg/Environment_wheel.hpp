@@ -57,8 +57,8 @@ namespace raisim {
 //    skate = world_ ->addArticulatedSystem("/home/lr-2002/code/raisimLib/rsc/skate/skate.urdf");
     anymal_->setName("model");
     anymal_->setControlMode(raisim::ControlMode::PD_PLUS_FEEDFORWARD_TORQUE);
-    world_->addGround(0,"land");
-
+//    world_->addGround(0,"land");
+world_->addGround();
     /// get robot data
     gcDim_ = anymal_->getGeneralizedCoordinateDim(); // 19
     gvDim_ = anymal_->getDOF(); // 18
@@ -78,8 +78,9 @@ namespace raisim {
 //    skate_vel_.setZero(8);
 //    skate_posi_.setZero(9);
 //      init_position();
-double aa =  double(35)/ 180 * PI , bb = double(35) /180*PI;
-    gc_init_<< 0, 0, cos(aa) * 2 * 0.2, 1.0, 0.0, 0.0, 0.0, 0.0,  aa, -2*aa, 0.0, bb, -2*bb, 0.0,aa,-2*aa, 0.0, bb, -2*bb;
+double aa =  double(40)/ 180 * PI , bb = double(40) /180*PI;
+    double for_r = double(-2.5) / 180 * PI ;
+    gc_init_<< 0, 0, cos(aa) * 2 * 0.2, 1.0, 0.0, 0.0, 0.0, 0.0,  aa, -2*aa, 0.0, bb, -2*bb, 0.0,aa +for_r ,-2*aa -2 * for_r , 0.0, bb + for_r, -2*bb -2 * for_r;
 //    gc_init_<< 0, 0, 0.37, 1.0, 0.0, 0.0, 0.0, 0.0,  0.5233, -1.046, 0.0,  0.5233, -1.046, 0.0, 0.523, -1.046, 0.0, 0.523, -1.046;
     init();
 
@@ -99,24 +100,24 @@ double aa =  double(35)/ 180 * PI , bb = double(35) /180*PI;
     footIndices_.insert(anymal_->getBodyIdx("RL_calf"));
     footIndices_.insert(anymal_->getBodyIdx("RR_calf"));
 
-      for(auto n : anymal_->getCollisionBodies())
-      {
-          auto name = n.colObj->name;
-          anymal_->getCollisionBody(name).setMaterial("steel");
-      }
+//      for(auto n : anymal_->getCollisionBodies())
+//      {
+//          auto name = n.colObj->name;
+//          anymal_->getCollisionBody(name).setMaterial("steel");
+//      }
 
 //      skate->getCollisionBody("base/0").setMaterial("sandpaper");
 //      skate->getCollisionBody("rotater_r/0").setMaterial("rubber");
 //      skate->getCollisionBody("rotater_f/0").setMaterial("rubber");
-      anymal_->getCollisionBody("FL_foot/0").setMaterial("rubber");
-      anymal_->getCollisionBody("FR_foot/0").setMaterial("rubber");
-      anymal_->getCollisionBody("RR_foot/0").setMaterial("rubber");
-      anymal_->getCollisionBody("RL_foot/0").setMaterial("rubber");
-      world_->setMaterialPairProp("steel", "rubber", 0.8, 0.15, 0.001);
-      world_->setMaterialPairProp("rubber", "sandpaper", 0.99, 0.15, 0.001);
-      world_->setMaterialPairProp("land", "rubber", 0.8, 0.1,0.001);
-      world_->setMaterialPairProp("sandpaper", "land", 0.4, 0.15,0.001);
-      world_->setMaterialPairProp("steel","land", 0.1, 0.05,0.001);
+//      anymal_->getCollisionBody("FL_foot/0").setMaterial("rubber");
+//      anymal_->getCollisionBody("FR_foot/0").setMaterial("rubber");
+//      anymal_->getCollisionBody("RR_foot/0").setMaterial("rubber");
+//      anymal_->getCollisionBody("RL_foot/0").setMaterial("rubber");
+//      world_->setMaterialPairProp("steel", "rubber", 0.8, 0.15, 0.001);
+//      world_->setMaterialPairProp("rubber", "sandpaper", 0.99, 0.15, 0.001);
+//      world_->setMaterialPairProp("land", "rubber", 0.8, 0.1,0.001);
+//      world_->setMaterialPairProp("sandpaper", "land", 0.4, 0.15,0.001);
+//      world_->setMaterialPairProp("steel","land", 0.1, 0.05,0.001);
 
     if (visualizable_) {
       server_ = std::make_unique<raisim::RaisimServer>(world_.get());
@@ -188,15 +189,15 @@ double aa =  double(35)/ 180 * PI , bb = double(35) /180*PI;
     }
     updateObservation();
     double rrr =0;
-    rrr = abs(euler_angle[0]) + abs(euler_angle[1]) + abs(euler_angle[2]) ;
-    rrr += 0.1 * ( abs(ang_vel_[0]) + abs(ang_vel_[1]) + abs(ang_vel_[2]));
+    rrr = abs(euler_angle[0]) + abs(euler_angle[1])  ;
+    rrr += 0.1 * ( abs(ang_vel_[0]) + abs(ang_vel_[1]));
 //    rrr += abs(gc_[0] - skate_posi_[0]) + abs(gc_[1] - (skate_posi_[1] - 0.15));
     bool accu = false;
     rewards_.record("Stable",-rrr, accu);
     rewards_.record("Live", 1, accu);
     rewards_.record("forwardVel", -abs(3- line_vel_[0]), accu);
 //    rewards_.record("height", 0.45- abs(gc_[2] - 0.45) - abs(gc_[0] ) - abs(gc_[1]) , accu);
-//    rewards_.record("Mimic", (gc_.tail(12) - pTarget12_).norm(), accu);
+    rewards_.record("Mimic", (gc_.tail(12) - pTarget12_).norm(), accu);
 //    rewards_.record("Wheel", euler_angle[2] * double(COUNT) / 400, accu);
     rewards_.record("Wheel", 0.5  - abs(ang_vel_[2]- 0.5), accu);
     rewards_.record("torque",anymal_->getGeneralizedForce().squaredNorm() );
@@ -237,8 +238,8 @@ double aa =  double(35)/ 180 * PI , bb = double(35) /180*PI;
         ang_vel_[0],
         ang_vel_[1],
         ang_vel_[2],
-        line_vel_[0],
-        line_vel_[1],
+//        line_vel_[0],
+//        line_vel_[1],
        c_v;
 
   }
