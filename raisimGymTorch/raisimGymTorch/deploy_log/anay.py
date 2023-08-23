@@ -4,7 +4,7 @@ from draw_map import Drawer
 ans_list = []
 import numpy as np
 drawer = Drawer('tt')
-with open("./tmp.log", 'r') as f:
+with open("./best.log", 'r') as f:
     lines = f.readlines()
     for line in lines:
         # x = re.search("work_action", line)
@@ -18,6 +18,6 @@ with open("./tmp.log", 'r') as f:
 
 drawer.draw()
 df = np.array(ans_list)
-dd = pd.DataFrame(df).to_csv('./tmp.csv')
+dd = pd.DataFrame(df).to_csv('./best.csv')
 
 

@@ -89,6 +89,8 @@ def real_handler(signal, frame):
     # debug_draw_gry.draw()
     draw_reward.draw()
     save_reward.save()
+    save_act.save()
+    save_observe.save()
     sys.exit(0)
 
 signal.signal(signal.SIGINT, real_handler)
@@ -133,8 +135,7 @@ def updating():
             'critic_architecture_state_dict': critic.architecture.state_dict(),
             'optimizer_state_dict': ppo.optimizer.state_dict(),
         }, saver.data_dir + "/full_" + str(update) + '.pt')
-        save_act.save()
-        save_observe.save()
+
 
         # draw_reward.draw()
 
