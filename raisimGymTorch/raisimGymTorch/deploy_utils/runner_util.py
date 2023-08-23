@@ -5,8 +5,8 @@ def lerp_np(a, b, c):
 def add_list_np(act_gen, sine, history,kb):
     kk = 0.95
     kf = 1
-    # kb = np.array([0.2 ,0.1, 0.1] * 4)
-    kb = np.array([0.3, 0.0, 0 ] * 4)
+    kb = np.array([0.2 ,0., 0.] * 4)
+    # kb = np.array([0.1] * 12)
     history = history*kk + (1-kk) * act_gen
     ans = np.clip(kb*history + kf * sine, -1, 1)
     ans = (ans + 1) /2  # 100 * 12

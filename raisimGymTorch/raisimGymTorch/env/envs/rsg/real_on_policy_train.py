@@ -262,14 +262,14 @@ for update in range(total_update):
     cnt = 0
     for i in range(2 * schedule):
         # print('running optimize position ')
-        waiter.wait()
         acc, history_act = run_model_with_pt_input_modify(action, envs_idx, schedule, history_act, kb=on_p_kb,
                                                           rate=on_p_rate)
-        a1.take_action(acc.tolist())
+        act = acc[0]
+        cnt+=1
+        a1.take_action(act.tolist())
     while update_thread.is_alive():
-        waiter.wait()
         # print('threading running')
-        a1.take_action(acc.tolist())
+        a1.take_action(act.tolist())
     history_act = acc
     print('updating finished')
 print(f'biggest:{biggest_reward},rate = {biggest_iter}')

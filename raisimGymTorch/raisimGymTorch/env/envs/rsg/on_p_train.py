@@ -180,8 +180,9 @@ if mode =='train' or mode == 'retrain':
         for i in range(2 * schedule):
             # print('running optimize position ')
             waiter.wait()
-            acc, history_act =run_model_with_pt_input_modify(action, envs_idx, schedule, history_act, kb=on_p_kb, rate=on_p_rate)
+            acc, history_act =run_model_with_pt_input_modify(action, cnt, schedule, history_act, kb=on_p_kb, rate=on_p_rate)
             env.step(acc)
+            cnt +=1
         while update_thread.is_alive():
             waiter.wait()
             # print('threading running')

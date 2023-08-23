@@ -189,13 +189,13 @@ double aa =  double(40)/ 180 * PI , bb = double(40) /180*PI;
     }
     updateObservation();
     double rrr =0;
-    rrr = abs(euler_angle[0]) + abs(euler_angle[1])  ;
-    rrr += 0.1 * ( abs(ang_vel_[0]) + abs(ang_vel_[1]));
+    rrr = abs(euler_angle[0]) + abs(euler_angle[1]) +abs(euler_angle[2])  ;
+    rrr += 0.1 * ( abs(ang_vel_[0]) + abs(ang_vel_[1]) + abs(ang_vel_[2]));
 //    rrr += abs(gc_[0] - skate_posi_[0]) + abs(gc_[1] - (skate_posi_[1] - 0.15));
     bool accu = false;
     rewards_.record("Stable",-rrr, accu);
     rewards_.record("Live", 1, accu);
-    rewards_.record("forwardVel", -abs(3- line_vel_[0]), accu);
+    rewards_.record("forwardVel",line_vel_[0], accu);
 //    rewards_.record("height", 0.45- abs(gc_[2] - 0.45) - abs(gc_[0] ) - abs(gc_[1]) , accu);
     rewards_.record("Mimic", (gc_.tail(12) - pTarget12_).norm(), accu);
 //    rewards_.record("Wheel", euler_angle[2] * double(COUNT) / 400, accu);
