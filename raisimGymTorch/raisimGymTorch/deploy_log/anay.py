@@ -15,6 +15,6 @@ with open("./train.log", 'r') as f:
 
 
 df = np.array(ans_list)
-dd = pd.DataFrame(df).to_csv('./tss.csv')
+dd = pd.DataFrame(df).to_csv('./tss_trot_wheel.csv')
 
 

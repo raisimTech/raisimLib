@@ -41,7 +41,9 @@ class RolloutStorage:
 
     def add_transitions(self, actor_obs, critic_obs, actions, mu, sigma, rewards, dones, actions_log_prob):
         if self.step >= self.num_transitions_per_env:
-            raise AssertionError("Rollout buffer overflow")
+            self.clear()
+            # raise AssertionError("Rollout buffer overflow")
+            print("Rollout buffer overflow")
         self.critic_obs[self.step] = critic_obs
         self.actor_obs[self.step] = actor_obs
         self.actions[self.step] = actions

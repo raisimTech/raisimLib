@@ -155,7 +155,7 @@ num_envs = cfg['environment']['num_envs']
 ppo = PPO.PPO(actor=actor,
               critic=critic,
               num_envs=cfg['environment']['num_envs'],
-              num_transitions_per_env=n_steps,
+              num_transitions_per_env=n_steps * 5,
               num_learning_epochs=4,
               gamma=0.996,
               lam=0.95,
@@ -258,10 +258,19 @@ for update in range(total_update):
     # take st step to get value obs
     update_thread = threading.Thread(target=updating)
     update_thread.start()
+
+    cnt = 0
+    for i in range(2 * schedule):
+        # print('running optimize position ')
+        waiter.wait()
+        acc, history_act = run_model_with_pt_input_modify(action, envs_idx, schedule, history_act, kb=on_p_kb,
+                                                          rate=on_p_rate)
+        a1.take_action(acc.tolist())
     while update_thread.is_alive():
-        # waiter.wait()
-        print('threading running')
-        a1.take_action(action.tolist())
+        waiter.wait()
+        # print('threading running')
+        a1.take_action(acc.tolist())
+    history_act = acc
     print('updating finished')
 print(f'biggest:{biggest_reward},rate = {biggest_iter}')
 

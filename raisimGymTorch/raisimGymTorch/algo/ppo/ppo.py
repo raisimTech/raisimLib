@@ -94,7 +94,7 @@ class PPO:
         # Learning step
         self.storage.compute_returns(last_values.to(self.device), self.critic, self.gamma, self.lam)
         mean_value_loss, mean_surrogate_loss, infos = self._train_step(log_this_iteration)
-        self.storage.clear()
+        # self.storage.clear()
 
         if log_this_iteration:
             self.log({**locals(), **infos, 'it': update})
