@@ -116,8 +116,9 @@ def cal_reward(robot):
     # reward = reward * 0.4#stable
     # reward += 1
     # reward = reward + (0.5 - abs(obs[4] +   0.5)) * 2 # wheel
-    reward = reward + obs[4]# wheel
-
+    # reward = reward + obs[4]# wheel
+    reward = reward+a1.est_vel[0]
+    print(f"est vel {a1.est_vel}")
     return  np.array([reward])
 
 def updating():

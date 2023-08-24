@@ -5,9 +5,9 @@ def lerp_np(a, b, c):
 def add_list_np(act_gen, sine, history,kb):
     kk = 0.95
     kf = 1
-    # kb = np.array([0.2 ,0., 0.] * 4)
+    kb = np.array([0.2 ,0., 0.] * 4)
     # print(act_gen)
-    kb = np.array([0,0.1, 0.1] * 4  )
+    # kb = np.array([0,0.1, 0.1] * 4  )
     # kb = np.array([0.1] *12  )
     history = history*kk + (1-kk) * act_gen
     ans = np.clip(kb*history + kf * sine, -1, 1)
@@ -54,7 +54,7 @@ def deg_normalize(lower, upper, x):
 low = [-46, -60, -154.5, -46, -60, -154.5, -46, -60, -154.5, -46, -60, -154.5]
 upp = [46, 240, -52.5, 46, 240, -52.5, 46, 240, -52.5, 46, 240, -52.5]
 tha1,tha2 = 40, 40
-for_r = 0
+for_r = -2.5
 u0 = [0, tha2, -2*tha2 , 0 ,tha1, -tha1 * 2  , 0 , tha2 + for_r , -2*tha2 - 2 * for_r , 0, tha1 + for_r  ,-2*tha1 -2 * for_r]
 
 low_np = np.array(low)
@@ -86,13 +86,13 @@ def sine_gene_pt(idx, T, rate):
             y1 = dh * 10 * (-cos(pi * 2 * tp0 / T) + 1 ) / 2
             # y2 = y1 /2
             y2 = 0
-            # y2 = y1
+            y2 = y1
         elif idx>T and idx<=2*T:
             tp0 =idx - T
             y2 = dh * 10 * (-cos(pi * 2 * tp0 / T) + 1 ) / 2
             # y1 = y2 /2
             y1 = 0
-            # y1 = y2
+            y1 = y2
         # idx = idx % T
         # y1 = dh  * 10 * (-cos(pi * 2  *idx  /T) + 1)
         # y2  = deg_rad(60)
@@ -100,14 +100,14 @@ def sine_gene_pt(idx, T, rate):
         angle_list[1] = y1
         angle_list[2] = -2 * y1
         angle_list[3] = 0
-        angle_list[4] = y2
-        angle_list[5] = -2 * y2
+        angle_list[4] = y1
+        angle_list[5] = -2 * y1
         angle_list[6] = 0
         angle_list[7] = y2
         angle_list[8] = -2 * y2
         angle_list[9] = 0
-        angle_list[10] = y1
-        angle_list[11] = -2 * y1
+        angle_list[10] = y2
+        angle_list[11] = -2 * y2
 
         angle_list = [deg_normalize(low[i], upp[i], angle_list[i] + u0_ang[i]) for i in range(12)]
 
