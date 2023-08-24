@@ -13,10 +13,13 @@ class Drawer:
     def add_map_list(self, l):
         self.draw_list.append(l.copy())
 
-    def draw(self):
+    def draw(self, lege=None):
         plt.figure(figsize=(10,10))
         now = np.stack(self.draw_list)
         now = now.transpose()
+        if lege is not None:
+            assert len(lege) == now.shape[0]
+
         le = now.shape[1]
         color = plt.cm.rainbow(np.linspace(0, 1, now.shape[0]))
         x = [i for i in range(le)]
@@ -24,6 +27,9 @@ class Drawer:
         print(now)
         for i, c in enumerate(color):
             plt.plot(x, now[i], c=c)
+            # if lege is not None:
+            #     plt.legend()
+        plt.legend(lege)
         plt.savefig(self.name)
 
         plt.show()
