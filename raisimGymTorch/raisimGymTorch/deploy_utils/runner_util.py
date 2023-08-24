@@ -5,8 +5,10 @@ def lerp_np(a, b, c):
 def add_list_np(act_gen, sine, history,kb):
     kk = 0.95
     kf = 1
-    kb = np.array([0.2 ,0., 0.] * 4)
-    # kb = np.array([0.1] * 12)
+    # kb = np.array([0.2 ,0., 0.] * 4)
+    # print(act_gen)
+    kb = np.array([0,0.1, 0.1] * 4  )
+    # kb = np.array([0.1] *12  )
     history = history*kk + (1-kk) * act_gen
     ans = np.clip(kb*history + kf * sine, -1, 1)
     ans = (ans + 1) /2  # 100 * 12
@@ -52,7 +54,7 @@ def deg_normalize(lower, upper, x):
 low = [-46, -60, -154.5, -46, -60, -154.5, -46, -60, -154.5, -46, -60, -154.5]
 upp = [46, 240, -52.5, 46, 240, -52.5, 46, 240, -52.5, 46, 240, -52.5]
 tha1,tha2 = 40, 40
-for_r = -2.5
+for_r = 0
 u0 = [0, tha2, -2*tha2 , 0 ,tha1, -tha1 * 2  , 0 , tha2 + for_r , -2*tha2 - 2 * for_r , 0, tha1 + for_r  ,-2*tha1 -2 * for_r]
 
 low_np = np.array(low)
@@ -82,11 +84,13 @@ def sine_gene_pt(idx, T, rate):
         if idx >= 0 and idx <= T:
             tp0 =idx - 0
             y1 = dh * 10 * (-cos(pi * 2 * tp0 / T) + 1 ) / 2
+            # y2 = y1 /2
             y2 = 0
             # y2 = y1
         elif idx>T and idx<=2*T:
             tp0 =idx - T
             y2 = dh * 10 * (-cos(pi * 2 * tp0 / T) + 1 ) / 2
+            # y1 = y2 /2
             y1 = 0
             # y1 = y2
         # idx = idx % T
@@ -127,6 +131,7 @@ def run_model_with_pt_input_modify(act_gen, idx, T, history, kb, rate):
     else:
         idx = idx % (2 * T)
     # act_gen = np.zeros_like(act_gen)
+    # print(act_gen.mean())
     sine = sine_gene_pt(idx, T, rate)
     ans, history = add_list_np(act_gen, sine, history, kb)
     ans = ans / 180 * 3.14

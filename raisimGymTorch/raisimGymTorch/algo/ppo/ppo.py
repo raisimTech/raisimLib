@@ -77,7 +77,7 @@ class PPO:
         self.actor_obs = actor_obs
         with torch.no_grad():
             self.actions, self.actions_log_prob = self.actor.sample(torch.from_numpy(actor_obs).to(self.device))
-            actions  = np.clip(self.actions -  1, -1, 1)
+            actions  = np.clip(self.actions , -1, 1)
         return   actions
 
     def forward(self, actor_obs):

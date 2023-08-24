@@ -5,7 +5,7 @@ environment:
   render: true
 # just testing commenting
   num_envs: 1
-  eval_every_n: 40
+  eval_every_n: 20
   num_threads: 1
   simulation_dt: 0.0025
   control_dt: 0.01
@@ -23,7 +23,7 @@ environment:
   urdf_path: /home/lr-2002/code/raisimLib/rsc/a1_description/urdf/a1.urdf
   reward:
     forwardVel:
-      coeff: 0
+      coeff: 2
     torque:
       coeff: -4e-5
     Stable:
@@ -33,7 +33,7 @@ environment:
     Live:
       coeff: 0
     Wheel:
-      coeff: 2
+      coeff: 0
     Mimic:
       coeff: 0.
 
@@ -42,5 +42,5 @@ architecture:
   value_net: [128, 128]
 
 on_policy:
-  rate: 0.8 # for sine A
+  rate: 0.6 # for sine A
   kb: 0.15 # act_gen * kb

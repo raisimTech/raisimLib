@@ -71,7 +71,7 @@ print(env.num_envs)
 actor = ppo_module.Actor(ppo_module.MLP(cfg['architecture']['policy_net'], nn.LeakyReLU, ob_dim, act_dim),
                          ppo_module.MultivariateGaussianDiagonalCovariance(act_dim,
                                                                            env.num_envs,
-                                                                           1.0,
+                                                                           1,
                                                                            NormalSampler(act_dim),
                                                                            cfg['seed']),
                          device)
@@ -149,12 +149,14 @@ if mode =='train' or mode == 'retrain':
     env.turn_on_visualization()
     schedule = cfg['environment']['schedule']
     envs_idx = 0
-    waiter = Waiter(0.01)
+    waiter = Waiter(0.001)
     waiter.update_start()
     for update in range(total_update):
         reward_sum = 0
 
         for step in range(n_steps):
+            # if step>=200:
+            #     time.sleep(5)
             waiter.wait()
             obs = env.observe(False)
             # print(obs)
