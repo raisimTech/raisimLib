@@ -24,16 +24,24 @@ with open("./tmp.log", 'r') as f:
         # x = re.search("work_action", line)
         # print(x)
         if "est vel [" in line:
+            if "Ini" in line :
+                continue
             print("line ",line)
             # print(line)
             line = line.strip().split('l [')[1][1:-1].split(' ')
             x = []
             it =0
             for i in line:
+                # it +=1
+                # if it ==1 :
+                #     continue
                 if i == '' :
                     continue
+                if ']UDP' in i :
+                    i = i.split(']')[0]
                 i = float(i.strip())
                 x.append(i)
+                # break
             # print(line[-20:])
             # x = list(line[-21:])
             print(x)
@@ -41,6 +49,7 @@ with open("./tmp.log", 'r') as f:
             drawer.add_map_list(x)
 
 drawer.draw(['x','y','z'])
+# drawer.draw(['x'])
 df = np.array(ans_list)
 dd = pd.DataFrame(df).to_csv('./foot.csv')
 

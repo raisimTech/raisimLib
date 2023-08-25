@@ -130,7 +130,7 @@ def run_model_with_pt_input_modify(act_gen, idx, T, history, kb, rate):
         idx = idx%(2*T)
     else:
         idx = idx % (2 * T)
-    # act_gen = np.zeros_like(act_gen)
+    act_gen = np.zeros_like(act_gen)
     # print(act_gen.mean())
     sine = sine_gene_pt(idx, T, rate)
     ans, history = add_list_np(act_gen, sine, history, kb)

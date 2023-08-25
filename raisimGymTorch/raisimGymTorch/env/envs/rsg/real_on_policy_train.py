@@ -117,7 +117,7 @@ def cal_reward(robot):
     # reward += 1
     # reward = reward + (0.5 - abs(obs[4] +   0.5)) * 2 # wheel
     # reward = reward + obs[4]# wheel
-    reward = reward+a1.est_vel[0] - 0.3 * abs(a1.gyroscope[2])
+    reward = reward+a1.est_vel[0] - 0.3 * abs(a1.gyroscope[2]) # the velo of x is hard to get nevagate so we use this one to minus
     print(f"est vel {a1.est_vel}")
     return  np.array([reward])
 
@@ -264,17 +264,18 @@ for update in range(total_update):
     update_thread.start()
 
     cnt = 0
-    for i in range(2 * schedule):
+    for i in range(4 * schedule):
         # print('running optimize position ')
-        acc, history_act = run_model_with_pt_input_modify(action, envs_idx, schedule, history_act, kb=on_p_kb,
+        acc, history_act = run_model_with_pt_input_modify(np.zeros_like(action), envs_idx, schedule, history_act, kb=on_p_kb,
                                                           rate=on_p_rate)
         act = acc[0]
         cnt+=1
         a1.take_action(act.tolist())
 
-    for i in range(2 * schedule):
-        a1.take_action(act.tolist())
-        cnt += 1
+    # for i in range(2 * schedule):
+    #     a1.take_action(act.tolist())
+    #     cnt += 1
+    print(f'stop posi {act}')
     while update_thread.is_alive():
         # print('threading running')
         a1.take_action(act.tolist())
