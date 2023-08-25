@@ -79,7 +79,7 @@ world_->addGround();
 //    skate_posi_.setZero(9);
 //      init_position();
 double aa =  double(40)/ 180 * PI , bb = double(40) /180*PI;
-    double for_r = double(-2.5) / 180 * PI ;
+    double for_r = double(0) / 180 * PI ;
     gc_init_<< 0, 0, cos(aa) * 2 * 0.2, 1.0, 0.0, 0.0, 0.0, 0.0,  aa, -2*aa, 0.0, bb, -2*bb, 0.0,aa +for_r ,-2*aa -2 * for_r , 0.0, bb + for_r, -2*bb -2 * for_r;
 //    gc_init_<< 0, 0, 0.37, 1.0, 0.0, 0.0, 0.0, 0.0,  0.5233, -1.046, 0.0,  0.5233, -1.046, 0.0, 0.523, -1.046, 0.0, 0.523, -1.046;
     init();

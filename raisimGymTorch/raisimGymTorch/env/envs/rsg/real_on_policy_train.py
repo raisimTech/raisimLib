@@ -117,7 +117,7 @@ def cal_reward(robot):
     # reward += 1
     # reward = reward + (0.5 - abs(obs[4] +   0.5)) * 2 # wheel
     # reward = reward + obs[4]# wheel
-    reward = reward+a1.est_vel[0]
+    reward = reward+a1.est_vel[0] - 0.3 * abs(a1.gyroscope[2])
     print(f"est vel {a1.est_vel}")
     return  np.array([reward])
 
@@ -189,31 +189,33 @@ obs = a1.observe()
 a1.torque_limit =31
 ppo.act(obs)
 act = a1.position
-a1.kp=[150] * 12
-a1.kd = [7] * 12
+a1.kp=[120] * 12
+a1.kd = [6] * 12
 envs_idx = 0
 schedule = cfg['environment']['schedule']
 
 action, _ = run_model_with_pt_input_modify(np.zeros((1,12)), 0, schedule, history_act, kb=on_p_kb,
                                                      rate=on_p_rate)
 
-a1.init_motor(act)
-init_position(action[0].tolist(), 250)
-a1.observe()
-print(f'actural position {a1.position}')
-for i in range(500):
-    if i >30 and i <=40:
-        obs = a1.observe()
-        init_e_x += obs[0][0]
-        init_e_y += obs[0][1]
-    if i==40:
-        init_e_y /= 10
-        init_e_x /= 10
-    a1.hold_on()
-    # print(a1.position)
-# obs = a1.observe()
+a1.stand_up(300,action[0].tolist())
 
-print(f'actual zero angle : {init_e_x, init_e_y}')
+# a1.init_motor(act)
+# init_position(action[0].tolist(), 250)
+# a1.observe()
+# print(f'actural position {a1.position}')
+# for i in range(500):
+#     if i >30 and i <=40:
+#         obs = a1.observe()
+#         init_e_x += obs[0][0]
+#         init_e_y += obs[0][1]
+#     if i==40:
+#         init_e_y /= 10
+#         init_e_x /= 10
+#     a1.hold_on()
+#     # print(a1.position)
+# # obs = a1.observe()
+
+# print(f'actual zero angle : {init_e_x, init_e_y}')
 
 # obb = obs.copy()
 # ppo_act = threading.Thread(target=ppo.act(obs))
@@ -269,11 +271,16 @@ for update in range(total_update):
         act = acc[0]
         cnt+=1
         a1.take_action(act.tolist())
+
+    for i in range(2 * schedule):
+        a1.take_action(act.tolist())
+        cnt += 1
     while update_thread.is_alive():
         # print('threading running')
         a1.take_action(act.tolist())
-    history_act = acc
+    history_act = np.array([his_util] * num_envs)
     print('updating finished')
 print(f'biggest:{biggest_reward},rate = {biggest_iter}')
+signal_handler(0,0)
 
 

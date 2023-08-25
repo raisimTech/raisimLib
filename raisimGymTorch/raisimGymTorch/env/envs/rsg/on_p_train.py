@@ -185,11 +185,17 @@ if mode =='train' or mode == 'retrain':
             acc, history_act =run_model_with_pt_input_modify(action, cnt, schedule, history_act, kb=on_p_kb, rate=on_p_rate)
             env.step(acc)
             cnt +=1
+        for i in range(2 * schedule):
+            # print('running optimize position ')
+            waiter.wait()
+            # acc, history_act =run_model_with_pt_input_modify(action, cnt, schedule, history_act, kb=on_p_kb, rate=on_p_rate)
+            env.step(acc)
+            cnt +=1
         while update_thread.is_alive():
             waiter.wait()
             # print('threading running')
             env.step(acc)
-        history_act=acc
+        history_act=np.array([his_util] * num_envs)
         print('updating finished')
     env.turn_off_visualization()
 print(f'biggest:{biggest_reward},rate = {biggest_iter}')
