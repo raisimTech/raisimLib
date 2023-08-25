@@ -15,6 +15,7 @@ class Drawer:
 
     def draw(self, lege=None):
         plt.figure(figsize=(10,10))
+        print(self.draw_list)
         now = np.stack(self.draw_list)
         now = now.transpose()
         if lege is not None:

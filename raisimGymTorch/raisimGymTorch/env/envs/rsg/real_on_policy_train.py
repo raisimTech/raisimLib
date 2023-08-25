@@ -11,7 +11,7 @@ import raisimGymTorch.algo.ppo.ppo as PPO
 from raisimGymTorch.env.RaisimGymVecEnv import RaisimGymVecEnv as VecEnv
 from raisimGymTorch.env.bin.rsg import RaisimGymEnv
 from raisimGymTorch.deploy_utils.angle_utils import get_last_position
-from raisimGymTorch.deploy_utils.runner_util import run_model_with_pt_input_modify, list_pt, u0_rad
+from raisimGymTorch.deploy_utils.runner_util import run_model_with_pt_input_modify, list_pt, u0_rad, step_reset
 import os
 import math
 import time
@@ -117,8 +117,9 @@ def cal_reward(robot):
     # reward += 1
     # reward = reward + (0.5 - abs(obs[4] +   0.5)) * 2 # wheel
     # reward = reward + obs[4]# wheel
-    reward = reward+a1.est_vel[0] - 0.3 * abs(a1.gyroscope[2]) # the velo of x is hard to get nevagate so we use this one to minus
-    print(f"est vel {a1.est_vel}")
+    print(f'vel {a1.est_vel[0]} ang: {a1.gyroscope[2]}')
+    reward = reward+max(0,a1.est_vel[0]) - 0.001 * abs(a1.gyroscope[2]) # the velo of x is hard to get nevagate so we use this one to minus
+    print(f"est vel {a1.est_vel} vel reward {max(0,a1.est_vel[0]) , -0.001 * abs(a1.gyroscope[2])} ")
     return  np.array([reward])
 
 def updating():
@@ -189,8 +190,8 @@ obs = a1.observe()
 a1.torque_limit =31
 ppo.act(obs)
 act = a1.position
-a1.kp=[120] * 12
-a1.kd = [6] * 12
+a1.kp=[150] * 12
+a1.kd = [7] * 12
 envs_idx = 0
 schedule = cfg['environment']['schedule']
 
@@ -266,7 +267,7 @@ for update in range(total_update):
     cnt = 0
     for i in range(4 * schedule):
         # print('running optimize position ')
-        acc, history_act = run_model_with_pt_input_modify(np.zeros_like(action), envs_idx, schedule, history_act, kb=on_p_kb,
+        acc, history_act = step_reset(np.zeros_like(action), envs_idx, schedule, history_act, kb=on_p_kb,
                                                           rate=on_p_rate)
         act = acc[0]
         cnt+=1

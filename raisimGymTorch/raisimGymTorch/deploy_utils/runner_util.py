@@ -7,8 +7,8 @@ def add_list_np(act_gen, sine, history,kb):
     kf = 1
     # kb = np.array([0.2 ,0., 0.] * 4)
     # print(act_gen)
-    kb = np.array([0,0.05, 0.05] * 4  )
-    # kb = np.array([0.1] *12  )
+    # kb = np.array([0,0.05, 0.05] * 4  )
+    kb = np.array([0.07] *12  )
     history = history*kk + (1-kk) * act_gen
     ans = np.clip(kb*history + kf * sine, -1, 1)
     ans = (ans + 1) /2  # 100 * 12
@@ -53,7 +53,7 @@ def deg_normalize(lower, upper, x):
         # return 1 - 2* norm(lower, upper,x)
 low = [-46, -60, -154.5, -46, -60, -154.5, -46, -60, -154.5, -46, -60, -154.5]
 upp = [46, 240, -52.5, 46, 240, -52.5, 46, 240, -52.5, 46, 240, -52.5]
-tha1,tha2 = 40, 40
+tha1,tha2 = 50, 50
 for_r = 0
 u0 = [0, tha2, -2*tha2 , 0 ,tha1, -tha1 * 2  , 0 , tha2 + for_r , -2*tha2 - 2 * for_r , 0, tha1 + for_r  ,-2*tha1 -2 * for_r]
 
@@ -84,27 +84,108 @@ def sine_gene_pt(idx, T, rate):
         if idx >= 0 and idx <= T:
             tp0 =idx - 0
             y1 = dh * 10 * (-cos(pi * 2 * tp0 / T) + 1 ) / 2
+            y11 = 1.3 * dh * 10 * (-cos(pi * 2 * tp0 / T) + 1 ) / 2
+            # y11 = 0
+
+            y2 = -y1
+            y22 = -y11 * 0.5
             # y2 = y1 /2
-            y2 = 0
+            # y2 = -y1
             # y2 = y1
+            # y1 = 1.5 * y1
         elif idx>T and idx<=2*T:
             tp0 =idx - T
             y2 = dh * 10 * (-cos(pi * 2 * tp0 / T) + 1 ) / 2
+            y22 = 1.3 * dh * 10 * (-cos(pi * 2 * tp0 / T) + 1 ) / 2
+            # y11 = 0
+
+            y1=-y2
+            y11 = -y2 * 0.5
             # y1 = y2 /2
-            y1 = 0
+            # y1 = -y2
             # y1 = y2
         # idx = idx % T
         # y1 = dh  * 10 * (-cos(pi * 2  *idx  /T) + 1)
         # y2  = deg_rad(60)
+        # y1 = 2 * y1
+        # y2 = 2 * y2
+        angle_list[0] = 0
+        angle_list[1] = y1
+        angle_list[2] = y11
+        angle_list[3] = 0
+        angle_list[4] = y2
+        angle_list[5] = y22
+        angle_list[6] = 0
+        angle_list[7] = y2
+        angle_list[8] = y22
+        angle_list[9] = 0
+        angle_list[10] = y1
+        angle_list[11] = y11
+
+        angle_list = [deg_normalize(low[i], upp[i], angle_list[i] + u0_ang[i]) for i in range(12)]
+
+        return angle_list
+    else:
+        ans = []
+        for i in idx:
+            ans.append(sine_gene_pt(i, T, rate))
+        return ans
+
+def sine_gene_pt_step(idx, T, rate):
+    # print(idx)
+    if isinstance(idx, np.ndarray) or isinstance(idx, list):
+        mat = np.zeros((len(idx), 12))
+        i_set = set(idx)
+        idd = {}
+        for i in i_set:
+            idd[i] = sine_gene_pt(i, T, rate)
+        for i in range(len(idx)):
+            mat[i] = idd[idx[i]]
+        return mat
+    if not isinstance(idx, list):
+        angle_list = [0 for i in range(12)]
+        if idx >= 2 * T:
+            idx = 0
+        dh = 0.6 #:w
+
+
+        if idx >= 0 and idx <= T:
+            tp0 =idx - 0
+            y1 = dh * 10 * (-cos(pi * 2 * tp0 / T) + 1 ) / 2
+            # y11 = 0.7 * dh * 10 * (-cos(pi * 2 * tp0 / T) + 1 ) / 2
+            # y11 = 0
+
+            y2 = 0
+            # y22 = -y11 * 0.5
+            # y2 = y1 /2
+            # y2 = -y1
+            # y2 = y1
+            # y1 = 1.5 * y1
+        elif idx>T and idx<=2*T:
+            tp0 =idx - T
+            y2 = dh * 10 * (-cos(pi * 2 * tp0 / T) + 1 ) / 2
+            # y22 = 0.7 * dh * 10 * (-cos(pi * 2 * tp0 / T) + 1 ) / 2
+            # y11 = 0
+
+            y1=0
+            # y11 = -y2 * 0.5
+            # y1 = y2 /2
+            # y1 = -y2
+            # y1 = y2
+        # idx = idx % T
+        # y1 = dh  * 10 * (-cos(pi * 2  *idx  /T) + 1)
+        # y2  = deg_rad(60)
+        # y1 = 2 * y1
+        # y2 = 2 * y2
         angle_list[0] = 0
         angle_list[1] = y1
         angle_list[2] = -2 * y1
         angle_list[3] = 0
         angle_list[4] = y2
-        angle_list[5] = -2 * y2
+        angle_list[5] =  -2 * y2
         angle_list[6] = 0
         angle_list[7] = y2
-        angle_list[8] = -2 * y2
+        angle_list[8] =  -2 * y2
         angle_list[9] = 0
         angle_list[10] = y1
         angle_list[11] = -2 * y1
@@ -123,6 +204,23 @@ def list_pt(act_gen, idx, T):
         ans.append(run_model_with_pt_input(act_gen[i, :], idx[i], T))
     ans = np.vstack(ans).astype(np.float32)
     return  ans
+
+def step_reset(act_gen, idx, T, history, kb, rate):
+        # act_gen = np.clip(act_gen- 1, -1, 1)
+        if isinstance(idx, list):
+            idx = np.array(idx)
+            idx = idx % (2 * T)
+        else:
+            idx = idx % (2 * T)
+        act_gen = np.zeros_like(act_gen)
+        # print(act_gen.mean())
+        sine = sine_gene_pt_step(idx, T, rate)
+        ans, history = add_list_np(act_gen, sine, history, kb)
+        ans = ans / 180 * 3.14
+
+        return ans.astype(np.float32), history.astype(np.float32)
+
+
 def run_model_with_pt_input_modify(act_gen, idx, T, history, kb, rate):
     # act_gen = np.clip(act_gen- 1, -1, 1)
     if isinstance(idx, list):
@@ -130,7 +228,7 @@ def run_model_with_pt_input_modify(act_gen, idx, T, history, kb, rate):
         idx = idx%(2*T)
     else:
         idx = idx % (2 * T)
-    act_gen = np.zeros_like(act_gen)
+    # act_gen = np.zeros_like(act_gen)
     # print(act_gen.mean())
     sine = sine_gene_pt(idx, T, rate)
     ans, history = add_list_np(act_gen, sine, history, kb)

@@ -42,5 +42,5 @@ architecture:
   value_net: [128, 128]
 
 on_policy:
-  rate: 0.6 # for sine A
+  rate: -0.6 # for sine A
   kb: 0.15 # act_gen * kb

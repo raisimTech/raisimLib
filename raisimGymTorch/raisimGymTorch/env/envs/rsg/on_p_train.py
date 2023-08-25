@@ -10,7 +10,7 @@ from raisimGymTorch.env.RewardAnalyzer import RewardAnalyzer
 import raisimGymTorch.algo.ppo.module as ppo_module
 import raisimGymTorch.algo.ppo.ppo as PPO
 from raisimGymTorch.deploy_utils.angle_utils import get_last_position
-from raisimGymTorch.deploy_utils.runner_util import run_model_with_pt_input_modify, list_pt
+from raisimGymTorch.deploy_utils.runner_util import run_model_with_pt_input_modify, list_pt, step_reset
 import os
 import math
 import time
@@ -149,7 +149,7 @@ if mode =='train' or mode == 'retrain':
     env.turn_on_visualization()
     schedule = cfg['environment']['schedule']
     envs_idx = 0
-    waiter = Waiter(0.01)
+    waiter = Waiter(0.001)
     waiter.update_start()
     for update in range(total_update):
         reward_sum = 0
@@ -179,18 +179,18 @@ if mode =='train' or mode == 'retrain':
         update_thread.start()
 
         cnt = 0
-        for i in range(2 * schedule):
+        for i in range(4 * schedule):
             # print('running optimize position ')
             waiter.wait()
-            acc, history_act =run_model_with_pt_input_modify(action, cnt, schedule, history_act, kb=on_p_kb, rate=on_p_rate)
+            acc, history_act =step_reset(action, cnt, schedule, history_act, kb=on_p_kb, rate=on_p_rate)
             env.step(acc)
             cnt +=1
-        for i in range(2 * schedule):
-            # print('running optimize position ')
-            waiter.wait()
-            # acc, history_act =run_model_with_pt_input_modify(action, cnt, schedule, history_act, kb=on_p_kb, rate=on_p_rate)
-            env.step(acc)
-            cnt +=1
+        # for i in range(2 * schedule):
+        #     # print('running optimize position ')
+        #     waiter.wait()
+        #     # acc, history_act =run_model_with_pt_input_modify(action, cnt, schedule, history_act, kb=on_p_kb, rate=on_p_rate)
+        #     env.step(acc)
+        #     cnt +=1
         while update_thread.is_alive():
             waiter.wait()
             # print('threading running')
