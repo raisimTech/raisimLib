@@ -3,8 +3,8 @@ import pandas as pd
 from draw_map import Drawer
 ans_list = []
 import numpy as np
-drawer = Drawer('walk_10')
-with open("./walk_10.log", 'r') as f:
+drawer = Drawer('vel')
+with open("./train.log", 'r') as f:
     lines = f.readlines()
     for line in lines:
         # x = re.search("work_action", line)
@@ -18,7 +18,7 @@ with open("./walk_10.log", 'r') as f:
 
 # cont = [27.41,24.57,69.16,38.64]
 #
-# with open("./walk_2033.log", 'r') as f:
+# with open("./train.log", 'r') as f:
 #     lines = f.readlines()
 #     for line in lines:
 #         tmmp = False
@@ -43,8 +43,9 @@ with open("./walk_10.log", 'r') as f:
 #                 if ']' in i :
 #                     i = i.split(']')[0]
 #                 i = float(i.strip())
-#                 if abs(i) >0.1:
+#                 if abs(i) >0.03:
 #                     tmmp = True
+#                     x.append(0)
 #                     continue
 #                 x.append(i)
 #                 # print()
@@ -54,13 +55,13 @@ with open("./walk_10.log", 'r') as f:
 #             if tmmp == True:
 #                 continue
 #             print(x)
-#             assert  len(x) == 1
+#             # assert  len(x) == 1
 #             ans_list.append(x)
 #             drawer.add_map_list(x)
 
 drawer.draw(["x"])
-# drawer.draw(['x'])
+# drawer.draw(['x','y','z'])
 df = np.array(ans_list)
-dd = pd.DataFrame(df).to_csv('./walk2033_vel.csv')
+dd = pd.DataFrame(df).to_csv('./vel.csv')
 
 

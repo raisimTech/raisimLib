@@ -83,6 +83,8 @@ saver = ConfigurationSaver(log_dir=home_path + "/raisimGymTorch/data/"+task_name
                            save_items=[task_path + "/cfg.yaml", task_path + "/Environment.hpp"])
 logger = RaisimLogger(saver.data_dir+"/train.log")
 
+
+
 def real_handler(signal, frame):
     print('You pressed Ctrl+C!')
     a1.quit_robot()
@@ -97,6 +99,14 @@ signal.signal(signal.SIGINT, real_handler)
 
 init_e_x = 0
 init_e_y = 0
+
+
+def load_pretrain(weight_path):
+    checkpoint = torch.load(weight_path)
+    actor.architecture.load_state_dict(checkpoint['actor_architecture_state_dict'])
+    actor.distribution.load_state_dict(checkpoint['actor_distribution_state_dict'])
+    critic.architecture.load_state_dict(checkpoint['critic_architecture_state_dict'])
+    ppo.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
 # init_v_x = 0
 # init_v_y = 0
 def cal_reward(robot):
@@ -118,8 +128,8 @@ def cal_reward(robot):
     # reward = reward + (0.5 - abs(obs[4] +   0.5)) * 2 # wheel
     # reward = reward + obs[4]# wheel
     print(f'vel {a1.est_vel[0]} ang: {a1.gyroscope[2]}')
-    reward = reward+max(0,a1.est_vel[0]) - 0.001 * abs(a1.gyroscope[2]) # the velo of x is hard to get nevagate so we use this one to minus
-    print(f"est vel {a1.est_vel} vel reward {max(0,a1.est_vel[0]) , -0.001 * abs(a1.gyroscope[2])} ")
+    reward = reward+max(0,a1.est_vel[0]) - 0.00* abs(a1.gyroscope[2]) # the velo of x is hard to get nevagate so we use this one to minus
+    print(f"est vel {a1.est_vel} vel reward {max(0,a1.est_vel[0]) , -0.00 * abs(a1.gyroscope[2])} ")
     return  np.array([reward])
 
 def updating():
@@ -168,6 +178,14 @@ ppo = PPO.PPO(actor=actor,
               )
 
 
+if mode =="retrain":
+    print(f'you are going to use the model of {weight_path} ')
+    # load_param(weight_path, env, actor, critic, ppo.optimizer, saver.data_dir)
+    load_pretrain(weight_path)
+    # load_param(weight_path.)
+
+
+
 biggest_reward = 0
 biggest_iter = 0
 
@@ -181,17 +199,18 @@ print = logger.info
 
 on_p_rate =cfg['on_policy']['rate']
 on_p_kb = cfg['on_policy']['kb']
-mode == 'train'
+mode == 'retrain'
 his_util = [0] * 12
 history_act = np.array([his_util] * num_envs)
 total_update = args.update
 
 obs = a1.observe()
-a1.torque_limit =31
+a1.torque_limit =35
 ppo.act(obs)
 act = a1.position
-a1.kp=[150] * 12
-a1.kd = [7] * 12
+a1.kp=[100] * 12
+# a1.kd = [1,2,2] * 4
+a1.kd = [4] * 12
 envs_idx = 0
 schedule = cfg['environment']['schedule']
 
@@ -231,6 +250,9 @@ for update in range(total_update):
     if update==0:
         a1.hold_on()
         # print('1')
+    x_posi = 0
+    y_posi = 0
+
     for step in range(n_steps):
         # waiter.wait()
         obs = a1.observe()
@@ -245,12 +267,15 @@ for update in range(total_update):
         # action=np.clip(action-1, -1, 1)
         # print(4)
         action, history_act = run_model_with_pt_input_modify(action, envs_idx, schedule, history_act, kb=on_p_kb, rate=on_p_rate)
+        # action, history_act = step_reset(action, envs_idx, schedule, history_act, kb=on_p_kb, rate=on_p_rate)
         action=action[0]
         if step==0 and update ==0:
             print(f"pre take action the first time ")
         # print('take action ')
         a1.take_action(action.tolist())
         reward = cal_reward(a1)
+        x_posi +=a1.est_vel[0] * a1.dt
+        y_posi +=a1.est_vel[1] * a1.dt
         envs_idx +=1
 
         ppo.step(value_obs=obs, rews=reward, dones=np.array([False]))
@@ -263,7 +288,9 @@ for update in range(total_update):
     # take st step to get value obs
     update_thread = threading.Thread(target=updating)
     update_thread.start()
-
+    print(f'a1 has move {x_posi}' )
+    print(f'a1 yyyy has move {y_posi}' )
+    print(f'def posi is {np.sqrt(x_posi**2 + y_posi**2)}')
     cnt = 0
     for i in range(4 * schedule):
         # print('running optimize position ')
@@ -272,6 +299,7 @@ for update in range(total_update):
         act = acc[0]
         cnt+=1
         a1.take_action(act.tolist())
+        a1.reset_esti()
 
     # for i in range(2 * schedule):
     #     a1.take_action(act.tolist())
@@ -281,6 +309,8 @@ for update in range(total_update):
         # print('threading running')
         a1.take_action(act.tolist())
     history_act = np.array([his_util] * num_envs)
+    # print('reset vel')
+    a1.reset_esti()
     print('updating finished')
 print(f'biggest:{biggest_reward},rate = {biggest_iter}')
 signal_handler(0,0)
