@@ -196,7 +196,7 @@ double aa =  double(50)/ 180 * PI , bb = double(50) /180*PI;
 //    std::cout << "body: " << bodyLinearVel_ << "\n  get_vel  " << line_vel_ << std:: endl ;
     rewards_.record("Stable",-rrr, accu);
     rewards_.record("Live", 1, accu);
-    rewards_.record("forwardVel",std::max(0.0, double(bodyLinearVel_[0])) - 0.3 * abs(ang_vel_[2]), accu);
+    rewards_.record("forwardVel",double(bodyLinearVel_[0]) - 0.0 * abs(ang_vel_[2]), accu);
 //    rewards_.record("height", 0.45- abs(gc_[2] - 0.45) - abs(gc_[0] ) - abs(gc_[1]) , accu);
     rewards_.record("Mimic", (gc_.tail(12) - pTarget12_).norm(), accu);
 //    rewards_.record("Wheel", euler_angle[2] * double(COUNT) / 400, accu);
