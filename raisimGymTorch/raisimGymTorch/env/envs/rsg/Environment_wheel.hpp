@@ -84,7 +84,7 @@ double aa =  double(50)/ 180 * PI , bb = double(50) /180*PI;
 //    gc_init_<< 0, 0, 0.37, 1.0, 0.0, 0.0, 0.0, 0.0,  0.5233, -1.046, 0.0,  0.5233, -1.046, 0.0, 0.523, -1.046, 0.0, 0.523, -1.046;
     init();
 
-    obDim_ = 31;
+    obDim_ = 27;
     actionDim_ = nJoints_; actionMean_.setZero(actionDim_); actionStd_.setZero(actionDim_);
     obDouble_.setZero(obDim_);
 
@@ -189,7 +189,7 @@ double aa =  double(50)/ 180 * PI , bb = double(50) /180*PI;
     }
     updateObservation();
     double rrr =0;
-    rrr = abs(euler_angle[0]) + abs(euler_angle[1]) +abs(euler_angle[2])  ;
+//    rrr = abs(euler_angle[0]) + abs(euler_angle[1]) +abs(euler_angle[2])  ;
     rrr += 0.1 * ( abs(ang_vel_[0]) + abs(ang_vel_[1]) + abs(ang_vel_[2]));
 //    rrr += abs(gc_[0] - skate_posi_[0]) + abs(gc_[1] - (skate_posi_[1] - 0.15));
     bool accu = false;
@@ -234,8 +234,8 @@ double aa =  double(50)/ 180 * PI , bb = double(50) /180*PI;
     }
 
     obDouble_ <<
-        euler_angle[0],
-       euler_angle[1],// quaternion
+//        euler_angle[0],
+//       euler_angle[1],// quaternion
         ang_vel_[0],
         ang_vel_[1],
         ang_vel_[2],

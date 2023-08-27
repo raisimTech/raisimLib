@@ -7,8 +7,8 @@ def add_list_np(act_gen, sine, history,kb):
     kf = 1
     # kb = np.array([0.2 ,0., 0.] * 4)
     # print(act_gen)
-    kb = np.array([0,0.1, 0.1] * 4  )
-    # kb = np.array([0.1] *12  )
+    # kb = np.array([0.1,0.1, 0.1] * 4  )
+    kb = np.array([0.07] *12  )
     history = history*kk + (1-kk) * act_gen
     ans = np.clip(kb*history + kf * sine, -1, 1)
     ans = (ans + 1) /2  # 100 * 12
@@ -113,14 +113,14 @@ def sine_gene_pt(idx, T, rate):
         angle_list[1] = y1
         angle_list[2] = y11
         angle_list[3] = 0
-        angle_list[4] = y1
-        angle_list[5] = y11
+        angle_list[4] = y2
+        angle_list[5] = y22
         angle_list[6] = 0
         angle_list[7] = y2
         angle_list[8] = y22
         angle_list[9] = 0
-        angle_list[10] = y2
-        angle_list[11] = y22
+        angle_list[10] = y1
+        angle_list[11] = y11
 
         angle_list = [deg_normalize(low[i], upp[i], angle_list[i] + u0_ang[i]) for i in range(12)]
 

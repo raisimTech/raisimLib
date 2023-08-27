@@ -128,7 +128,8 @@ def cal_reward(robot):
     # reward = reward + (0.5 - abs(obs[4] +   0.5)) * 2 # wheel
     # reward = reward + obs[4]# wheel
     # print(f'vel {a1.est_vel[0]} ang: {a1.gyroscope[2]}')
-    reward = reward+a1.est_vel[0] - 0.00* abs(a1.gyroscope[2]) # the velo of x is hard to get nevagate so we use this one to minus
+    # reward = reward+a1.est_vel[0] - 0.00* abs(a1.gyroscope[2]) # the velo of x is hard to get nevagate so we use this one to minus
+    reward = -1 * ( abs(a1.gyroscope[2])) # the velo of x is hard to get nevagate so we use this one to minus
     # print(f"est vel {a1.est_vel} vel reward {max(0,a1.est_vel[0]) , -0.00 * abs(a1.gyroscope[2])} ")
     return  np.array([reward])
 
