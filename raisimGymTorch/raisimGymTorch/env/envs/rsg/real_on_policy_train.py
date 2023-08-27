@@ -128,8 +128,8 @@ def cal_reward(robot):
     # reward = reward + (0.5 - abs(obs[4] +   0.5)) * 2 # wheel
     # reward = reward + obs[4]# wheel
     # print(f'vel {a1.est_vel[0]} ang: {a1.gyroscope[2]}')
-    reward = reward+max(0,a1.est_vel[0]) - 0.00* abs(a1.gyroscope[2]) # the velo of x is hard to get nevagate so we use this one to minus
-    print(f"est vel {a1.est_vel} vel reward {max(0,a1.est_vel[0]) , -0.00 * abs(a1.gyroscope[2])} ")
+    reward = reward+a1.est_vel[0] - 0.00* abs(a1.gyroscope[2]) # the velo of x is hard to get nevagate so we use this one to minus
+    # print(f"est vel {a1.est_vel} vel reward {max(0,a1.est_vel[0]) , -0.00 * abs(a1.gyroscope[2])} ")
     return  np.array([reward])
 
 def updating():
@@ -245,6 +245,33 @@ a1.stand_up(300,action[0].tolist())
 #     print('holding')
 # print('finished hold /on ')
 envs_idx = 0
+cnt =0
+# for i in range(4 * schedule):
+#     # print('running optimize position ')
+#     acc, history_act = step_reset(np.zeros_like(action), envs_idx, schedule, history_act, kb=on_p_kb,
+#                                   rate=on_p_rate)
+#     act = acc[0]
+#     cnt += 1
+#     a1.take_action(act.tolist())
+#     a1.reset_esti()
+#     print(f"est vel {a1.est_vel} vel reward {max(0, a1.est_vel[0]), -0.00 * abs(a1.gyroscope[2])} ")
+
+
+def thread_hold_on():
+    cnt = 0
+    for i in range(2*schedule):
+        print('hold_on')
+        acc, history_act = step_reset(np.zeros_like(action), envs_idx, schedule, history_act, kb=on_p_kb,
+                                                          rate=on_p_rate)
+        act = acc[0]
+        cnt+=1
+        a1.take_action(act.tolist())
+        a1.reset_esti()
+        # print(f"est vel {a1.est_vel} vel reward {max(0,a1.est_vel[0]) , -0.00 * abs(a1.gyroscope[2])} ")
+holding = threading.Thread(target=thread_hold_on)
+holding.start()
+
+
 for update in range(total_update):
     reward_sum = 0
     if update==0:
@@ -252,15 +279,16 @@ for update in range(total_update):
         # print('1')
     x_posi = 0
     y_posi = 0
+    if holding.is_alive():
+        time.sleep(0.005)
+    # print('finished holding')
     a1.reset_esti()
     for step in range(n_steps):
         # waiter.wait()
         obs = a1.observe()
-        # print(3)
+        # print('before cal')
         action = ppo.act(obs)
-        if update == 0 and step == 0 :
-            a1.hold_on()
-            # print('2')
+        # print('after cal')
 
         # action = np.zeros_like(action)
 
@@ -300,7 +328,7 @@ for update in range(total_update):
         cnt+=1
         a1.take_action(act.tolist())
         a1.reset_esti()
-        print(f"est vel {a1.est_vel} vel reward {max(0,a1.est_vel[0]) , -0.00 * abs(a1.gyroscope[2])} ")
+        # print(f"est vel {a1.est_vel} vel reward {max(0,a1.est_vel[0]) , -0.00 * abs(a1.gyroscope[2])} ")
 
     # for i in range(2 * schedule):
     #     a1.take_action(act.tolist())
@@ -309,7 +337,7 @@ for update in range(total_update):
     while update_thread.is_alive():
         # print('threading running')
         a1.take_action(act.tolist())
-        print(f"est vel {a1.est_vel} vel reward {max(0,a1.est_vel[0]) , -0.00 * abs(a1.gyroscope[2])} ")
+        # print(f"est vel {a1.est_vel} vel reward {max(0,a1.est_vel[0]) , -0.00 * abs(a1.gyroscope[2])} ")
 
     history_act = np.array([his_util] * num_envs)
     # print('reset vel')

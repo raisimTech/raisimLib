@@ -100,7 +100,7 @@ def sine_gene_pt(idx, T, rate):
             # y11 = 0
 
             y1=-y2
-            y11 = -y2 * 0.5
+            y11 = -y22 * 0.5
             # y1 = y2 /2
             # y1 = -y2
             # y1 = y2
@@ -138,7 +138,7 @@ def sine_gene_pt_step(idx, T, rate):
         i_set = set(idx)
         idd = {}
         for i in i_set:
-            idd[i] = sine_gene_pt(i, T, rate)
+            idd[i] = sine_gene_pt_step(i, T, rate)
         for i in range(len(idx)):
             mat[i] = idd[idx[i]]
         return mat
@@ -196,7 +196,7 @@ def sine_gene_pt_step(idx, T, rate):
     else:
         ans = []
         for i in idx:
-            ans.append(sine_gene_pt(i, T, rate))
+            ans.append(sine_gene_pt_step(i, T, rate))
         return ans
 def list_pt(act_gen, idx, T):
     ans = []
@@ -233,7 +233,7 @@ def run_model_with_pt_input_modify(act_gen, idx, T, history, kb, rate):
     act_gen[:, 7] = act_gen[:, 3+7]
     act_gen[:, 8] = act_gen[:, 3+8]
 
-    act_gen = np.zeros_like(act_gen)
+    # act_gen = np.zeros_like(act_gen)
     # print(act_gen.mean())
     sine = sine_gene_pt(idx, T, rate)
     ans, history = add_list_np(act_gen, sine, history, kb)
@@ -243,3 +243,4 @@ def run_model_with_pt_input_modify(act_gen, idx, T, history, kb, rate):
 
 if __name__=='__main__':
     print(run_model_with_pt_input_modify(np.zeros((1,12)), 1, 50, np.zeros((1,12)), 0.15, 0.6))
+    print(step_reset(np.zeros((1,12)), 1, 50, np.zeros((1,12)), 0.15, 0.6))
