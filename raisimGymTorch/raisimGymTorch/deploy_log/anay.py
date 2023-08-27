@@ -16,8 +16,7 @@ drawer = Drawer('vel')
 #             ans_list.append(x)
 #             drawer.add_map_list([x])
 
-# cont = [27.41,24.57,69.16,38.64]
-#
+
 with open("./train.log", 'r') as f:
     lines = f.readlines()
     for line in lines:

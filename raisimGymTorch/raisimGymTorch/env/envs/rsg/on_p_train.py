@@ -149,7 +149,7 @@ if mode =='train' or mode == 'retrain':
     env.turn_on_visualization()
     schedule = cfg['environment']['schedule']
     envs_idx = 0
-    waiter = Waiter(0.001)
+    waiter = Waiter(0.01)
     waiter.update_start()
     for update in range(total_update):
         reward_sum = 0
