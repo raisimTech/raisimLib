@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 14)
 # find the various packages
 find_package(Eigen3 REQUIRED)
 find_package(raisim CONFIG REQUIRED)
-find_package(PythonInterp REQUIRED)
+find_package(Python3 REQUIRED)
 
 # source files
 file(GLOB SOURCES "src/*.cpp")
