@@ -1505,6 +1505,13 @@ class ArticulatedSystem : public Object {
   }
 
   /**
+   * get the joint velocity limits
+   * @return jointLimits joint velocity limits*/
+    const VecDyn& getJointVelocityLimits() {
+      return velLimits_;
+    }
+
+  /**
    * Clears all external forces and torques */
   void clearExternalForcesAndTorques() final {
     isExternalForces_.resize(0);
