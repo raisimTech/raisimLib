@@ -78,13 +78,13 @@ world_->addGround();
 //    skate_vel_.setZero(8);
 //    skate_posi_.setZero(9);
 //      init_position();
-double aa =  double(50)/ 180 * PI , bb = double(50) /180*PI;
+double aa =  double(41)/ 180 * PI , bb = double(41) /180*PI;
     double for_r = double(0) / 180 * PI ;
     gc_init_<< 0, 0, cos(aa) * 2 * 0.2, 1.0, 0.0, 0.0, 0.0, 0.0,  aa, -2*aa, 0.0, bb, -2*bb, 0.0,aa +for_r ,-2*aa -2 * for_r , 0.0, bb + for_r, -2*bb -2 * for_r;
 //    gc_init_<< 0, 0, 0.37, 1.0, 0.0, 0.0, 0.0, 0.0,  0.5233, -1.046, 0.0,  0.5233, -1.046, 0.0, 0.523, -1.046, 0.0, 0.523, -1.046;
     init();
 
-    obDim_ = 27;
+    obDim_ = 28;
     actionDim_ = nJoints_; actionMean_.setZero(actionDim_); actionStd_.setZero(actionDim_);
     obDouble_.setZero(obDim_);
 
@@ -178,6 +178,10 @@ double aa =  double(50)/ 180 * PI , bb = double(50) /180*PI;
     }
     COUNT ++;
     pTarget12_ = action.cast<double>();
+
+    ori = pTarget12_[0];
+    pTarget12_ = pTarget12_.tail(nJoints_);
+
     pTarget_.tail(nJoints_) = pTarget12_;
 
     anymal_->setPdTarget(pTarget_, vTarget_);
@@ -196,12 +200,12 @@ double aa =  double(50)/ 180 * PI , bb = double(50) /180*PI;
 //    std::cout << "body: " << bodyLinearVel_ << "\n  get_vel  " << line_vel_ << std:: endl ;
     rewards_.record("Stable",-rrr, accu);
     rewards_.record("Live", 1, accu);
-    rewards_.record("forwardVel",double(bodyLinearVel_[0]) - 0.0 * abs(ang_vel_[2]), accu);
+    rewards_.record("forwardVel",abs(bodyLinearVel_[0]), accu);
 //    rewards_.record("height", 0.45- abs(gc_[2] - 0.45) - abs(gc_[0] ) - abs(gc_[1]) , accu);
-    rewards_.record("Mimic", (gc_.tail(12) - pTarget12_).norm(), accu);
+//    rewards_.record("Mimic", (gc_.tail(12) - pTarget12_).norm(), accu);
 //    rewards_.record("Wheel", euler_angle[2] * double(COUNT) / 400, accu);
-    rewards_.record("Wheel", ang_vel_[2], accu);
-    rewards_.record("torque",anymal_->getGeneralizedForce().squaredNorm() );
+//    rewards_.record("Wheel", ang_vel_[2], accu);
+//    rewards_.record("torque",anymal_->getGeneralizedForce().squaredNorm() );
     return rewards_.sum();
   }
 
@@ -236,6 +240,7 @@ double aa =  double(50)/ 180 * PI , bb = double(50) /180*PI;
     obDouble_ <<
 //        euler_angle[0],
 //       euler_angle[1],// quaternion
+        ori,
         ang_vel_[0],
         ang_vel_[1],
         ang_vel_[2],
@@ -309,6 +314,7 @@ double aa =  double(50)/ 180 * PI , bb = double(50) /180*PI;
   int COUNT = 0;
   float schedule_T;
   bool show_ref= true;
+  double ori = 1.0;
   double action_std, angle_rate;
   Eigen::VectorXd angle_list, angle_list_for_work;
   Eigen::VectorXd gc_old, ref_old;

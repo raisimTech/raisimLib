@@ -149,12 +149,13 @@ if mode =='train' or mode == 'retrain':
     env.turn_on_visualization()
     schedule = cfg['environment']['schedule']
     envs_idx = 0
-    waiter = Waiter(0.001)
+    waiter = Waiter(0.01)
     waiter.update_start()
     for update in range(total_update):
         reward_sum = 0
 
         for step in range(n_steps):
+            qq = 1 if (envs_idx // (10 * schedule)) % 2 == 0 else -1
             # if step>=200:
             #     time.sleep(5)
             waiter.wait()
@@ -185,12 +186,12 @@ if mode =='train' or mode == 'retrain':
             acc, history_act =step_reset(action, cnt, schedule, history_act, kb=on_p_kb, rate=on_p_rate)
             env.step(acc)
             cnt +=1
-        # for i in range(2 * schedule):
-        #     # print('running optimize position ')
-        #     waiter.wait()
-        #     # acc, history_act =run_model_with_pt_input_modify(action, cnt, schedule, history_act, kb=on_p_kb, rate=on_p_rate)
-        #     env.step(acc)
-        #     cnt +=1
+        for i in range(2 * schedule):
+            # print('running optimize position ')
+            waiter.wait()
+            # acc, history_act =run_model_with_pt_input_modify(action, cnt, schedule, history_act, kb=on_p_kb, rate=on_p_rate)
+            env.step(acc)
+            cnt +=1
         while update_thread.is_alive():
             waiter.wait()
             # print('threading running')

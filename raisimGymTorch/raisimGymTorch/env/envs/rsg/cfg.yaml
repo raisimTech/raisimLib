@@ -9,12 +9,12 @@ environment:
   num_threads: 1
   simulation_dt: 0.0025
   control_dt: 0.01
-  max_time: 4
+  max_time: 3
   action_std: 0.5
 #  action_std: 0
   show_ref: false
   angle_rate: 0.21
-  schedule: 40
+  schedule: 30
 #  for_work: 1
   float_base: false
   learnning_rate: 5e-4
@@ -23,11 +23,11 @@ environment:
   urdf_path: /home/lr-2002/code/raisimLib/rsc/a1_description/urdf/a1.urdf
   reward:
     forwardVel:
-      coeff: 0
+      coeff: 1
     torque:
       coeff: -4e-5
     Stable:
-      coeff: 5
+      coeff: 0
     height:
       coeff: 0.
     Live:
@@ -42,5 +42,5 @@ architecture:
   value_net: [128, 128]
 
 on_policy:
-  rate: -0.8   # for sine A
+  rate: 0.5  # for sine A
   kb: 0.15 # act_gen * kb

@@ -130,7 +130,7 @@ def cal_reward(robot):
     # print(f'vel {a1.est_vel[0]} ang: {a1.gyroscope[2]}')
     # reward = reward+a1.est_vel[0] - 0.00* abs(a1.gyroscope[2]) # the velo of x is hard to get nevagate so we use this one to minus
     reward = -1 * ( abs(a1.gyroscope[2])) # the velo of x is hard to get nevagate so we use this one to minus
-    # print(f"est vel {a1.est_vel} vel reward {max(0,a1.est_vel[0]) , -0.00 * abs(a1.gyroscope[2])} ")
+    print(f"est vel {a1.est_vel} vel reward {max(0,a1.est_vel[0]) , -0.00 * abs(a1.gyroscope[2])} ")
     return  np.array([reward])
 
 def updating():
@@ -215,7 +215,7 @@ a1.kd = [4] * 12
 envs_idx = 0
 schedule = cfg['environment']['schedule']
 
-action, _ = run_model_with_pt_input_modify(np.zeros((1,12)), 0, schedule, history_act, kb=on_p_kb,
+action, _ = step_reset(np.zeros((1,12)), 0, schedule, history_act, kb=on_p_kb,
                                                      rate=on_p_rate)
 
 a1.stand_up(300,action[0].tolist())
