@@ -19,7 +19,8 @@ import numpy as np
 import torch
 import datetime
 import argparse
-
+import faulthandler
+faulthandler.enable()
 from unitree_utils.Waiter import Waiter
 from raisimGymTorch.deploy_log.draw_map import Drawer
 from raisimGymTorch.deploy_log.csv_saver import CSV_saver
@@ -40,7 +41,8 @@ weight_path = args.weight
 cfg_path = args.cfg_path
 # load_best = args.load_best
 # check if gpu is available
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+# device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cpu')
 print(device)
 # directories
 task_path = os.path.dirname(os.path.realpath(__file__))
@@ -131,7 +133,7 @@ def cal_reward(qq, now):
     d[2] = c[2] - last_c[2]
     d[3] = c[3] - last_c[3]
     last_c = c
-    return np.array([qq * (d[0] + d[3] - d[1] - d[2])])
+    return np.array([-qq * (d[0] + d[3] - d[1] - d[2])])
 
 if mode =='train' or mode == 'retrain':
     tensorboard_launcher(saver.data_dir+"/..")  # press refresh (F5) after the first ppo update
@@ -170,7 +172,7 @@ if mode =='train' or mode == 'retrain':
     env.turn_on_visualization()
     schedule = cfg['environment']['schedule']
     envs_idx = 0
-    waiter = Waiter(0.001)
+    waiter = Waiter(0.005)
     waiter.update_start()
     for update in range(total_update):
         reward_sum = 0

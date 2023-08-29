@@ -14,6 +14,8 @@ from raisimGymTorch.deploy_utils.angle_utils import get_last_position
 from raisimGymTorch.deploy_utils.runner_util import run_model_with_pt_input_modify, list_pt, u0_rad, step_reset
 import os
 import math
+import faulthandler
+faulthandler.enable()
 import time
 import torch.nn as nn
 import numpy as np
@@ -42,7 +44,8 @@ weight_path = args.weight
 cfg_path = args.cfg_path
 # load_best = args.load_best
 # check if gpu is available
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+# device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cpu')
 print(device)
 # directories
 task_path = os.path.dirname(os.path.realpath(__file__))
@@ -156,10 +159,15 @@ def cal_reward(qq, now):
     d[2] = c[2] - last_c[2]
     d[3] = c[3] - last_c[3]
     last_c = c
-    return np.array([-qq * (d[0] + d[3] - d[1] - d[2])])
+    print(last_c)
+    return np.array([-qq * 10 * (d[0] + d[3] - d[1] - d[2])])
 
-def updating():
-    obs = a1.observe()
+def updating(obs, update):
+    print('thread updating ')
+    # obs = a1.observe()
+    # print(obs.shape)
+    # print(obs)
+    # input('go on  ?')
     ppo.update(actor_obs=obs, value_obs=obs, log_this_iteration=update % 2 == 0, update=update)
     average_ll_performance = reward_sum / total_steps
 
@@ -284,19 +292,7 @@ envs_idx = 0
 history_act = np.array([his_util] * num_envs)
 
 
-def thread_hold_on():
-    cnt = 0
-    for i in range(2*schedule):
-        print('hold_on')
-        acc, history_act = step_reset(np.zeros_like(action), envs_idx, schedule, history_act, kb=on_p_kb,
-                                                          rate=on_p_rate)
-        act = acc[0]
-        a1.take_action(act.tolist())
-        a1.reset_esti()
-        # print(f"est vel {a1.est_vel} vel reward {max(0,a1.est_vel[0]) , -0.00 * abs(a1.gyroscope[2])} ")
-holding = threading.Thread(target=thread_hold_on)
-holding.start()
-
+print('fini?')
 
 for update in range(total_update):
     reward_sum = 0
@@ -305,12 +301,14 @@ for update in range(total_update):
         # print('1')
     x_posi = 0
     y_posi = 0
-    if holding.is_alive():
-        time.sleep(0.005)
-    # print('finished holding')
+    # if holding.is_alive():
+    #     time.sleep(0.005)
+    print('finished holding')
     a1.reset_esti()
+    envs_idx=0
     for step in range(n_steps):
         # waiter.wait()
+
         qq = 1 if (envs_idx // schedule) % 2 == 0 else -1
 
         obs = a1.observe()
@@ -328,6 +326,9 @@ for update in range(total_update):
         if step==0 and update ==0:
             print(f"pre take action the first time ")
         # print('take action ')
+        if step == 0:
+             a1.go_position(action.tolist(), 30)
+
         a1.take_action(action.tolist())
         # reward = cal_reward(a1)
         # x_posi +=a1.est_vel[0] * a1.dt
@@ -352,7 +353,8 @@ for update in range(total_update):
         reward_sum = reward_sum + np.sum(reward)
 
     # take st step to get value obs
-    update_thread = threading.Thread(target=updating)
+    obs = a1.observe()
+    update_thread = threading.Thread(target=updating,args=(obs,update))
     update_thread.start()
     # print(f'a1 has move {x_posi}' )
     # print(f'a1 yyyy has move {y_posi}' )
@@ -362,14 +364,20 @@ for update in range(total_update):
         acc, history_act = step_reset(np.zeros_like(action), envs_idx, schedule, history_act, kb=on_p_kb,
                                                           rate=on_p_rate)
         act = acc[0]
+        if  i == 0 :
+            print(f'going to {act.tolist()}')
+            a1.go_position(act.tolist(), 100)
+        envs_idx +=1
+        print(act.tolist())
         a1.take_action(act.tolist())
-        a1.reset_esti()
+        # a1.reset_esti()
         # print(f"est vel {a1.est_vel} vel reward {max(0,a1.est_vel[0]) , -0.00 * abs(a1.gyroscope[2])} ")
 
     # for i in range(2 * schedule):
     #     a1.take_action(act.tolist())
     #     cnt += 1
     print(f'stop posi {act}')
+    update_thread.join()
     while update_thread.is_alive():
         # print('threading running')
         a1.take_action(act.tolist())
