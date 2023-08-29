@@ -246,7 +246,8 @@ double aa =  double(50)/ 180 * PI , bb = double(50) /180*PI;
         ang_vel_[2],
 //        line_vel_[0],
 //        line_vel_[1],
-       c_v;
+       c_v,
+       gcc;
 
   }
 
@@ -319,6 +320,7 @@ double aa =  double(50)/ 180 * PI , bb = double(50) /180*PI;
   Eigen::VectorXd angle_list, angle_list_for_work;
   Eigen::VectorXd gc_old, ref_old;
   Eigen::Vector3d euler_angle, euler_angle_old;
+
   /// these variables are not in use. They are placed to show you how to create a random number sampler.
   bool float_base;
 //  Eigen::VectorXd  skate_vel_, skate_posi_,skate_posi_init, skate_vel_init;

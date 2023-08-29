@@ -61,6 +61,7 @@ env.seed(cfg['seed'])
 ob_dim = env.num_obs
 act_dim = env.num_acts
 num_threads = cfg['environment']['num_threads']
+max_time = cfg['environment']['max_time']
 
 # Training
 n_steps = math.floor(cfg['environment']['max_time'] / cfg['environment']['control_dt'])
@@ -109,8 +110,28 @@ def updating():
     print('{:>6}th iteration'.format(update))
     print('{:<40} {:>6}'.format("average ll reward: ", '{:0.10f}'.format(average_ll_performance)))
     print('----------------------------------------------------\n')
+last_c = [0] * 4
+def cal_reward(qq, now):
+    """
 
-
+    :param qq: 1 / -1
+    :param now:  12
+    :param last: 12
+    :return: reward
+    """
+    global last_c
+    c = [0] * 4
+    c[0] = now[3 * 0 + 1] + now[3 * 0 + 2]/2
+    c[1] = now[3 * 1 + 1] + now[3 * 1 + 2]/2
+    c[2] = now[3 * 2 + 1] + now[3 * 2 + 2]/2
+    c[3] = now[3 * 3 + 1] + now[3 * 3 + 2]/2
+    d = [0] * 4
+    d[0] = c[0] - last_c[0]
+    d[1] = c[1] - last_c[1]
+    d[2] = c[2] - last_c[2]
+    d[3] = c[3] - last_c[3]
+    last_c = c
+    return np.array([qq * (d[0] + d[3] - d[1] - d[2])])
 
 if mode =='train' or mode == 'retrain':
     tensorboard_launcher(saver.data_dir+"/..")  # press refresh (F5) after the first ppo update
@@ -153,19 +174,33 @@ if mode =='train' or mode == 'retrain':
     waiter.update_start()
     for update in range(total_update):
         reward_sum = 0
-
+        q = 0
         for step in range(n_steps):
-            qq = 1 if (envs_idx // (10 * schedule)) % 2 == 0 else -1
+            qq = 1 if (envs_idx // schedule) % 2 == 0 else -1
+            # print(f"{envs_idx} {qq}")
             # if step>=200:
             #     time.sleep(5)
             waiter.wait()
             obs = env.observe(False)
-            # print(obs)
+            position  = get_last_position(obs)
+            # print(position)
             action = ppo.act(obs)
             # action = np.zeros_like(action)
             action, history_act = run_model_with_pt_input_modify(action, envs_idx, schedule, history_act, kb=on_p_kb, rate=on_p_rate)
             reward, _ = env.step(action)
+            # print(len(last_c))
+            # print(len(position))
 
+            position =  position[0]
+            if envs_idx == 0 :
+                last_c[0] = position[3 * 0 + 1] + position[3 * 0 + 2] / 2
+                last_c[1] = position[3 * 1 + 1] + position[3 * 1 + 2] / 2
+                last_c[2] = position[3 * 2 + 1] + position[3 * 2 + 2] / 2
+                last_c[3] = position[3 * 3 + 1] + position[3 * 3 + 2] / 2
+                reward = np.array([0])
+            else:
+                reward = cal_reward(qq, position)
+            # print(f"reward {reward} ")
             envs_idx +=1
             ppo.step(value_obs=obs, rews=reward, dones=_)
 
@@ -179,19 +214,19 @@ if mode =='train' or mode == 'retrain':
         update_thread = threading.Thread(target=updating)
         update_thread.start()
 
-        cnt = 0
+        # cnt = 0
         for i in range(4 * schedule):
             # print('running optimize position ')
             waiter.wait()
-            acc, history_act =step_reset(action, cnt, schedule, history_act, kb=on_p_kb, rate=on_p_rate)
+            acc, history_act =step_reset(action, envs_idx, schedule, history_act, kb=on_p_kb, rate=on_p_rate)
             env.step(acc)
-            cnt +=1
+            envs_idx +=1
         for i in range(2 * schedule):
             # print('running optimize position ')
             waiter.wait()
             # acc, history_act =run_model_with_pt_input_modify(action, cnt, schedule, history_act, kb=on_p_kb, rate=on_p_rate)
             env.step(acc)
-            cnt +=1
+            # envs_idx +=1
         while update_thread.is_alive():
             waiter.wait()
             # print('threading running')

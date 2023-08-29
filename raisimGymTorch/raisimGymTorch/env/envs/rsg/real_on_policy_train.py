@@ -108,30 +108,55 @@ def load_pretrain(weight_path):
     critic.architecture.load_state_dict(checkpoint['critic_architecture_state_dict'])
     ppo.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
 # init_v_x = 0
-# init_v_y = 0
-def cal_reward(robot):
+# # init_v_y = 0
+# def cal_reward(robot):
+#     """
+#
+#     :param robot: a1
+#     :return: reward number
+#     """
+#     global init_e_x
+#     global init_e_y
+#     # global init_v_x
+#     # global init_v_y
+#     obs = robot.observe()[0]
+#     reward = 0
+#     # reward -= (abs(obs[0] - init_e_x )+ abs(obs[1] - init_e_y))
+#     # reward -=  (abs(obs[2]) + abs(obs[3])) * 0.1
+#     # reward = reward * 0.4#stable
+#     # reward += 1
+#     # reward = reward + (0.5 - abs(obs[4] +   0.5)) * 2 # wheel
+#     # reward = reward + obs[4]# wheel
+#     # print(f'vel {a1.est_vel[0]} ang: {a1.gyroscope[2]}')
+#     # reward = reward+a1.est_vel[0] - 0.00* abs(a1.gyroscope[2]) # the velo of x is hard to get nevagate so we use this one to minus
+#     reward = -1 * ( abs(a1.gyroscope[2])) # the velo of x is hard to get nevagate so we use this one to minus
+#     print(f"est vel {a1.est_vel} vel reward {max(0,a1.est_vel[0]) , -0.00 * abs(a1.gyroscope[2])} ")
+#     return  np.array([reward])
+
+
+
+last_c = [0] * 4
+def cal_reward(qq, now):
     """
 
-    :param robot: a1
-    :return: reward number
+    :param qq: 1 / -1
+    :param now:  12
+    :param last: 12
+    :return: reward
     """
-    global init_e_x
-    global init_e_y
-    # global init_v_x
-    # global init_v_y
-    obs = robot.observe()[0]
-    reward = 0
-    # reward -= (abs(obs[0] - init_e_x )+ abs(obs[1] - init_e_y))
-    # reward -=  (abs(obs[2]) + abs(obs[3])) * 0.1
-    # reward = reward * 0.4#stable
-    # reward += 1
-    # reward = reward + (0.5 - abs(obs[4] +   0.5)) * 2 # wheel
-    # reward = reward + obs[4]# wheel
-    # print(f'vel {a1.est_vel[0]} ang: {a1.gyroscope[2]}')
-    # reward = reward+a1.est_vel[0] - 0.00* abs(a1.gyroscope[2]) # the velo of x is hard to get nevagate so we use this one to minus
-    reward = -1 * ( abs(a1.gyroscope[2])) # the velo of x is hard to get nevagate so we use this one to minus
-    print(f"est vel {a1.est_vel} vel reward {max(0,a1.est_vel[0]) , -0.00 * abs(a1.gyroscope[2])} ")
-    return  np.array([reward])
+    global last_c
+    c = [0] * 4
+    c[0] = now[3 * 0 + 1] + now[3 * 0 + 2]/2
+    c[1] = now[3 * 1 + 1] + now[3 * 1 + 2]/2
+    c[2] = now[3 * 2 + 1] + now[3 * 2 + 2]/2
+    c[3] = now[3 * 3 + 1] + now[3 * 3 + 2]/2
+    d = [0] * 4
+    d[0] = c[0] - last_c[0]
+    d[1] = c[1] - last_c[1]
+    d[2] = c[2] - last_c[2]
+    d[3] = c[3] - last_c[3]
+    last_c = c
+    return np.array([-qq * (d[0] + d[3] - d[1] - d[2])])
 
 def updating():
     obs = a1.observe()
@@ -246,7 +271,6 @@ a1.stand_up(300,action[0].tolist())
 #     print('holding')
 # print('finished hold /on ')
 envs_idx = 0
-cnt =0
 # for i in range(4 * schedule):
 #     # print('running optimize position ')
 #     acc, history_act = step_reset(np.zeros_like(action), envs_idx, schedule, history_act, kb=on_p_kb,
@@ -257,6 +281,8 @@ cnt =0
 #     a1.reset_esti()
 #     print(f"est vel {a1.est_vel} vel reward {max(0, a1.est_vel[0]), -0.00 * abs(a1.gyroscope[2])} ")
 
+history_act = np.array([his_util] * num_envs)
+
 
 def thread_hold_on():
     cnt = 0
@@ -265,7 +291,6 @@ def thread_hold_on():
         acc, history_act = step_reset(np.zeros_like(action), envs_idx, schedule, history_act, kb=on_p_kb,
                                                           rate=on_p_rate)
         act = acc[0]
-        cnt+=1
         a1.take_action(act.tolist())
         a1.reset_esti()
         # print(f"est vel {a1.est_vel} vel reward {max(0,a1.est_vel[0]) , -0.00 * abs(a1.gyroscope[2])} ")
@@ -286,6 +311,8 @@ for update in range(total_update):
     a1.reset_esti()
     for step in range(n_steps):
         # waiter.wait()
+        qq = 1 if (envs_idx // schedule) % 2 == 0 else -1
+
         obs = a1.observe()
         # print('before cal')
         action = ppo.act(obs)
@@ -302,10 +329,20 @@ for update in range(total_update):
             print(f"pre take action the first time ")
         # print('take action ')
         a1.take_action(action.tolist())
-        reward = cal_reward(a1)
-        x_posi +=a1.est_vel[0] * a1.dt
-        y_posi +=a1.est_vel[1] * a1.dt
+        # reward = cal_reward(a1)
+        # x_posi +=a1.est_vel[0] * a1.dt
+        # y_posi +=a1.est_vel[1] * a1.dt
         envs_idx +=1
+
+        position = a1.position
+        if envs_idx == 0:
+            last_c[0] = position[3 * 0 + 1] + position[3 * 0 + 2] / 2
+            last_c[1] = position[3 * 1 + 1] + position[3 * 1 + 2] / 2
+            last_c[2] = position[3 * 2 + 1] + position[3 * 2 + 2] / 2
+            last_c[3] = position[3 * 3 + 1] + position[3 * 3 + 2] / 2
+            reward = np.array([0])
+        else:
+            reward = cal_reward(qq, position)
 
         ppo.step(value_obs=obs, rews=reward, dones=np.array([False]))
 
@@ -317,16 +354,14 @@ for update in range(total_update):
     # take st step to get value obs
     update_thread = threading.Thread(target=updating)
     update_thread.start()
-    print(f'a1 has move {x_posi}' )
-    print(f'a1 yyyy has move {y_posi}' )
-    print(f'def posi is {np.sqrt(x_posi**2 + y_posi**2)}')
-    cnt = 0
+    # print(f'a1 has move {x_posi}' )
+    # print(f'a1 yyyy has move {y_posi}' )
+    # print(f'def posi is {np.sqrt(x_posi**2 + y_posi**2)}')
     for i in range(4 * schedule):
         # print('running optimize position ')
         acc, history_act = step_reset(np.zeros_like(action), envs_idx, schedule, history_act, kb=on_p_kb,
                                                           rate=on_p_rate)
         act = acc[0]
-        cnt+=1
         a1.take_action(act.tolist())
         a1.reset_esti()
         # print(f"est vel {a1.est_vel} vel reward {max(0,a1.est_vel[0]) , -0.00 * abs(a1.gyroscope[2])} ")
