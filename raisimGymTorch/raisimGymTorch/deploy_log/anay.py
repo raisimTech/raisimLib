@@ -3,7 +3,7 @@ import pandas as pd
 from draw_map import Drawer
 ans_list = []
 import numpy as np
-drawer = Drawer('vel')
+drawer = Drawer('reward')
 with open("./train.log", 'r') as f:
     lines = f.readlines()
     for line in lines:
@@ -62,9 +62,9 @@ with open("./train.log", 'r') as f:
 #             ans_list.append(x)
 #             drawer.add_map_list(x)
 
-drawer.draw(["x"])
-# drawer.draw(['x','y','z'])
+drawer.draw(["reward"])
+# drawer.draw(['x',y','z'])
 df = np.array(ans_list)
-dd = pd.DataFrame(df).to_csv('./vel.csv')
+dd = pd.DataFrame(df).to_csv('./reward.csv')
 
 

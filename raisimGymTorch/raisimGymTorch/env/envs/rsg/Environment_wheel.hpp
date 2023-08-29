@@ -78,9 +78,10 @@ world_->addGround();
 //    skate_vel_.setZero(8);
 //    skate_posi_.setZero(9);
 //      init_position();
-double aa =  double(50)/ 180 * PI , bb = double(50) /180*PI;
+double aa =  double(49)/ 180 * PI , bb = double(49) /180*PI;
     double for_r = double(0) / 180 * PI ;
-    gc_init_<< 0, 0, cos(aa) * 2 * 0.2, 1.0, 0.0, 0.0, 0.0, 0.0,  aa, -2*aa, 0.0, bb, -2*bb, 0.0,aa +for_r ,-2*aa -2 * for_r , 0.0, bb + for_r, -2*bb -2 * for_r;
+    double abss = double(8) / 180 * PI;
+    gc_init_<< 0, 0, cos(aa) * 2 * 0.2, 1.0, 0.0, 0.0, 0.0, 0.0,  aa, -2*aa + 2 *abss, 0.0, bb, -2*bb+ 2 *abss, 0.0,aa +for_r ,-2*aa -2 * for_r+ 2 *abss , 0.0, bb + for_r, -2*bb -2 * for_r+ 2 *abss;
 //    gc_init_<< 0, 0, 0.37, 1.0, 0.0, 0.0, 0.0, 0.0,  0.5233, -1.046, 0.0,  0.5233, -1.046, 0.0, 0.523, -1.046, 0.0, 0.523, -1.046;
     init();
 
@@ -204,7 +205,7 @@ double aa =  double(50)/ 180 * PI , bb = double(50) /180*PI;
 //    rewards_.record("height", 0.45- abs(gc_[2] - 0.45) - abs(gc_[0] ) - abs(gc_[1]) , accu);
 //    rewards_.record("Mimic", (gc_.tail(12) - pTarget12_).norm(), accu);
 //    rewards_.record("Wheel", euler_angle[2] * double(COUNT) / 400, accu);
-    rewards_.record("Wheel", abs(ang_vel_[2]), accu);
+    rewards_.record("Wheel", ang_vel_[2], accu);
 //    rewards_.record("torque",anymal_->getGeneralizedForce().squaredNorm() );
     return rewards_.sum();
   }

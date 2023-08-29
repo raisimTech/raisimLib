@@ -33,7 +33,7 @@ environment:
     Live:
       coeff: 0
     Wheel:
-      coeff: -5
+      coeff: 3
     Mimic:
       coeff: 0.
 

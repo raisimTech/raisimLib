@@ -172,7 +172,7 @@ if mode =='train' or mode == 'retrain':
     env.turn_on_visualization()
     schedule = cfg['environment']['schedule']
     envs_idx = 0
-    waiter = Waiter(0.005)
+    waiter = Waiter(0.003)
     waiter.update_start()
     for update in range(total_update):
         reward_sum = 0
@@ -193,15 +193,15 @@ if mode =='train' or mode == 'retrain':
             # print(len(last_c))
             # print(len(position))
 
-            position =  position[0]
-            if envs_idx == 0 :
-                last_c[0] = position[3 * 0 + 1] + position[3 * 0 + 2] / 2
-                last_c[1] = position[3 * 1 + 1] + position[3 * 1 + 2] / 2
-                last_c[2] = position[3 * 2 + 1] + position[3 * 2 + 2] / 2
-                last_c[3] = position[3 * 3 + 1] + position[3 * 3 + 2] / 2
-                reward = np.array([0])
-            else:
-                reward = cal_reward(qq, position)
+            # position =  position[0]
+            # if envs_idx == 0 :
+            #     last_c[0] = position[3 * 0 + 1] + position[3 * 0 + 2] / 2
+            #     last_c[1] = position[3 * 1 + 1] + position[3 * 1 + 2] / 2
+            #     last_c[2] = position[3 * 2 + 1] + position[3 * 2 + 2] / 2
+            #     last_c[3] = position[3 * 3 + 1] + position[3 * 3 + 2] / 2
+            #     reward = np.array([0])
+            # else:
+            #     reward = cal_reward(qq, position)
             # print(f"reward {reward} ")
             envs_idx +=1
             ppo.step(value_obs=obs, rews=reward, dones=_)
