@@ -147,23 +147,23 @@ def cal_reward(qq, now):
     :param last: 12
     :return: reward
     """
-    # global last_c
-    # c = [0] * 4
-    # c[0] = now[3 * 0 + 1] + now[3 * 0 + 2]/2
-    # c[1] = now[3 * 1 + 1] + now[3 * 1 + 2]/2
-    # c[2] = now[3 * 2 + 1] + now[3 * 2 + 2]/2
-    # c[3] = now[3 * 3 + 1] + now[3 * 3 + 2]/2
-    # d = [0] * 4
-    # d[0] = c[0] - last_c[0]
-    # d[1] = c[1] - last_c[1]
-    # d[2] = c[2] - last_c[2]
-    # d[3] = c[3] - last_c[3]
-    # last_c = c
-    # print(last_c)
-    # return np.array([-qq * 10 * (d[0] + d[3] - d[1] - d[2])])
-    a1.observe()
-    reward = a1.gyroscope[2]
-    return np.array([reward]).astype(np.float32)
+    global last_c
+    c = [0] * 4
+    c[0] = now[3 * 0 + 1] + now[3 * 0 + 2]/2
+    c[1] = now[3 * 1 + 1] + now[3 * 1 + 2]/2
+    c[2] = now[3 * 2 + 1] + now[3 * 2 + 2]/2
+    c[3] = now[3 * 3 + 1] + now[3 * 3 + 2]/2
+    d = [0] * 4
+    d[0] = c[0] - last_c[0]
+    d[1] = c[1] - last_c[1]
+    d[2] = c[2] - last_c[2]
+    d[3] = c[3] - last_c[3]
+    last_c = c
+    print(last_c)
+    return np.array([-qq * 10 * (d[0] + d[3] - d[1] - d[2])])
+    # a1.observe()
+    # reward = a1.gyroscope[2]
+    # return np.array([reward]).astype(np.float32)
 
 def updating(obs, update):
     print('thread updating ')
@@ -339,15 +339,15 @@ for update in range(total_update):
         envs_idx +=1
 
         position = a1.position
-        # if envs_idx == 0:
-        #     last_c[0] = position[3 * 0 + 1] + position[3 * 0 + 2] / 2
-        #     last_c[1] = position[3 * 1 + 1] + position[3 * 1 + 2] / 2
-        #     last_c[2] = position[3 * 2 + 1] + position[3 * 2 + 2] / 2
-        #     last_c[3] = position[3 * 3 + 1] + position[3 * 3 + 2] / 2
-        #     reward = np.array([0])
-        # else:
-        #     reward = cal_reward(qq, position)
-        reward=cal_reward(qq, position)
+        if envs_idx == 0:
+            last_c[0] = position[3 * 0 + 1] + position[3 * 0 + 2] / 2
+            last_c[1] = position[3 * 1 + 1] + position[3 * 1 + 2] / 2
+            last_c[2] = position[3 * 2 + 1] + position[3 * 2 + 2] / 2
+            last_c[3] = position[3 * 3 + 1] + position[3 * 3 + 2] / 2
+            reward = np.array([0])
+        else:
+            reward = cal_reward(qq, position)
+        # reward=cal_reward(qq, position)
         ppo.step(value_obs=obs, rews=reward, dones=np.array([False]))
 
         save_observe.add_list(obs[0])
