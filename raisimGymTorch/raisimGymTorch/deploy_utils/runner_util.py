@@ -9,8 +9,8 @@ def add_list_np(act_gen, sine, history,kb):
     kf = 1
     # kb = np.array([0.15 ,0., 0.] * 4)
     # print(act_gen)
-    kb = np.array([0.07,0.07, 0.07] * 4  )
-    # kb = np.array([0.] *12  )
+    # kb = np.array([0.07,0.07, 0.07] * 4  )
+    kb = np.array([0.13] *12  )
     history = history*kk + (1-kk) * act_gen
     ans = np.clip(kb*history + kf * sine, -1, 1)
     ans = (ans + 1) /2  # 100 * 12
@@ -98,7 +98,7 @@ def sine_gene_pt(idx, T, rate):
             idx = 0
         dh = rate #:w
         # assert dh == 0.6
-        ds = 0.2
+        ds = 0.
         H = 0.3
         # print(idx)
         if idx >= 0 and idx <= T:
@@ -170,11 +170,11 @@ def sine_gene_pt(idx, T, rate):
         angle_list[1] = c1 + deg_rad(abss)
         angle_list[2] = c2
         angle_list[3] = 0
-        angle_list[4] = ac1 + deg_rad(abss)
-        angle_list[5] = ac2
+        angle_list[4] = c1 + deg_rad(abss)
+        angle_list[5] = c2
         angle_list[6] = 0
-        angle_list[7] = ac1 + deg_rad(abss)
-        angle_list[8] = ac2
+        angle_list[7] = c1 + deg_rad(abss)
+        angle_list[8] = c2
         angle_list[9] = 0
         angle_list[10] = c1 + deg_rad(abss)
         angle_list[11] = c2
@@ -272,7 +272,7 @@ def step_reset(act_gen, idx, T, history, kb, rate):
         idx = idx % (2 * T)
     else:
         idx = idx % (2 * T)
-    act_gen = np.zeros_like(act_gen)
+    # act_gen = np.zeros_like(act_gen)
     # print(act_gen.mean())
     sine = sine_gene_pt_step(idx, T, rate)
     ans, history = add_list_np(act_gen, sine, history, kb)
@@ -296,7 +296,7 @@ def run_model_with_pt_input_modify(act_gen, idx, T, history, kb, rate):
     # act_gen[:, 7] = act_gen[:, 3+7]
     # act_gen[:, 8] = act_gen[:, 3+8]
 
-    # act_gen = np.zeros_like(act_gen)
+    act_gen = np.zeros_like(act_gen)
     # print(act_gen.mean())
     sine = sine_gene_pt(idx, T, rate)
     ans, history = add_list_np(act_gen, sine, history, kb)

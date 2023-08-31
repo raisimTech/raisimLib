@@ -38,8 +38,8 @@ weight_path = args.weight
 cfg_path = args.cfg_path
 # load_best = args.load_best
 # check if gpu is available
-# device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-device = torch.device('cpu')
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+# device = torch.device('cpu')
 print(device)
 # directories
 task_path = os.path.dirname(os.path.realpath(__file__))

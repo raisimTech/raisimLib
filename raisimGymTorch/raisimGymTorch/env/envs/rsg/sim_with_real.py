@@ -163,7 +163,7 @@ if moving_robot:
         load_param(weight_path, env, actor, critic, ppo.optimizer, saver.data_dir)
 
     from robot_utils import *
-    a1.torque_limit = 40
+    a1.torque_limit = 50
     # init_robot(dt)
 
     # ori_posi = sine_generator(0, schedule, rate=angle_rate).tolist() # initial position

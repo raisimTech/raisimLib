@@ -57,8 +57,8 @@ namespace raisim {
 //    skate = world_ ->addArticulatedSystem("/home/lr-2002/code/raisimLib/rsc/skate/skate.urdf");
     anymal_->setName("model");
     anymal_->setControlMode(raisim::ControlMode::PD_PLUS_FEEDFORWARD_TORQUE);
-//    world_->addGround(0,"land");
-world_->addGround();
+    world_->addGround(0,"land");
+//world_->addGround();
     /// get robot data
     gcDim_ = anymal_->getGeneralizedCoordinateDim(); // 19
     gvDim_ = anymal_->getDOF(); // 18
@@ -85,7 +85,7 @@ double aa =  double(49)/ 180 * PI , bb = double(49) /180*PI;
 //    gc_init_<< 0, 0, 0.37, 1.0, 0.0, 0.0, 0.0, 0.0,  0.5233, -1.046, 0.0,  0.5233, -1.046, 0.0, 0.523, -1.046, 0.0, 0.523, -1.046;
     init();
 
-    obDim_ = 27;
+    obDim_ = 29;
     actionDim_ = nJoints_; actionMean_.setZero(actionDim_); actionStd_.setZero(actionDim_);
     obDouble_.setZero(obDim_);
 
@@ -100,8 +100,7 @@ double aa =  double(49)/ 180 * PI , bb = double(49) /180*PI;
     footIndices_.insert(anymal_->getBodyIdx("FR_calf"));
     footIndices_.insert(anymal_->getBodyIdx("RL_calf"));
     footIndices_.insert(anymal_->getBodyIdx("RR_calf"));
-    std::uniform_int_distribution<int> rnddd(0, 50);
-    rnd_cnt = rnddd(gen_);
+
 //      for(auto n : anymal_->getCollisionBodies())
 //      {
 //          auto name = n.colObj->name;
@@ -111,13 +110,13 @@ double aa =  double(49)/ 180 * PI , bb = double(49) /180*PI;
 //      skate->getCollisionBody("base/0").setMaterial("sandpaper");
 //      skate->getCollisionBody("rotater_r/0").setMaterial("rubber");
 //      skate->getCollisionBody("rotater_f/0").setMaterial("rubber");
-//      anymal_->getCollisionBody("FL_foot/0").setMaterial("rubber");
-//      anymal_->getCollisionBody("FR_foot/0").setMaterial("rubber");
-//      anymal_->getCollisionBody("RR_foot/0").setMaterial("rubber");
-//      anymal_->getCollisionBody("RL_foot/0").setMaterial("rubber");
+      anymal_->getCollisionBody("FL_foot/0").setMaterial("rubber");
+      anymal_->getCollisionBody("FR_foot/0").setMaterial("rubber");
+      anymal_->getCollisionBody("RR_foot/0").setMaterial("rubber");
+      anymal_->getCollisionBody("RL_foot/0").setMaterial("rubber");
 //      world_->setMaterialPairProp("steel", "rubber", 0.8, 0.15, 0.001);
 //      world_->setMaterialPairProp("rubber", "sandpaper", 0.99, 0.15, 0.001);
-//      world_->setMaterialPairProp("land", "rubber", 0.8, 0.1,0.001);
+      world_->setMaterialPairProp("land", "rubber", 0.8, 0.1,0.001);
 //      world_->setMaterialPairProp("sandpaper", "land", 0.4, 0.15,0.001);
 //      world_->setMaterialPairProp("steel","land", 0.1, 0.05,0.001);
 
@@ -166,6 +165,8 @@ double aa =  double(49)/ 180 * PI , bb = double(49) /180*PI;
 
   float step(const Eigen::Ref<EigenVec>& action) final {
 //      std::cout<<"mt 19937 " << gen_() << std::endl;
+      std::uniform_int_distribution<int> rnddd(1, 100);
+      rnd_cnt = rnddd(gen_);
     if (show_ref)
     {
         Eigen::Vector3d po(3, 3 ,10);
@@ -208,8 +209,8 @@ double aa =  double(49)/ 180 * PI , bb = double(49) /180*PI;
 
     /// apply random force
 //    raisim::Vec<3> force_ = {gen_()  % 10, };
-if (COUNT % rnd_cnt == 0  ){
-    std::uniform_real_distribution<double> force_dist(-10,10);
+if (rnd_cnt <=2){
+    std::uniform_real_distribution<double> force_dist(-30,30);
 //    std::uniform_int_distribution<int> idx_dist(0, 13);
     raisim::Vec<3> force_ = {force_dist(gen_), force_dist(gen_), force_dist(gen_)};
 //    std::cout << " force gened " << force_ << std::endl;
@@ -228,7 +229,9 @@ if (COUNT % rnd_cnt == 0  ){
 //    std::cout << "body: " << bodyLinearVel_ << "\n  get_vel  " << line_vel_ << std:: endl ;
     rewards_.record("Stable",-rrr, accu);
     rewards_.record("Live", 1, accu);
-    rewards_.record("forwardVel",bodyLinearVel_[0], accu);
+//    std::cout << "minus is " << bodyLinearVel_[0]  << "    " << line_vel_[0] << std::endl;
+//    rewards_.record("forwardVel",bodyLinearVel_[0], accu);
+    rewards_.record("forwardVel",line_vel_[0], accu);
 //    rewards_.record("height", 0.45- abs(gc_[2] - 0.45) - abs(gc_[0] ) - abs(gc_[1]) , accu);
 //    rewards_.record("Mimic", (gc_.tail(12) - pTarget12_).norm(), accu);
 //    rewards_.record("Wheel", euler_angle[2] * double(COUNT) / 400, accu);
@@ -266,8 +269,8 @@ if (COUNT % rnd_cnt == 0  ){
     }
 
     obDouble_ <<
-//        euler_angle[0],
-//       euler_angle[1],// quaternion
+        euler_angle[0],
+       euler_angle[1],// quaternion
 //        ori,
         ang_vel_[0],
         ang_vel_[1],
@@ -289,8 +292,8 @@ if (COUNT % rnd_cnt == 0  ){
     for(auto& contact: anymal_->getContacts())
       if(footIndices_.find(contact.getlocalBodyIndex()) == footIndices_.end())
       {// if there is any contact body was not in the footIndices the over
-//          rewards_.record("Live", terminalReward, accu);
-           std::cout<<"foot done " << std::endl;
+          rewards_.record("Live", terminalReward, accu);
+//           std::cout<<"foot done " << std::endl;
           return true;}
 
 //      if(gc_[2] - gc_init_[2] > 0.3){
@@ -299,14 +302,14 @@ if (COUNT % rnd_cnt == 0  ){
 //       return true;
 //       }
 
-      if(fmin(abs(euler_angle[1]), abs(euler_angle[1] + 2 * PI)) > 0.3)
+      if(fmin(abs(euler_angle[1]), abs(euler_angle[1] + 2 * PI)) > 0.4)
       {
 //      std::cout<<"y angle done" <<"  " << euler_angle[1]<< std::endl;
           rewards_.record("Live", terminalReward, accu);
 
         return true;
        }
-      if(fmin(abs(euler_angle[0]), abs(euler_angle[0] + 2 * PI)) > 0.3)
+      if(fmin(abs(euler_angle[0]), abs(euler_angle[0] + 2 * PI)) > 0.17)
       {
 //      std::cout<<"x angle done " << euler_angle[0] << std::endl;
           rewards_.record("Live", terminalReward, accu);
@@ -339,7 +342,7 @@ if (COUNT % rnd_cnt == 0  ){
  bool visualizable_ = false;
   raisim::ArticulatedSystem* anymal_, *anymal_1;
   Eigen::VectorXd gc_init_, gv_init_, gc_, gv_, pTarget_, pTarget12_, vTarget_;
-  double terminalRewardCoeff_ = -10.;
+  double terminalRewardCoeff_ = -60.;
   Eigen::VectorXd actionMean_, actionStd_, obDouble_;
   Vec<3> acc_, ang_vel_, line_vel_;
   Eigen::Vector3d bodyLinearVel_, bodyAngularVel_;
