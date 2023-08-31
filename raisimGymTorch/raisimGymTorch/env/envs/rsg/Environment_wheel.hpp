@@ -81,11 +81,11 @@ world_->addGround();
 double aa =  double(49)/ 180 * PI , bb = double(49) /180*PI;
     double for_r = double(0) / 180 * PI ;
     double abss = double(8) / 180 * PI;
-    gc_init_<< 0, 0, cos(aa) * 2 * 0.2, 1.0, 0.0, 0.0, 0.0, 0.0,  aa, -2*aa + 2 *abss, 0.0, bb, -2*bb+ 2 *abss, 0.0,aa +for_r ,-2*aa -2 * for_r+ 2 *abss , 0.0, bb + for_r, -2*bb -2 * for_r+ 2 *abss;
+    gc_init_<< 0, 0, 0.31, 1.0, 0.0, 0.0, 0.0, 0.0,  aa, -2*aa + 2 *abss, 0.0, bb, -2*bb+ 2 *abss, 0.0,aa +for_r ,-2*aa -2 * for_r+ 2 *abss , 0.0, bb + for_r, -2*bb -2 * for_r+ 2 *abss;
 //    gc_init_<< 0, 0, 0.37, 1.0, 0.0, 0.0, 0.0, 0.0,  0.5233, -1.046, 0.0,  0.5233, -1.046, 0.0, 0.523, -1.046, 0.0, 0.523, -1.046;
     init();
 
-    obDim_ = 28;
+    obDim_ = 27;
     actionDim_ = nJoints_; actionMean_.setZero(actionDim_); actionStd_.setZero(actionDim_);
     obDouble_.setZero(obDim_);
 
@@ -100,7 +100,8 @@ double aa =  double(49)/ 180 * PI , bb = double(49) /180*PI;
     footIndices_.insert(anymal_->getBodyIdx("FR_calf"));
     footIndices_.insert(anymal_->getBodyIdx("RL_calf"));
     footIndices_.insert(anymal_->getBodyIdx("RR_calf"));
-
+    std::uniform_int_distribution<int> rnddd(0, 50);
+    rnd_cnt = rnddd(gen_);
 //      for(auto n : anymal_->getCollisionBodies())
 //      {
 //          auto name = n.colObj->name;
@@ -158,11 +159,13 @@ double aa =  double(49)/ 180 * PI , bb = double(49) /180*PI;
 //    skate->setState(skate_posi_init, skate_vel_init);
     rewards_.setZero();
     COUNT=0;
+    limit_flag = false;
 //    euler_angle_old.setZero();
     updateObservation();
   }
 
   float step(const Eigen::Ref<EigenVec>& action) final {
+//      std::cout<<"mt 19937 " << gen_() << std::endl;
     if (show_ref)
     {
         Eigen::Vector3d po(3, 3 ,10);
@@ -177,9 +180,17 @@ double aa =  double(49)/ 180 * PI , bb = double(49) /180*PI;
         anymal_->setBasePos(po);
 
     }
+
     COUNT ++;
     pTarget12_ = action.cast<double>();
 
+    for (auto i = 0;i <12; i++)
+        {
+        if(abs( p_gain * (pTarget12_[i] - gc_[7 + i ]) + d_gain * (gv_[7+i])) > 50)
+            {
+            limit_flag = false;
+            }
+        }
     ori = pTarget12_[0];
     pTarget12_ = pTarget12_.tail(nJoints_);
 
@@ -192,16 +203,32 @@ double aa =  double(49)/ 180 * PI , bb = double(49) /180*PI;
       world_->integrate();
       if(server_) server_->unlockVisualizationServerMutex();
     }
+
+
+
+    /// apply random force
+//    raisim::Vec<3> force_ = {gen_()  % 10, };
+if (COUNT % rnd_cnt == 0  ){
+    std::uniform_real_distribution<double> force_dist(-10,10);
+//    std::uniform_int_distribution<int> idx_dist(0, 13);
+    raisim::Vec<3> force_ = {force_dist(gen_), force_dist(gen_), force_dist(gen_)};
+//    std::cout << " force gened " << force_ << std::endl;
+//    int iddx =
+    anymal_->setExternalForce(0, force_);
+//    anymal_->printOutMovableJointNamesInOrder();
+}
+
+
     updateObservation();
     double rrr =0;
 //    rrr = abs(euler_angle[0]) + abs(euler_angle[1]) +abs(euler_angle[2])  ;
-    rrr += 0.1 * ( abs(ang_vel_[0]) + abs(ang_vel_[1]) + abs(ang_vel_[2]));
+    rrr += 0.1 * ( abs(ang_vel_[0]) + abs(ang_vel_[1]) +abs(ang_vel_[2]));
 //    rrr += abs(gc_[0] - skate_posi_[0]) + abs(gc_[1] - (skate_posi_[1] - 0.15));
     bool accu = false;
 //    std::cout << "body: " << bodyLinearVel_ << "\n  get_vel  " << line_vel_ << std:: endl ;
     rewards_.record("Stable",-rrr, accu);
     rewards_.record("Live", 1, accu);
-    rewards_.record("forwardVel",abs(bodyLinearVel_[0]), accu);
+    rewards_.record("forwardVel",bodyLinearVel_[0], accu);
 //    rewards_.record("height", 0.45- abs(gc_[2] - 0.45) - abs(gc_[0] ) - abs(gc_[1]) , accu);
 //    rewards_.record("Mimic", (gc_.tail(12) - pTarget12_).norm(), accu);
 //    rewards_.record("Wheel", euler_angle[2] * double(COUNT) / 400, accu);
@@ -241,14 +268,14 @@ double aa =  double(49)/ 180 * PI , bb = double(49) /180*PI;
     obDouble_ <<
 //        euler_angle[0],
 //       euler_angle[1],// quaternion
-        ori,
+//        ori,
         ang_vel_[0],
         ang_vel_[1],
         ang_vel_[2],
 //        line_vel_[0],
 //        line_vel_[1],
-       c_v,
-       gcc;
+       c_v;
+//       gcc;
 
   }
 
@@ -259,32 +286,39 @@ double aa =  double(49)/ 180 * PI , bb = double(49) /180*PI;
   bool isTerminalState(float& terminalReward) final {
     terminalReward = float(terminalRewardCoeff_);
     bool accu = true;
-//    for(auto& contact: anymal_->getContacts())
-//      if(footIndices_.find(contact.getlocalBodyIndex()) == footIndices_.end())
-//      {// if there is any contact body was not in the footIndices the over
+    for(auto& contact: anymal_->getContacts())
+      if(footIndices_.find(contact.getlocalBodyIndex()) == footIndices_.end())
+      {// if there is any contact body was not in the footIndices the over
 //          rewards_.record("Live", terminalReward, accu);
-//           std::cout<<"foot done " << std::endl;
-//          return true;}
+           std::cout<<"foot done " << std::endl;
+          return true;}
+
 //      if(gc_[2] - gc_init_[2] > 0.3){
-//      std::cout<<"z done" << std::endl;
+////      std::cout<<"z done" << std::endl;
 //         rewards_.record("Live", terminalReward, accu);
 //       return true;
 //       }
 
-//      if(fmin(abs(euler_angle[1]), abs(euler_angle[1] + 2 * PI)) > 0.3)
-//      {
+      if(fmin(abs(euler_angle[1]), abs(euler_angle[1] + 2 * PI)) > 0.3)
+      {
 //      std::cout<<"y angle done" <<"  " << euler_angle[1]<< std::endl;
-//          rewards_.record("Live", terminalReward, accu);
+          rewards_.record("Live", terminalReward, accu);
 
-//        return true;
-//       }
-//      if(fmin(abs(euler_angle[0]), abs(euler_angle[0] + 2 * PI)) > 0.3)
-//      {
+        return true;
+       }
+      if(fmin(abs(euler_angle[0]), abs(euler_angle[0] + 2 * PI)) > 0.3)
+      {
 //      std::cout<<"x angle done " << euler_angle[0] << std::endl;
-//          rewards_.record("Live", terminalReward, accu);
-//
-//            return true;
-//        }
+          rewards_.record("Live", terminalReward, accu);
+
+            return true;
+        }
+      if(limit_flag)
+          {
+//          std::cout<<"limit done" << std::endl;
+          rewards_.record("Live", terminalReward, accu);
+          return true;
+          }
 //        if(abs(gc_[0] - skate_posi_[0]) >0.2)
 //        {
 //            return true;
@@ -317,6 +351,7 @@ double aa =  double(49)/ 180 * PI , bb = double(49) /180*PI;
   float schedule_T;
   bool show_ref= true;
   double ori = 1.0;
+  double limit_flag = false;
   double action_std, angle_rate;
   Eigen::VectorXd angle_list, angle_list_for_work;
   Eigen::VectorXd gc_old, ref_old;
@@ -327,6 +362,8 @@ double aa =  double(49)/ 180 * PI , bb = double(49) /180*PI;
 //  Eigen::VectorXd  skate_vel_, skate_posi_,skate_posi_init, skate_vel_init;
   std::normal_distribution<double> normDist_;
   thread_local static std::mt19937 gen_;
+  int rnd_cnt = 0;
+//  static std::uniform_real_distribution<double> dist_(-10,10);
 };
 thread_local std::mt19937 raisim::ENVIRONMENT::gen_;
 

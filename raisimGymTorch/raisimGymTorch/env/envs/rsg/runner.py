@@ -38,7 +38,8 @@ weight_path = args.weight
 cfg_path = args.cfg_path
 # load_best = args.load_best
 # check if gpu is available
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+# device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cpu')
 print(device)
 # directories
 task_path = os.path.dirname(os.path.realpath(__file__))
@@ -86,7 +87,7 @@ num_envs = cfg['environment']['num_envs']
 ppo = PPO.PPO(actor=actor,
               critic=critic,
               num_envs=cfg['environment']['num_envs'],
-              num_transitions_per_env=n_steps,
+              num_transitions_per_env=n_steps * 5,
               num_learning_epochs=4,
               gamma=0.996,
               lam=0.95,
@@ -164,7 +165,7 @@ if mode =='train' or mode == 'retrain':
 
             env.stop_video_recording()
             env.turn_off_visualization()
-            history_act = np.array([his_util] * num_envs)
+            # history_act = np.array([his_util] * num_envs)
             reward_analyzer.analyze_and_plot(update)
             env.reset()
             env.save_scaling(saver.data_dir, str(update))

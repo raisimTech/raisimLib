@@ -6,7 +6,7 @@ from raisimGymTorch.env.bin.rsg import RaisimGymEnv
 from raisimGymTorch.env.RewardAnalyzer import RewardAnalyzer
 import raisimGymTorch.algo.ppo.module as ppo_module
 import raisimGymTorch.algo.ppo.ppo as PPO
-from raisimGymTorch.env.deploy_util.angle_utils import transfer
+from raisimGymTorch.deploy_utils.angle_utils import transfer
 from unitree_utils.Waiter import Waiter
 from raisimGymTorch.deploy_utils.angle_utils import get_last_position
 from raisimGymTorch.deploy_log.draw_map import  Drawer
@@ -23,6 +23,8 @@ import argparse
 # from sine_generator import sine_generator
 from unitree_deploy.angle_utils import  sine_generator
 from raisimGymTorch.deploy_utils.angle_utils import  deg_rad, rad_deg
+from raisimGymTorch.deploy_utils.runner_util import run_model_with_pt_input_modify, list_pt
+
 
 # task specification
 task_name = "sim2real"
@@ -121,12 +123,14 @@ act_rate = float(act_rate)
 input(f"Are you sure to execute the action in schedule: {schedule}, angle_rate: {angle_rate}, act_rate(how many action generated from NN used for work): {act_rate}")
 
 
-moving_robot = False
-onnx_flag = True
-virtual = True
-
+moving_robot = True
+onnx_flag = False
+virtual = False
+on_p_rate =cfg['on_policy']['rate']
+on_p_kb = cfg['on_policy']['kb']
 # his_util=[0, 0.523, -1.046] * 4
-his_util=[0, 0.523, -1.046] * 4
+his_util =[0] * 12
+# his_util=[0, 0.523, -1.046] * 4
 # check_done = lambda a, b: a + 1 if not b else 0
 check_history = lambda a, b: a if not b else his_util
 history_act = np.array([his_util] * num_envs)
@@ -135,10 +139,10 @@ if virtual:
     waiter= Waiter(0.01)
     env.reset()
     start = time.time()
-    onnx_flag = True
+    onnx_flag = False
     if onnx_flag:
         cnt_onnx = 0
-        from raisimGymTorch.env.deploy_util import onnx_deploy
+        from raisimGymTorch.deploy_utils import onnx_deploy
     else:
         load_param(weight_path, env, actor, critic, ppo.optimizer, saver.data_dir)
 
@@ -150,17 +154,29 @@ if virtual:
 
 if moving_robot:
     history_obs = None
+
     if onnx_flag:
         cnt_onnx = 0
-        from raisimGymTorch.env.deploy_util import onnx_deploy
-    from robot_utils import *
-    a1.torque_limit = 33.15
-    init_robot(dt)
 
-    ori_posi = sine_generator(0, schedule, rate=angle_rate).tolist() # initial position
+        from raisimGymTorch.deploy_utils import onnx_deploy
+    else:
+        load_param(weight_path, env, actor, critic, ppo.optimizer, saver.data_dir)
+
+    from robot_utils import *
+    a1.torque_limit = 40
+    # init_robot(dt)
+
+    # ori_posi = sine_generator(0, schedule, rate=angle_rate).tolist() # initial position
     # a1.kp = cfg['environment']['kp']
     # ori_posi = a1.position
-    init_position(ori_posi,250)
+    # init_position(ori_posi,250)
+    gen_action = ppo.act(a1.observe())
+    a1.kp = [100] * 12
+    a1.kd = [3] * 12
+    # a1.init_k(a1.kp, a1.kd)
+    ori_posi,_ = run_model_with_pt_input_modify(np.zeros_like(gen_action), 0, schedule, history_act, kb=on_p_kb,
+                                                                 rate=on_p_rate)
+    a1.stand_up(200, ori_posi[0].tolist())
     print(f"""
         now_posi: {a1.position},
         angle_rate : {angle_rate}
@@ -169,12 +185,10 @@ if moving_robot:
     real_idx = 0
     for i in range(schedule):
         a1.hold_on()
-    a1.kp = [100] * 12
-    a1.kd = [3] * 12
-    a1.init_k(a1.kp, a1.kd)
-    history_obs = a1.observe()[ :5]
 
-for step in range(n_steps * 2):
+    # history_obs = a1.observe()[ :5]
+history_act = np.array([his_util] * num_envs)
+for step in range(n_steps * 10):
     #virtual bot part
     if virtual:
         # if step%1    ==0 :
@@ -202,8 +216,10 @@ for step in range(n_steps * 2):
             cnt_onnx += 1
         else:
             gen_action = ppo.act(obs)
-            sine = sine_generator(envs_idx, schedule, angle_rate)
-            action = transfer(gen_action, sine, act_rate, history_act=history_act).astype(np.float32)
+            action, history_act = run_model_with_pt_input_modify(gen_action, envs_idx, schedule, history_act, kb=on_p_kb,
+                                                                 rate=on_p_rate)
+            # sine = sine_generator(envs_idx, schedule, angle_rate)
+            # action = transfer(gen_action, sine, act_rate, history_act=history_act).astype(np.float32)
             # history_act =
         print(f"virtual_obs:{obs} \n virtual_action:{action}")
         save_obs.add_list(obs[0])
@@ -223,15 +239,15 @@ for step in range(n_steps * 2):
             real_history_act = np.array(his_util)
             save_real_obs = CSV_saver('real_a_obs')
             save_real_action = CSV_saver('real_a_action')
-        print('b-observe')
-        obbs = a1.observe()
-        obbs[:5] -= history_obs
-        real_obs = np.array([obbs])
+        # print('b-observe')
+        # obbs = a1.observe()
+        # obbs[:5] -= history_obs
+        real_obs = a1.observe()
         # real_obs = np.array([a1.observe()])
-        print(f"real_obs {real_obs}")
+        # print(f"real_obs {real_obs}")
         # input('now cancel it ')
         # print()
-        print('b-ppo')
+        # print('b-ppo')
 
 
         if onnx_flag:
@@ -242,12 +258,13 @@ for step in range(n_steps * 2):
 
         else:
             gen_action = ppo.act(real_obs)
-            print('b-sin')
-            real_sine = sine_generator(real_idx, schedule, angle_rate)
-            print('b-trans')
-            real_action = transfer(gen_action, real_sine, act_rate, history_act=real_history_act)
-
-
+            # print('b-sin')
+            # real_sine = sine_generator(real_idx, schedule, angle_rate)
+            # print('b-trans')
+            # real_action = transfer(gen_action, real_sine, act_rate, history_act=real_history_act)
+            # gen_action = ppo.act(obs)
+            action, history_act = run_model_with_pt_input_modify(gen_action, real_idx, schedule, history_act, kb=on_p_kb,
+                                                                 rate=on_p_rate)
 
         # real_action = real_action
         # add_map_list(real_action)
@@ -255,12 +272,12 @@ for step in range(n_steps * 2):
         save_real_obs.add_list(real_obs)
         save_real_action.add_list(a1.position)
         draw_recv_action.add_map_list(a1.position)
-        draw_sent_action.add_map_list(real_action[0])
-        print(f"real_obs:{real_obs} \n for work_action:{real_action} ")
+        draw_sent_action.add_map_list(action[0])
+        print(f"real_obs:{real_obs} \n for work_action:{action} ")
         # waiter.wait()
-        if real_action.shape[0] == 1:
-            real_action = real_action[0]
-        a1.take_action(real_action.tolist())
+        if action.shape[0] == 1:
+            action = action[0]
+        a1.take_action(action.tolist())
         # real_history_act = real_sine
         real_idx +=1
 
