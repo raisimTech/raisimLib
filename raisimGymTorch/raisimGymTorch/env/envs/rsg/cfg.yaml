@@ -4,9 +4,9 @@ record_video: true
 environment:
   render: true
 # just testing commenting
-  num_envs: 1
+  num_envs: 20
   eval_every_n: 20
-  num_threads: 1
+  num_threads: 20
   simulation_dt: 0.0025
   control_dt: 0.01
   max_time: 8
@@ -27,7 +27,7 @@ environment:
     torque:
       coeff: -4e-5
     Stable:
-      coeff: 10
+      coeff: 15
     height:
       coeff: 0.
     Live:
@@ -42,5 +42,5 @@ architecture:
   value_net: [128, 128]
 
 on_policy:
-  rate: 2  # for sine A
+  rate: 1.  # for sine A
   kb: 0.15 # act_gen * kb

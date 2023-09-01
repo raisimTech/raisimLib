@@ -222,7 +222,8 @@ if (rnd_cnt <=2){
 
     updateObservation();
     double rrr =0;
-//    rrr = abs(euler_angle[0]) + abs(euler_angle[1]) +abs(euler_angle[2])  ;
+    rrr = abs(euler_angle[0]) + abs(euler_angle[1]) +abs(euler_angle[2]);
+    rrr = rrr * 0.1;
     rrr += 0.1 * ( abs(ang_vel_[0]) + abs(ang_vel_[1]) +abs(ang_vel_[2]));
 //    rrr += abs(gc_[0] - skate_posi_[0]) + abs(gc_[1] - (skate_posi_[1] - 0.15));
     bool accu = false;
@@ -302,14 +303,14 @@ if (rnd_cnt <=2){
 //       return true;
 //       }
 
-      if(fmin(abs(euler_angle[1]), abs(euler_angle[1] + 2 * PI)) > 0.4)
+      if(fmin(abs(euler_angle[1]), abs(euler_angle[1] + 2 * PI)) > 0.17)
       {
 //      std::cout<<"y angle done" <<"  " << euler_angle[1]<< std::endl;
           rewards_.record("Live", terminalReward, accu);
 
         return true;
        }
-      if(fmin(abs(euler_angle[0]), abs(euler_angle[0] + 2 * PI)) > 0.17)
+      if(fmin(abs(euler_angle[0]), abs(euler_angle[0] + 2 * PI)) > 0.4)
       {
 //      std::cout<<"x angle done " << euler_angle[0] << std::endl;
           rewards_.record("Live", terminalReward, accu);

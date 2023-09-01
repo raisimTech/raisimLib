@@ -9,7 +9,7 @@ def add_list_np(act_gen, sine, history,kb):
     kf = 1
     # kb = np.array([0.15 ,0., 0.] * 4)
     # print(act_gen)
-    # kb = np.array([0.07,0.07, 0.07] * 4  )
+    # kb = np.array([0.2,0.1, 0.1] * 4  )
     kb = np.array([0.2] *12  )
     history = history*kk + (1-kk) * act_gen
     ans = np.clip(kb*history + kf * sine, -1, 1)
@@ -167,14 +167,14 @@ def sine_gene_pt(idx, T, rate):
         ac2 = -2 * act1
         abss = 8
         angle_list[0] = 0
-        angle_list[1] = c1 + deg_rad(abss)
-        angle_list[2] = c2
+        angle_list[1] = ac1 + deg_rad(abss)
+        angle_list[2] = ac2
         angle_list[3] = 0
         angle_list[4] = c1 + deg_rad(abss)
         angle_list[5] = c2
         angle_list[6] = 0
-        angle_list[7] = c1 + deg_rad(abss)
-        angle_list[8] = c2
+        angle_list[7] = ac1 + deg_rad(abss)
+        angle_list[8] = ac2
         angle_list[9] = 0
         angle_list[10] = c1 + deg_rad(abss)
         angle_list[11] = c2
@@ -291,8 +291,12 @@ def run_model_with_pt_input_modify(act_gen, idx, T, history, kb, rate):
     else:
         idx = idx % (2 * T)
     #
-    # act_gen[:, 1] = act_gen[:, 3+1]
-    # act_gen[:, 2] = act_gen[:, 3+2]
+    act_gen[:, 0] = act_gen[:, 6+0]
+    act_gen[:, 1] = act_gen[:, 6+1]
+    act_gen[:, 2] = act_gen[:, 6+2]
+    act_gen[:, 3] = act_gen[:, 6+3]
+    act_gen[:, 4] = act_gen[:, 6+4]
+    act_gen[:, 5] = act_gen[:, 6+5]
     # act_gen[:, 10] = act_gen[:, 3+1]
     # act_gen[:, 11] = act_gen[:, 3+2]
     # act_gen[:, 7] = act_gen[:, 3+1]
