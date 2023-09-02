@@ -123,9 +123,9 @@ act_rate = float(act_rate)
 input(f"Are you sure to execute the action in schedule: {schedule}, angle_rate: {angle_rate}, act_rate(how many action generated from NN used for work): {act_rate}")
 
 
-moving_robot = True
+moving_robot = False
 onnx_flag = False
-virtual = False
+virtual = True
 on_p_rate =cfg['on_policy']['rate']
 on_p_kb = cfg['on_policy']['kb']
 # his_util=[0, 0.523, -1.046] * 4

@@ -87,7 +87,7 @@
 
 # `RaisimGymTorch`
 
-如果你是要学习`raisimgymmtorch`进行强化学习，那就需要理解以下几个基本概念
+如果你是要学习`RaisimGymTorch`进行强化学习，那就需要理解以下几个基本概念
 
 1. `setup.py`(`raisimlib/raisimgymtorch/`) 对所有的环境进行编译，生成在python中可以使用的库
 2. `Environment.hpp` 这个文件定义了你的机器人与环境作用的方式
@@ -97,8 +97,8 @@
 3. `runner.py` 这个文件是你的`python`的主框架
    1. 记录`log`
    2. 更新`observation`
-   3. 记录`state-action`对
-   4. `ppo`计算
+   3. 记录`state-action`对   对应函数为`ppo.step`
+   4. `ppo`计算 对应的函数是`ppo.act`
    5. 生成`action`
    6. 更新`model`
 4. `cfg.yaml` 定义超参数
