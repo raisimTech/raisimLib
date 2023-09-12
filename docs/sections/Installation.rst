@@ -6,10 +6,9 @@ Setup
 ========
 
 Please install/save everything locally to prevent any conflicts with other libraries.
-We will assume that you have a single workspace where you save all repos related to raisim.
 Here we introduce two variables
 
-* ``WORKSPACE``: workspace where you clone your git repos (e.g., ~/raisim_workspace)
+* ``RAISIM_DIR``: the directory where you cloned raisimLib
 * ``LOCAL_INSTALL``: install directory where you install exported cmake libraries (e.g., ~/raisim_build)
 
 You can add them to your environment variables or simply replace them by the path you want in the following instructions on this page.
@@ -95,7 +94,7 @@ To build raisimPy for the correct python version, activate your conda environmen
 
     .. code-block:: c
 
-      cd $WORKSPACE/raisimLib
+      cd $WORKSPACE
       mkdir build
       cd build
       cmake .. -DCMAKE_INSTALL_PREFIX=$LOCAL_INSTALL -DRAISIM_EXAMPLE=ON -DRAISIM_PY=ON -DPYTHON_EXECUTABLE=$(which python)
@@ -109,7 +108,7 @@ To build raisimPy for the correct python version, activate your conda environmen
 
     .. code-block::
 
-      cd $WORKSPACE/raisimLib
+      cd $WORKSPACE
       mkdir build
       cd build
       cmake .. -DCMAKE_INSTALL_PREFIX=$LOCAL_INSTALL -DRAISIM_EXAMPLE=ON -DRAISIM_PY=ON -DPYTHON_EXECUTABLE=$(which python)
