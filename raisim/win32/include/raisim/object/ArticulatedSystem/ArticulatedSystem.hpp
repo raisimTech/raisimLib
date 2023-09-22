@@ -15,6 +15,7 @@
 #include <cmath>
 #include <unordered_map>
 #include <fstream>
+#include <map>
 #include "raisim/math.hpp"
 #include "algorithm"
 
@@ -559,6 +560,14 @@ class ArticulatedSystem : public Object {
    * joints with multiple dof's
    * @return movable joint names in the joint order. */
   [[nodiscard]] const std::vector<std::string> &getMovableJointNames() const { return movableJointNames; };
+
+  /**
+   * get generalized velocity index of a joint.
+   * @return the joint index. */
+  [[nodiscard]] size_t getGeneralizedVelocityIndex(const std::string& name) const {
+    RSFATAL_IF(jointName2GvIdx.find(name) == jointName2GvIdx.end(), name + " not found")
+    return jointName2GvIdx.at(name);
+  };
 
   /**
    * @param[in] bodyIdx The body which contains the point, can be retrieved by getBodyIdx()
@@ -1505,6 +1514,13 @@ class ArticulatedSystem : public Object {
   }
 
   /**
+   * get the joint velocity limits
+   * @return jointLimits joint velocity limits*/
+    const VecDyn& getJointVelocityLimits() {
+      return velLimits_;
+    }
+
+  /**
    * Clears all external forces and torques */
   void clearExternalForcesAndTorques() final {
     isExternalForces_.resize(0);
@@ -1566,7 +1582,7 @@ class ArticulatedSystem : public Object {
    *
    * @return return if the inverse dynamics is computed
    */
-  bool getComputeInverseDynamics() const { return computeInverseDynamics_; }
+  [[nodiscard]] bool getComputeInverseDynamics() const { return computeInverseDynamics_; }
 
   /**
    * YOU MUST CALL raisim::ArticulatedSystem::setComputeInverseDynamics(true) before calling this method.
@@ -1574,7 +1590,7 @@ class ArticulatedSystem : public Object {
    * @param jointId[in] the joint id
    * @return force at the joint
    */
-  const raisim::Vec<3>& getForceAtJointInWorldFrame(size_t jointId) const { return forceAtJoint_W[jointId]; }
+  [[nodiscard]] const raisim::Vec<3>& getForceAtJointInWorldFrame(size_t jointId) const { return forceAtJoint_W[jointId]; }
 
   /**
    * YOU MUST CALL raisim::ArticulatedSystem::setComputeInverseDynamics(true) before calling this method.
@@ -1582,7 +1598,7 @@ class ArticulatedSystem : public Object {
    * @param jointId[in] the joint id
    * @return torque at the joint
    */
-  const raisim::Vec<3>& getTorqueAtJointInWorldFrame(size_t jointId) const { return torqueAtJoint_W[jointId]; }
+  [[nodiscard]] const raisim::Vec<3>& getTorqueAtJointInWorldFrame(size_t jointId) const { return torqueAtJoint_W[jointId]; }
 
  protected:
 
@@ -1739,6 +1755,7 @@ class ArticulatedSystem : public Object {
   std::vector<Child> rootChild_;
   std::vector<std::string> bodyName;
   std::vector<std::string> movableJointNames;
+  std::map<std::string, size_t> jointName2GvIdx;
 
   std::vector<SparseJacobian> contactJaco_;
   std::vector<SparseJacobian> externalForceAndTorqueJaco_;
