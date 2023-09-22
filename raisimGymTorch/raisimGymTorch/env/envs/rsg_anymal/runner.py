@@ -121,7 +121,7 @@ for update in range(1000000):
         env.stop_video_recording()
         env.turn_off_visualization()
 
-        reward_analyzer.analyze_and_plot(cfg['environment']['eval_every_n'])
+        reward_analyzer.analyze_and_plot(update)
         env.reset()
         env.save_scaling(saver.data_dir, str(update))
 

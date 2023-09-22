@@ -20,10 +20,10 @@ class RewardAnalyzer:
     def add_reward_info(self, info):
         self.data_size += len(info)
 
-        for i in range(len(self.data_tags)-1):
-            for j in range(len(info)-1):
+        for i in range(len(self.data_tags)):
+            for j in range(len(info)):
                 self.data_square_sum[i] += info[j][self.data_tags[i]]*info[j][self.data_tags[i]]
-                self.data_mean[i] += info[i][self.data_tags[i]]
+                self.data_mean[i] += info[j][self.data_tags[i]]
                 self.data_min[i] = min(self.data_min[i], info[j][self.data_tags[i]])
                 self.data_max[i] = max(self.data_max[i], info[j][self.data_tags[i]])
 
@@ -37,6 +37,7 @@ class RewardAnalyzer:
             self.writer.add_scalar(self.data_tags[data_id]+'/min', self.data_min[data_id], global_step=step)
             self.writer.add_scalar(self.data_tags[data_id]+'/max', self.data_max[data_id], global_step=step)
 
+        self.data_size = 0
         self.data_mean = np.zeros(shape=(len(self.data_tags), 1), dtype=np.double)
         self.data_square_sum = np.zeros(shape=(len(self.data_tags), 1), dtype=np.double)
         self.data_min = np.inf * np.ones(shape=(len(self.data_tags), 1), dtype=np.double)
