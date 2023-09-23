@@ -1186,6 +1186,7 @@ class RaisimServer final {
               < world_->getWorldTime() + 1e-10) {
         data_ = set(data_, true);
         needsSensorUpdate_ = true;
+        sensorUpdateTime_ = world_->getWorldTime();
       } else {
         data_ = set(data_, false);
       }
@@ -1691,14 +1692,14 @@ class RaisimServer final {
         auto &img = std::static_pointer_cast<RGBCamera>(sensor)->getImageBuffer();
         RSFATAL_IF(width * height * 4 != img.size(), "Image size mismatch. Sensor module not working properly")
         rData_ = getN(rData_, img.data(), width * height * 4);
-        sensor->setUpdateTimeStamp(world_->getWorldTime());
+        sensor->setUpdateTimeStamp(sensorUpdateTime_);
       } else if (type == Sensor::Type::DEPTH) {
         int width, height;
         rData_ = get(rData_, &width, &height);
         auto &depthArray = std::static_pointer_cast<DepthCamera>(sensor)->getDepthArray();
         RSFATAL_IF(width * height != depthArray.size(), "Image size mismatch. Sensor module not working properly")
         rData_ = getN(rData_, depthArray.data(), width * height);
-        sensor->setUpdateTimeStamp(world_->getWorldTime());
+        sensor->setUpdateTimeStamp(sensorUpdateTime_);
       }
     }
 
@@ -1707,6 +1708,7 @@ class RaisimServer final {
 
   char *data_, *rData_;
   bool needsSensorUpdate_ = false;
+  double sensorUpdateTime_;
   World *world_;
   std::vector<char> receive_buffer, send_buffer;
   bool connected_ = false;
