@@ -26,7 +26,7 @@ hm.setAppearance("soil1")
 robot = world.addArticulatedSystem(os.path.dirname(os.path.abspath(__file__)) + "/../../rsc/husky/husky.urdf")
 robot.setName("smb")
 robot.setGeneralizedCoordinate(np.array([0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0]))
-robot.setGeneralizedVelocity(np.zeros(7))
+robot.setGeneralizedVelocity(np.zeros(10))
 robot.setJointDamping(np.array([0, 0, 0, 0, 0, 0, 1, 1, 1, 1]))
 
 # launch raisim server
