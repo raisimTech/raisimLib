@@ -90,6 +90,15 @@ class DepthCamera final : public Sensor {
   [[nodiscard]] const std::vector<float> & getDepthArray () const { return depthArray_; }
   [[nodiscard]] std::vector<float> & getDepthArray () { return depthArray_; }
 
+  /**
+   * rgb image in bgra format. It is updated only if the measurement source is the visualizer and raisimUnreal is used
+   * @return The image data in char vector
+   */
+  void setDepthArray(const std::vector<float> & depthIn) {
+    RSFATAL_IF(depthIn.size() != depthArray_.size(), "Input data size should be "<<prop_.width <<" by "<<prop_.height);
+    depthArray_ = depthIn;
+  }
+
   /* This method works only if the sensor update type is THREE_DIM_COORD.
    * Otherwise, it will return garbage.
    * In simulation, you can set the update type in the urdf file.

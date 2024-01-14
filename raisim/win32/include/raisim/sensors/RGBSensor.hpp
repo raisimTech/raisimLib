@@ -59,6 +59,15 @@ class RGBCamera : public Sensor {
   [[nodiscard]] const std::vector<char>& getImageBuffer () const { return rgbBuffer_; }
   [[nodiscard]] std::vector<char>& getImageBuffer () { return rgbBuffer_; }
 
+  /**
+   * Set RGBA data. This method is only useful on the real robot.
+   * @param rgbaIn rgba
+   */
+  void setDepthArray(const std::vector<char> & rgbaIn) {
+    RSFATAL_IF(rgbaIn.size() != rgbBuffer_.size(), "Input data size should be "<<prop_.width <<" by "<<prop_.height << "by 4");
+    rgbBuffer_ = rgbaIn;
+  }
+
   void update (class World& world) final {
     RSFATAL("RGB sensors can only be updated by the visualizer. Use RaisimUnreal. ")
   }

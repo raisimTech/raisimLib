@@ -48,6 +48,9 @@ int main(int argc, char **argv) {
   rgbCamera2->setMeasurementSource(raisim::Sensor::MeasurementSource::VISUALIZER);
   auto imu = anymal->getSensor<raisim::InertialMeasurementUnit>("depth_camera_front_camera_parent:imu");
 
+  auto dummySphere = server.addVisualSphere("dummy", 1, 1, 0, 0, 1);
+  dummySphere->setPosition(3, 0, 0);
+
   server.launchServer();
   for (int k = 0; k < loopN; k++) {
     RS_TIMED_LOOP(int(world.getTimeStep()*1e6))
