@@ -853,6 +853,27 @@ class RaisimServer final {
   }
 
   /**
+   * Check if there is any sensor that has to be updated from the visualizer
+   * @return if any of the sensors needs an update
+   */
+  inline bool needsSensorUpdate() {
+    auto &objList = world_->getObjList();
+    for (auto *ob: objList) {
+      if (ob->getObjectType() == ObjectType::ARTICULATED_SYSTEM) {
+        auto as = dynamic_cast<ArticulatedSystem *>(ob);
+        for (auto &sensor: as->getSensors()) {
+          if (sensor.second->getMeasurementSource() == Sensor::MeasurementSource::VISUALIZER &&
+              sensor.second->getUpdateTimeStamp() + 1. / sensor.second->getUpdateRate()
+                  < world_->getWorldTime() + 1e-10) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
+  /**
    * Synchronous update method.
    * Receive a request from the client, process it and return the requested data to the client.
    * The method return false if 1) the client failed to respond 2) the client protocol version is different 3) the client refused to receive the data 4) the client did not send the sensor data in time
@@ -1440,7 +1461,7 @@ class RaisimServer final {
       auto *ob = &vis.second->obj;
       bool initialized = ob->visualTag != 0;
       if (!initialized) ob->visualTag = visTagCounter++;
-      data_ = set(data_, ob->visualTag, initialized, ob->getObjectType(), false);
+      data_ = set(data_, ob->visualTag, initialized, int32_t(-1), false);
       serializeAS(ob, initialized, vis.second->color);
     }
 

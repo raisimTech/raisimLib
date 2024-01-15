@@ -125,10 +125,12 @@ class RaisimServer final {
   ~RaisimServer() = default;
 
   /**
+   * @param[in] port the port number to open the socket
    * Setup the port so that it can accept (acceptConnection) incoming connections
    */
-  void setupSocket() {
+  void setupSocket(int port = 8080) {
     tryingToLock_ = false;
+    raisimPort_ = port;
 
 #if __linux__ || __APPLE__
     int opt = 1;
@@ -255,8 +257,8 @@ class RaisimServer final {
     unlockVisualizationServerMutex();
   }
 
-  inline void loop() {
-    setupSocket();
+  inline void loop(int port = 8080) {
+    setupSocket(port);
 
     while (!terminateRequested_) {
       acceptConnection(2);
@@ -296,7 +298,7 @@ class RaisimServer final {
     tryingToLock_ = false;
 
     threadResult_ = std::async(std::launch::async, [this] {
-      serverThread_ = std::thread(&raisim::RaisimServer::loop, this);
+      serverThread_ = std::thread(&raisim::RaisimServer::loop, this, raisimPort_);
       return true;
     });
   }
@@ -851,6 +853,27 @@ class RaisimServer final {
   }
 
   /**
+   * Check if there is any sensor that has to be updated from the visualizer
+   * @return if any of the sensors needs an update
+   */
+  inline bool needsSensorUpdate() {
+    auto &objList = world_->getObjList();
+    for (auto *ob: objList) {
+      if (ob->getObjectType() == ObjectType::ARTICULATED_SYSTEM) {
+        auto as = dynamic_cast<ArticulatedSystem *>(ob);
+        for (auto &sensor: as->getSensors()) {
+          if (sensor.second->getMeasurementSource() == Sensor::MeasurementSource::VISUALIZER &&
+              sensor.second->getUpdateTimeStamp() + 1. / sensor.second->getUpdateRate()
+                  < world_->getWorldTime() + 1e-10) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
+  /**
    * Synchronous update method.
    * Receive a request from the client, process it and return the requested data to the client.
    * The method return false if 1) the client failed to respond 2) the client protocol version is different 3) the client refused to receive the data 4) the client did not send the sensor data in time
@@ -1182,9 +1205,9 @@ class RaisimServer final {
       if (sensor.second->getMeasurementSource() == Sensor::MeasurementSource::VISUALIZER &&
           sensor.second->getUpdateTimeStamp() + 1. / sensor.second->getUpdateRate()
               < world_->getWorldTime() + 1e-10) {
-        sensor.second->setUpdateTimeStamp(world_->getWorldTime());
         data_ = set(data_, true);
         needsSensorUpdate_ = true;
+        sensorUpdateTime_ = world_->getWorldTime();
       } else {
         data_ = set(data_, false);
       }
@@ -1309,7 +1332,10 @@ class RaisimServer final {
             case UNRECOGNIZED:
               break;
           }
-          data_ = set(data_, Masking::SB_OBJ, int32_t(0));
+          if (ob->getObjectType() == HALFSPACE || ob->getObjectType() == HEIGHTMAP)
+            data_ = set(data_, Masking::VIS_OBJ, int32_t(0));
+          else
+            data_ = set(data_, Masking::SB_OBJ, int32_t(0));
         }
         auto *sob = dynamic_cast<SingleBodyObject *>(ob);
         auto tempAdd = data_;
@@ -1435,7 +1461,7 @@ class RaisimServer final {
       auto *ob = &vis.second->obj;
       bool initialized = ob->visualTag != 0;
       if (!initialized) ob->visualTag = visTagCounter++;
-      data_ = set(data_, ob->visualTag, initialized, ob->getObjectType(), false);
+      data_ = set(data_, ob->visualTag, initialized, int32_t(-1), false);
       serializeAS(ob, initialized, vis.second->color);
     }
 
@@ -1511,6 +1537,9 @@ class RaisimServer final {
     for (auto *obj: world_->getObjList()) {
       for (auto &contact: obj->getContacts()) {
         if (!contact.isObjectA() && contact.getPairObjectBodyType()==BodyType::DYNAMIC)
+          continue;
+
+        if (!contact.getImpulsePtr())
           continue;
 
         contactIncrement++;
@@ -1684,14 +1713,15 @@ class RaisimServer final {
         auto &img = std::static_pointer_cast<RGBCamera>(sensor)->getImageBuffer();
         RSFATAL_IF(width * height * 4 != img.size(), "Image size mismatch. Sensor module not working properly")
         rData_ = getN(rData_, img.data(), width * height * 4);
+        sensor->setUpdateTimeStamp(sensorUpdateTime_);
       } else if (type == Sensor::Type::DEPTH) {
         int width, height;
         rData_ = get(rData_, &width, &height);
         auto &depthArray = std::static_pointer_cast<DepthCamera>(sensor)->getDepthArray();
         RSFATAL_IF(width * height != depthArray.size(), "Image size mismatch. Sensor module not working properly")
         rData_ = getN(rData_, depthArray.data(), width * height);
+        sensor->setUpdateTimeStamp(sensorUpdateTime_);
       }
-
     }
 
     return true;
@@ -1699,6 +1729,7 @@ class RaisimServer final {
 
   char *data_, *rData_;
   bool needsSensorUpdate_ = false;
+  double sensorUpdateTime_;
   World *world_;
   std::vector<char> receive_buffer, send_buffer;
   bool connected_ = false;

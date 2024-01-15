@@ -1461,7 +1461,7 @@ class RaisimServer final {
       auto *ob = &vis.second->obj;
       bool initialized = ob->visualTag != 0;
       if (!initialized) ob->visualTag = visTagCounter++;
-      data_ = set(data_, ob->visualTag, initialized, ob->getObjectType(), false);
+      data_ = set(data_, ob->visualTag, initialized, int32_t(-1), false);
       serializeAS(ob, initialized, vis.second->color);
     }
 

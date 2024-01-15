@@ -1046,7 +1046,7 @@ class ArticulatedSystem : public Object {
    * @param[in] force the applied force in the world frame*/
   void setExternalForce(const std::string &frame_name, const Vec<3> &force) {
     auto &frame = getFrameByName(frame_name);
-    Vec<3> force_b; force_b = frame.orientation * force;
+    Vec<3> force_b; force_b = frame.orientation.transpose() * force;
     setExternalForce(frame.parentId, Frame::BODY_FRAME, force_b, Frame::BODY_FRAME, frame.position);
   }
 
@@ -1641,8 +1641,6 @@ class ArticulatedSystem : public Object {
 
   void setConstraintForce(size_t bodyIdx, const Vec<3> &pos, const Vec<3> &force) final;
 
-  void updateInertialMeasurementUnit(InertialMeasurementUnit* imu, Eigen::Vector3d& linAcc, Eigen::Vector3d& angVel);
-
   /**
    * Recursive Newton Euler algorithm computes inverse dynamics of the system.
    * In other words, it computes the generalized force that results in the given given generalized acceleration.
@@ -1732,7 +1730,7 @@ class ArticulatedSystem : public Object {
   std::vector<double> compositeMass;
 
   std::vector<std::vector<size_t> > children_;
-  std::vector<size_t> toBaseBodyCount_; // counts to base (which is WORLD).
+  std::vector<size_t> toBaseBodyCount_;
   std::vector<size_t> toBaseGvDimCount_;
   std::vector<size_t> toBaseGcDimCount_;
   std::vector<size_t> lambda;
