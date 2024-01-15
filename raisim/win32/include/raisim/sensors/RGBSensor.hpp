@@ -63,7 +63,7 @@ class RGBCamera : public Sensor {
    * Set RGBA data. This method is only useful on the real robot.
    * @param rgbaIn rgba
    */
-  void setDepthArray(const std::vector<char> & rgbaIn) {
+  void setImageBuffer(const std::vector<char> & rgbaIn) {
     RSFATAL_IF(rgbaIn.size() != rgbBuffer_.size(), "Input data size should be "<<prop_.width <<" by "<<prop_.height << "by 4");
     rgbBuffer_ = rgbaIn;
   }
