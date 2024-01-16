@@ -1600,6 +1600,19 @@ class ArticulatedSystem : public Object {
    */
   [[nodiscard]] const raisim::Vec<3>& getTorqueAtJointInWorldFrame(size_t jointId) const { return torqueAtJoint_W[jointId]; }
 
+
+  /**
+   * Default is 1. This number limits the number of possible contacts between two bodies.
+   * @return the number of possible contacts between two bodies
+   */
+  [[nodiscard]] int getAllowedNumberOfInternalContactsBetweenTwoBodies() const { return allowedNumberOfInternalContactsBetweenTwoBodies; }
+
+  /**
+   * Default is 1. This sets the number of possible contacts between two bodies
+   * @param count
+   */
+  void setAllowedNumberOfInternalContactsBetweenTwoBodies(int count) { allowedNumberOfInternalContactsBetweenTwoBodies = count; }
+
  protected:
 
   ArticulatedSystem(const std::string &filePath,
@@ -1761,6 +1774,7 @@ class ArticulatedSystem : public Object {
   raisim::CollisionSet collisionBodies;
   std::vector<VisObject> visColObj, visObj;
   ArticulatedSystemOption options_;
+  int allowedNumberOfInternalContactsBetweenTwoBodies = 1;
 
  private:
   size_t nbody, dof = 0, gcDim = 0;
