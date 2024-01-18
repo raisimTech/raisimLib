@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
 from .storage import RolloutStorage
-
+import numpy as np
 
 class PPO:
     def __init__(self,
@@ -77,7 +77,12 @@ class PPO:
         self.actor_obs = actor_obs
         with torch.no_grad():
             self.actions, self.actions_log_prob = self.actor.sample(torch.from_numpy(actor_obs).to(self.device))
-        return self.actions
+            actions  = np.clip(self.actions, -1, 1)
+        return   actions
+
+    def forward(self, actor_obs):
+        return self.act(actor_obs)
+
 
     def step(self, value_obs, rews, dones):
         self.storage.add_transitions(self.actor_obs, value_obs, self.actions, self.actor.action_mean, self.actor.distribution.std_np, rews, dones,
@@ -89,7 +94,7 @@ class PPO:
         # Learning step
         self.storage.compute_returns(last_values.to(self.device), self.critic, self.gamma, self.lam)
         mean_value_loss, mean_surrogate_loss, infos = self._train_step(log_this_iteration)
-        self.storage.clear()
+        # self.storage.clear()
 
         if log_this_iteration:
             self.log({**locals(), **infos, 'it': update})
@@ -105,6 +110,7 @@ class PPO:
     def _train_step(self, log_this_iteration):
         mean_value_loss = 0
         mean_surrogate_loss = 0
+        # cnnt = 0
         for epoch in range(self.num_learning_epochs):
             for actor_obs_batch, critic_obs_batch, actions_batch, old_sigma_batch, old_mu_batch, current_values_batch, advantages_batch, returns_batch, old_actions_log_prob_batch \
                     in self.batch_sampler(self.num_mini_batches):
@@ -164,5 +170,5 @@ class PPO:
             num_updates = self.num_learning_epochs * self.num_mini_batches
             mean_value_loss /= num_updates
             mean_surrogate_loss /= num_updates
-
+        # print('cnnt ', cnnt)
         return mean_value_loss, mean_surrogate_loss, locals()

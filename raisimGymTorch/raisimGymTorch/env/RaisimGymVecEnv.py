@@ -32,6 +32,9 @@ class RaisimGymVecEnv:
     def seed(self, seed=None):
         self.wrapper.setSeed(seed)
 
+    def init_position(self, position):
+        self.wrapper.init_position(position)
+
     def turn_on_visualization(self):
         self.wrapper.turnOnVisualization()
 
@@ -45,6 +48,10 @@ class RaisimGymVecEnv:
         self.wrapper.stopRecordingVideo()
 
     def step(self, action):
+        # print(action.size)
+        # print(type(action))
+        # print(action.shape)
+        # print(action.max(), action.min())
         self.wrapper.step(action, self._reward, self._done)
         return self._reward.copy(), self._done.copy()
 

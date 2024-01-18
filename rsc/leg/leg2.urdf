@@ -1,0 +1,128 @@
+<?xml version="1.0" ?>
+<robot name="leg">
+    <!--基坐标 -->
+    <link name="base_line"/>
+
+
+
+
+    <!-- 大轴 (髋关节)-->
+    <link name="hip_joint">
+        <visual>
+            <geometry>
+                <cylinder length="1000" radius="0.05"/>
+            </geometry>
+            <material name="white">
+                <color rgba="1 1 1 1"/>
+            </material>  
+        </visual>
+    </link>
+
+
+    <!-- 大腿 -->
+    <link name="thigh_link">
+        <visual>
+            <geometry>
+                <cylinder length="0.4" radius="0.04"/>
+            </geometry>
+            <material name="yellow">
+                <color rgba="1 0.4 0 1"/>
+            </material>
+        </visual>
+    </link>
+
+    <!-- 膝关节 -->
+    <link name="knee_joint_link">
+        <visual>
+        <geometry>
+            <cylinder length="0.1" radius="0.03"/>
+        </geometry>
+        </visual>
+    </link>
+
+    <!-- 小腿 -->
+    <link name="calf_link">
+        <visual>
+            <geometry>
+                <cylinder length="0.3" radius = "0.04"/>
+            </geometry>
+            <material name="gray">
+                <color rgba="0.75 0.75 0.75 1"/>
+            </material>
+        </visual>
+    </link>
+
+    <!-- 脚关节 -->
+    <link name="ankle_joint_link">
+        <visual>
+            <geometry>
+                <cylinder length="0.1" radius="0.03"/>
+            </geometry>
+        </visual>
+    </link>
+
+
+    <!-- 脚 -->
+    <link name="foot_link">
+        <visual>
+            <geometry>
+                <cylinder length="0.2" length = "0.02"/>
+            </geometry>
+            <material name="white">
+                <color rgba="1 1 1 0.9"/>
+            </material>
+        </visual>
+    </link>
+
+
+    <!-- 大轴与大腿之间的关节（髋关节） -->
+    <joint name="world_joint" type="fixed">
+        <parent link="base_link"/>
+        <child link="hip_joint"/>
+        <origin rpy="0 0 0" xyz="0 0 -0.2"/>
+        <axis xyz="0 1 0"/>
+    </joint>
+
+
+    <!-- 大轴与大腿之间的关节（髋关节） -->
+    <joint name="hip_thigh_joint" type="revolute">
+        <parent link="hip_joint"/>
+        <child link="thigh_link"/>
+        <origin rpy="0 0 0" xyz="0 0 -0.2"/>
+        <axis xyz="0 1 0"/>
+    </joint>
+
+
+    <!-- 大腿与膝关节之间的关节 -->
+    <joint name="thigh_knee_joint" type="revolute">
+        <parent link="thigh_link"/>
+        <child link="knee_joint_link"/>
+        <origin rpy="0 0 0" xyz="0 0 -0.2"/>
+        <axis xyz="0 1 0"/>
+    </joint>
+
+
+    <!-- 膝关节与小腿之间的关节 -->
+    <joint name="knee_calf_joint" type="revolute">
+        <parent link="knee_joint_link"/>
+        <child link="calf_link"/>
+        <origin rpy="0 0 0" xyz="0 0 -0.05"/>
+        <axis xyz="0 1 0"/>
+    </joint>
+
+    <!-- 小腿与脚关节之间的关节 -->
+    <joint name="calf_ankle_joint" type="revolute">
+        <parent link="calf_link"/>
+        <child link="ankle_joint_link"/>
+        <origin rpy="0 0 0" xyz="0 0 -0.15"/>
+        <axis xyz="0 1 0"/>
+    </joint>
+
+    <!-- 脚关节与脚之间的关节 -->
+    <joint name="ankle_foot_joint" type="revolute">
+        <parent link="ankle_joint_link"/>
+        <child link="foot_link"/>
+        <origin rpy="0 0 0" xyz="0 0 -0.05"/>
+        <axis xyz="0 1 0"/>
+    </joint>
+<robot>

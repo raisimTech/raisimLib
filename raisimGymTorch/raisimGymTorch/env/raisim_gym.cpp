@@ -6,7 +6,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/eigen.h>
-#include "Environment.hpp"
+#include "Environment_wheel.hpp"
 #include "VectorizedEnvironment.hpp"
 
 namespace py = pybind11;
@@ -24,6 +24,7 @@ PYBIND11_MODULE(RAISIMGYM_TORCH_ENV_NAME, m) {
     .def("reset", &VectorizedEnvironment<ENVIRONMENT>::reset)
     .def("observe", &VectorizedEnvironment<ENVIRONMENT>::observe)
     .def("step", &VectorizedEnvironment<ENVIRONMENT>::step)
+    .def("init_posi", &VectorizedEnvironment<ENVIRONMENT>::init_position)
     .def("setSeed", &VectorizedEnvironment<ENVIRONMENT>::setSeed)
     .def("getRewardInfo", &VectorizedEnvironment<ENVIRONMENT>::getRewardInfo)
     .def("close", &VectorizedEnvironment<ENVIRONMENT>::close)

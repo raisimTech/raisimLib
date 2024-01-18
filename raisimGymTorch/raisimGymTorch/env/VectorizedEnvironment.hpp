@@ -8,6 +8,7 @@
 
 #include "RaisimGymEnv.hpp"
 #include "omp.h"
+#include <iostream>
 #include "Yaml.hpp"
 
 namespace raisim {
@@ -76,6 +77,13 @@ class VectorizedEnvironment {
   void reset() {
     for (auto env: environments_)
       env->reset();
+  }
+
+  void init_position(Eigen::Ref<EigenRowMajorMat> &posi)
+  {
+#pragma omp parallel for schedule(auto)
+      for(int i = 0; i < num_envs_; i++)
+          environments_[i]->init_position(posi.row(i));
   }
 
   void observe(Eigen::Ref<EigenRowMajorMat> &ob, bool updateStatistics) {
@@ -174,14 +182,15 @@ class VectorizedEnvironment {
                            Eigen::Ref<EigenVec> &reward,
                            Eigen::Ref<EigenBoolVec> &done) {
     reward[agentId] = environments_[agentId]->step(action.row(agentId));
-    rewardInformation_[agentId] = environments_[agentId]->getRewards().getStdMap();
 
     float terminalReward = 0;
     done[agentId] = environments_[agentId]->isTerminalState(terminalReward);
+    rewardInformation_[agentId] = environments_[agentId]->getRewards().getStdMap();
 
     if (done[agentId]) {
       environments_[agentId]->reset();
       reward[agentId] += terminalReward;
+//       std::cout<<"agentid "<< agentId <<" reward " << reward[agentId] << std::endl;
     }
   }
 
@@ -228,7 +237,7 @@ class NormalSampler {
   }
 
   void seed(int seed) {
-    // this ensures that every thread gets a different seed
+    // this ensures that every thread gets a different see
 #pragma omp parallel for schedule(static, 1)
     for (int i = 0; i < THREAD_COUNT; i++)
       normal_[0].seed(i + seed);

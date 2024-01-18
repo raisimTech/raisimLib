@@ -55,6 +55,7 @@ int main(int argc, char **argv) {
   for (int k = 0; k < loopN; k++) {
     RS_TIMED_LOOP(int(world.getTimeStep()*1e6))
     server.integrateWorldThreadSafe();
+    std::cout << imu->getAngularVelocity();
   }
 
   server.killServer();

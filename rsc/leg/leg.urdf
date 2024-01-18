@@ -1,0 +1,131 @@
+<!-- Authors: Inkyu and Jemin 5/Aug/2019 -->
+<!-- contact:enddl22@gmail.com -->
+
+<?xml version="1.0"?>
+<robot name="Cartpole">
+  <link name="world">  </link>
+
+
+  <joint name="world_to_sliderBar" type="fixed">
+    <axis xyz="0 0 0"/>
+    <origin xyz="0.0 0.0 2.0"/>
+    <parent link="world"/>
+    <child link="lk1"/>
+  </joint>
+
+
+  <link name="lk1">
+    <inertial>
+      <mass value="2"/>
+      <inertia ixx="2.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="2.0"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <cylinder radius="0.1" length="0.2"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 1.57 0"/>
+    </visual>
+  </link>
+  <link name="lk2">
+     <visual>
+       <origin xyz="0 0 0.25" rpy="0 0 0"/>
+       <geometry>
+         <cylinder radius="0.05" length="0.5"/>
+       </geometry>
+     </visual>
+     <inertial>
+       <mass value="5"/>
+       <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+     </inertial>
+  </link>
+   <link name="lk3">
+     <visual>
+       <origin xyz="0 0 0" rpy="0 0 0"/>
+       <geometry>
+         <cylinder radius="0.05" length="0.10"/>
+       </geometry>
+     </visual>
+     <inertial>
+       <mass value="1"/>
+       <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+     </inertial>
+   </link>
+
+
+  <link name="lk4">
+    <visual>
+      <origin xyz="0 0 0.2" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.05" length="0.4"/>
+      </geometry>
+    </visual>
+    <inertial>
+      <mass value="4"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+  </link>
+
+  <link name="lk5">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.05" length="0.10"/>
+      </geometry>
+    </visual>
+    <inertial>
+      <mass value="1"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+  </link>
+
+  <link name="lk6">
+    <visual>
+      <origin xyz="0 0 0.15" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.05" length="0.3"/>
+      </geometry>
+    </visual>
+    <inertial>
+      <mass value="3"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+  </link>
+>
+
+  <joint name="r1" type="revolute">
+    <axis xyz="0 1 0"/>
+    <parent link="lk1"/>
+    <child link="lk2"/>
+    <origin xyz="0.0 0 0" rpy="1.57 0 0"/>
+    <limit lower="-3.14" upper="3.14" effort="10" velocity="3"/>
+  </joint>
+
+  <joint name="r2" type="revolute">
+    <axis xyz="0 0 1"/>
+    <parent link="lk2"/>
+    <child link="lk3"/>
+    <origin xyz="0 0 0.5" rpy="1.57 1.57 0 "/>
+    <limit lower="-1.57" upper="1.57" effort="10" velocity="3"/>
+  </joint>
+
+  <joint name="r_1" type="fixed">
+    <axis xyz="0 1 0"/>
+    <parent link="lk3"/>
+    <child link="lk4"/>
+    <origin xyz="0.0 0.0 0.0" rpy="-1.57 0 0 "/>
+  </joint>
+  <joint name="r3" type="revolute">
+    <axis xyz="0 0 1"/>
+    <parent link="lk4"/>
+    <child link="lk5"/>
+    <origin xyz="0 0 0.4" rpy="1.57 0 0 "/>
+    <limit lower="-1.57" upper="1.57" effort="10" velocity="3"/>
+  </joint>
+  <joint name="r_2" type="fixed">
+    <axis xyz="0 0 1"/>
+    <parent link="lk5"/>
+    <child link="lk6"/>
+    <origin xyz="0 0 0" rpy="-1.57 0 0 "/>
+  </joint>
+
+</robot>

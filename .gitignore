@@ -20,3 +20,5 @@ examples/cmake-build*/*
 **/activation.raisim
 data/*
 **/.DS_Store
+/raisimGymTorch/raisimGymTorch/algo/pre_sin.py
+/raisimGymTorch/raisimGymTorch/env/deploy/data/

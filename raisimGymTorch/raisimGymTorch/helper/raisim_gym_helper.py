@@ -3,7 +3,7 @@ import datetime
 import os
 import ntpath
 import torch
-
+import logging
 
 class ConfigurationSaver:
     def __init__(self, log_dir, save_items):
@@ -28,7 +28,7 @@ def tensorboard_launcher(directory_path):
     tb.configure(argv=[None, '--logdir', directory_path])
     url = tb.launch()
     print("[RAISIM_GYM] Tensorboard session created: "+url)
-    webbrowser.open_new(url)
+    # webbrowser.open_new(url)
 
 
 def load_param(weight_path, env, actor, critic, optimizer, data_dir):
@@ -58,3 +58,32 @@ def load_param(weight_path, env, actor, critic, optimizer, data_dir):
     actor.distribution.load_state_dict(checkpoint['actor_distribution_state_dict'])
     critic.architecture.load_state_dict(checkpoint['critic_architecture_state_dict'])
     optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+
+class RaisimLogger():
+    def __init__(self, path):
+        self.logger = logging.getLogger(__file__)
+        self.logger.setLevel(logging.INFO)
+        self.fh = logging.FileHandler(path)
+        self.ch = logging.StreamHandler()
+        self.fh.setLevel(logging.DEBUG)
+        self.ch.setLevel(logging.DEBUG)
+
+        self.formatter = logging.Formatter("%(asctime)s.%(msecs)03d - %(levelname)s - %(message)s",
+                                           datefmt='%Y-%m-%d,%H:%M:%S')
+        self.ch.setFormatter(self.formatter)
+        self.fh.setFormatter(self.formatter)
+        self.logger.addHandler(self.ch)
+        self.logger.addHandler(self.fh)
+
+    def info(self, msg):
+        self.logger.info(msg)
+    def warning(self, msg):
+        self.logger.warning(msg)
+    def debug(self, msg):
+        self.logger.debug(msg)
+    def error(self, msg):
+        self.logger.error(msg)
+
+    def setLevel(self, Level):
+        self.fh.setLevel(Level)
+        self.ch.setLevel(Level)
