@@ -80,7 +80,7 @@ class InertialMeasurementUnit final : public Sensor {
    * On the real robot, this value should be set externally by setAngularVelocity()
    * @return angular velocity
    */
-  [[nodiscard]] const Eigen::Vector4d & getOrientation () const { return quaternion_; }
+  [[nodiscard]] const Vec<4> & getOrientation () const { return quaternion_; }
 
   /**
    * This set method make sense only on the real robot.
@@ -98,7 +98,7 @@ class InertialMeasurementUnit final : public Sensor {
    * This set method make sense only on the real robot.
    * @param orientation orientation of the imu sensor in quaternion (w,x,y,z convention)
    */
-  void setOrientation (const Eigen::Vector4d & orientation) { quaternion_ = orientation; }
+  void setOrientation (const Vec<4> & orientation) { quaternion_ = orientation; }
 
   [[nodiscard]] const ImuProperties& getProperties () const { return prop_; }
   [[nodiscard]] static Type getType() { return Type::IMU; }
@@ -117,7 +117,7 @@ class InertialMeasurementUnit final : public Sensor {
   ImuProperties prop_;
   Eigen::Vector3d linearAcc_, linearVel_;
   Eigen::Vector3d angularVel_;
-  Eigen::Vector4d quaternion_;
+  Vec<4> quaternion_;
 };
 
 }
