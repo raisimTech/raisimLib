@@ -9,7 +9,8 @@
 
 #include <memory>
 #include <vector>
-#include <raisim/contact/BisectionContactSolver.hpp>
+#include <mutex>
+#include "raisim/contact/BisectionContactSolver.hpp"
 #include "raisim/math.hpp"
 #include "raisim/contact/Contact.hpp"
 #include "raisim/Materials.hpp"
@@ -117,6 +118,16 @@ class Object {
   [[nodiscard]] const std::vector<Vec<3>>& getExternalTorquePosition() const { return externalTorqueVizPos_; }
   virtual void clearExternalForcesAndTorques() = 0;
 
+  /**
+   * locks object mutex. This can be used if you use raisim in a multi-threaded environment.
+   */
+  void lockMutex() { mutex_.lock(); }
+
+  /**
+   * unlock object mutex. This can be used if you use raisim in a multi-threaded environment.
+   */
+  void unlockMutex() { mutex_.unlock(); }
+
  protected:
   double &getImpactVel(size_t idx);
   virtual void destroyCollisionBodies(dSpaceID id) = 0;
@@ -156,6 +167,7 @@ class Object {
 
  protected:
   uint32_t visualTag = 0;
+  std::mutex mutex_;
 };
 
 } // raisim
