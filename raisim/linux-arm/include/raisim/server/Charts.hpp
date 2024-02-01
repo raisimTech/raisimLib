@@ -19,6 +19,16 @@ class Chart {
   virtual char* initialize(char* data) = 0;
   virtual char* serialize(char* data) = 0;
 
+  /**
+   * locks chart mutex. This can be used if you use raisim in a multi-threaded environment.
+   */
+  void lockMutex() { mutex_.lock(); }
+
+  /**
+   * unlock chart mutex. This can be used if you use raisim in a multi-threaded environment.
+   */
+  void unlockMutex() { mutex_.unlock(); }
+
  protected:
   std::string title_;
   enum class Type : int32_t {
@@ -27,6 +37,7 @@ class Chart {
   } type_;
 
   uint32_t visualTag = 0;
+  std::mutex mutex_;
  public:
   Type getType() { return type_; }
 };

@@ -13,7 +13,12 @@ option(RAISIM_PY "Build a python wrapper." FALSE)
 option(RAISIM_DOC "Build a raisim documentation. You can find the latest doc in raisim.com." FALSE)
 
 if (UNIX AND NOT APPLE AND NOT ANDROID AND NOT WEBGL AND NOT WIN32)
-    set(RAISIM_OS linux)  
+    if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "arm")
+        set(RAISIM_OS linux-arm)
+    else ()
+        set(RAISIM_OS linux)
+    endif ()
+
     list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_SOURCE_DIR}/raisim/${RAISIM_OS})
 elseif(APPLE)
     execute_process(COMMAND sysctl -q hw.optional.arm64
@@ -37,6 +42,7 @@ endif()
 # Package installation
 #==
 set(RAISIM_BIN_DIR ${RAISIM_OS})
+message("-- Detected OS/Architecture is ${RAISIM_OS}")
 
 if(WIN32)
     install(

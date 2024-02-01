@@ -109,7 +109,6 @@ int main(int argc, char* argv[]) {
 
   /// create objects
   auto chain10 = world3.addArticulatedSystem(binaryPath.getDirectory() + "/rsc/chain/robot_springed_10.urdf");
-  std::cout<<"chain10 dof is "<<chain10->getDOF()<<std::endl;
 
   begin = std::chrono::steady_clock::now();
 
@@ -127,7 +126,6 @@ int main(int argc, char* argv[]) {
 
   /// create objects
   auto chain20 = world4.addArticulatedSystem(binaryPath.getDirectory() + "/rsc/chain/robot_springed_20.urdf");
-  std::cout<<"chain 20 dof is "<<chain20->getDOF()<<std::endl;
 
   begin = std::chrono::steady_clock::now();
 

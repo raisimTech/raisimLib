@@ -896,6 +896,7 @@ class RaisimServer final {
       rData_ = get(rData_, &clientRequestSize);
       wireStiffness_ = 0.;
       tryingToLock_ = true;
+//      auto timeStart = std::chrono::system_clock::now();
       lockVisualizationServerMutex();
       tryingToLock_ = false;
 
@@ -911,6 +912,7 @@ class RaisimServer final {
                                      [&](const Object *o) { return o->visualTag == hangingObjVisTag_; });
             if (iter != obList.end()) {
               interactingOb_ = *iter;
+              interactingOb_->lockMutex();
               if (interactingOb_->getObjectType() == ObjectType::ARTICULATED_SYSTEM) {
                 auto as = dynamic_cast<ArticulatedSystem *>(interactingOb_);
                 as->getPositionInBodyCoordinate(hangingObjLocalId_, hangingObjPos_, hangingObjLocalPos_);
@@ -922,6 +924,7 @@ class RaisimServer final {
                 sob->getOrientation(0, sobRot);
                 hangingObjLocalPos_ = sobRot.transpose() * (hangingObjPos_ - sobPos);
               }
+              interactingOb_->unlockMutex();
             } else {
               hangingObjLocalId_ = -1;
             }
@@ -1082,6 +1085,9 @@ class RaisimServer final {
         set(toBeFocusedPtr, toBeFocused_->visualTag);
 
       unlockVisualizationServerMutex();
+//      auto timeEnd = std::chrono::system_clock::now();
+//      auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeStart);
+//      std::cout<<"elapsed time "<<microseconds.count()<<std::endl;
     } else {
       RSWARN("Version mismatch. Raisim protocol version: "<<version_<<", Visualizer protocol version: "<<clientVersion)
       return false;
@@ -1243,6 +1249,8 @@ class RaisimServer final {
     /// Appearance/Size/Pose}/
     /// SensorSize/{SensorDescription}
     for (auto *ob: objList) {
+      ob->lockMutex();
+
       // set gc
       bool initialized = ob->visualTag != 0;
       if (!initialized) ob->visualTag = visTagCounter++;
@@ -1402,9 +1410,11 @@ class RaisimServer final {
         data_ = setInFloat(data_, pos, quat);
         data_ = set(data_, (int32_t) 0);
       }
+      ob->unlockMutex();
     }
 
     for (auto &sw: world_->getWires()) {
+      sw->lockMutex();
       bool initialized = sw->visualTag != 0;
       if (!initialized) sw->visualTag = visTagCounter++;
       data_ = set(data_, sw->visualTag, initialized, int32_t(-1), false, (int32_t)1);
@@ -1421,11 +1431,13 @@ class RaisimServer final {
       data_ = set(data_, float(sw->getVisualizationWidth()), float(sw->getVisualizationWidth()), (float)diff.norm(), 0.f);
       data_ = setInFloat(data_, pos, quat);
       data_ = set(data_, (int32_t) 0);
+      sw->unlockMutex();
     }
 
     // single visuals
     for (auto &ob: visuals_) {
       auto *vo = ob.second;
+      vo->lockMutex();
       bool initialized = vo->visualTag != 0;
       if (!initialized) vo->visualTag = visTagCounter++;
       Vec<3> pos = vo->getPosition();
@@ -1454,20 +1466,24 @@ class RaisimServer final {
       data_ = set(data_, colorToString(vo->color));
       data_ = setInFloat(data_, vo->size, pos, quat);
       data_ = set(data_, (int32_t) 0);
+      vo->unlockMutex();
     }
 
     // ArticulatedSystemVisuals
     for (auto &vis: visualAs_) {
+      vis.second->lockMutex();
       auto *ob = &vis.second->obj;
       bool initialized = ob->visualTag != 0;
       if (!initialized) ob->visualTag = visTagCounter++;
       data_ = set(data_, ob->visualTag, initialized, int32_t(-1), false);
       serializeAS(ob, initialized, vis.second->color);
+      vis.second->unlockMutex();
     }
 
     // instanced visuals
     for (auto &iv: instancedvisuals_) {
       auto *v = iv.second;
+      v->lockMutex();
       bool initialized = v->visualTag != 0;
       if (!initialized) v->visualTag = visTagCounter++;
       data_ = set(data_, v->visualTag, initialized, int32_t(-1), true, (int32_t) v->count());
@@ -1477,11 +1493,13 @@ class RaisimServer final {
         data_ = set(data_, v->data[i].colorWeight);
         data_ = setInFloat(data_, v->data[i].scale, v->data[i].pos, v->data[i].quat);
       }
+      v->unlockMutex();
     }
 
     // polylines
     for (auto &pl: polyLines_) {
       auto *ptr = pl.second;
+      ptr->lockMutex();
       bool initialized = ptr->visualTag != 0;
       if (!initialized) ptr->visualTag = visTagCounter++;
       data_ = set(data_, ptr->visualTag, initialized, int32_t(-1), true, (int32_t) (ptr->points.size()-1));
@@ -1500,6 +1518,7 @@ class RaisimServer final {
         data_ = setInFloat(data_, 0., ptr->width, ptr->width, diff.norm());
         data_ = setInFloat(data_, pos, quat);
       }
+      ptr->unlockMutex();
     }
 
     // External forces
@@ -1507,24 +1526,30 @@ class RaisimServer final {
     int32_t numExtTorque = 0;
 
     for (auto *ob: world_->getObjList()) {
+      ob->lockMutex();
       numExtForce += int32_t(ob->getExternalForce().size());
       numExtTorque += int32_t(ob->getExternalTorque().size());
+      ob->unlockMutex();
     }
 
     data_ = set(data_, numExtForce);
     for (auto *ob: world_->getObjList()) {
+      ob->lockMutex();
       for (size_t extNum = 0; extNum < ob->getExternalForce().size(); extNum++) {
         data_ = setInFloat(data_, ob->getExternalForcePosition()[extNum]);
         data_ = setInFloat(data_, ob->getExternalForce()[extNum]);
       }
+      ob->unlockMutex();
     }
 
     data_ = set(data_, numExtTorque);
     for (auto *ob: world_->getObjList()) {
+      ob->lockMutex();
       for (size_t extNum = 0; extNum < ob->getExternalTorque().size(); extNum++) {
         data_ = setInFloat(data_, ob->getExternalTorquePosition()[extNum]);
         data_ = setInFloat(data_, ob->getExternalTorque()[extNum]);
       }
+      ob->unlockMutex();
     }
 
     auto *contactList = world_->getContactProblem();
@@ -1535,6 +1560,8 @@ class RaisimServer final {
 
     /// contact position
     for (auto *obj: world_->getObjList()) {
+      obj->lockMutex();
+
       for (auto &contact: obj->getContacts()) {
         if (!contact.isObjectA() && contact.getPairObjectBodyType()==BodyType::DYNAMIC)
           continue;
@@ -1555,6 +1582,7 @@ class RaisimServer final {
         impulseW /= world_->getTimeStep();
         data_ = setInFloat(data_, impulseW);
       }
+      obj->unlockMutex();
     }
     set(contactSizeLocation, contactIncrement);
 
@@ -1564,6 +1592,7 @@ class RaisimServer final {
 
     if (found != world_->getObjList().end()) {
       auto obSelected = *found;
+      obSelected->lockMutex();
       if (obSelected->getObjectType() == ObjectType::ARTICULATED_SYSTEM) {
         data_ = set(data_, int32_t(1));
         auto *as = reinterpret_cast<ArticulatedSystem *>(obSelected);
@@ -1626,6 +1655,7 @@ class RaisimServer final {
         data_ = set(data_, int32_t(0));
         data_ = setInFloat(data_, pos);
       }
+      obSelected->unlockMutex();
     } else {
       data_ = set(data_, int32_t(-1));
     }
@@ -1633,6 +1663,7 @@ class RaisimServer final {
     // charts
     data_ = set(data_, (int32_t) (charts_.size()));
     for (auto c: charts_) {
+      c.second->lockMutex();
       bool initialized = c.second->visualTag != 0;
       if (!initialized) c.second->visualTag = visTagCounter++;
 
@@ -1641,6 +1672,7 @@ class RaisimServer final {
         data_ = c.second->initialize(data_);
 
       data_ = c.second->serialize(data_);
+      c.second->unlockMutex();
     }
   }
 
@@ -1705,6 +1737,7 @@ class RaisimServer final {
       rData_ = get(rData_, &visualTag, &type, &name);
       ArticulatedSystem *as = dynamic_cast<ArticulatedSystem*>(*std::find_if(obList.begin(), obList.end(),
                                                                              [visualTag](const Object* i){ return i->visualTag == visualTag; }));
+      as->lockMutex();
       auto sensor = as->getSensors()[name];
 
       if (type == Sensor::Type::RGB) {
@@ -1722,6 +1755,7 @@ class RaisimServer final {
         rData_ = getN(rData_, depthArray.data(), width * height);
         sensor->setUpdateTimeStamp(sensorUpdateTime_);
       }
+      as->unlockMutex();
     }
 
     return true;

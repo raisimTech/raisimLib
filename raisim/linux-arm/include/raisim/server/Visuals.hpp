@@ -38,8 +38,20 @@ struct PolyLine {
    * clear all polyline points. */
   void clearPoints() { points.clear(); }
 
+  /**
+   * locks polyLine mutex. This can be used if you use raisim in a multi-threaded environment.
+   */
+  void lockMutex() { mutex_.lock(); }
+
+  /**
+   * unlock polyLine mutex. This can be used if you use raisim in a multi-threaded environment.
+   */
+  void unlockMutex() { mutex_.unlock(); }
+
+
  protected:
   uint32_t visualTag = 0;
+  std::mutex mutex_;
 };
 
 struct ArticulatedSystemVisual {
@@ -68,11 +80,23 @@ struct ArticulatedSystemVisual {
     obj.setGeneralizedCoordinate(gc);
   }
 
+  /**
+   * locks polyline mutex. This can be used if you use raisim in a multi-threaded environment.
+   */
+  void lockMutex() { mutex_.lock(); }
+
+  /**
+   * unlock polyline mutex. This can be used if you use raisim in a multi-threaded environment.
+   */
+  void unlockMutex() { mutex_.unlock(); }
+
+
   raisim::Vec<4> color;
   ArticulatedSystem obj;
  protected:
   uint32_t visualTag = 0;
   std::string name;
+  std::mutex mutex_;
 };
 
 struct Visuals {
@@ -162,13 +186,24 @@ struct Visuals {
    * get the orientation of the visual object. */
   Eigen::Vector4d getOrientation() { return quaternion.e(); }
 
+  /**
+   * locks visualObject mutex. This can be used if you use raisim in a multi-threaded environment.
+   */
+  void lockMutex() { mutex_.lock(); }
+
+  /**
+   * unlock visualObject mutex. This can be used if you use raisim in a multi-threaded environment.
+   */
+  void unlockMutex() { mutex_.unlock(); }
+
+
  private:
   Vec<3> position = {0, 0, 0};
   Vec<4> quaternion = {1, 0, 0, 0};
 
  protected:
   uint32_t visualTag = 0;
-
+  std::mutex mutex_;
 };
 
 struct VisualMesh : public Visuals {
@@ -321,6 +356,17 @@ struct InstancedVisuals {
    * get the orientation of the specified instance of the visual object. */
   Eigen::Vector3d getScale(size_t id) { return data[id].scale.e(); }
 
+  /**
+   * locks InstancedvisualObject mutex. This can be used if you use raisim in a multi-threaded environment.
+   */
+  void lockMutex() { mutex_.lock(); }
+
+  /**
+   * unlock InstancedvisualObject mutex. This can be used if you use raisim in a multi-threaded environment.
+   */
+  void unlockMutex() { mutex_.unlock(); }
+
+
  protected:
   struct PerInstanceData {
     Vec<3> pos;
@@ -340,6 +386,7 @@ struct InstancedVisuals {
   Vec<4> color2 = {1, 1, 1, 1};
 
   uint32_t visualTag = 0;
+  std::mutex mutex_;
 };
 
 }
