@@ -251,6 +251,7 @@ class RaisimServer final {
     for (auto& ob: world_->getWires()) ob->visualTag = 0u;
     for (auto& ob: visuals_) ob.second->visualTag = 0u;
     for (auto& ob: visualAs_) ob.second->obj.visualTag = 0u;
+    for (auto& ob: visualHm_) ob.second->obj.visualTag = 0u;
     for (auto& ob: instancedvisuals_) ob.second->visualTag = 0u;
     for (auto& ob: polyLines_) ob.second->visualTag = 0u;
     for (auto& ob: charts_) ob.second->visualTag = 0u;
@@ -412,14 +413,7 @@ class RaisimServer final {
    * @param[in] as ArticulatedSystemVisual to be removed
    * remove a visualized articulated system */
   inline void removeVisualArticulatedSystem(ArticulatedSystemVisual *as) {
-    auto it = visualAs_.begin();
-
-    // Search for an element with value 2
-    while (it != visualAs_.end()) {
-      if (it->second == as)
-        break;
-      it++;
-    }
+    auto it = std::find_if(visualAs_.begin(), visualAs_.end(), [as](const std::pair<std::string, ArticulatedSystemVisual*>& p){ return p.second == as; });
 
     // Erase the element pointed by iterator it
     if (it != visualAs_.end())
@@ -680,6 +674,157 @@ class RaisimServer final {
   }
 
   /**
+   * @param[in] name the name of the visual heightmap object
+   * @param[in] fileName the raisim text file which will be used to create the height map
+   * @param[in] centerX x coordinate of the center of the height map
+   * @param[in] centerY y coordinate of the center of the height map
+   * @param[in] colorR the red value of the color   (max=1)
+   * @param[in] colorG the green value of the color (max=1)
+   * @param[in] colorB the blue value of the color  (max=1)
+   * @param[in] colorA the alpha value of the color (max=1)
+   * @return pointer to the created visual height map */
+  inline HeightMapVisual *addVisualHeightMap(const std::string &name,
+                                             const std::string &fileName,
+                                             double centerX,
+                                             double centerY,
+                                             double colorR = 0, double colorG = 0,
+                                             double colorB = 0, double colorA = -1) {
+    if (visuals_.find(name) != visuals_.end()) RSFATAL("Duplicated visual object name: " + name)
+    updateVisualConfig();
+    visualHm_[name] = new HeightMapVisual(fileName, centerX, centerY);
+    visualHm_[name]->name = name;
+    visualHm_[name]->color = raisim::Vec<4>{colorR, colorG, colorB, colorA};
+    return visualHm_[name];
+  }
+
+  /**
+   * @param[in] name the name of the visual heightmap object
+   * @param[in] pngFileName the png file which will be used to create the height map
+   * @param[in] centerX x coordinate of the center of the height map
+   * @param[in] centerY y coordinate of the center of the height map
+   * @param[in] xSize x width of the height map
+   * @param[in] ySize y length of the height map
+   * @param[in] heightScale a png file (if 8-bit) has pixel values from 0 to 255. This parameter scales the pixel values to the actual height
+   * @param[in] heightOffset height of the 0-value pixel
+   * @param[in] colorR the red value of the color   (max=1)
+   * @param[in] colorG the green value of the color (max=1)
+   * @param[in] colorB the blue value of the color  (max=1)
+   * @param[in] colorA the alpha value of the color (max=1)
+   * @return pointer to the created visual height map */
+  inline HeightMapVisual *addVisualHeightMap(const std::string &name,
+                                             const std::string &pngFileName,
+                                             double centerX,
+                                             double centerY,
+                                             double xScale,
+                                             double yScale,
+                                             double heightScale,
+                                             double heightOffset,
+                                             double colorR = 0, double colorG = 0,
+                                             double colorB = 0, double colorA = -1) {
+    if (visuals_.find(name) != visuals_.end()) RSFATAL("Duplicated visual object name: " + name)
+    updateVisualConfig();
+    visualHm_[name] = new HeightMapVisual(pngFileName, centerX, centerY, xScale, yScale, heightScale, heightOffset);
+    visualHm_[name]->name = name;
+    visualHm_[name]->color = raisim::Vec<4>{colorR, colorG, colorB, colorA};
+    return visualHm_[name];
+  }
+
+  /**
+   * @param[in] name the name of the visual heightmap object
+   * @param[in] centerX x coordinate of the center of the height map
+   * @param[in] centerY y coordinate of the center of the height map
+   * @param[in] terrainProperties perlin noise parameters which will be used to create the height map
+   * @param[in] colorR the red value of the color   (max=1)
+   * @param[in] colorG the green value of the color (max=1)
+   * @param[in] colorB the blue value of the color  (max=1)
+   * @param[in] colorA the alpha value of the color (max=1)
+   * @return pointer to the created visual height map */
+  inline HeightMapVisual *addVisualHeightMap(const std::string &name,
+                                             double centerX,
+                                             double centerY,
+                                             TerrainProperties &terrainProperties,
+                                             double colorR = 0, double colorG = 0,
+                                             double colorB = 0, double colorA = -1) {
+    if (visuals_.find(name) != visuals_.end()) RSFATAL("Duplicated visual object name: " + name)
+    updateVisualConfig();
+    visualHm_[name] = new HeightMapVisual(centerX, centerY, terrainProperties);
+    visualHm_[name]->name = name;
+    visualHm_[name]->color = raisim::Vec<4>{colorR, colorG, colorB, colorA};
+    return visualHm_[name];
+  }
+
+  /**
+   * @param[in] name the name of the visual heightmap object
+   * @param[in] xSamples how many points along x axis
+   * @param[in] ySamples how many points along y axis
+   * @param[in] xSize x width of the height map
+   * @param[in] ySize y length of the height map
+   * @param[in] centerX x coordinate of the center of the height map
+   * @param[in] centerY y coordinate of the center of the height map
+   * @param[in] height a vector of doubles representing heights. the size should be xSample X ySamples
+   * @param[in] colorR the red value of the color   (max=1)
+   * @param[in] colorG the green value of the color (max=1)
+   * @param[in] colorB the blue value of the color  (max=1)
+   * @param[in] colorA the alpha value of the color (max=1)
+   * @return pointer to the created visual height map */
+  inline HeightMapVisual *addVisualHeightMap(const std::string &name,
+                                             size_t xSamples,
+                                             size_t ysamples,
+                                             double xSize,
+                                             double ySize,
+                                             double centerX,
+                                             double centerY,
+                                             const std::vector<double> &height,
+                                             double colorR = 0, double colorG = 0,
+                                             double colorB = 0, double colorA = -1) {
+    RSFATAL_IF(height.size() != xSamples * ysamples, "The height vector should contain "<<xSamples * ysamples<<" elements")
+    RSFATAL_IF (visuals_.find(name) != visuals_.end(), "Duplicated visual object name: " + name)
+    updateVisualConfig();
+    visualHm_[name] = new HeightMapVisual(xSamples, ysamples, xSize, ySize, centerX, centerY, height);
+    visualHm_[name]->name = name;
+    visualHm_[name]->color = raisim::Vec<4>{colorR, colorG, colorB, colorA};
+    return visualHm_[name];
+  }
+
+  /**
+   * @param[in] name the name of the visual heightmap object
+   * @param[in] heightmapToBeCloned Another height map to be cloned
+   * @param[in] colorR the red value of the color   (max=1)
+   * @param[in] colorG the green value of the color (max=1)
+   * @param[in] colorB the blue value of the color  (max=1)
+   * @param[in] colorA the alpha value of the color (max=1)
+   * @return pointer to the created height map */
+  inline HeightMapVisual * addVisualHeightMap(const std::string &name,
+                                              const HeightMap* hm,
+                                              double colorR = 0, double colorG = 0,
+                                              double colorB = 0, double colorA = -1) {
+    RSFATAL_IF(!hm, "World::addHeightMap: Got a nullptr for the reference heightmap")
+
+    return addVisualHeightMap(name,
+                              hm->getXSamples(),
+                              hm->getYSamples(),
+                              hm->getXSize(),
+                              hm->getYSize(),
+                              hm->getCenterX(),
+                              hm->getCenterY(),
+                              hm->getHeightMap(),
+                              colorR, colorG, colorB, colorA);
+  }
+
+  /**
+   * @param[in] hm ArticulatedSystemVisual to be removed
+   * remove a visualized articulated system */
+  inline void removeVisualHeightMap(HeightMapVisual *hm) {
+    auto it = std::find_if(visualHm_.begin(), visualHm_.end(), [hm](const std::pair<std::string, HeightMapVisual*>& p){ return p.second == hm; });
+
+    // Erase the element pointed by iterator it
+    if (it != visualHm_.end())
+      visualHm_.erase(it);
+
+    delete hm;
+  }
+
+  /**
    * @param[in] name the name of the polyline
    * @return the polyline pointer
    * add a polyline without physics */
@@ -704,6 +849,14 @@ class RaisimServer final {
   inline ArticulatedSystemVisual *getVisualArticulatedSystem(const std::string &name) {
     RSFATAL_IF(visualAs_.find(name) == visualAs_.end(), name + " doesn't exist")
     return visualAs_[name];
+  }
+
+  /**
+   * @param[in] name the name of the visual articulated system
+   * get visualized height map */
+  inline HeightMapVisual *getVisualHeightMap(const std::string &name) {
+    RSFATAL_IF(visualHm_.find(name) == visualHm_.end(), name + " doesn't exist")
+    return visualHm_[name];
   }
 
   /**
@@ -1241,6 +1394,7 @@ class RaisimServer final {
         visuals_.size() +
         instancedvisuals_.size() +
         visualAs_.size() +
+        visualHm_.size() +
         polyLines_.size() +
         world_->getWires().size()));
 
@@ -1477,6 +1631,35 @@ class RaisimServer final {
       if (!initialized) ob->visualTag = visTagCounter++;
       data_ = set(data_, ob->visualTag, initialized, int32_t(-1), false);
       serializeAS(ob, initialized, vis.second->color);
+      vis.second->unlockMutex();
+    }
+
+    for (auto &vis: visualHm_) {
+      vis.second->lockMutex();
+      auto *hm = &vis.second->obj;
+      bool initialized = hm->visualTag != 0;
+      if (!initialized) hm->visualTag = visTagCounter++;
+      data_ = set(data_, hm->visualTag, initialized, int32_t(-1), false, int32_t(1));
+      if (!initialized) {
+        data_ = set(data_, hm->getName(), Shape::HeightMap);
+        data_ = setInFloat(data_, hm->getCenterX(), hm->getCenterY(), hm->getXSize(), hm->getYSize());
+        data_ = set(data_, (int32_t) hm->getXSamples(), (int32_t) hm->getYSamples());
+        data_ = setInFloat(data_, hm->getHeightVector());
+        data_ = set(data_, hm->getColorMap());
+        data_ = set(data_, Masking::VIS_OBJ, int32_t(0));
+      }
+
+      data_ = set(data_, int(hm->isUpdated()));
+      if (hm->isUpdated()) {
+        data_ = setInFloat(data_, hm->getCenterX(), hm->getCenterY(), hm->getXSize(), hm->getYSize());
+        data_ = set(data_, (int32_t) hm->getXSamples(), (int32_t) hm->getYSamples());
+        data_ = setInFloat(data_, hm->getHeightVector());
+        data_ = set(data_, hm->getColorMap());
+      }
+      data_ = set(data_, colorToString(vis.second->color));
+      data_ = set(data_, 0.f, 0.f, 0.f, 0.f);
+      data_ = setInFloat(data_, hm->getPosition(), hm->getQuaternion());
+      data_ = set(data_, (int32_t) 0);
       vis.second->unlockMutex();
     }
 
@@ -1809,6 +1992,7 @@ class RaisimServer final {
   std::unordered_map<std::string, InstancedVisuals *> instancedvisuals_;
   std::unordered_map<std::string, PolyLine *> polyLines_;
   std::unordered_map<std::string, ArticulatedSystemVisual *> visualAs_;
+  std::unordered_map<std::string, HeightMapVisual *> visualHm_;
   std::map<std::string, Chart *> charts_;
 
  public:
