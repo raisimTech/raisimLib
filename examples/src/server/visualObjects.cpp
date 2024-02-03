@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
   std::vector<raisim::ColorRGB> colorMap(10000, {0, 0, 0});
   colorMap.resize(10000);
   raisim::Vec<3> color1{1,0,0}, color2{0,0,1};
-  auto hm = server.addVisualHeightMap("dynamic_visual_heightmap", 100, 100, 10., 10., 0., 0., height);
+  auto hm = server.addVisualHeightMap("dynamic_visual_heightmap", 100, 100, 10., 10., 0., 10., height);
 
   /// positions and orientations
   raisim::Vec<4> quat = {0.6, 0.2, -0.6, 0.1};
@@ -93,7 +93,7 @@ int main(int argc, char* argv[]) {
 
     for (int k=0; k<100; k++) {
       for (int j=0; j<100; j++) {
-        height[k*100+j] = std::sin(0.01f * float(i) + 0.05 * float(k+j)) + 10;
+        height[k*100+j] = std::sin(0.01f * float(i) + 0.05 * float(k+j)) + 1.2;
         colorMap[k*100+j] = {uint8_t((std::sin(0.02f * float(i) + 0.05 * float(2*k+j)) * 0.5f + 0.5f)*255.f),
                              uint8_t((std::cos(0.02f * float(i) + 0.07 * float(2*k+j)) * 0.5f + 0.5f)*255.f),
                              uint8_t((std::sin(0.02f * float(i) + 0.09 * float(2*k+j)) * 0.5f + 0.5f)*255.f)};
@@ -113,7 +113,7 @@ int main(int argc, char* argv[]) {
     color[10] = uint8_t(counter/5%255);
     dynamicMesh->updateMesh(vertices, color);
 
-    hm->update(0., 0., 10., 10., height);
+    hm->update(0., 10., 10., 10., height);
     hm->setColor(colorMap);
 
     server.unlockVisualizationServerMutex();
