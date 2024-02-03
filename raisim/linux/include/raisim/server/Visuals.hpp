@@ -228,6 +228,76 @@ struct VisualMesh : public Visuals {
   bool updateMesh_ = false;
 };
 
+struct HeightMapVisual {
+  friend class raisim::RaisimServer;
+
+  HeightMapVisual(const std::string &fileName,
+                  double centerX,
+                  double centerY) : obj(centerX, centerY, fileName) {
+    color.setZero(); }
+
+  HeightMapVisual(const std::string &pngFileName,
+                  double centerX,
+                  double centerY,
+                  double xScale,
+                  double yScale,
+                  double heightScale,
+                  double heightOffset) : obj(centerX, centerY, pngFileName, xScale, yScale, heightScale, heightOffset) {
+    color.setZero(); }
+
+  HeightMapVisual(double centerX,
+                  double centerY,
+                  TerrainProperties &terrainProperties) : obj(centerX, centerY, terrainProperties) {
+    color.setZero(); }
+
+  HeightMapVisual(size_t xSamples,
+                  size_t ysamples,
+                  double xSize,
+                  double ySize,
+                  double centerX,
+                  double centerY,
+                  const std::vector<double> &heightIn) : obj(xSamples, ysamples, xSize, ySize, centerX, centerY, heightIn) {
+    color.setZero(); }
+
+  ~HeightMapVisual() = default;
+
+  /**
+   * @param[in] r red value (max=1)
+   * @param[in] g green value (max=1)
+   * @param[in] b blue value (max=1)
+   * @param[in] a alpha value (max=1)
+   * set color. if the alpha value is 0, it uses the original color defined in the mesh file */
+  void setColor(double r, double g, double b, double a) {
+    color = {r, g, b, a};
+  }
+
+  void setColor(const std::vector<raisim::ColorRGB>& color) {
+    obj.setColor(color);
+  }
+
+  void update(double centerX, double centerY, double sizeX, double sizeY, const std::vector<double> &height) {
+    obj.update(centerX, centerY, sizeX, sizeY, height);
+  }
+
+  /**
+   * locks polyline mutex. This can be used if you use raisim in a multi-threaded environment.
+   */
+  void lockMutex() { mutex_.lock(); }
+
+  /**
+   * unlock polyline mutex. This can be used if you use raisim in a multi-threaded environment.
+   */
+  void unlockMutex() { mutex_.unlock(); }
+
+
+  raisim::Vec<4> color;
+  raisim::HeightMap obj;
+ protected:
+  uint32_t visualTag = 0;
+  std::string name;
+  std::mutex mutex_;
+};
+
 
 struct InstancedVisuals {
   friend class raisim::RaisimServer;

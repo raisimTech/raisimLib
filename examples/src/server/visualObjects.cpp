@@ -31,6 +31,13 @@ int main(int argc, char* argv[]) {
   auto varrow_y = server.addVisualArrow("v_arrow_y", 1, 2, 0, 1, 0, 1);
   auto varrow_z = server.addVisualArrow("v_arrow_z", 1, 2, 0, 0, 1, 1);
 
+  /// visual height map
+  std::vector<double> height(10000, 0.);
+  std::vector<raisim::ColorRGB> colorMap(10000, {0, 0, 0});
+  colorMap.resize(10000);
+  raisim::Vec<3> color1{1,0,0}, color2{0,0,1};
+  auto hm = server.addVisualHeightMap("dynamic_visual_heightmap", 100, 100, 10., 10., 0., 10., height);
+
   /// positions and orientations
   raisim::Vec<4> quat = {0.6, 0.2, -0.6, 0.1};
   quat = quat / quat.norm();
@@ -84,6 +91,15 @@ int main(int argc, char* argv[]) {
     RS_TIMED_LOOP(int(world.getTimeStep()*1e6))
     counter++;
 
+    for (int k=0; k<100; k++) {
+      for (int j=0; j<100; j++) {
+        height[k*100+j] = std::sin(0.01f * float(i) + 0.05 * float(k+j)) + 1.2;
+        colorMap[k*100+j] = {uint8_t((std::sin(0.02f * float(i) + 0.05 * float(2*k+j)) * 0.5f + 0.5f)*255.f),
+                             uint8_t((std::cos(0.02f * float(i) + 0.07 * float(2*k+j)) * 0.5f + 0.5f)*255.f),
+                             uint8_t((std::sin(0.02f * float(i) + 0.09 * float(2*k+j)) * 0.5f + 0.5f)*255.f)};
+      }
+    }
+
     server.lockVisualizationServerMutex();
     visBox->color[2] = double((counter)%255+1)/256.;
     visBox->setBoxSize(1, double((counter)%255+1)/256.+0.01, 1);
@@ -96,6 +112,9 @@ int main(int argc, char* argv[]) {
     vertices[0] = 0.5f * (2.+sin(counter*0.01));
     color[10] = uint8_t(counter/5%255);
     dynamicMesh->updateMesh(vertices, color);
+
+    hm->update(0., 10., 10., 10., height);
+    hm->setColor(colorMap);
 
     server.unlockVisualizationServerMutex();
 //    server.integrateWorldThreadSafe();
