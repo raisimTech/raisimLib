@@ -1986,7 +1986,7 @@ class RaisimServer final {
   int screenShotWidth_, screenShotHeight_;
 
   // version
-  constexpr static int version_ = 10016;
+  constexpr static int version_ = 10017;
 
   // visual tag counter
   uint32_t visTagCounter = 30;
