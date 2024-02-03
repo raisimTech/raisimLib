@@ -1509,16 +1509,23 @@ class ArticulatedSystem : public Object {
    * For revolute and prisimatic joints, the joint limit is {lower, upper}
    * For spherical joint, the joint limit is {angle, NOT_USED}
    * @return jointLimits joint limits*/
-  const std::vector<raisim::Vec<2>> &getJointLimits() {
+  const std::vector<raisim::Vec<2>> &getJointLimits() const {
     return jointLimits_;
   }
 
   /**
    * get the joint velocity limits
    * @return jointLimits joint velocity limits*/
-    const VecDyn& getJointVelocityLimits() {
+    const VecDyn& getJointVelocityLimits() const {
       return velLimits_;
     }
+
+  /**
+    * set the joint velocity limits
+    * @param[in] velLimits joint velocity limits*/
+  void setJointVelocityLimits(const VecDyn& velLimits) {
+    velLimits_ = velLimits;
+  }
 
   /**
    * Clears all external forces and torques */
