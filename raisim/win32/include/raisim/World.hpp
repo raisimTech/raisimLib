@@ -652,6 +652,16 @@ class World {
   [[nodiscard]] const MaterialPairProperties& getMaterialPairProperties (const std::string& mat1, const std::string& mat2) const {
     return mat_.getMaterialPairProp(mat1, mat2); }
 
+  /**
+   * locks world mutex. This can be used if you use raisim in a multi-threaded environment.
+   */
+  void lockMutex() { worldMutex_.lock(); }
+
+  /**
+   * unlock world mutex. This can be used if you use raisim in a multi-threaded environment.
+   */
+  void unlockMutex() { worldMutex_.unlock(); }
+
 protected:
   void init();
   void contactProblemUpdate(Object *objectA);
@@ -708,6 +718,9 @@ protected:
   // ray test
   dGeomID ray_;
   RayCollisionList rayContact_;
+
+  // mutex
+  std::mutex worldMutex_;
 
   // the location of the license file
   RAISIM_STATIC_API static std::string activationKey_;

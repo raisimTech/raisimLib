@@ -7,6 +7,7 @@
 #define RAISIM_INCLUDE_RAISIM_SENSORS_HPP_
 
 #include <string>
+#include <mutex>
 #include "Eigen/Core"
 #include "raisim/math.hpp"
 #include "raisim/helper.hpp"
@@ -145,9 +146,17 @@ class Sensor {
    * Get the id of the frame on which the sensor is attached
    * @return frame id
    */
-  size_t getFrameId() {
-    return frameId_;
-  }
+  size_t getFrameId() { return frameId_; }
+
+  /**
+   * locks sensor mutex. This can be used if you use raisim in a multi-threaded environment.
+   */
+  void lockMutex() { mutex_.lock(); }
+
+  /**
+   * unlock sensor mutex. This can be used if you use raisim in a multi-threaded environment.
+   */
+  void unlockMutex() { mutex_.unlock(); }
 
  protected:
   void setFramePosition(const Vec<3>& pos) { posFrame_ = pos; }
@@ -164,6 +173,7 @@ class Sensor {
 
  private:
   std::string name_;
+  std::mutex mutex_;
   double updateRate_ = 1., updateTimeStamp_ = -1.;
 };
 

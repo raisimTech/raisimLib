@@ -309,10 +309,10 @@ class RaisimServer final {
    * This will prevent visualization thread reading from the world (otherwise, there can be a segfault).
    * Integrate the world. */
   inline void integrateWorldThreadSafe() {
-    serverMutex_.lock();
+    lockVisualizationServerMutex();
     applyInteractionForce();
     world_->integrate();
-    serverMutex_.unlock();
+    unlockVisualizationServerMutex();
     if (tryingToLock_)
       USLEEP(10);
   }
@@ -353,15 +353,17 @@ class RaisimServer final {
   /**
    * hibernate the server. This will stop the server spinning. */
   inline void hibernate() {
-    std::lock_guard<std::mutex> guard(serverMutex_);
+    lockVisualizationServerMutex();
     state_ = STATUS_HIBERNATING;
+    unlockVisualizationServerMutex();
   }
 
   /**
    * wake up the server. Restart the server from hibernation */
   inline void wakeup() {
-    std::lock_guard<std::mutex> guard(serverMutex_);
+    lockVisualizationServerMutex();
     state_ = STATUS_RENDERING;
+    unlockVisualizationServerMutex();
   }
 
   /**
@@ -374,12 +376,12 @@ class RaisimServer final {
 
   /**
    * lock the visualization mutex so that the server cannot read from the world */
-  inline void lockVisualizationServerMutex() { serverMutex_.lock(); }
+  inline void lockVisualizationServerMutex() { world_->lockMutex(); }
 
   /**
    * unlock the visualization mutex so that the server can read from the world */
   inline void unlockVisualizationServerMutex() {
-    serverMutex_.unlock();
+    world_->unlockMutex();
     if (tryingToLock_)
       USLEEP(10);
   }
@@ -1015,11 +1017,14 @@ class RaisimServer final {
       if (ob->getObjectType() == ObjectType::ARTICULATED_SYSTEM) {
         auto as = dynamic_cast<ArticulatedSystem *>(ob);
         for (auto &sensor: as->getSensors()) {
+          sensor.second->lockMutex();
           if (sensor.second->getMeasurementSource() == Sensor::MeasurementSource::VISUALIZER &&
               sensor.second->getUpdateTimeStamp() + 1. / sensor.second->getUpdateRate()
                   < world_->getWorldTime() + 1e-10) {
+            sensor.second->unlockMutex();
             return true;
           }
+          sensor.second->unlockMutex();
         }
       }
     }
@@ -1283,8 +1288,9 @@ class RaisimServer final {
    * Saves the screenshot (the directory is chosen by the visualizer)
    */
   void requestSaveScreenshot() {
-    std::lock_guard<std::mutex> guard(serverMutex_);
+    lockVisualizationServerMutex();
     serverRequest_.push_back(ServerRequestType::GET_SCREEN_SHOT);
+    unlockVisualizationServerMutex();
   }
 
  private:
@@ -1357,6 +1363,7 @@ class RaisimServer final {
 
     // add sensors to be updated
     for (auto &sensor: as->getSensors()) {
+      sensor.second->lockMutex();
       if (!initialized) data_ = sensor.second->serializeProp(data_);
 
       data_ = set(data_, sensor.second->getMeasurementSource());
@@ -1380,6 +1387,8 @@ class RaisimServer final {
 
       if (sensor.second->getMeasurementSource() != Sensor::MeasurementSource::VISUALIZER)
         data_ = sensor.second->serializeMeasurements(data_);
+
+      sensor.second->unlockMutex();
     }
   }
 
@@ -1904,7 +1913,7 @@ class RaisimServer final {
 
   inline bool updateSensorMeasurements() {
     using namespace server;
-    std::lock_guard<std::mutex> guard(serverMutex_);
+    world_->lockMutex();
     ClientMessageType cMsgType;
     int nSensors;
     rData_ = get(rData_, &cMsgType, &nSensors);
@@ -1922,6 +1931,7 @@ class RaisimServer final {
                                                                              [visualTag](const Object* i){ return i->visualTag == visualTag; }));
       as->lockMutex();
       auto sensor = as->getSensors()[name];
+      sensor->lockMutex();
 
       if (type == Sensor::Type::RGB) {
         int width, height;
@@ -1938,9 +1948,10 @@ class RaisimServer final {
         rData_ = getN(rData_, depthArray.data(), width * height);
         sensor->setUpdateTimeStamp(sensorUpdateTime_);
       }
+      sensor->unlockMutex();
       as->unlockMutex();
     }
-
+    world_->unlockMutex();
     return true;
   }
 
@@ -1965,7 +1976,6 @@ class RaisimServer final {
   std::future<bool> threadResult_;
   std::string mapName_;
 
-  std::mutex serverMutex_;
   std::atomic_bool tryingToLock_;
 
   int32_t visualConfiguration_ = 0;
@@ -1976,7 +1986,7 @@ class RaisimServer final {
   int screenShotWidth_, screenShotHeight_;
 
   // version
-  constexpr static int version_ = 10016;
+  constexpr static int version_ = 10017;
 
   // visual tag counter
   uint32_t visTagCounter = 30;
