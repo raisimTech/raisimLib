@@ -1643,7 +1643,7 @@ class ArticulatedSystem : public Object {
   void preContactSolverUpdate2(const Vec<3> &gravity, double dt, contact::ContactProblems& problems) final;
   void integrateWithoutContact(const Vec<3> &gravity, double dt);
 
-  void integrate(double dt, const World* world) final;
+  void integrate(double dt, World& world) final;
 
   void addContactPointVel(size_t pointId, Vec<3> &vel) final;
   void subContactPointVel(size_t pointId, Vec<3> &vel) final;
@@ -1655,7 +1655,7 @@ class ArticulatedSystem : public Object {
 
   void updateTimeStepIfNecessary(double dt) final;
 
-  void updateSensorsIfNecessary(const raisim::World* world) final;
+  void updateSensorsIfNecessary(class raisim::World& world) final;
 
   inline void jacoSub(const raisim::SparseJacobian &jaco1, raisim::SparseJacobian &jaco, bool isFloatingBase);
 

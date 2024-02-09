@@ -103,10 +103,10 @@ class InertialMeasurementUnit final : public Sensor {
   [[nodiscard]] const ImuProperties& getProperties () const { return prop_; }
   [[nodiscard]] static Type getType() { return Type::IMU; }
 
-  /*
-   * Not implemented
+  /**
+   * The update is done by ``ArticulatedSystem`` class and this method is not necessary
    */
-  void update (class World& world) final;
+  void update (class World& world) final {}
 
  protected:
   void validateMeasurementSource() final {

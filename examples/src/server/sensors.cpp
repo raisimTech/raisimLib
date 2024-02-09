@@ -39,6 +39,8 @@ int main(int argc, char **argv) {
 
   auto depthSensor1 = anymal->getSensor<raisim::DepthCamera>("depth_camera_front_camera_parent:depth");
   depthSensor1->setMeasurementSource(raisim::Sensor::MeasurementSource::VISUALIZER);
+//  depthSensor1->setMeasurementSource(raisim::Sensor::MeasurementSource::RAISIM); // uncomment this line if you want to update the sensor using Raisim (CPU)
+
   auto rgbCamera1 = anymal->getSensor<raisim::RGBCamera>("depth_camera_front_camera_parent:color");
   rgbCamera1->setMeasurementSource(raisim::Sensor::MeasurementSource::VISUALIZER);
 
@@ -48,14 +50,24 @@ int main(int argc, char **argv) {
   rgbCamera2->setMeasurementSource(raisim::Sensor::MeasurementSource::VISUALIZER);
   auto imu = anymal->getSensor<raisim::InertialMeasurementUnit>("depth_camera_front_camera_parent:imu");
 
-  auto dummySphere = server.addVisualSphere("dummy", 1, 1, 0, 0, 1);
-  dummySphere->setPosition(3, 0, 0);
+  auto dummySphere1 = server.addVisualSphere("dummy1", 0.05, 1, 0, 0, 1);
+  auto dummySphere2 = server.addVisualSphere("dummy2", 0.05, 1, 0, 0, 1);
+  std::vector<raisim::Vec<3>> pointCloudFromConversion;
 
   server.launchServer();
   for (int k = 0; k < loopN; k++) {
     RS_TIMED_LOOP(int(world.getTimeStep()*1e6))
     server.integrateWorldThreadSafe();
-    std::cout<<imu->getOrientation()<<std::endl;
+
+    depthSensor1->lockMutex();
+    const auto &depth = depthSensor1->getDepthArray();
+    depthSensor1->depthToPointCloud(depth, pointCloudFromConversion, false); // this method lets you convert depth values to 3D points
+    auto& posFromRaisim = depthSensor1->get3DPoints(); // this method returns garbage if the update is done by the visualizer
+    depthSensor1->unlockMutex();
+
+    dummySphere1->setPosition(posFromRaisim[0].e()); // this doesn't work if the update is done by Raisim
+    dummySphere2->setPosition(pointCloudFromConversion.back().e());
+    std::cout<<"Imu orientation\n" << imu->getOrientation()<<std::endl;
   }
 
   server.killServer();
