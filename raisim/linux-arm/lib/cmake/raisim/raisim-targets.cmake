@@ -54,7 +54,7 @@ endif()
 add_library(raisim::raisimZ SHARED IMPORTED)
 
 set_target_properties(raisim::raisimZ PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
+  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/"
 )
 
 # Create imported target raisim::raisimPng

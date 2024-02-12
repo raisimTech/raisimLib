@@ -13,7 +13,7 @@ option(RAISIM_PY "Build a python wrapper." FALSE)
 option(RAISIM_DOC "Build a raisim documentation. You can find the latest doc in raisim.com." FALSE)
 
 if (UNIX AND NOT APPLE AND NOT ANDROID AND NOT WEBGL AND NOT WIN32)
-    if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "arm")
+    if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "aarch64")
         set(RAISIM_OS linux-arm)
     else ()
         set(RAISIM_OS linux)

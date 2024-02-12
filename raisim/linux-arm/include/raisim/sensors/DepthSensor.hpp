@@ -64,6 +64,19 @@ class DepthCamera final : public Sensor {
       Sensor(prop.name, Sensor::Type::DEPTH, as, pos, rot), prop_(prop) {
     depthArray_.resize(prop.height * prop.width);
     threeDPoints_.resize(prop.height * prop.width);
+    precomputedRayDir_.reserve(prop.height * prop.width);
+
+    const double hRef = std::tan(prop_.hFOV * 0.5) * 2.;
+    const double vRef = hRef * double(prop_.height) / double(prop_.width);
+
+    for (int i= 0; i < prop_.width; i++) {
+      for (int j = 0; j < prop_.height; j++) {
+        Vec<3> dirB, dirW;
+        dirB.e() << 1., -hRef * (double(i)+0.5) / double(prop_.width) + hRef * 0.5,
+            -vRef * (double(j)+0.5) / double(prop_.height) + vRef * 0.5;
+        precomputedRayDir_.push_back(dirB);
+      }
+    }
   }
   ~DepthCamera() final = default;
 
@@ -81,10 +94,7 @@ class DepthCamera final : public Sensor {
       threeDPoints_[i] = data[i];
   }
 
-  /* This method works only if the sensor update type is DEPTH_ARRAY.
-   * Otherwise, it will return garbage.
-   * In simulation, you can set the update type in the urdf file.
-   * On the real robot, you can set the 3d data using setDepthArray method
+  /* This method will return garbage if it has never been updated
    * @return depthArray
    */
   [[nodiscard]] const std::vector<float> & getDepthArray () const { return depthArray_; }
@@ -99,11 +109,8 @@ class DepthCamera final : public Sensor {
     depthArray_ = depthIn;
   }
 
-  /* This method works only if the sensor update type is THREE_DIM_COORD.
-   * Otherwise, it will return garbage.
-   * In simulation, you can set the update type in the urdf file.
-   * On the real robot, you can set the 3d data using set3DPoints method
-   * @return 3D points in the specified frame. In simulation, the frame is specified in the URDF. On the real robot, you have to update the 3D points (using set3DPoints) in the correct frame.
+  /* This method works only if you call ``update``(simulation)
+   * @return 3D points in the world frame
    */
   [[nodiscard]] const std::vector<raisim::Vec<3>, AlignedAllocator<raisim::Vec<3>, 32>>& get3DPoints() const { return threeDPoints_; }
 
@@ -118,12 +125,19 @@ class DepthCamera final : public Sensor {
    */
   void update (class World& world) final;
 
- protected:
+  /**
+   * Convert the depth values to 3D coordinates
+   * @param[in] depthArray input depth array to convert
+   * @param[out] pointCloud output point cloud
+   * @param[in] sensorFrame If the 3D points are expressed in the sensor frame or the world frame
+   */
+  void depthToPointCloud(const std::vector<float>& depthArray, std::vector<raisim::Vec<3>>& pointCloud, bool isInSensorFrame = false) const;
 
  private:
   DepthCameraProperties prop_;
   std::vector<float> depthArray_;
   std::vector<raisim::Vec<3>, AlignedAllocator<raisim::Vec<3>, 32>> threeDPoints_;
+  std::vector<raisim::Vec<3>, AlignedAllocator<raisim::Vec<3>, 32>> precomputedRayDir_;
 };
 
 }
