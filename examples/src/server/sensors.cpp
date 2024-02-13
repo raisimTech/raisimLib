@@ -66,7 +66,7 @@ int main(int argc, char **argv) {
     depthSensor1->unlockMutex();
 
     dummySphere1->setPosition(posFromRaisim[0].e()); // this doesn't work if the update is done by Raisim Unreal
-    dummySphere2->setPosition(pointCloudFromConversion.back().e());
+    dummySphere2->setPosition(pointCloudFromConversion[400].e());
     std::cout<<"Imu orientation\n" << imu->getOrientation()<<std::endl;
   }
 

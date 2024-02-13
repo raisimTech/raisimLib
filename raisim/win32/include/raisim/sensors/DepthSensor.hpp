@@ -69,8 +69,8 @@ class DepthCamera final : public Sensor {
     const double hRef = std::tan(prop_.hFOV * 0.5) * 2.;
     const double vRef = hRef * double(prop_.height) / double(prop_.width);
 
-    for (int i= 0; i < prop_.width; i++) {
-      for (int j = 0; j < prop_.height; j++) {
+    for (int j = 0; j < prop_.height; j++) {
+      for (int i= 0; i < prop_.width; i++) {
         Vec<3> dirB, dirW;
         dirB.e() << 1., -hRef * (double(i)+0.5) / double(prop_.width) + hRef * 0.5,
             -vRef * (double(j)+0.5) / double(prop_.height) + vRef * 0.5;

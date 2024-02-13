@@ -1,3 +1,8 @@
+Set-Location C:\Users\jemin\source\repos\raisim
+git pull
+Set-Location C:\Users\jemin\source\repos\raisimLib
+git pull
+
 Set-Location C:\Users\jemin\source\repos\raisim\build-release
 cmake -G"Visual Studio 16 2019" -A x64 .. -DRAISIM_TEST=ON -DCMAKE_PREFIX_PATH=C:\Users\jemin\devel -DCMAKE_INSTALL_PREFIX=C:\Users\jemin\source\repos\raisimLib\raisim\win32
 cmake --build . --config Release
