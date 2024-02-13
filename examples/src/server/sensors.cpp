@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
     auto& posFromRaisim = depthSensor1->get3DPoints(); // this method returns garbage if the update is done by the visualizer
     depthSensor1->unlockMutex();
 
-    dummySphere1->setPosition(posFromRaisim[0].e()); // this doesn't work if the update is done by Raisim
+    dummySphere1->setPosition(posFromRaisim[0].e()); // this doesn't work if the update is done by Raisim Unreal
     dummySphere2->setPosition(pointCloudFromConversion.back().e());
     std::cout<<"Imu orientation\n" << imu->getOrientation()<<std::endl;
   }
