@@ -13,7 +13,7 @@ make install -j
 
 # download the tool at https://docs.nvidia.com/jetson/archives/r35.3.1/DeveloperGuide/text/AT/JetsonLinuxToolchain.html#at-jetsonlinuxtoolchain
 cd ../build-arm
-CXX=/home/jemin/software/gcc11jetson/aarch64--glibc--stable-2022.08-1/bin/aarch64-buildroot-linux-gnu-g++ CC=/home/jemin/software/gcc11jetson/aarch64--glibc--stable-2022.08-1/bin/aarch64-buildroot-linux-gnu-gcc cmake .. -DRAISIM_ARM=ON -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=~/workspace/raisimLib/raisim/linux-arm -DRAISIM_TEST=OFF
+CXX=/home/jemin/software/aarch64--glibc--stable-final/bin/aarch64-buildroot-linux-gnu-g++ CC=/home/jemin/software/aarch64--glibc--stable-final/bin/aarch64-buildroot-linux-gnu-gcc cmake .. -DRAISIM_ARM=ON -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=~/workspace/raisimLib/raisim/linux-arm -DRAISIM_TEST=OFF
 make install -j
 
 cd ~/workspace/raisimLib/build
