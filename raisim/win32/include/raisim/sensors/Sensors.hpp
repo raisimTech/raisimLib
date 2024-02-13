@@ -88,6 +88,7 @@ class Sensor {
   [[nodiscard]] double getUpdateRate() const { return updateRate_; }
 
   /**
+   * This method will return negative value if it has never been updated
    * @return The time when the last sensor measurement was recorded
    */
   [[nodiscard]] double getUpdateTimeStamp() const { return updateTimeStamp_; }
@@ -146,7 +147,7 @@ class Sensor {
    * Get the id of the frame on which the sensor is attached
    * @return frame id
    */
-  size_t getFrameId() { return frameId_; }
+  size_t getFrameId() const { return frameId_; }
 
   /**
    * locks sensor mutex. This can be used if you use raisim in a multi-threaded environment.
