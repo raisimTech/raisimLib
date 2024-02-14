@@ -1,8 +1,6 @@
 #############################
 Sensors
 #############################
-**The implementations of sensor modules are highly experimental at this stage.**
-**This documentation is only for the internal alpha testers.**
 
 This module provides a way to specify sensor properties using a URDF-like format.
 We provide a few implementation examples for depth camera, RGB camera, and IMU.
@@ -35,3 +33,16 @@ If it is not found, raisim will search the following directories in order: ``[ur
 Any example of an sensor xml file can be found in ``rsc/anymal_c/sensors``.
 A more formal xml definitions will be uploaded once the module is expanded and tested enough.
 
+Update
+--------------------
+The sensor update method can be set using ``raisim::Sensor::setMeasurementSource``.
+It can be either updated using raisim (``raisim::Sensor::MeasurementSource::RAISIM``) or the visualizer (``raisim::Sensor::MeasurementSource::VISUALIZER``).
+``RGBSensor`` can only be updated using the RaisimUnreal.
+``DepthSensor`` can be updated either raisim or the RaisimUnreal.
+``InertialMeasurementUnit`` can only be updated using raisim.
+
+The update is performed at the specified frequency (i.e., ``update_rate`` in the sensor xml).
+
+Example
+-----------------
+https://github.com/raisimTech/raisimLib/blob/master/examples/src/server/sensors.cpp

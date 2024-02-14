@@ -261,6 +261,7 @@ class ArticulatedSystem : public Object {
   friend class raisim::urdf::LoadFromURDF2;
   friend class raisim::mjcf::LoadFromMjcf;
   friend class raisim::InertialMeasurementUnit;
+  friend class raisim::Sensor;
 
  public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW

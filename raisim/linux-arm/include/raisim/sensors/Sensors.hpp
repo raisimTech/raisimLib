@@ -17,9 +17,11 @@
 namespace raisim {
 
 class Child;
+class ArticulatedSystem;
 
 class Sensor {
   friend class raisim::Child;
+  friend class raisim::ArticulatedSystem;
 
  public:
   enum class Type : int {
@@ -138,12 +140,6 @@ class Sensor {
   }
 
   /**
-   * Update the sensor measurement using raisim if possible
-   * @param[in] world the world object
-   */
-  virtual void update (class World& world) = 0;
-
-  /**
    * Get the id of the frame on which the sensor is attached
    * @return frame id
    */
@@ -160,6 +156,8 @@ class Sensor {
   void unlockMutex() { mutex_.unlock(); }
 
  protected:
+
+  virtual void update (class World& world) = 0;
   void setFramePosition(const Vec<3>& pos) { posFrame_ = pos; }
   void setFrameRotation(const Mat<3,3>& rot) { rotFrame_ = rot; }
   void setFrameId(size_t id) { frameId_ = id; }
