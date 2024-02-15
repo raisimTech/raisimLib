@@ -47,20 +47,26 @@ Example
 ====================================
 https://github.com/raisimTech/raisimLib/blob/master/examples/src/server/sensors.cpp
 
-API
-====
+Parent Class API
+=====================
 
 .. doxygenclass:: raisim::Sensor
    :members:
 
+Depth Sensor API
+=====================
 
 .. doxygenclass:: raisim::DepthSensor
    :members:
 
+RGB Sensor API
+=====================
 
 .. doxygenclass:: raisim::RGBSensor
    :members:
 
+Inertial Measurement Unit API
+======================================
 
 .. doxygenclass:: raisim::InertialMeasurementUnit
    :members:
