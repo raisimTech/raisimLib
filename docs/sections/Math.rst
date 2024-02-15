@@ -2,13 +2,12 @@
 Math Classes
 #############################
 
-RaiSim provides its own math library.
-All files related to the math library can be found in `raisim/math`.
-I do not recommend using RaiSim math library to users.
-But many RaiSim methods return a RaiSim math object.
-In such a case, you have to convert it to an Eigen object.
-RaiSim includes a convenient conversion method in the Mat class: ``e()`` method returns the corresponding ``Eigen::Map``.
-Here is an example.
+RaiSim incorporates its dedicated math library, located within the `raisim/math` directory.
+It is important to note that while the RaiSim math library is available, it is not recommended for direct use by users.
+However, several RaiSim methods generate a RaiSim math object as output.
+In these situations, conversion to an Eigen object is required.
+To facilitate this conversion process, RaiSim provides a convenient method within the Mat class: the ``e()`` method, which returns the corresponding ``Eigen::Map``.
+An example demonstrating this conversion is provided below.
 
 .. code-block:: c
 
