@@ -19,31 +19,33 @@ Click the image for vector graphics
 Introduction
 =============================
 
-An articulated Systems is a system of multiple bodies connected through joints.
-There are two types of articulated systems: *Kinematic trees* and *closed-loop systems*. 
-Kinematic trees do not contain a loop (a body always has only one parent joint).
-Consequently, the number of joints is equal to the number of bodies (for floating systems, we assign a floating joint on the root body).
-RaiSim can only simulate **kinematic trees**.
+An articulated system comprises multiple bodies interconnected via joints.
+Within this framework, there exist two primary configurations: Kinematic trees and closed-loop systems.
+Kinematic trees are characterized by their absence of loops, ensuring that each body has only one parent joint.
+Consequently, the number of joints in a kinematic tree equals the number of bodies, with the provision of a floating joint on the root body for floating systems.
+It's important to note that RaiSim exclusively supports simulation of **kinematic trees**.
 
-**Since all bodies have one joint, a body index is always the same as its parent joint's index**.
-A *body* refers to a rigid body which is composed of one or more *links*. All links within a body are connected to each other by a fixed joint.
+In kinematic trees, **since each body has only one joint, the index of a body always matches that of its parent joint**.
+Here, a "body" denotes a rigid body composed of one or more "links", each of which is rigidly connected to others within the same body via fixed joints.
 
 Creating an instance
 =============================
 Just like any other object, an articulated system is created by the world instance using :code:`addArticulatedSystem` method.
-There are three ways to specify the system.
+There are four ways to specify an articulated system.
 
-1. by providing the path to the URDF file (the most recommneded way)
-2. by providing :code:`std::string` of the URDF text (can be useful when working with Xacro)
-3. by providing a :code:`raisim::Child` instance. It is an advanced method and not recommended for beginners.
+1. by providing the path to the URDF file (the most recommended way)
+2. by providing the path to the URDF template file (`example <https://github.com/raisimTech/raisimLib/blob/master/examples/src/server/trackedRobotAndTemplatedURDF.cpp>`_)
+3. by providing :code:`std::string` of the URDF text (can be useful when working with Xacro)
+4. by providing a :code:`raisim::Child` instance. It is an advanced method and not recommended for beginners.
 
-Note that option 1 and 2 use the same method.
-You can provide either the path string or the contents string and the class will identify which one is provided.
+**Note that option 1 and 3 use the same method.**
+**You can provide either the path string or the contents string and the class will identify which one is provided.**
 
-To use option 3, you have to provide all details of the robot in C++ code.
+To use option 4, you have to provide all details of the robot in C++ code.
 Child is a tree node which contains ``fixedBodies`` and ``child``.
 It also contains ``joint``, ``body``, and ``name``.
 All properties should be filled.
+Make sure that all inertial properties are defined so that the resulting system is physically feasible.
 
 State Representation
 =============================
@@ -57,12 +59,11 @@ Since we are not constraining their parameterization, in general,
   \end{equation}
 
 A generalized coordinate fully represents the configuration of the articulated system and a generalized velocity fully represents the velocity state of the articulated system.
+The are independently defined in general.
 
 Every joint has a corresponding generalized coordinate and generalized velocity.
 A concatenation of all joint generalized coordinates and velocities are the generalized coordinates and velocities of the articulated system, respectively.
 The order of this concatenation is called **joint order**.
-The URDF reader lists joints in the depth first manner.
-For the joints from the same parent, the joint order is determined by the order the joint appears in the URDF.
 The joint order can be accessed through :code:`getMovableJointNames()`.
 Note the keyword "movable".
 The fixed joints contribute to neither the generalized coordinate nor the generalized velocity.
@@ -73,8 +74,6 @@ For floating-base systems, the root body is the floating base.
 For fixed-base systems, the root body is the one rigidly attached to the world.
 Even though the fixed base cannot move physically, users can move them using :code:`setBaseOrientation` and :code:`setBasePosition`.
 So :code:`getMovableJointNames()` method will return the fixed base name and the fixed base joint is a part of the joint order.
-
-The following example illustrates how the generalized coordinates and velocities are defined.
 
 To set the state of the system, the following methods can be used
 
