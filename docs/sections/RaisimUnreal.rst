@@ -160,8 +160,8 @@ Time-series graphs and bar charts
 ======================================
 You can add time-series graphs and bar charts.
 
-.. image:: ../image/TimeSeriesGraphAndBarChart.png
-  :alt: rsu_maps
+.. image:: ../image/timeSeriesGraphAndBarChart.png
+  :alt: graphs
   :width: 1080
 
 You can find an example `here <https://github.com/raisimTech/raisimLib/blob/master/examples/src/maps/atlas.cpp>`_.

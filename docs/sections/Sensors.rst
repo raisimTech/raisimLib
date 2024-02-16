@@ -54,13 +54,13 @@ Parent Class API
 Depth Sensor API
 =====================
 
-.. doxygenclass:: raisim::DepthSensor
+.. doxygenclass:: raisim::DepthCamera
    :members:
 
 RGB Sensor API
 =====================
 
-.. doxygenclass:: raisim::RGBSensor
+.. doxygenclass:: raisim::RGBCamera
    :members:
 
 Inertial Measurement Unit API

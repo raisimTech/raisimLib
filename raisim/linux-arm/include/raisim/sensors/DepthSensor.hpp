@@ -75,8 +75,7 @@ class DepthCamera final : public Sensor {
   /**
    * This method is only useful on the real robot (and you use raisim on the real robot).
    * You can set the 3d point array manually
-   * @param[in] data The 3d point data
-   */
+   * @param[in] data The 3d point data */
   void set3DPoints (const std::vector<raisim::Vec<3>>& data) {
     for (int i = 0; i < prop_.width * prop_.height; i++)
       threeDPoints_[i] = data[i];
@@ -91,22 +90,19 @@ class DepthCamera final : public Sensor {
   /**
    * Set the data manually. This can be useful on the real robot
    * @param[in] depthIn Depth values
-   * @return The image data in char vector
-   */
+   * @return The image data in char vector */
   void setDepthArray(const std::vector<float> & depthIn) {
     RSFATAL_IF(depthIn.size() != depthArray_.size(), "Input data size should be "<<prop_.width <<" by "<<prop_.height);
     depthArray_ = depthIn;
   }
 
   /** This method works only if the measurement source is Raisim
-   * @return 3D points in the world frame
-   */
+   * @return 3D points in the world frame */
   [[nodiscard]] const std::vector<raisim::Vec<3>, AlignedAllocator<raisim::Vec<3>, 32>>& get3DPoints() const { return threeDPoints_; }
 
   /**
    * Get the depth camera properties
-   * @return the depth camera properties
-   */
+   * @return the depth camera properties */
   [[nodiscard]] const DepthCameraProperties& getProperties () const { return prop_; }
 
   /**
@@ -119,8 +115,7 @@ class DepthCamera final : public Sensor {
    * Convert the depth values to 3D coordinates
    * @param[in] depthArray input depth array to convert
    * @param[out] pointCloud output point cloud
-   * @param[in] sensorFrame If the 3D points are expressed in the sensor frame or the world frame
-   */
+   * @param[in] sensorFrame If the 3D points are expressed in the sensor frame or the world frame */
   void depthToPointCloud(const std::vector<float>& depthArray, std::vector<raisim::Vec<3>>& pointCloud, bool isInSensorFrame = false) const;
 
  private:
