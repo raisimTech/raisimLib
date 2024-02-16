@@ -51,13 +51,13 @@ Parent Class API
 .. doxygenclass:: raisim::Sensor
    :members:
 
-Depth Sensor API
+Depth Camera API
 =====================
 
 .. doxygenclass:: raisim::DepthCamera
    :members:
 
-RGB Sensor API
+RGB Camera API
 =====================
 
 .. doxygenclass:: raisim::RGBCamera
