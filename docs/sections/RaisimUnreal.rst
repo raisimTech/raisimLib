@@ -156,6 +156,16 @@ You can press ``alt`` and ``left-click`` on an object to specify a *point of int
 If there is one *point of interest*, the ruler will measure a position.
 If there are two, the ruler will measure the displacement.
 
+Time-series graphs and bar charts
+======================================
+You can add time-series graphs and bar charts.
+
+.. image:: ../image/TimeSeriesGraphAndBarChart.png
+  :alt: rsu_maps
+  :width: 1080
+
+You can find an example `here <https://github.com/raisimTech/raisimLib/blob/master/examples/src/maps/atlas.cpp>`_.
+
 Maps
 ================================
 You can use pre-configured maps using raisimUnreal using ``RaisimServer::setMap``.
