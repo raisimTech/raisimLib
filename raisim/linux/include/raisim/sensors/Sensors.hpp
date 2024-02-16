@@ -143,7 +143,7 @@ class Sensor {
    * Get the id of the frame on which the sensor is attached
    * @return frame id
    */
-  size_t getFrameId() const { return frameId_; }
+  [[nodiscard]] size_t getFrameId() const { return frameId_; }
 
   /**
    * locks sensor mutex. This can be used if you use raisim in a multi-threaded environment.

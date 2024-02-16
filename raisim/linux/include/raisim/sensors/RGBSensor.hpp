@@ -49,7 +49,13 @@ class RGBCamera : public Sensor {
                        prop_.hFOV, prop_.noiseType, prop_.mean, prop_.std, prop_.format);
   }
 
+
   [[nodiscard]] static Type getType() { return Type::RGB; }
+
+  /**
+   * Return the camera properties
+   * @return camera properties
+   */
   [[nodiscard]] const RGBCameraProperties& getProperties () const { return prop_; }
 
   /**
