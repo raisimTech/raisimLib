@@ -75,6 +75,7 @@ class DepthCamera final : public Sensor {
   /**
    * This method is only useful on the real robot (and you use raisim on the real robot).
    * You can set the 3d point array manually
+   * @param[in] data The 3d point data
    */
   void set3DPoints (const std::vector<raisim::Vec<3>>& data) {
     for (int i = 0; i < prop_.width * prop_.height; i++)
@@ -88,7 +89,8 @@ class DepthCamera final : public Sensor {
   [[nodiscard]] std::vector<float> & getDepthArray () { return depthArray_; }
 
   /**
-   * rgb image in bgra format. It is updated only if the measurement source is the visualizer and raisimUnreal is used
+   * Set the data manually. This can be useful on the real robot
+   * @param[in] depthIn Depth values
    * @return The image data in char vector
    */
   void setDepthArray(const std::vector<float> & depthIn) {
@@ -96,7 +98,7 @@ class DepthCamera final : public Sensor {
     depthArray_ = depthIn;
   }
 
-  /** This method works only if you call ``update``(simulation)
+  /** This method works only if the measurement source is Raisim
    * @return 3D points in the world frame
    */
   [[nodiscard]] const std::vector<raisim::Vec<3>, AlignedAllocator<raisim::Vec<3>, 32>>& get3DPoints() const { return threeDPoints_; }
@@ -109,7 +111,7 @@ class DepthCamera final : public Sensor {
 
   /**
    * Update the sensor value
-   * @param world the world that the sensor is in
+   * @param[in] world the world that the sensor is in
    */
   void update (class World& world) final;
 

@@ -19,7 +19,7 @@ class RGBCamera : public Sensor {
     double clipNear, clipFar;
     double hFOV;
 
-    /// noise type
+    // noise type
     enum class NoiseType : int {
       GAUSSIAN = 0,
       UNIFORM,
@@ -67,7 +67,7 @@ class RGBCamera : public Sensor {
 
   /**
    * Set RGBA data. This method is only useful on the real robot.
-   * @param rgbaIn rgba
+   * @param[in] rgbaIn rgba
    */
   void setImageBuffer(const std::vector<char> & rgbaIn) {
     RSFATAL_IF(rgbaIn.size() != rgbBuffer_.size(), "Input data size should be "<<prop_.width <<" by "<<prop_.height << "by 4");
