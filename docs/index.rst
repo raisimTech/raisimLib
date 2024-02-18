@@ -13,25 +13,25 @@ Examples
   :alt: RaiSim demo (sensors.cpp)
   :width: 600
 
-**raisim example** in ``examples/src/server/sensors.cpp``
+**raisim example** `sensors.cpp <https://github.com/raisimTech/raisimLib/blob/master/examples/src/server/sensors.cpp>`_
 
 .. image:: image/atlas_cpp.png
   :alt: RaiSim demo (atlas.cpp)
   :width: 600
 
-**raisim example** in ``examples/src/maps/atlas.cpp``
+**raisim example** `atlas.cpp <https://github.com/raisimTech/raisimLib/blob/master/examples/src/maps/atlas.cpp>`_
 
 .. image:: image/office1_cpp.png
   :alt: RaiSim demo (office1.cpp)
   :width: 600
 
-**raisim example** in ``examples/src/maps/office1.cpp``
+**raisim example** `office1.cpp <https://github.com/raisimTech/raisimLib/blob/master/examples/src/maps/office1.cpp>`_
 
 .. image:: image/demo_robots.gif
   :alt: RaiSimPy demo (robots.py)
   :width: 600
 
-**RaisimPy example** in ``raisimPy/examples/robots.py``
+**RaisimPy example** `robot.py <https://github.com/raisimTech/raisimLib/blob/master/raisimPy/examples/robot.py>`_
 
 .. image:: image/skeleton.bmp
   :alt: Skeleton img from S. K at KAIST
@@ -41,23 +41,25 @@ Examples
 
 The geometric model is created using the Full-body musculoskeletal model in Rajagopal et al. (2016).
 
+The KAIST team provided this image but we do not have this model in this repo.
+
 .. image:: image/huskyScan.gif
   :alt: husky
   :width: 600
 
-**Ray Test example with Husky and Velodyne**
+**raisim example** `rayDemo2.cpp <https://github.com/raisimTech/raisimLib/blob/master/examples/src/server/rayDemo2.cpp>`_
 
 .. image:: image/anymals.png
   :alt: anymals
   :width: 600
 
-**ANYmal B and C robots**, by ANYbotics AG.**
+**raisim example** `anymals.cpp <https://github.com/raisimTech/raisimLib/blob/master/examples/src/maps/anymals.cpp>`_
 
 .. image:: image/trackedRobot.gif
   :alt: trackedRobot
   :width: 600
 
-**URDF Example**
+**raisim example** `trackedRobotAndTemplatedURDF.cpp <https://github.com/raisimTech/raisimLib/blob/master/examples/src/server/trackedRobotAndTemplatedURDF.cpp>`_
 
 .. toctree::
    :maxdepth: 1
