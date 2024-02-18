@@ -31,7 +31,7 @@ Examples
   :alt: RaiSimPy demo (robots.py)
   :width: 600
 
-**RaisimPy example** `robot.py <https://github.com/raisimTech/raisimLib/blob/master/raisimPy/examples/robot.py>`_
+**RaisimPy example** `robot.py <https://github.com/raisimTech/raisimLib/blob/master/raisimPy/examples/robots.py>`_
 
 .. image:: image/skeleton.bmp
   :alt: Skeleton img from S. K at KAIST
