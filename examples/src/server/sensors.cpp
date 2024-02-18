@@ -13,6 +13,8 @@ int main(int argc, char **argv) {
   raisim::RaisimServer server(&world);
 
   auto checkerBoard = world.addGround(0.0, "glass");
+  auto sphere = world.addSphere(0.2, 5);
+  sphere->setPosition(2, 0, 0.5);
 
   Eigen::VectorXd jointConfig(19), jointVelocityTarget(18);
   Eigen::VectorXd jointState(18), jointVel(18), jointPgain(18), jointDgain(18);

@@ -9,6 +9,24 @@ RaiSim is closed-source and is distributed under a few different types of licens
 Examples
 ========
 
+.. image:: image/sensors_cpp.png
+  :alt: RaiSim demo (sensors.cpp)
+  :width: 600
+
+**raisim example** in ``examples/src/server/sensors.cpp``
+
+.. image:: image/atlas_cpp.png
+  :alt: RaiSim demo (atlas.cpp)
+  :width: 600
+
+**raisim example** in ``examples/src/maps/atlas.cpp``
+
+.. image:: image/office1_cpp.png
+  :alt: RaiSim demo (office1.cpp)
+  :width: 600
+
+**raisim example** in ``examples/src/maps/office1.cpp``
+
 .. image:: image/demo_robots.gif
   :alt: RaiSimPy demo (robots.py)
   :width: 600
