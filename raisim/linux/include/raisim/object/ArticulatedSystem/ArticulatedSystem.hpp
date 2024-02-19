@@ -1350,7 +1350,7 @@ class ArticulatedSystem : public Object {
 
   /**
    * set the base orientation using a raisim quaternion (i.e., Vec<4>)
-   * @param[in] rot orientation of the base */
+   * @param[in] quat orientation of the base */
     void setBaseOrientation(const Vec<4> &quat);
 
   /**
@@ -1576,7 +1576,7 @@ class ArticulatedSystem : public Object {
   [[nodiscard]] const std::unordered_map<std::string, std::shared_ptr<Sensor>>& getSensors() const { return sensors_; }
 
   // not recommended for users. only for developers
-  void addConstraints(const std::vector<PinConstraintDefinition>& pinDef);
+  void addConstraints(const std::vector<PinConstraintDefinition>& pinDef, const VecDyn& pinConstraintNominalConfig);
   void initializeConstraints();
 
   /**
@@ -1595,7 +1595,7 @@ class ArticulatedSystem : public Object {
   /**
    * YOU MUST CALL raisim::ArticulatedSystem::setComputeInverseDynamics(true) before calling this method.
    * This method returns the force at the specified joint
-   * @param jointId[in] the joint id
+   * @param[in] jointId the joint id
    * @return force at the joint
    */
   [[nodiscard]] const raisim::Vec<3>& getForceAtJointInWorldFrame(size_t jointId) const { return forceAtJoint_W[jointId]; }
@@ -1603,7 +1603,7 @@ class ArticulatedSystem : public Object {
   /**
    * YOU MUST CALL raisim::ArticulatedSystem::setComputeInverseDynamics(true) before calling this method.
    * This method returns the torque at the specified joint
-   * @param jointId[in] the joint id
+   * @param[in] jointId the joint id
    * @return torque at the joint
    */
   [[nodiscard]] const raisim::Vec<3>& getTorqueAtJointInWorldFrame(size_t jointId) const { return torqueAtJoint_W[jointId]; }
@@ -1666,9 +1666,11 @@ class ArticulatedSystem : public Object {
    * Recursive Newton Euler algorithm computes inverse dynamics of the system.
    * In other words, it computes the generalized force that results in the given given generalized acceleration.
    * After calling this method, you can also call below methods
-   * @param gravity[in] The gravitational acceleration of the world (raisim::World::getGravity())
-   * @param ga[in] The generalized acceleration
-   * @param b[out] The generalized force
+   * @param [in] gravity The gravitational acceleration of the world (raisim::World::getGravity())
+   * @param [in] includeExternalForces if the external forces should be included in RNE computation
+   * @param [in] updateJointForces if internal forces are joints should be updated
+   * @param [in] ga The generalized acceleration
+   * @param [out] b The generalized force
    */
   void recursiveNewtonEuler(const Vec<3> &gravity, bool includeExternalForces, bool updateJointForces, const VecDyn& ga, VecDyn &b);
 
@@ -1821,6 +1823,7 @@ class ArticulatedSystem : public Object {
   // constraints
   std::vector<PinConstraint> pinConstraints_;
   std::vector<PinConstraintDefinition> pinDef_;
+  VecDyn pinConstraintNominalConfig_;
 
   /// ABA
   Mat<6,6> MaInv_base;

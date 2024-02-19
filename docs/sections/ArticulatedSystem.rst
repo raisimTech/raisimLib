@@ -20,10 +20,16 @@ Introduction
 =============================
 
 An articulated system comprises multiple bodies interconnected via joints.
-Within this framework, there exist two primary configurations: Kinematic trees and closed-loop systems.
+There exist two primary configurations of an articulated system: Kinematic trees and closed-loop systems.
 Kinematic trees are characterized by their absence of loops, ensuring that each body has only one parent joint.
 Consequently, the number of joints in a kinematic tree equals the number of bodies, with the provision of a floating joint on the root body for floating systems.
-It's important to note that RaiSim exclusively supports simulation of **kinematic trees**.
+
+Closed-loop system has one or more loops.
+A loop means that there are multiple routes from the link to the ROOT.
+Raisim's algorithmic backbone, Articulated Body Algorithm, cannot solve the dynamics of a closed system.
+However, we can simulate a closed-loop system using Raisim's contact solver.
+This article will mainly cover kinematic trees.
+A simulation of a closed-loop system is mentioned in **Closed-loop system** at the bottom of this page.
 
 In kinematic trees, **since each body has only one joint, the index of a body always matches that of its parent joint**.
 Here, a "body" denotes a rigid body composed of one or more "links", each of which is rigidly connected to others within the same body via fixed joints.
@@ -488,19 +494,38 @@ Collision
 ==============================
 Apart from the collision mask and collision group set in the world, users can also disable a collision between a certain pair of the links with :code:`ignoreCollisionBetween`.
 
-Types of Indicies
+Types of Indices
 =============================
-ArticulatedSystem class contains multiple types of indicies. To query a specific quantity, you have to provide an index of the right type. Here are the types of indicies in Articulated Systems
+ArticulatedSystem class contains multiple types of indices. To query a specific quantity, you have to provide an index of the right type. Here are the types of indices in Articulated Systems
 
 * **Body/Joint Index**: All fixed bodies are combined to a single movable body. Each movable body has a unique body index. Because there is a movable joint associated with a movable body, there is a 1-to-1 mapping between the joints and the bodies and they share the same index. For a fixed-base system, the first body rigidly fixed to the world is body-0. For a floating-base system, the floating base is body-0.
 * **Generalized Velocity (DOF) Index**: All joints are mapped to a specific set of generalized velocity indicies.
 * **Generalized Coordinate Index**:
 * **Frame Index**:
 
-Conversions Between Indicies
+Conversions Between Indices
 *****************************
 * A body index to a generalized velocity index: :code:`ArticulatedSystem::getMappingFromBodyIndexToGeneralizedVelocityIndex()`
 * A body index to a generalized coordinate index: :code:`ArticulatedSystem::getMappingFromBodyIndexToGeneralizedCoordinateIndex()`
+
+Closed-loop system
+=============================
+Before modeling a closed-loop system, it is necessary to model a corresponding spanning tree.
+A spanning tree is a kinematic tree that can be constructed by removing a minimum number of joints from a closed-loop system.
+Imagine a chain necklace. By disconnecting one of the joints, a kinematic tree will form.
+Only one joint should be removed because, otherwise, two separate kinematic trees will form.
+Note that there are multiple ways to form a kinematic tree because any of the joints can be removed.
+
+To model a closed-loop system in Raisim, a corresponding spanning tree should be modeled in a URDF format first.
+To convert the spanning tree into a closed-loop system, a pin constraint can be added.
+A pin constraint is an equality constraint that enforces two points on different bodies to be at the same position.
+A pin constraint is defined by the nominal configuration of the robot, the names of the two bodies to be pinned, and the position on the first body to be pinned.
+Note that the pinned position on the second body is defined by the nominal configuration and the position on the first body.
+
+An example of a closed loop system can be found `here <https://github.com/raisimTech/raisimLib/blob/master/examples/src/server/minitaur.cpp>`_.
+An example of a closed loop system URDF can be found `here <https://github.com/raisimTech/raisimLib/blob/master/rsc/minitaur/minitaur.urdf>`_.
+
+
 
 API
 ====
