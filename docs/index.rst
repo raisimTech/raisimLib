@@ -9,6 +9,12 @@ RaiSim is closed-source and is distributed under a few different types of licens
 Examples
 ========
 
+.. image:: image/minitaur_cpp.png
+  :alt: RaiSim demo (minitaur.cpp)
+  :width: 600
+
+**raisim example** (closed-loop) `minitaur.cpp <https://github.com/raisimTech/raisimLib/blob/master/examples/src/server/minitaur.cpp>`_
+
 .. image:: image/sensors_cpp.png
   :alt: RaiSim demo (sensors.cpp)
   :width: 600

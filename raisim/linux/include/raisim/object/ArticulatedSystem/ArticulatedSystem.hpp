@@ -1576,7 +1576,7 @@ class ArticulatedSystem : public Object {
   [[nodiscard]] const std::unordered_map<std::string, std::shared_ptr<Sensor>>& getSensors() const { return sensors_; }
 
   // not recommended for users. only for developers
-  void addConstraints(const std::vector<PinConstraintDefinition>& pinDef);
+  void addConstraints(const std::vector<PinConstraintDefinition>& pinDef, const VecDyn& pinConstraintNominalConfig);
   void initializeConstraints();
 
   /**
@@ -1823,6 +1823,7 @@ class ArticulatedSystem : public Object {
   // constraints
   std::vector<PinConstraint> pinConstraints_;
   std::vector<PinConstraintDefinition> pinDef_;
+  VecDyn pinConstraintNominalConfig_;
 
   /// ABA
   Mat<6,6> MaInv_base;
