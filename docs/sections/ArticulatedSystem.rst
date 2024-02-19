@@ -20,7 +20,7 @@ Introduction
 =============================
 
 An articulated system comprises multiple bodies interconnected via joints.
-Within this framework, there exist two primary configurations: Kinematic trees and closed-loop systems.
+There exist two primary configurations of an articulated system: Kinematic trees and closed-loop systems.
 Kinematic trees are characterized by their absence of loops, ensuring that each body has only one parent joint.
 Consequently, the number of joints in a kinematic tree equals the number of bodies, with the provision of a floating joint on the root body for floating systems.
 
