@@ -1,6 +1,7 @@
 # Build and Release Folders
 build-debug/
 build-release/
+build-*/
 build/*
 cmake-build*/*
 .idea/*
