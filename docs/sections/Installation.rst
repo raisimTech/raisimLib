@@ -20,6 +20,15 @@ You have to install the following packages before using raisim
 
 * eigen library
 * cmake > 3.10
+* For linux, g++-11 or higher (by installing g++-11, you will get libstdc++-6 with GLIBCXX_3.4.32)
+
+.. code-block:: bash
+
+  ## add the repository if you are using ubuntu 20.04 or lower
+  sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+  sudo apt install -y g++-11
+
+
 * For windows users, visual studio 2019 (we only support 2019 but it will probably work with 2015 or above). **Make sure that you install the C++ module as well by checking the corresponding checkbox during install**.
 
 RaiSim includes many open-source libraries. See the COPYING file for the full list.
