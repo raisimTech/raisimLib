@@ -1,3 +1,5 @@
+## docker command: sudo docker rm -v -f $(sudo docker ps -qa) && sudo docker run --name raisim_build -it -v ~/workspace:/root/workspace raisim_build bash
+
 cd ~/workspace/raisim/
 rm -rf build build-arm build-debug
 mkdir build

@@ -13,7 +13,14 @@ Closed-loop system simulation is now available! Check out the [minitaur example]
 ##### Ubuntu
 ```bash
 sudo apt install libeigen3-dev
+## you need to run this line if you are using 20.04 or below
+sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+## g++-11 will update your libstdc++6 to a newer version
+sudo apt install -y g++-11
 ```
+
+
+
 #### Windows
 Install desired release [here](http://eigen.tuxfamily.org) and unzip file at C:\Program, files for better discoverability.
 
