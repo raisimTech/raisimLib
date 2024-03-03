@@ -1572,8 +1572,8 @@ class ArticulatedSystem : public Object {
   /**
    * @return sensors on the robot
    */
-  [[nodiscard]] std::unordered_map<std::string, std::shared_ptr<Sensor>>& getSensors() { return sensors_; }
-  [[nodiscard]] const std::unordered_map<std::string, std::shared_ptr<Sensor>>& getSensors() const { return sensors_; }
+  [[nodiscard]] std::unordered_map<std::string, std::shared_ptr<Sensor>, std::hash<std::string>, std::equal_to<std::string>, AlignedAllocator<std::pair<std::string, std::shared_ptr<Sensor>>,32>>& getSensors() { return sensors_; }
+  [[nodiscard]] const std::unordered_map<std::string, std::shared_ptr<Sensor>, std::hash<std::string>, std::equal_to<std::string>, AlignedAllocator<std::pair<std::string, std::shared_ptr<Sensor>>,32>>& getSensors() const { return sensors_; }
 
   // not recommended for users. only for developers
   void addConstraints(const std::vector<PinConstraintDefinition>& pinDef, const VecDyn& pinConstraintNominalConfig);
@@ -1860,7 +1860,7 @@ class ArticulatedSystem : public Object {
   std::vector<AbaData3, AlignedAllocator<AbaData3, 32>> ad3_;
 
   /// sensors
-  std::unordered_map<std::string, std::shared_ptr<Sensor>> sensors_;
+  std::unordered_map<std::string, std::shared_ptr<Sensor>, std::hash<std::string>, std::equal_to<std::string>, AlignedAllocator<std::pair<std::string, std::shared_ptr<Sensor>>,32>> sensors_;
 };
 }
 
