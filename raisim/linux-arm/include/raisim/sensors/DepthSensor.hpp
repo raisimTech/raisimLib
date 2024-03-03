@@ -56,7 +56,7 @@ class DepthCamera final : public Sensor {
 
     for (int j = 0; j < prop_.height; j++) {
       for (int i= 0; i < prop_.width; i++) {
-        Vec<3> dirB, dirW;
+        Vec<3> dirB;
         dirB.e() << 1., -hRef * (double(i)+0.5) / double(prop_.width) + hRef * 0.5,
             -vRef * (double(j)+0.5) / double(prop_.height) + vRef * 0.5;
         precomputedRayDir_.push_back(dirB);
