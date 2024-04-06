@@ -16,10 +16,11 @@ class RGBCamera : public Sensor {
   struct RGBCameraProperties {
     std::string name;
     int width, height;
+    int xOffset = 0, yOffset = 0;
     double clipNear, clipFar;
     double hFOV;
 
-    /// noise type
+    // noise type
     enum class NoiseType : int {
       GAUSSIAN = 0,
       UNIFORM,
@@ -49,20 +50,23 @@ class RGBCamera : public Sensor {
                        prop_.hFOV, prop_.noiseType, prop_.mean, prop_.std, prop_.format);
   }
 
+
   [[nodiscard]] static Type getType() { return Type::RGB; }
-  [[nodiscard]] const RGBCameraProperties& getProperties () const { return prop_; }
+
+  /**
+   * Return the camera properties
+   * @return camera properties */
+  [[nodiscard]] RGBCameraProperties& getProperties () { return prop_; }
 
   /**
    * rgb image in bgra format. It is updated only if the measurement source is the visualizer and raisimUnreal is used
-   * @return The image data in char vector
-   */
+   * @return The image data in char vector */
   [[nodiscard]] const std::vector<char>& getImageBuffer () const { return rgbBuffer_; }
   [[nodiscard]] std::vector<char>& getImageBuffer () { return rgbBuffer_; }
 
   /**
    * Set RGBA data. This method is only useful on the real robot.
-   * @param rgbaIn rgba
-   */
+   * @param[in] rgbaIn rgba */
   void setImageBuffer(const std::vector<char> & rgbaIn) {
     RSFATAL_IF(rgbaIn.size() != rgbBuffer_.size(), "Input data size should be "<<prop_.width <<" by "<<prop_.height << "by 4");
     rgbBuffer_ = rgbaIn;

@@ -103,7 +103,8 @@ typedef std::vector<CollisionDefinition> CollisionSet;
 /// visualization definition created by a user or URDF
 struct VisObject {
 
-  /* to add primitive
+  /**
+   * to add primitive
    * vis_shape: choices, Box, Cylinder, Sphere, Capsule
    * vis_shapeParam: params associated with shape,
    *      for sphere: {radius},
@@ -294,7 +295,8 @@ class CoordinateFrame {
 };
 
 struct CollisionBody {
-  /* to add a primitive
+  /**
+   * to add a primitive
    * col_shape: choices, Box, Cylinder, Sphere, mesh, Capsule
    * col_shapeParam: params associated with shape,
    *      for sphere: {radius},
@@ -320,7 +322,8 @@ struct CollisionBody {
     RSFATAL_IF(col_shape == Shape::Type::Mesh, "This constructor is for primitive shapes")
   }
 
-  /* to add mesh
+  /**
+   * to add mesh
    * col_meshFile: file location relative to the resource directory of the articulated system,
    * col_origin: position of the collision object
    * col_rotMat: orientation of the collision object
@@ -350,7 +353,8 @@ struct CollisionBody {
   std::string colMeshFileName;
   CollisionGroup group = 1, mask = -1;
 
-  /* col_shape: choices, Box, Cylinder, Sphere, mesh, Capsule
+  /**
+   * col_shape: choices, Box, Cylinder, Sphere, mesh, Capsule
    * col_shapeParam: params associated with shape,
    *      for sphere: {radius},
    *      for Box: {lx, ly, lz},

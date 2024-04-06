@@ -135,15 +135,13 @@ class Sensor {
    * change the measurement source
    * @param[in] source The measurement source.
    */
-  void setMeasurementSource(MeasurementSource source) {
-    source_ = source;
-  }
+  void setMeasurementSource(MeasurementSource source) { source_ = source; }
 
   /**
    * Get the id of the frame on which the sensor is attached
    * @return frame id
    */
-  size_t getFrameId() const { return frameId_; }
+  [[nodiscard]] size_t getFrameId() const { return frameId_; }
 
   /**
    * locks sensor mutex. This can be used if you use raisim in a multi-threaded environment.
