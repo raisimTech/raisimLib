@@ -161,14 +161,6 @@ static inline char *get(char *data, std::vector<T> *vec) {
   return data;
 }
 
-template<typename T>
-static inline char *set(char *data, const std::vector<std::string> &val) {
-  data = set(data, int32_t(val.size()));
-  for (auto &v : val)
-    data = set(data, v);
-  return data;
-}
-
 template<typename T, typename... Types>
 static inline char *set(char *data, const T &arg, Types... args) {
   return set(set(data, arg), args...);

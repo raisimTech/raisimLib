@@ -100,7 +100,7 @@ class InertialMeasurementUnit final : public Sensor {
    */
   void setOrientation (const Vec<4> & orientation) { quaternion_ = orientation; }
 
-  [[nodiscard]] const ImuProperties& getProperties () const { return prop_; }
+  [[nodiscard]] ImuProperties& getProperties () { return prop_; }
   [[nodiscard]] static Type getType() { return Type::IMU; }
 
   /**

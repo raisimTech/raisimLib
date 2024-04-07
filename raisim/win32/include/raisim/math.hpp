@@ -202,7 +202,7 @@ inline std::ostream &operator<<(std::ostream &os, const Mat<n,m> &mat) {
 class VecDyn: public DynamicArray {
  public:
 
-  size_t n;
+  size_t n = 0;
   typedef Eigen::Map<Eigen::Matrix<double, -1, 1> > EigenVecn;
   typedef Eigen::Map<const Eigen::Matrix<double, -1, 1> > ConstEigenVecn;
 

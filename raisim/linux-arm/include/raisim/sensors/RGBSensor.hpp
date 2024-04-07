@@ -16,6 +16,7 @@ class RGBCamera : public Sensor {
   struct RGBCameraProperties {
     std::string name;
     int width, height;
+    int xOffset = 0, yOffset = 0;
     double clipNear, clipFar;
     double hFOV;
 
@@ -55,7 +56,7 @@ class RGBCamera : public Sensor {
   /**
    * Return the camera properties
    * @return camera properties */
-  [[nodiscard]] const RGBCameraProperties& getProperties () const { return prop_; }
+  [[nodiscard]] RGBCameraProperties& getProperties () { return prop_; }
 
   /**
    * rgb image in bgra format. It is updated only if the measurement source is the visualizer and raisimUnreal is used

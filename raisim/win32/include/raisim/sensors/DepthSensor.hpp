@@ -23,25 +23,11 @@ class DepthCamera final : public Sensor {
     std::string name;
 
     int width, height;
+    int xOffset = 0, yOffset = 0;
     double clipNear, clipFar;
     double hFOV;
 
-    /// data type
-    enum class DataType : unsigned {
-      UNKNOWN = 0,
-      COORDINATE,
-      DEPTH_ARRAY,
-    } dataType = DataType::DEPTH_ARRAY;
-
-    static DataType stringToDataType(const std::string& type) {
-      if(type == "coordinates" || type == "Coordinates")
-        return DataType::COORDINATE;
-      else if (type == "depth" || type == "Depth")
-        return DataType::DEPTH_ARRAY;
-      else return DataType::UNKNOWN;
-    }
-
-    /// noise type
+    /// noise type - CURRENTLY NOT USED
     enum class NoiseType : int {
       GAUSSIAN = 0,
       UNIFORM,
@@ -62,66 +48,74 @@ class DepthCamera final : public Sensor {
 
   explicit DepthCamera(const DepthCameraProperties& prop, class ArticulatedSystem* as, const Vec<3>& pos, const Mat<3,3>& rot) :
       Sensor(prop.name, Sensor::Type::DEPTH, as, pos, rot), prop_(prop) {
-    depthArray_.resize(prop.height * prop.width);
-    threeDPoints_.resize(prop.height * prop.width);
-    precomputedRayDir_.reserve(prop.height * prop.width);
+    updateRayDirections();
+  }
+  ~DepthCamera() final = default;
+
+  /**
+   * This method must be called after sensor properties are modified. It updates the ray directions
+   */
+  void updateRayDirections() {
+    depthArray_.resize(prop_.height * prop_.width);
+    threeDPoints_.resize(prop_.height * prop_.width);
+    precomputedRayDir_.reserve(prop_.height * prop_.width);
 
     const double hRef = std::tan(prop_.hFOV * 0.5) * 2.;
     const double vRef = hRef * double(prop_.height) / double(prop_.width);
 
     for (int j = 0; j < prop_.height; j++) {
       for (int i= 0; i < prop_.width; i++) {
-        Vec<3> dirB, dirW;
-        dirB.e() << 1., -hRef * (double(i)+0.5) / double(prop_.width) + hRef * 0.5,
-            -vRef * (double(j)+0.5) / double(prop_.height) + vRef * 0.5;
+        Vec<3> dirB;
+        dirB.e() << 1., -hRef * (double(i+prop_.xOffset)+0.5) / double(prop_.width) + hRef * 0.5,
+            -vRef * (double(j+prop_.yOffset)+0.5) / double(prop_.height) + vRef * 0.5;
         precomputedRayDir_.push_back(dirB);
       }
     }
   }
-  ~DepthCamera() final = default;
 
   char* serializeProp (char* data) const final {
     return server::set(data, type_, prop_.name, prop_.width, prop_.height, prop_.clipNear, prop_.clipFar,
                        prop_.hFOV, prop_.noiseType, prop_.mean, prop_.std, prop_.format);
   }
 
-  /*
+  [[nodiscard]] static Type getType() { return Type::DEPTH; }
+
+  /**
    * This method is only useful on the real robot (and you use raisim on the real robot).
    * You can set the 3d point array manually
-   */
+   * @param[in] data The 3d point data */
   void set3DPoints (const std::vector<raisim::Vec<3>>& data) {
     for (int i = 0; i < prop_.width * prop_.height; i++)
       threeDPoints_[i] = data[i];
   }
 
-  /* This method will return garbage if it has never been updated
+  /** This method will return garbage if it has never been updated. Makes sure that the updateTimeStep is positive (negative means that it has never been updated)
    * @return depthArray
    */
   [[nodiscard]] const std::vector<float> & getDepthArray () const { return depthArray_; }
   [[nodiscard]] std::vector<float> & getDepthArray () { return depthArray_; }
 
   /**
-   * rgb image in bgra format. It is updated only if the measurement source is the visualizer and raisimUnreal is used
-   * @return The image data in char vector
-   */
+   * Set the data manually. This can be useful on the real robot
+   * @param[in] depthIn Depth values
+   * @return The image data in char vector */
   void setDepthArray(const std::vector<float> & depthIn) {
     RSFATAL_IF(depthIn.size() != depthArray_.size(), "Input data size should be "<<prop_.width <<" by "<<prop_.height);
     depthArray_ = depthIn;
   }
 
-  /* This method works only if you call ``update``(simulation)
-   * @return 3D points in the world frame
-   */
+  /** This method works only if the measurement source is Raisim
+   * @return 3D points in the world frame */
   [[nodiscard]] const std::vector<raisim::Vec<3>, AlignedAllocator<raisim::Vec<3>, 32>>& get3DPoints() const { return threeDPoints_; }
 
-  [[nodiscard]] const DepthCameraProperties& getProperties () const { return prop_; }
+  /**
+   * Get the depth camera properties. MUST call updateRayDirections() after modifying the sensor properties.
+   * @return the depth camera properties */
+  [[nodiscard]] DepthCameraProperties& getProperties () { return prop_; }
 
-  void setDataType(DepthCameraProperties::DataType type) { prop_.dataType = type; }
-
-  [[nodiscard]] static Type getType() { return Type::DEPTH; }
-
-  /*
-   * Manually update the sensor pose then measurements using Raisim ray cast function.
+  /**
+   * Update the sensor value
+   * @param[in] world the world that the sensor is in
    */
   void update (class World& world) final;
 
@@ -129,8 +123,7 @@ class DepthCamera final : public Sensor {
    * Convert the depth values to 3D coordinates
    * @param[in] depthArray input depth array to convert
    * @param[out] pointCloud output point cloud
-   * @param[in] sensorFrame If the 3D points are expressed in the sensor frame or the world frame
-   */
+   * @param[in] sensorFrame If the 3D points are expressed in the sensor frame or the world frame */
   void depthToPointCloud(const std::vector<float>& depthArray, std::vector<raisim::Vec<3>>& pointCloud, bool isInSensorFrame = false) const;
 
  private:

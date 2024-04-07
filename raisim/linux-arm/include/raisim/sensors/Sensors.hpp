@@ -135,9 +135,7 @@ class Sensor {
    * change the measurement source
    * @param[in] source The measurement source.
    */
-  void setMeasurementSource(MeasurementSource source) {
-    source_ = source;
-  }
+  void setMeasurementSource(MeasurementSource source) { source_ = source; }
 
   /**
    * Get the id of the frame on which the sensor is attached
