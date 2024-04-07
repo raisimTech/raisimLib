@@ -38,22 +38,22 @@ list(APPEND _IMPORT_CHECK_FILES_FOR_raisim::raisimMine "${_IMPORT_PREFIX}/lib/li
 # Import target "raisim::raisimODE" for configuration "DEBUG"
 set_property(TARGET raisim::raisimODE APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
 set_target_properties(raisim::raisimODE PROPERTIES
-  IMPORTED_LOCATION_DEBUG "${_IMPORT_PREFIX}/lib/libraisimODEd.so.1.1.7"
-  IMPORTED_SONAME_DEBUG "libraisimODEd.so.1.1.7"
+  IMPORTED_LOCATION_DEBUG "${_IMPORT_PREFIX}/lib/libraisimODEd.so.1.1.8"
+  IMPORTED_SONAME_DEBUG "libraisimODEd.so.1.1.8"
   )
 
 list(APPEND _IMPORT_CHECK_TARGETS raisim::raisimODE )
-list(APPEND _IMPORT_CHECK_FILES_FOR_raisim::raisimODE "${_IMPORT_PREFIX}/lib/libraisimODEd.so.1.1.7" )
+list(APPEND _IMPORT_CHECK_FILES_FOR_raisim::raisimODE "${_IMPORT_PREFIX}/lib/libraisimODEd.so.1.1.8" )
 
 # Import target "raisim::raisim" for configuration "DEBUG"
 set_property(TARGET raisim::raisim APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
 set_target_properties(raisim::raisim PROPERTIES
-  IMPORTED_LOCATION_DEBUG "${_IMPORT_PREFIX}/lib/libraisimd.so.1.1.7"
-  IMPORTED_SONAME_DEBUG "libraisimd.so.1.1.7"
+  IMPORTED_LOCATION_DEBUG "${_IMPORT_PREFIX}/lib/libraisimd.so.1.1.8"
+  IMPORTED_SONAME_DEBUG "libraisimd.so.1.1.8"
   )
 
 list(APPEND _IMPORT_CHECK_TARGETS raisim::raisim )
-list(APPEND _IMPORT_CHECK_FILES_FOR_raisim::raisim "${_IMPORT_PREFIX}/lib/libraisimd.so.1.1.7" )
+list(APPEND _IMPORT_CHECK_FILES_FOR_raisim::raisim "${_IMPORT_PREFIX}/lib/libraisimd.so.1.1.8" )
 
 # Commands beyond this point should not need to know the version.
 set(CMAKE_IMPORT_FILE_VERSION)

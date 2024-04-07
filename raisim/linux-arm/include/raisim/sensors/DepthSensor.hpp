@@ -23,6 +23,7 @@ class DepthCamera final : public Sensor {
     std::string name;
 
     int width, height;
+    int xOffset = 0, yOffset = 0;
     double clipNear, clipFar;
     double hFOV;
 
@@ -47,9 +48,17 @@ class DepthCamera final : public Sensor {
 
   explicit DepthCamera(const DepthCameraProperties& prop, class ArticulatedSystem* as, const Vec<3>& pos, const Mat<3,3>& rot) :
       Sensor(prop.name, Sensor::Type::DEPTH, as, pos, rot), prop_(prop) {
-    depthArray_.resize(prop.height * prop.width);
-    threeDPoints_.resize(prop.height * prop.width);
-    precomputedRayDir_.reserve(prop.height * prop.width);
+    updateRayDirections();
+  }
+  ~DepthCamera() final = default;
+
+  /**
+   * This method must be called after sensor properties are modified. It updates the ray directions
+   */
+  void updateRayDirections() {
+    depthArray_.resize(prop_.height * prop_.width);
+    threeDPoints_.resize(prop_.height * prop_.width);
+    precomputedRayDir_.reserve(prop_.height * prop_.width);
 
     const double hRef = std::tan(prop_.hFOV * 0.5) * 2.;
     const double vRef = hRef * double(prop_.height) / double(prop_.width);
@@ -57,13 +66,12 @@ class DepthCamera final : public Sensor {
     for (int j = 0; j < prop_.height; j++) {
       for (int i= 0; i < prop_.width; i++) {
         Vec<3> dirB;
-        dirB.e() << 1., -hRef * (double(i)+0.5) / double(prop_.width) + hRef * 0.5,
-            -vRef * (double(j)+0.5) / double(prop_.height) + vRef * 0.5;
+        dirB.e() << 1., -hRef * (double(i+prop_.xOffset)+0.5) / double(prop_.width) + hRef * 0.5,
+            -vRef * (double(j+prop_.yOffset)+0.5) / double(prop_.height) + vRef * 0.5;
         precomputedRayDir_.push_back(dirB);
       }
     }
   }
-  ~DepthCamera() final = default;
 
   char* serializeProp (char* data) const final {
     return server::set(data, type_, prop_.name, prop_.width, prop_.height, prop_.clipNear, prop_.clipFar,
@@ -101,9 +109,9 @@ class DepthCamera final : public Sensor {
   [[nodiscard]] const std::vector<raisim::Vec<3>, AlignedAllocator<raisim::Vec<3>, 32>>& get3DPoints() const { return threeDPoints_; }
 
   /**
-   * Get the depth camera properties
+   * Get the depth camera properties. MUST call updateRayDirections() after modifying the sensor properties.
    * @return the depth camera properties */
-  [[nodiscard]] const DepthCameraProperties& getProperties () const { return prop_; }
+  [[nodiscard]] DepthCameraProperties& getProperties () { return prop_; }
 
   /**
    * Update the sensor value
