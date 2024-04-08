@@ -601,11 +601,13 @@ class World {
   /**
    * Changes the contact solver parameter.
    * For details, please check "Hwangbo, Jemin, Joonho Lee, and Marco Hutter. "Per-contact iteration method for solving contact dynamics." IEEE Robotics and Automation Letters 3.2 (2018): 895-902."
-   * @param[in] alpha_init how aggressive the solver is initially
-   * @param[in] alpha_min how aggressive the solver is after an infinite number of solver iterations
-   * @param[in] alpha_decay how fast alpha converges from alpha_init to alpha_min
-   * @param[in] threshold error threshold for termination
-   * @param[in] maxIter the maximum number of iterations allowed */
+   * We found that the three default alpha values are always the best. So they are hardcoded now. So only the maxIter and threshold will affect the simulation.
+   * The three input alpha values will be ignored
+   * @param[in] alpha_init NOT_USED_ANYMORE (default: 1.0) how aggressive the solver is initially
+   * @param[in] alpha_min NOT_USED_ANYMORE (default: 1.0) how aggressive the solver is after an infinite number of solver iterations
+   * @param[in] alpha_decay NOT_USED_ANYMORE (default: 1.0) how fast alpha converges from alpha_init to alpha_min
+   * @param[in] threshold (default: 1e-8) error threshold for termination
+   * @param[in] maxIter (default: 150) the maximum number of iterations allowed */
   void setContactSolverParam(double alpha_init, double alpha_min, double alpha_decay, int maxIter, double threshold);
 
   /**
@@ -651,6 +653,16 @@ class World {
    */
   [[nodiscard]] const MaterialPairProperties& getMaterialPairProperties (const std::string& mat1, const std::string& mat2) const {
     return mat_.getMaterialPairProp(mat1, mat2); }
+
+  /**
+   * locks world mutex. This can be used if you use raisim in a multi-threaded environment.
+   */
+  void lockMutex() { worldMutex_.lock(); }
+
+  /**
+   * unlock world mutex. This can be used if you use raisim in a multi-threaded environment.
+   */
+  void unlockMutex() { worldMutex_.unlock(); }
 
 protected:
   void init();
@@ -708,6 +720,9 @@ protected:
   // ray test
   dGeomID ray_;
   RayCollisionList rayContact_;
+
+  // mutex
+  std::mutex worldMutex_;
 
   // the location of the license file
   RAISIM_STATIC_API static std::string activationKey_;

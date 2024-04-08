@@ -261,6 +261,7 @@ class ArticulatedSystem : public Object {
   friend class raisim::urdf::LoadFromURDF2;
   friend class raisim::mjcf::LoadFromMjcf;
   friend class raisim::InertialMeasurementUnit;
+  friend class raisim::Sensor;
 
  public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -1349,7 +1350,7 @@ class ArticulatedSystem : public Object {
 
   /**
    * set the base orientation using a raisim quaternion (i.e., Vec<4>)
-   * @param[in] rot orientation of the base */
+   * @param[in] quat orientation of the base */
     void setBaseOrientation(const Vec<4> &quat);
 
   /**
@@ -1509,16 +1510,23 @@ class ArticulatedSystem : public Object {
    * For revolute and prisimatic joints, the joint limit is {lower, upper}
    * For spherical joint, the joint limit is {angle, NOT_USED}
    * @return jointLimits joint limits*/
-  const std::vector<raisim::Vec<2>> &getJointLimits() {
+  const std::vector<raisim::Vec<2>> &getJointLimits() const {
     return jointLimits_;
   }
 
   /**
    * get the joint velocity limits
    * @return jointLimits joint velocity limits*/
-    const VecDyn& getJointVelocityLimits() {
+    const VecDyn& getJointVelocityLimits() const {
       return velLimits_;
     }
+
+  /**
+    * set the joint velocity limits
+    * @param[in] velLimits joint velocity limits*/
+  void setJointVelocityLimits(const VecDyn& velLimits) {
+    velLimits_ = velLimits;
+  }
 
   /**
    * Clears all external forces and torques */
@@ -1564,11 +1572,11 @@ class ArticulatedSystem : public Object {
   /**
    * @return sensors on the robot
    */
-  [[nodiscard]] std::unordered_map<std::string, std::shared_ptr<Sensor>>& getSensors() { return sensors_; }
-  [[nodiscard]] const std::unordered_map<std::string, std::shared_ptr<Sensor>>& getSensors() const { return sensors_; }
+  [[nodiscard]] std::unordered_map<std::string, std::shared_ptr<Sensor>, std::hash<std::string>, std::equal_to<std::string>, AlignedAllocator<std::pair<const std::string, std::shared_ptr<Sensor>>,32>>& getSensors() { return sensors_; }
+  [[nodiscard]] const std::unordered_map<std::string, std::shared_ptr<Sensor>, std::hash<std::string>, std::equal_to<std::string>, AlignedAllocator<std::pair<const std::string, std::shared_ptr<Sensor>>,32>>& getSensors() const { return sensors_; }
 
   // not recommended for users. only for developers
-  void addConstraints(const std::vector<PinConstraintDefinition>& pinDef);
+  void addConstraints(const std::vector<PinConstraintDefinition>& pinDef, const VecDyn& pinConstraintNominalConfig);
   void initializeConstraints();
 
   /**
@@ -1587,7 +1595,7 @@ class ArticulatedSystem : public Object {
   /**
    * YOU MUST CALL raisim::ArticulatedSystem::setComputeInverseDynamics(true) before calling this method.
    * This method returns the force at the specified joint
-   * @param jointId[in] the joint id
+   * @param[in] jointId the joint id
    * @return force at the joint
    */
   [[nodiscard]] const raisim::Vec<3>& getForceAtJointInWorldFrame(size_t jointId) const { return forceAtJoint_W[jointId]; }
@@ -1595,10 +1603,23 @@ class ArticulatedSystem : public Object {
   /**
    * YOU MUST CALL raisim::ArticulatedSystem::setComputeInverseDynamics(true) before calling this method.
    * This method returns the torque at the specified joint
-   * @param jointId[in] the joint id
+   * @param[in] jointId the joint id
    * @return torque at the joint
    */
   [[nodiscard]] const raisim::Vec<3>& getTorqueAtJointInWorldFrame(size_t jointId) const { return torqueAtJoint_W[jointId]; }
+
+
+  /**
+   * Default is 1. This number limits the number of possible contacts between two bodies.
+   * @return the number of possible contacts between two bodies
+   */
+  [[nodiscard]] int getAllowedNumberOfInternalContactsBetweenTwoBodies() const { return allowedNumberOfInternalContactsBetweenTwoBodies; }
+
+  /**
+   * Default is 1. This sets the number of possible contacts between two bodies
+   * @param count
+   */
+  void setAllowedNumberOfInternalContactsBetweenTwoBodies(int count) { allowedNumberOfInternalContactsBetweenTwoBodies = count; }
 
  protected:
 
@@ -1623,7 +1644,7 @@ class ArticulatedSystem : public Object {
   void preContactSolverUpdate2(const Vec<3> &gravity, double dt, contact::ContactProblems& problems) final;
   void integrateWithoutContact(const Vec<3> &gravity, double dt);
 
-  void integrate(double dt, const World* world) final;
+  void integrate(double dt, World& world) final;
 
   void addContactPointVel(size_t pointId, Vec<3> &vel) final;
   void subContactPointVel(size_t pointId, Vec<3> &vel) final;
@@ -1635,7 +1656,7 @@ class ArticulatedSystem : public Object {
 
   void updateTimeStepIfNecessary(double dt) final;
 
-  void updateSensorsIfNecessary(const raisim::World* world) final;
+  void updateSensorsIfNecessary(class raisim::World& world) final;
 
   inline void jacoSub(const raisim::SparseJacobian &jaco1, raisim::SparseJacobian &jaco, bool isFloatingBase);
 
@@ -1645,9 +1666,11 @@ class ArticulatedSystem : public Object {
    * Recursive Newton Euler algorithm computes inverse dynamics of the system.
    * In other words, it computes the generalized force that results in the given given generalized acceleration.
    * After calling this method, you can also call below methods
-   * @param gravity[in] The gravitational acceleration of the world (raisim::World::getGravity())
-   * @param ga[in] The generalized acceleration
-   * @param b[out] The generalized force
+   * @param [in] gravity The gravitational acceleration of the world (raisim::World::getGravity())
+   * @param [in] includeExternalForces if the external forces should be included in RNE computation
+   * @param [in] updateJointForces if internal forces are joints should be updated
+   * @param [in] ga The generalized acceleration
+   * @param [out] b The generalized force
    */
   void recursiveNewtonEuler(const Vec<3> &gravity, bool includeExternalForces, bool updateJointForces, const VecDyn& ga, VecDyn &b);
 
@@ -1761,6 +1784,7 @@ class ArticulatedSystem : public Object {
   raisim::CollisionSet collisionBodies;
   std::vector<VisObject> visColObj, visObj;
   ArticulatedSystemOption options_;
+  int allowedNumberOfInternalContactsBetweenTwoBodies = 1;
 
  private:
   size_t nbody, dof = 0, gcDim = 0;
@@ -1799,6 +1823,7 @@ class ArticulatedSystem : public Object {
   // constraints
   std::vector<PinConstraint> pinConstraints_;
   std::vector<PinConstraintDefinition> pinDef_;
+  VecDyn pinConstraintNominalConfig_;
 
   /// ABA
   Mat<6,6> MaInv_base;
@@ -1835,7 +1860,7 @@ class ArticulatedSystem : public Object {
   std::vector<AbaData3, AlignedAllocator<AbaData3, 32>> ad3_;
 
   /// sensors
-  std::unordered_map<std::string, std::shared_ptr<Sensor>> sensors_;
+  std::unordered_map<std::string, std::shared_ptr<Sensor>, std::hash<std::string>, std::equal_to<std::string>, AlignedAllocator<std::pair<const std::string, std::shared_ptr<Sensor>>,32>> sensors_;
 };
 }
 
