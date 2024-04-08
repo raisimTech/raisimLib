@@ -92,10 +92,10 @@ class BisectionContactSolver {
 
   int getLoopCounter() const { return loopCounter_; }
 
-  const std::vector<double>& getErrorHistory() const { return error_; }
+//  const std::vector<double>& getErrorHistory() const { return error_; }
 
   SolverConfiguration& getConfig() { return config_; }
-  const SolverConfiguration& getConfig() const { return config_; }
+  [[nodiscard]] const SolverConfiguration& getConfig() const { return config_; }
 
  private:
   int loopCounter_ = 0;

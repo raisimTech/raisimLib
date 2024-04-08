@@ -31,7 +31,7 @@ These algorithms do not compute the mass matrix nor its inverse (they have n^2 e
 These properties are in fact not necessary to compute any contact related properties that the RaiSim contact solver needs.
 Consequently, **RaiSim (>v1.1) computes the whole forward dynamics of an articulated system at O(n) including contact related properties**.
 We cannot share exactly what these algorithms are and what they compute.
-They are not published.
+No materials related to this algorithm is published.
 
 
 What matters to performance
@@ -76,7 +76,7 @@ The current best single-thread cpu (for RaiSim at least) is Apple's M2.
 The ANYmal simulation without contacts runs at 380 kHz on M1.
 
 Linux and OSX are the best for high-speed simulation applications.
-In Windows, you get less than half the performance because it is compiled with MSVC, which is bad optimizing math operations.
+In Windows, you get less than half the performance because it is compiled with MSVC, which is bad at optimizing math operations.
 
 The computational speed of **4** becomes very significant when there are more than 10 coupled contact points.
 Therefore, it is important to check if there are unnecessary contact points.

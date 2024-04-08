@@ -7,6 +7,7 @@
 #define RAISIM_INCLUDE_RAISIM_SENSORS_HPP_
 
 #include <string>
+#include <mutex>
 #include "Eigen/Core"
 #include "raisim/math.hpp"
 #include "raisim/helper.hpp"
@@ -16,9 +17,11 @@
 namespace raisim {
 
 class Child;
+class ArticulatedSystem;
 
 class Sensor {
   friend class raisim::Child;
+  friend class raisim::ArticulatedSystem;
 
  public:
   enum class Type : int {
@@ -87,6 +90,7 @@ class Sensor {
   [[nodiscard]] double getUpdateRate() const { return updateRate_; }
 
   /**
+   * This method will return negative value if it has never been updated
    * @return The time when the last sensor measurement was recorded
    */
   [[nodiscard]] double getUpdateTimeStamp() const { return updateTimeStamp_; }
@@ -131,25 +135,27 @@ class Sensor {
    * change the measurement source
    * @param[in] source The measurement source.
    */
-  void setMeasurementSource(MeasurementSource source) {
-    source_ = source;
-  }
-
-  /**
-   * Update the sensor measurement using raisim if possible
-   * @param[in] world the world object
-   */
-  virtual void update (class World& world) = 0;
+  void setMeasurementSource(MeasurementSource source) { source_ = source; }
 
   /**
    * Get the id of the frame on which the sensor is attached
    * @return frame id
    */
-  size_t getFrameId() {
-    return frameId_;
-  }
+  [[nodiscard]] size_t getFrameId() const { return frameId_; }
+
+  /**
+   * locks sensor mutex. This can be used if you use raisim in a multi-threaded environment.
+   */
+  void lockMutex() { mutex_.lock(); }
+
+  /**
+   * unlock sensor mutex. This can be used if you use raisim in a multi-threaded environment.
+   */
+  void unlockMutex() { mutex_.unlock(); }
 
  protected:
+
+  virtual void update (class World& world) = 0;
   void setFramePosition(const Vec<3>& pos) { posFrame_ = pos; }
   void setFrameRotation(const Mat<3,3>& rot) { rotFrame_ = rot; }
   void setFrameId(size_t id) { frameId_ = id; }
@@ -164,6 +170,7 @@ class Sensor {
 
  private:
   std::string name_;
+  std::mutex mutex_;
   double updateRate_ = 1., updateTimeStamp_ = -1.;
 };
 
