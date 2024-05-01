@@ -51,10 +51,20 @@ int main(int argc, char **argv) {
   auto rgbCamera2 = anymal->getSensor<raisim::RGBCamera>("depth_camera_rear_camera_parent:color");
   rgbCamera2->setMeasurementSource(raisim::Sensor::MeasurementSource::VISUALIZER);
   auto imu = anymal->getSensor<raisim::InertialMeasurementUnit>("depth_camera_front_camera_parent:imu");
+  auto lidar = anymal->getSensor<raisim::SpinningLidar>("lidar_link:lidar");
 
   auto dummySphere1 = server.addVisualSphere("dummy1", 0.05, 1, 0, 0, 1);
   auto dummySphere2 = server.addVisualSphere("dummy2", 0.05, 1, 0, 0, 1);
   std::vector<raisim::Vec<3>> pointCloudFromConversion;
+
+  /// this method should be called before server launch
+  auto scans = server.addInstancedVisuals("spinning lidar",
+                                          raisim::Shape::Box,
+                                          {0.02, 0.02, 0.02},
+                                          {1, 0, 0, 1},
+                                          {0, 1, 0, 1});
+  scans->resize(3000);
+  int scanCounter = 0;
 
   server.launchServer();
   for (int k = 0; k < loopN; k++) {
@@ -69,7 +79,19 @@ int main(int argc, char **argv) {
 
     dummySphere1->setPosition(posFromRaisim[0].e()); // this doesn't work if the update is done by Raisim Unreal
     dummySphere2->setPosition(pointCloudFromConversion[400].e());
-    std::cout<<"Imu orientation\n" << imu->getOrientation()<<std::endl;
+
+    {
+      /// lidar processing      
+      auto& pos = lidar->getPosition();
+      auto& ori = lidar->getOrientation();
+      auto& scan = lidar->getScan();
+
+      for (auto& point : scan) {
+        raisim::Vec<3> scanPos = pos + (ori * point);
+        scans->setPosition(scanCounter++, scanPos.e());
+        scanCounter = scanCounter % 3000;
+      }
+    }
   }
 
   server.killServer();

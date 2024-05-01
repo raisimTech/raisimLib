@@ -446,6 +446,10 @@ class MatDyn: public DynamicArray {
     for (size_t i = 0; i < n * m; i++) v[i] = 0;
   }
 
+  inline void setConstant(double cValue) {
+    for (size_t i = 0; i < n * m; i++) v[i] = cValue;
+  }
+
   inline double sum() const {
     double summ = 0;
     for (size_t j = 0; j < m; j++)
