@@ -1,1 +1,21 @@
 error logs 
+System.AggregateException: One or more errors occurred. (Unable to read data from the transport connection: Connection reset by peer.) ---> System.IO.IOException: Unable to read data from the transport connection: Connection reset by peer. ---> System.Net.Sockets.SocketException: Connection reset by peer
+   --- End of inner exception stack trace ---
+  at System.Net.Sockets.Socket+AwaitableSocketAsyncEventArgs.ThrowException (System.Net.Sockets.SocketError error) [0x00007] in <9636e0d8e384411e9255faf591f21085>:0 
+  at System.Net.Sockets.Socket+AwaitableSocketAsyncEventArgs.GetResult (System.Int16 token) [0x00022] in <9636e0d8e384411e9255faf591f21085>:0 
+  at System.Threading.Tasks.ValueTask`1+ValueTaskSourceAsTask+<>c[TResult].<.cctor>b__4_0 (System.Object state) [0x00030] in <c46c80684ad14b639dc9b13c1642b8bb>:0 
+   --- End of inner exception stack trace ---
+  at System.Threading.Tasks.Task.ThrowIfExceptional (System.Boolean includeTaskCanceledExceptions) [0x00011] in <c46c80684ad14b639dc9b13c1642b8bb>:0 
+  at System.Threading.Tasks.Task`1[TResult].GetResultCore (System.Boolean waitCompletionNotification) [0x0002b] in <c46c80684ad14b639dc9b13c1642b8bb>:0 
+  at System.Threading.Tasks.Task`1[TResult].get_Result () [0x0000f] in <c46c80684ad14b639dc9b13c1642b8bb>:0 
+  at raisimUnity.TcpHelper.ReadData () [0x00044] in <e22ed8bfc97a4ce2b2114543e6d06173>:0 
+  at raisimUnity.RsUnityRemote.ReadAndCheckServer (raisimUnity.ClientMessageType type) [0x000a0] in <e22ed8bfc97a4ce2b2114543e6d06173>:0 
+  at raisimUnity.RsUnityRemote.Update () [0x00023] in <e22ed8bfc97a4ce2b2114543e6d06173>:0 
+---> (Inner Exception #0) System.IO.IOException: Unable to read data from the transport connection: Connection reset by peer. ---> System.Net.Sockets.SocketException: Connection reset by peer
+   --- End of inner exception stack trace ---
+  at System.Net.Sockets.Socket+AwaitableSocketAsyncEventArgs.ThrowException (System.Net.Sockets.SocketError error) [0x00007] in <9636e0d8e384411e9255faf591f21085>:0 
+  at System.Net.Sockets.Socket+AwaitableSocketAsyncEventArgs.GetResult (System.Int16 token) [0x00022] in <9636e0d8e384411e9255faf591f21085>:0 
+  at System.Threading.Tasks.ValueTask`1+ValueTaskSourceAsTask+<>c[TResult].<.cctor>b__4_0 (System.Object state) [0x00030] in <c46c80684ad14b639dc9b13c1642b8bb>:0 <---
+
+ 
+
