@@ -16,7 +16,7 @@ namespace raisim {
 class SpinningLidar : public Sensor {
  public:
   struct SpinningLidarProperties {
-    std::string name;    
+    std::string name, model;    
     int yawSamples = 1, pitchSamples = 1;
     double pitchMinAngle = 0, pitchMaxAngle = 0;
     double rangeMin = 0, rangeMax = 100.0;
@@ -56,6 +56,8 @@ class SpinningLidar : public Sensor {
    * update lidar measurement
    */
   void update (class World& world) final;
+
+  const std::string& getModelName () { prop_.model; }
 
  private:
   double timeStamp_;
