@@ -50,6 +50,14 @@
             </geometry>
         </self_filter>
     </link>
+        
+    <joint name="base_to_lidar" type="fixed">
+        <parent link="base"/>
+        <child link="lidar_link"/>
+        <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.08"/>
+    </joint>
+    <link name="lidar_link" sensor="ouster1-64.xml"/>
+
     <!-- Fixed joint to add dummy inertia link -->
     <joint name="base_to_base_inertia" type="fixed">
         <parent link="base"/>
@@ -1597,4 +1605,3 @@
         </inertial>
     </link>
 </robot>
-

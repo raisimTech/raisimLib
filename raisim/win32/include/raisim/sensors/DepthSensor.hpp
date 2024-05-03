@@ -47,7 +47,7 @@ class DepthCamera final : public Sensor {
   };
 
   explicit DepthCamera(const DepthCameraProperties& prop, class ArticulatedSystem* as, const Vec<3>& pos, const Mat<3,3>& rot) :
-      Sensor(prop.name, Sensor::Type::DEPTH, as, pos, rot), prop_(prop) {
+      Sensor(prop.name, Sensor::Type::DEPTH, as, pos, rot, MeasurementSource::VISUALIZER), prop_(prop) {
     updateRayDirections();
   }
   ~DepthCamera() final = default;

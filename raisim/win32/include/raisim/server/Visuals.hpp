@@ -392,6 +392,12 @@ struct InstancedVisuals {
   void setOrientation(size_t id, const Eigen::Vector4d &ori) { data[id].quat = ori; }
 
   /**
+   * @param[in] id instance id.
+   * @param[in] scale scale in Eigen::Vector3d.
+   * set the scale of the specified instance of the visual object. */
+  void setScale(size_t id, const Eigen::Vector3d &scale) { data[id].scale = scale; }
+
+  /**
    * @param[in] color1 first color.
    * @param[in] color2 second color.
    * The color of the instance is interpolated between the two colors.

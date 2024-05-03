@@ -41,7 +41,7 @@ class RGBCamera : public Sensor {
   };
 
   RGBCamera(RGBCameraProperties& prop, class ArticulatedSystem* as, const Vec<3>& pos, const Mat<3,3>& rot) :
-      Sensor(prop.name, Type::RGB, as, pos, rot), prop_(prop) {
+      Sensor(prop.name, Type::RGB, as, pos, rot, MeasurementSource::VISUALIZER), prop_(prop) {
     rgbBuffer_.resize(prop.height * prop.width * 4);
   }
 
@@ -54,7 +54,7 @@ class RGBCamera : public Sensor {
   [[nodiscard]] static Type getType() { return Type::RGB; }
 
   /**
-   * Return the camera properties
+   * Return the camera properties. Any updates to the properties should be made before connection to the server
    * @return camera properties */
   [[nodiscard]] RGBCameraProperties& getProperties () { return prop_; }
 

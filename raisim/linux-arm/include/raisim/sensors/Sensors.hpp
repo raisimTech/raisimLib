@@ -28,7 +28,8 @@ class Sensor {
     UNKNOWN = 0,
     RGB,
     DEPTH,
-    IMU
+    IMU,
+    SPINNING_LIDAR
   };
 
   enum class MeasurementSource : int {
@@ -37,8 +38,8 @@ class Sensor {
     MANUAL // user manually update the measurements whenever needed.
   };
 
-  Sensor (std::string name, Type type, class ArticulatedSystem* as, const Vec<3>& pos, const Mat<3,3>& rot) :
-      name_(std::move(name)), type_(type), as_(as), posB_(pos), rotB_(rot), posFrame_(pos), rotFrame_(rot) { }
+  Sensor (std::string name, Type type, class ArticulatedSystem* as, const Vec<3>& pos, const Mat<3,3>& rot, MeasurementSource source) :
+      name_(std::move(name)), type_(type), as_(as), posB_(pos), rotB_(rot), posFrame_(pos), rotFrame_(rot), source_(source) { }
   virtual ~Sensor() = default;
 
   /**
@@ -180,6 +181,8 @@ static inline std::string toString(Sensor::Type type) {
       return "depth";
     case Sensor::Type::RGB:
       return "rgb";
+    case Sensor::Type::SPINNING_LIDAR:
+      return "spinning_lidar";
     default:
       return "unknown";
   }

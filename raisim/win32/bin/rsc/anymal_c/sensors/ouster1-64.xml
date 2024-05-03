@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<sensor_set name="os1_64">
+    <origin xyz="0 0 0.008"/>
+    <link>
+        <visual>
+            <geometry>
+                <box size="0.112 0.112 0.016" />
+            </geometry>
+            <material name="silver">
+                <color rgba="0.5 0.5 0.5 1.0" />
+            </material>
+        </visual>
+        <collision>
+            <geometry>
+              <box size="0.112 0.112 0.016" />
+            </geometry>
+        </collision>
+
+        <inertial>
+            <mass value="0.33" />
+            <origin xyz="0 0 0.0785" rpy="0 0 0" />
+            <inertia ixx="0.000241148" ixy="0" ixz="0"
+                iyy="0.000241148" iyz="0" izz="0.000264" />
+        </inertial>
+        <collision name="base_collision">
+            <origin xyz="0 0 0.0785" rpy="0 0 0" />
+            <geometry>
+                <cylinder radius="0.04" length="0.073" />
+            </geometry>
+        </collision>
+        <visual>
+            <origin xyz="0 0 0.042" rpy="0 0 1.5707" />
+            <geometry>
+                <mesh filename="package://ouster_description/meshes/os1_64.dae" />
+            </geometry>
+        </visual>
+
+        <sensor name="lidar" type="spinning_lidar" update_rate="100">
+            <origin xyz="0.006253 -0.011775 0.049645" rpy="0 0 0" />
+            <model name="ouster os1"/>
+            <yaw samples="512"/>
+            <pitch samples="64" min_angle="-0.2897247" max_angle="0.2897247"/>
+            <!-- clockwise or counter-clockwise (everything other than clockwise is counter-clockwise)-->
+            <spin direction="clockwise" rate = "10"/> 
+            <range min="0.8" max="40"/>
+        </sensor>
+
+        <sensor name="imu" type="imu" update_rate="10">
+            <origin xyz="0.006253 -0.011775 0.049645" rpy="0 0 0" />
+            <limit acc_limit="50" ang_vel_limit="40"/>
+        </sensor>
+    </link>
+</sensor_set>
