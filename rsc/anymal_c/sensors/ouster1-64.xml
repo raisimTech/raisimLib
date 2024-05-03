@@ -38,7 +38,7 @@
 
         <sensor name="lidar" type="spinning_lidar" update_rate="100">
             <origin xyz="0.006253 -0.011775 0.049645" rpy="0 0 0" />
-            <model name="ouster os1">
+            <model name="ouster os1"/>
             <yaw samples="512"/>
             <pitch samples="64" min_angle="-0.2897247" max_angle="0.2897247"/>
             <!-- clockwise or counter-clockwise (everything other than clockwise is counter-clockwise)-->
