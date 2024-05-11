@@ -1504,7 +1504,7 @@ class RaisimServer final {
               break;
           }
           if (ob->getObjectType() == HALFSPACE || ob->getObjectType() == HEIGHTMAP)
-            data_ = set(data_, Masking::VIS_OBJ, int32_t(0));
+            data_ = set(data_, Masking::SB_OBJ, int32_t(0));
           else
             data_ = set(data_, Masking::SB_OBJ, int32_t(0));
         }
@@ -1986,7 +1986,7 @@ class RaisimServer final {
   int screenShotWidth_, screenShotHeight_;
 
   // version
-  constexpr static int version_ = 10017;
+  constexpr static int version_ = 10018;
 
   // visual tag counter
   uint32_t visTagCounter = 30;

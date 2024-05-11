@@ -39,7 +39,7 @@ class InertialMeasurementUnit final : public Sensor {
   };
 
   explicit InertialMeasurementUnit(const ImuProperties& prop, class ArticulatedSystem* as, const Vec<3>& pos, const Mat<3,3>& rot) :
-      Sensor(prop.name, Sensor::Type::IMU, as, pos, rot), prop_(prop) {
+      Sensor(prop.name, Sensor::Type::IMU, as, pos, rot, MeasurementSource::RAISIM), prop_(prop) {
     linearAcc_.setZero();
     angularVel_.setZero();
     quaternion_.setZero();
