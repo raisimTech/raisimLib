@@ -27,6 +27,7 @@
 #include "raisim/sensors/RGBSensor.hpp"
 #include "raisim/sensors/DepthSensor.hpp"
 #include "raisim/sensors/InertialMeasurementUnit.hpp"
+#include "raisim/sensors/SpinningLidar.hpp"
 
 
 namespace raisim {

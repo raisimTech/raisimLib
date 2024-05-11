@@ -1,4 +1,4 @@
-import os
+fimport os
 import numpy as np
 import raisimpy as raisim
 import time
