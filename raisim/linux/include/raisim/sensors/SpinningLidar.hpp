@@ -57,7 +57,7 @@ class SpinningLidar : public Sensor {
    */
   void update (class World& world) final;
 
-  const std::string& getModelName () { prop_.model; }
+  const std::string& getModelName () { return prop_.model; }
 
  private:
   double timeStamp_;
