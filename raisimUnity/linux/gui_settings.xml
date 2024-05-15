@@ -1,0 +1,9 @@
+<root>
+  <auto_connect value="true"/>
+  <ip_address value="127.0.0.1"/>
+  <ip_port value="8080"/>
+  <target_bitrate value="50"/>
+  <encoder value="h264_nvenc"/>
+  <!--<resource_directory value="C:\Users\jemin\source\repos\raisimLib\raisim\win32\mt_release"/>-->
+  <!--<resource_directory value="C:\Users\jemin\source\repos\raisimLib\raisim\win32"/>-->
+</root>
