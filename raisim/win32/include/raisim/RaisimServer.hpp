@@ -832,9 +832,31 @@ class RaisimServer final {
    * add a polyline without physics */
   inline PolyLine *addVisualPolyLine(const std::string &name) {
     RSFATAL_IF(polyLines_.find(name) != polyLines_.end(), "Duplicated polyline object name: " + name)
+    updateVisualConfig();
     polyLines_[name] = new PolyLine();
     polyLines_[name]->name = name;
     return polyLines_[name];
+  }
+
+  /**
+   * @param[in] name the name of the point cloud
+   * @return the point cloud pointer */
+  inline PointCloud *addPointCloud(const std::string name) {
+    RSFATAL_IF(pointClouds_.find(name) != pointClouds_.end(), "Duplicated polyline object name: " + name)
+    updateVisualConfig();
+    pointClouds_[name] = new PointCloud();
+    pointClouds_[name]->name = name;
+    return pointClouds_[name];
+  }
+
+  /**
+   * @param[in] name the name of the point cloud to be removed
+   * remove an existing point cloud */
+  inline void removePointCloud(const std::string &name) {
+    if (pointClouds_.find(name) == pointClouds_.end()) RSFATAL("Point cloud with name \"" + name + "\" doesn't exist.")
+    updateVisualConfig();
+    delete pointClouds_[name];
+    pointClouds_.erase(name);
   }
 
   /**
@@ -1778,6 +1800,13 @@ class RaisimServer final {
     }
     set(contactSizeLocation, contactIncrement);
 
+    // point clouds
+    data_ = set(data_, int32_t(pointClouds_.size()));
+    for (auto& pc : pointClouds_) {
+      if(pc.second->visualTag == 0) pc.second->visualTag = visTagCounter++;
+      data_ = pc.second->serialize(data_);    
+    }
+
     // object information
     auto found = std::find_if(world_->getObjList().begin(), world_->getObjList().end(),
                               [this](const Object * ptr) { return ptr->visualTag == this->objectId_; });
@@ -1986,7 +2015,7 @@ class RaisimServer final {
   int screenShotWidth_, screenShotHeight_;
 
   // version
-  constexpr static int version_ = 10018;
+  constexpr static int version_ = 10019;
 
   // visual tag counter
   uint32_t visTagCounter = 30;
@@ -2001,6 +2030,7 @@ class RaisimServer final {
   std::unordered_map<std::string, Visuals *> visuals_;
   std::unordered_map<std::string, InstancedVisuals *> instancedvisuals_;
   std::unordered_map<std::string, PolyLine *> polyLines_;
+  std::unordered_map<std::string, PointCloud *> pointClouds_;
   std::unordered_map<std::string, ArticulatedSystemVisual *> visualAs_;
   std::unordered_map<std::string, HeightMapVisual *> visualHm_;
   std::map<std::string, Chart *> charts_;

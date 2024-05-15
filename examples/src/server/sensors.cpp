@@ -58,12 +58,10 @@ int main(int argc, char **argv) {
   std::vector<raisim::Vec<3>> pointCloudFromConversion;
 
   /// this method should be called before server launch
-  auto scans = server.addInstancedVisuals("spinning lidar",
-                                          raisim::Shape::Box,
-                                          {0.02, 0.02, 0.02},
-                                          {1, 0, 0, 1},
-                                          {0, 1, 0, 1});
-  scans->resize(3000);
+  auto scans = server.addPointCloud("spinning lidar");
+  RSWARN("Point cloud visualization is only available in RaisimUnreal");
+  scans->pointSize = 0.05f;
+  scans->resize(512*64);
   int scanCounter = 0;
 
   server.launchServer();
@@ -88,8 +86,8 @@ int main(int argc, char **argv) {
 
       for (auto& point : scan) {
         raisim::Vec<3> scanPos = pos + (ori * point);
-        scans->setPosition(scanCounter++, scanPos.e());
-        scanCounter = scanCounter % 3000;
+        scans->position[scanCounter++] = scanPos;
+        scanCounter = scanCounter % 512*64;
       }
     }
   }
