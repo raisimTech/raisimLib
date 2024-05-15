@@ -465,6 +465,46 @@ struct InstancedVisuals {
   std::mutex mutex_;
 };
 
+
+struct PointCloud {
+  friend class raisim::RaisimServer;  
+
+  char* serialize (char* data) const {
+    RSFATAL_IF(position.size() != color.size(), "PointCloud: position and color should have the same dimension")
+    data = server::set(data, visualTag, pointSize, int32_t(position.size()));
+    for (int i=0; i<position.size(); i++)
+      data = server::setInFloat(data, position[i], color[i]);
+
+    return data;
+  }
+  
+  /**
+   * locks InstancedvisualObject mutex. This can be used if you use raisim in a multi-threaded environment.
+   */
+  void lockMutex() { mutex_.lock(); }
+
+  /**
+   * unlock InstancedvisualObject mutex. This can be used if you use raisim in a multi-threaded environment.
+   */
+  void unlockMutex() { mutex_.unlock(); }
+
+  /**
+   * resize both position and color
+   * @param[in] size size
+   */
+  void resize(size_t size) {
+    position.resize(size);
+    color.resize(size, {1.0, 0.0, 0.0, 1.0});
+  }
+
+  std::string name;
+  float pointSize = 0.05f;  
+  std::vector<Vec<3>> position;
+  std::vector<Vec<4>> color;
+  uint32_t visualTag = 0;
+  std::mutex mutex_;
+};
+
 }
 
 
