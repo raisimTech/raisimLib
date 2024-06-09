@@ -81,6 +81,18 @@ class Sensor {
   [[nodiscard]] const std::string& getName() { return name_; }
 
   /**
+   * @return The serial number of the sensor
+   */
+   [[nodiscard]] const std::string& getSerialNumber() { return serialNumber_; };
+
+   /**
+    * Set the serial number of the sensor
+    * @param serialNumber
+    * @return
+    */
+   [[nodiscard]] void setSerialNumber(const std::string& serialNumber) { serialNumber_ = serialNumber; };
+
+  /**
    * @return The type of the sensor
    */
   [[nodiscard]] Type getType() { return type_; }
@@ -168,6 +180,7 @@ class Sensor {
   size_t frameId_;
   class ArticulatedSystem* as_;
   MeasurementSource source_ = MeasurementSource::MANUAL;
+  std::string serialNumber_;
 
  private:
   std::string name_;
