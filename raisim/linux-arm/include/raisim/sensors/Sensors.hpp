@@ -90,7 +90,7 @@ class Sensor {
     * @param serialNumber
     * @return
     */
-   [[nodiscard]] void setSerialNumber(const std::string& serialNumber) { serialNumber_ = serialNumber; };
+   void setSerialNumber(const std::string& serialNumber) { serialNumber_ = serialNumber; };
 
   /**
    * @return The type of the sensor
