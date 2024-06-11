@@ -81,6 +81,11 @@ class Sensor {
   [[nodiscard]] const std::string& getName() { return name_; }
 
   /**
+   * @return The name of the sensor
+   */
+  [[nodiscard]] const std::string& getSensorSetModel() { return model_; }
+
+  /**
    * @return The serial number of the sensor
    */
    [[nodiscard]] const std::string& getSerialNumber() { return serialNumber_; };
@@ -181,6 +186,7 @@ class Sensor {
   class ArticulatedSystem* as_;
   MeasurementSource source_ = MeasurementSource::MANUAL;
   std::string serialNumber_;
+  std::string model_;
 
  private:
   std::string name_;
