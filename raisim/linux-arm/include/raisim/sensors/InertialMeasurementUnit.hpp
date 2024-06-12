@@ -16,7 +16,7 @@ class InertialMeasurementUnit final : public Sensor {
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
   struct ImuProperties {
-    std::string name;
+    std::string name, full_name;
     double maxAcc = std::numeric_limits<double>::max();
     double maxAngVel = std::numeric_limits<double>::max();
 
@@ -39,7 +39,7 @@ class InertialMeasurementUnit final : public Sensor {
   };
 
   explicit InertialMeasurementUnit(const ImuProperties& prop, class ArticulatedSystem* as, const Vec<3>& pos, const Mat<3,3>& rot) :
-      Sensor(prop.name, Sensor::Type::IMU, as, pos, rot, MeasurementSource::RAISIM), prop_(prop) {
+      Sensor(prop.name, prop.full_name, Sensor::Type::IMU, as, pos, rot, MeasurementSource::RAISIM), prop_(prop) {
     linearAcc_.setZero();
     angularVel_.setZero();
     quaternion_.setZero();
@@ -48,7 +48,7 @@ class InertialMeasurementUnit final : public Sensor {
   ~InertialMeasurementUnit() final = default;
 
   char* serializeProp (char* data) const final {
-    return server::set(data, type_, prop_.name, prop_.maxAcc, prop_.maxAngVel);
+    return server::set(data, type_, prop_.full_name, prop_.maxAcc, prop_.maxAngVel);
   }
 
   [[nodiscard]] char* serializeMeasurements (char* data) const {

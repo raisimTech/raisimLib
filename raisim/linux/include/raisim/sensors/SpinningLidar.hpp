@@ -16,7 +16,7 @@ namespace raisim {
 class SpinningLidar : public Sensor {
  public:
   struct SpinningLidarProperties {
-    std::string name, model;    
+    std::string name, full_name;
     int yawSamples = 1, pitchSamples = 1;
     double pitchMinAngle = 0, pitchMaxAngle = 0;
     double rangeMin = 0, rangeMax = 100.0;
@@ -25,13 +25,13 @@ class SpinningLidar : public Sensor {
   };
 
   SpinningLidar (SpinningLidarProperties& prop, class ArticulatedSystem* as, const Vec<3>& pos, const Mat<3,3>& rot) :
-      Sensor(prop.name, Type::SPINNING_LIDAR, as, pos, rot, MeasurementSource::RAISIM), prop_(prop) {
+      Sensor(prop.name, prop.full_name, Type::SPINNING_LIDAR, as, pos, rot, MeasurementSource::RAISIM), prop_(prop) {
     scan_.reserve(prop.pitchSamples * prop.yawSamples);
     timeStamp_ = 0;
   }
 
   char* serializeProp (char* data) const final {
-    return server::set(data, type_, prop_.name, prop_.yawSamples, prop_.pitchSamples,
+    return server::set(data, type_, prop_.full_name, prop_.yawSamples, prop_.pitchSamples,
                        prop_.pitchMinAngle, prop_.pitchMaxAngle, prop_.rangeMin, prop_.rangeMax, prop_.spinningRate);
   }
 
@@ -56,8 +56,6 @@ class SpinningLidar : public Sensor {
    * update lidar measurement
    */
   void update (class World& world) final;
-
-  const std::string& getModelName () { return prop_.model; }
 
  private:
   double timeStamp_;

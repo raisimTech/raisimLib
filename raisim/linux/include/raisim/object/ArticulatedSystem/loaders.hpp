@@ -8,6 +8,7 @@
 #define RAISIM_LOADERS_HPP
 
 #include "ArticulatedSystem.hpp"
+#include "raisim/sensors/SensorSet.hpp"
 #include <map>
 
 namespace raisim {
@@ -109,7 +110,7 @@ struct UrdfLink {
   std::vector<UrdfBody> visual, collision;
   UrdfLinkInertial inertial;
   Vec<4> color_;
-  std::vector<std::shared_ptr<Sensor>> sensor;
+  std::shared_ptr<SensorSet> sensorSet;
 };
 
 class LoadFromURDF2 {
