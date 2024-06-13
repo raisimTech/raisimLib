@@ -50,6 +50,7 @@ class SensorSet {
 
   const std::string& getModel() { return model; }
   const std::string& getSerialNumber() { return serialNumber; };
+  const std::string& getName() { return name; };
 
  protected:
 
