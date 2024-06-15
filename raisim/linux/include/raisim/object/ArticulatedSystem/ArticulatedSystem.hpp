@@ -263,6 +263,7 @@ class ArticulatedSystem : public Object {
   friend class raisim::mjcf::LoadFromMjcf;
   friend class raisim::InertialMeasurementUnit;
   friend class raisim::Sensor;
+  using SensorSetGroupDataType = std::unordered_map<std::string, std::shared_ptr<SensorSet>, std::hash<std::string>, std::equal_to<>, AlignedAllocator<std::pair<const std::string, std::shared_ptr<SensorSet>>,32>>;
 
  public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -1560,21 +1561,16 @@ class ArticulatedSystem : public Object {
   /**
    * @return sensor of the specified type
    */
-  template<class T>
-  T* getSensor(const std::string& name) {
-    RSFATAL_IF(sensors_.find(name) == sensors_.end(), "Cannot find \""<<name<<"\"")
-    auto sensor = sensors_.find(name)->second;
-    RSFATAL_IF(sensor->getType() != T::getType(), "Type mismatch. "
-        << name << " has a type of " << toString(sensor->getType()) << " and the requested type is "
-        << toString(T::getType()))
-    return reinterpret_cast<T*>(sensor.get());
+  std::shared_ptr<SensorSet>& getSensorSet(const std::string& name) {
+    RSFATAL_IF(sensorSets_.find(name) == sensorSets_.end(), "Cannot find \""<<name<<"\"")
+    return sensorSets_[name];
   }
 
   /**
    * @return sensors on the robot
    */
-  [[nodiscard]] std::unordered_map<std::string, std::shared_ptr<Sensor>, std::hash<std::string>, std::equal_to<std::string>, AlignedAllocator<std::pair<const std::string, std::shared_ptr<Sensor>>,32>>& getSensors() { return sensors_; }
-  [[nodiscard]] const std::unordered_map<std::string, std::shared_ptr<Sensor>, std::hash<std::string>, std::equal_to<std::string>, AlignedAllocator<std::pair<const std::string, std::shared_ptr<Sensor>>,32>>& getSensors() const { return sensors_; }
+  [[nodiscard]] SensorSetGroupDataType & getSensorSets() { return sensorSets_; }
+  [[nodiscard]] const SensorSetGroupDataType& getSensorSets() const { return sensorSets_; }
 
   // not recommended for users. only for developers
   void addConstraints(const std::vector<PinConstraintDefinition>& pinDef, const VecDyn& pinConstraintNominalConfig);
@@ -1860,8 +1856,8 @@ class ArticulatedSystem : public Object {
   std::vector<AbaData, AlignedAllocator<AbaData, 32>> ad_;
   std::vector<AbaData3, AlignedAllocator<AbaData3, 32>> ad3_;
 
-  /// sensors
-  std::unordered_map<std::string, std::shared_ptr<Sensor>, std::hash<std::string>, std::equal_to<std::string>, AlignedAllocator<std::pair<const std::string, std::shared_ptr<Sensor>>,32>> sensors_;
+  /// sensor set
+  SensorSetGroupDataType sensorSets_;
 };
 }
 

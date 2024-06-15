@@ -20,7 +20,7 @@ class DepthCamera final : public Sensor {
   };
 
   struct DepthCameraProperties {
-    std::string name;
+    std::string name, full_name;
 
     int width, height;
     int xOffset = 0, yOffset = 0;
@@ -47,7 +47,7 @@ class DepthCamera final : public Sensor {
   };
 
   explicit DepthCamera(const DepthCameraProperties& prop, class ArticulatedSystem* as, const Vec<3>& pos, const Mat<3,3>& rot) :
-      Sensor(prop.name, Sensor::Type::DEPTH, as, pos, rot, MeasurementSource::VISUALIZER), prop_(prop) {
+      Sensor(prop.name, prop.full_name, Sensor::Type::DEPTH, as, pos, rot, MeasurementSource::VISUALIZER), prop_(prop) {
     updateRayDirections();
   }
   ~DepthCamera() final = default;
@@ -74,7 +74,7 @@ class DepthCamera final : public Sensor {
   }
 
   char* serializeProp (char* data) const final {
-    return server::set(data, type_, prop_.name, prop_.width, prop_.height, prop_.clipNear, prop_.clipFar,
+    return server::set(data, type_, prop_.full_name, prop_.width, prop_.height, prop_.clipNear, prop_.clipFar,
                        prop_.hFOV, prop_.noiseType, prop_.mean, prop_.std, prop_.format);
   }
 

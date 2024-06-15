@@ -39,19 +39,19 @@ int main(int argc, char **argv) {
   anymal->setGeneralizedForce(Eigen::VectorXd::Zero(anymal->getDOF()));
   anymal->setName("Anymal");
 
-  auto depthSensor1 = anymal->getSensor<raisim::DepthCamera>("depth_camera_front_camera_parent:depth");
+  auto depthSensor1 = anymal->getSensorSet("depth_camera_front_camera_parent")->getSensor<raisim::DepthCamera>("depth");
   depthSensor1->setMeasurementSource(raisim::Sensor::MeasurementSource::VISUALIZER);
 //  depthSensor1->setMeasurementSource(raisim::Sensor::MeasurementSource::RAISIM); // uncomment this line if you want to update the sensor using Raisim (CPU)
 
-  auto rgbCamera1 = anymal->getSensor<raisim::RGBCamera>("depth_camera_front_camera_parent:color");
+  auto rgbCamera1 = anymal->getSensorSet("depth_camera_front_camera_parent")->getSensor<raisim::RGBCamera>("color");
   rgbCamera1->setMeasurementSource(raisim::Sensor::MeasurementSource::VISUALIZER);
 
-  auto depthSensor2 = anymal->getSensor<raisim::DepthCamera>("depth_camera_rear_camera_parent:depth");
+  auto depthSensor2 = anymal->getSensorSet("depth_camera_rear_camera_parent")->getSensor<raisim::DepthCamera>("depth");
   depthSensor2->setMeasurementSource(raisim::Sensor::MeasurementSource::VISUALIZER);
-  auto rgbCamera2 = anymal->getSensor<raisim::RGBCamera>("depth_camera_rear_camera_parent:color");
+  auto rgbCamera2 = anymal->getSensorSet("depth_camera_rear_camera_parent")->getSensor<raisim::RGBCamera>("color");
   rgbCamera2->setMeasurementSource(raisim::Sensor::MeasurementSource::VISUALIZER);
-  auto imu = anymal->getSensor<raisim::InertialMeasurementUnit>("depth_camera_front_camera_parent:imu");
-  auto lidar = anymal->getSensor<raisim::SpinningLidar>("lidar_link:lidar");
+  auto imu = anymal->getSensorSet("depth_camera_front_camera_parent")->getSensor<raisim::InertialMeasurementUnit>("imu");
+  auto lidar = anymal->getSensorSet("lidar_link")->getSensor<raisim::SpinningLidar>("lidar");
 
   auto dummySphere1 = server.addVisualSphere("dummy1", 0.05, 1, 0, 0, 1);
   auto dummySphere2 = server.addVisualSphere("dummy2", 0.05, 1, 0, 0, 1);

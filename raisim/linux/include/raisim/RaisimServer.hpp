@@ -1038,15 +1038,17 @@ class RaisimServer final {
     for (auto *ob: objList) {
       if (ob->getObjectType() == ObjectType::ARTICULATED_SYSTEM) {
         auto as = dynamic_cast<ArticulatedSystem *>(ob);
-        for (auto &sensor: as->getSensors()) {
-          sensor.second->lockMutex();
-          if (sensor.second->getMeasurementSource() == Sensor::MeasurementSource::VISUALIZER &&
-              sensor.second->getUpdateTimeStamp() + 1. / sensor.second->getUpdateRate()
-                  < world_->getWorldTime() + 1e-10) {
+        for (auto &sensorSet: as->getSensorSets()) {
+          for (auto &sensor : sensorSet.second->getSensors()) {
+            sensor.second->lockMutex();
+            if (sensor.second->getMeasurementSource() == Sensor::MeasurementSource::VISUALIZER &&
+                sensor.second->getUpdateTimeStamp() + 1. / sensor.second->getUpdateRate()
+                    < world_->getWorldTime() + 1e-10) {
+              sensor.second->unlockMutex();
+              return true;
+            }
             sensor.second->unlockMutex();
-            return true;
           }
-          sensor.second->unlockMutex();
         }
       }
     }
@@ -1381,36 +1383,44 @@ class RaisimServer final {
       }
     }
 
-    data_ = set(data_, (int32_t) as->getSensors().size());
+    int sensorCount = 0;
+    for (auto& sensorSet : as->getSensorSets()) {
+      sensorCount += sensorSet.second->getSensors().size();
+    }
+
+    data_ = set(data_, (int32_t) sensorCount);
 
     // add sensors to be updated
-    for (auto &sensor: as->getSensors()) {
-      sensor.second->lockMutex();
-      if (!initialized) data_ = sensor.second->serializeProp(data_);
+    for (auto &sensorSet: as->getSensorSets()) {
+      for (auto& sensorPair : sensorSet.second->getSensors()) {
+        auto &sensor = sensorPair.second;
+        sensor->lockMutex();
+        if (!initialized) data_ = sensor->serializeProp(data_);
 
-      data_ = set(data_, sensor.second->getMeasurementSource());
+        data_ = set(data_, sensor->getMeasurementSource());
 
-      if (sensor.second->getMeasurementSource() == Sensor::MeasurementSource::VISUALIZER &&
-          sensor.second->getUpdateTimeStamp() + 1. / sensor.second->getUpdateRate()
-              < world_->getWorldTime() + 1e-10) {
-        data_ = set(data_, true);
-        needsSensorUpdate_ = true;
-        sensorUpdateTime_ = world_->getWorldTime();
-      } else {
-        data_ = set(data_, false);
+        if (sensor->getMeasurementSource() == Sensor::MeasurementSource::VISUALIZER &&
+            sensor->getUpdateTimeStamp() + 1. / sensor->getUpdateRate()
+                < world_->getWorldTime() + 1e-10) {
+          data_ = set(data_, true);
+          needsSensorUpdate_ = true;
+          sensorUpdateTime_ = world_->getWorldTime();
+        } else {
+          data_ = set(data_, false);
+        }
+
+        sensor->updatePose();
+        Vec<4> quat;
+        auto &pos = sensor->getPosition();
+        auto &rot = sensor->getOrientation();
+        rotMatToQuat(rot, quat);
+        data_ = setInFloat(data_, pos, quat);
+
+        if (sensor->getMeasurementSource() != Sensor::MeasurementSource::VISUALIZER)
+          data_ = sensor->serializeMeasurements(data_);
+
+        sensor->unlockMutex();
       }
-
-      sensor.second->updatePose();
-      Vec<4> quat;
-      auto &pos = sensor.second->getPosition();
-      auto &rot = sensor.second->getOrientation();
-      rotMatToQuat(rot, quat);
-      data_ = setInFloat(data_, pos, quat);
-
-      if (sensor.second->getMeasurementSource() != Sensor::MeasurementSource::VISUALIZER)
-        data_ = sensor.second->serializeMeasurements(data_);
-
-      sensor.second->unlockMutex();
     }
   }
 
@@ -1959,7 +1969,18 @@ class RaisimServer final {
       ArticulatedSystem *as = dynamic_cast<ArticulatedSystem*>(*std::find_if(obList.begin(), obList.end(),
                                                                              [visualTag](const Object* i){ return i->visualTag == visualTag; }));
       as->lockMutex();
-      auto sensor = as->getSensors()[name];
+      std::shared_ptr<Sensor> sensor;
+      for (auto& sensorSet : as->getSensorSets()) {
+        for (auto& sensorPair : sensorSet.second->getSensors()) {
+          if (name == sensorPair.second->getFullName()) {
+            sensor = sensorPair.second;
+            break;
+          }
+        }
+        if (sensor) break;
+      }
+
+      RSFATAL_IF(!sensor, "Sensor not found: " << name)
       sensor->lockMutex();
 
       if (type == Sensor::Type::RGB) {
