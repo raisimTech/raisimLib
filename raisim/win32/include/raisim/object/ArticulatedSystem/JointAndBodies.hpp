@@ -12,7 +12,7 @@
 
 #include "raisim/math.hpp"
 #include "raisim/object/singleBodies/Mesh.hpp"
-#include "raisim/sensors/Sensors.hpp"
+#include "raisim/sensors/SensorSet.hpp"
 
 namespace raisim {
 
@@ -574,7 +574,7 @@ class Body {
   double mass_;
   Mat<3, 3> inertia_;
   Vec<3> com_;
-  std::vector<std::shared_ptr<Sensor>> sensor;
+  std::vector<SensorSet*> sensorSet;
 };
 
 class Child {

@@ -14,7 +14,7 @@ namespace raisim {
 class RGBCamera : public Sensor {
  public:
   struct RGBCameraProperties {
-    std::string name;
+    std::string name, full_name;
     int width, height;
     int xOffset = 0, yOffset = 0;
     double clipNear, clipFar;
@@ -41,12 +41,12 @@ class RGBCamera : public Sensor {
   };
 
   RGBCamera(RGBCameraProperties& prop, class ArticulatedSystem* as, const Vec<3>& pos, const Mat<3,3>& rot) :
-      Sensor(prop.name, Type::RGB, as, pos, rot, MeasurementSource::VISUALIZER), prop_(prop) {
+      Sensor(prop.name, prop.full_name, Type::RGB, as, pos, rot, MeasurementSource::VISUALIZER), prop_(prop) {
     rgbBuffer_.resize(prop.height * prop.width * 4);
   }
 
   char* serializeProp (char* data) const final {
-    return server::set(data, type_, prop_.name, prop_.width, prop_.height, prop_.clipNear, prop_.clipFar,
+    return server::set(data, type_, prop_.full_name, prop_.width, prop_.height, prop_.clipNear, prop_.clipFar,
                        prop_.hFOV, prop_.noiseType, prop_.mean, prop_.std, prop_.format);
   }
 
