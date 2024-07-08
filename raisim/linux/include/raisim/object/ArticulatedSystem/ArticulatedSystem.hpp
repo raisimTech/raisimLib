@@ -263,7 +263,7 @@ class ArticulatedSystem : public Object {
   friend class raisim::mjcf::LoadFromMjcf;
   friend class raisim::InertialMeasurementUnit;
   friend class raisim::Sensor;
-  using SensorSetGroupDataType = std::unordered_map<std::string, std::shared_ptr<SensorSet>, std::hash<std::string>, std::equal_to<>, AlignedAllocator<std::pair<const std::string, std::shared_ptr<SensorSet>>,32>>;
+  using SensorSetGroupDataType = std::vector<SensorSet*>;
 
  public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -1561,9 +1561,10 @@ class ArticulatedSystem : public Object {
   /**
    * @return sensor of the specified type
    */
-  std::shared_ptr<SensorSet>& getSensorSet(const std::string& name) {
-    RSFATAL_IF(sensorSets_.find(name) == sensorSets_.end(), "Cannot find \""<<name<<"\"")
-    return sensorSets_[name];
+  SensorSet* getSensorSet(const std::string& name) {
+    auto sensorIt = std::find_if(sensorSets_.begin(), sensorSets_.end(), [&](SensorSet* a){ return a->getName() == name; });
+    RSFATAL_IF(sensorIt == sensorSets_.end(), "Cannot find \""<<name<<"\"")
+    return *sensorIt;
   }
 
   /**

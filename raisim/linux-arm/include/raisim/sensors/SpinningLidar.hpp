@@ -5,9 +5,6 @@
 #ifndef RAISIM_INCLUDE_RAISIM_SENSORS_SPINNINGLIDAR_HPP_
 #define RAISIM_INCLUDE_RAISIM_SENSORS_SPINNINGLIDAR_HPP_
 
-
-
-
 #include "raisim/sensors/Sensors.hpp"
 
 
@@ -44,13 +41,13 @@ class SpinningLidar : public Sensor {
     timeStamp_ = 0;
   }
 
-  const std::vector<raisim::Vec<3>>& getScan() const { return scan_; }
+  [[nodiscard]] const std::vector<raisim::Vec<3>>& getScan() const { return scan_; }
   void setScan(const std::vector<raisim::Vec<3>>& scan) { scan_ = scan; }
 
-  const double getTimeStamp() const { return timeStamp_; }
+  [[nodiscard]] double getTimeStamp() const { return timeStamp_; }
   void setTimeStamp(double timeStamp) { timeStamp_ = timeStamp; }
 
-  double getCurrentYaw() const { return currentYaw_; }
+  [[nodiscard]] double getCurrentYaw() const { return currentYaw_; }
 
   /**
    * update lidar measurement

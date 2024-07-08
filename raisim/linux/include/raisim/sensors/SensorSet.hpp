@@ -6,6 +6,7 @@
 #define RAISIM_INCLUDE_RAISIM_SENSORS_SENSORSET_HPP_
 
 #include <memory>
+#include <unordered_map>
 #include <vector>
 #include "Sensors.hpp"
 
@@ -21,11 +22,11 @@ class SensorSet {
   friend class raisim::Child;
   friend class raisim::ArticulatedSystem;
   friend class raisim::urdf::LoadFromURDF2;
-  using SensorSetDataType = std::unordered_map<std::string, std::shared_ptr<Sensor>, std::hash<std::string>, std::equal_to<>, AlignedAllocator<std::pair<const std::string, std::shared_ptr<Sensor>>,32>>;
+//  using SensorSetDataType = std::unordered_map<std::string, std::shared_ptr<Sensor>, std::hash<std::string>, std::equal_to<>, AlignedAllocator<std::pair<const std::string, std::shared_ptr<Sensor>>,32>>;
+  using SensorSetDataType = std::vector<Sensor*>;
 
-  SensorSet(std::string nameI, std::string modelI, std::string serialNumberI) :
-   name(std::move(nameI)), model(std::move(modelI)), serialNumber(std::move(serialNumberI)) {}
-
+  SensorSet(std::string nameI, std::string modelI, std::string serialNumberI);
+  ~SensorSet();
 
   [[nodiscard]] SensorSetDataType& getSensors() {
     return sensors;
@@ -40,12 +41,25 @@ class SensorSet {
  */
   template<class T>
   T* getSensor(const std::string& nameIn) {
-    RSFATAL_IF(sensors.find(nameIn) == sensors.end(), "Cannot find \""<<nameIn<<"\"")
-    auto sensor = sensors.find(nameIn)->second;
+    auto sensorIter = std::find_if(sensors.begin(), sensors.end(), [&](Sensor* a){ return a->getName() == nameIn;});
+    RSFATAL_IF(sensorIter == sensors.end(), "Cannot find \""<<nameIn<<"\"")
+    auto sensor = *sensorIter;
     RSFATAL_IF(sensor->getType() != T::getType(), "Type mismatch. "
         << nameIn << " has a type of " << toString(sensor->getType()) << " and the requested type is "
         << toString(T::getType()))
-    return reinterpret_cast<T*>(sensor.get());
+    return reinterpret_cast<T*>(sensor);
+  }
+
+  /**
+   * This function returns the sensor as its parent class pointer.
+   * @param nameIn the name of the sensor
+   * @return the sensor as a base class (Sensor*) pointer
+   */
+  Sensor* getSensorRawPtr(const std::string& nameIn) {
+    auto sensorIter = std::find_if(sensors.begin(), sensors.end(), [&](Sensor* a){ return a->getName() == nameIn;});
+    RSFATAL_IF(sensorIter == sensors.end(), "Cannot find \""<<nameIn<<"\"")
+    auto sensor = *sensorIter;
+    return sensor;
   }
 
   const std::string& getModel() { return model; }
@@ -54,9 +68,7 @@ class SensorSet {
 
  protected:
 
-  void addSensor (const std::string& nameIn, const std::shared_ptr<Sensor>& sensor) {
-    sensors[nameIn] = sensor;
-  }
+  void addSensor (Sensor* sensor);
 
   std::string name;
   std::string serialNumber;
