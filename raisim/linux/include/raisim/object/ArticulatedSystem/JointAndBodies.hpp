@@ -574,7 +574,7 @@ class Body {
   double mass_;
   Mat<3, 3> inertia_;
   Vec<3> com_;
-  std::unordered_map<std::string, std::shared_ptr<SensorSet>> sensorSet;
+  std::vector<SensorSet*> sensorSet;
 };
 
 class Child {

@@ -30,6 +30,8 @@ function(create_executable app_name file_name)
         target_compile_options(${app_name} PRIVATE "/MP")
     else()
         target_link_libraries(${app_name} PUBLIC raisim::raisim pthread)
+        target_compile_options(${app_name} PRIVATE "$<$<CONFIG:RELEASE>:-O3>")
+        target_compile_options(${app_name} PRIVATE "$<$<CONFIG:DEBUG>:-O0>")
     endif()
 
     if(APPLE)

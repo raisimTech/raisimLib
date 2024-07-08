@@ -38,8 +38,8 @@ class Sensor {
     MANUAL // user manually update the measurements whenever needed.
   };
 
-  Sensor (std::string name, Type type, class ArticulatedSystem* as, const Vec<3>& pos, const Mat<3,3>& rot, MeasurementSource source) :
-      name_(std::move(name)), type_(type), as_(as), posB_(pos), rotB_(rot), posFrame_(pos), rotFrame_(rot), source_(source) { }
+  Sensor (std::string name, std::string fullName, Type type, class ArticulatedSystem* as, const Vec<3>& pos, const Mat<3,3>& rot, MeasurementSource source) :
+      name_(std::move(name)), fullName_(std::move(fullName)), type_(type), as_(as), posB_(pos), rotB_(rot), posFrame_(pos), rotFrame_(rot), source_(source) { }
   virtual ~Sensor() = default;
 
   /**
@@ -76,9 +76,31 @@ class Sensor {
   [[nodiscard]] const Mat<3,3>& getOriInSensorFrame() { return rotB_; }
 
   /**
-   * @return The name of the sensor
+   * @return The name of the sensor. This name is given in the sensor xml file
    */
   [[nodiscard]] const std::string& getName() { return name_; }
+
+  /**
+   * @return The full name of the sensor. This name includes the sensor set's name
+   */
+    [[nodiscard]] const std::string& getFullName() { return fullName_; }
+
+  /**
+   * @return The name of the sensor
+   */
+  [[nodiscard]] const std::string& getSensorSetModel() { return model_; }
+
+  /**
+   * @return The serial number of the sensor
+   */
+   [[nodiscard]] const std::string& getSerialNumber() { return serialNumber_; };
+
+   /**
+    * Set the serial number of the sensor
+    * @param serialNumber
+    * @return
+    */
+   void setSerialNumber(const std::string& serialNumber) { serialNumber_ = serialNumber; };
 
   /**
    * @return The type of the sensor
@@ -168,9 +190,11 @@ class Sensor {
   size_t frameId_;
   class ArticulatedSystem* as_;
   MeasurementSource source_ = MeasurementSource::MANUAL;
+  std::string serialNumber_;
+  std::string model_;
 
  private:
-  std::string name_;
+  std::string name_, fullName_;
   std::mutex mutex_;
   double updateRate_ = 1., updateTimeStamp_ = -1.;
 };
