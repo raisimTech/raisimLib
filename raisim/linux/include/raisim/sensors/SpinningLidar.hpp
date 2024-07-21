@@ -41,8 +41,9 @@ class SpinningLidar : public Sensor {
     timeStamp_ = 0;
   }
 
-  [[nodiscard]] const std::vector<raisim::Vec<3>>& getScan() const { return scan_; }
-  void setScan(const std::vector<raisim::Vec<3>>& scan) { scan_ = scan; }
+  [[nodiscard]] const std::vector<raisim::Vec<3>, AlignedAllocator<raisim::Vec<3>, 32>>& getScan() const;
+  void setScan(const std::vector<raisim::Vec<3>>& scan);
+  void setScan(const std::vector<raisim::Vec<3>, AlignedAllocator<raisim::Vec<3>, 32>>& scan);
 
   [[nodiscard]] double getTimeStamp() const { return timeStamp_; }
   void setTimeStamp(double timeStamp) { timeStamp_ = timeStamp; }
@@ -56,7 +57,7 @@ class SpinningLidar : public Sensor {
 
  private:
   double timeStamp_;
-  std::vector<raisim::Vec<3>> scan_;
+  std::vector<raisim::Vec<3>, AlignedAllocator<raisim::Vec<3>, 32>> scan_;
   SpinningLidarProperties prop_;
 
   double currentYaw_ = 0;
