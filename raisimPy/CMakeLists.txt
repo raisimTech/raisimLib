@@ -17,15 +17,6 @@ target_link_libraries(raisimpy PRIVATE raisim::raisim)
 target_include_directories(raisimpy PUBLIC include ${EIGEN3_INCLUDE_DIRS})
 message("-- python executable: ${PYTHON_EXECUTABLE}")
 
-# Install precompiled Python modules (raisimpy)
-execute_process(
-        COMMAND "${PYTHON_EXECUTABLE}" -c "if True:
-            import sysconfig
-            print(sysconfig.get_paths()[\"purelib\"])"
-        OUTPUT_VARIABLE PYTHON_SITE
-        OUTPUT_STRIP_TRAILING_WHITESPACE)
-message("-- python site is ${PYTHON_SITE}")
-
 if(UNIX)
     set(INSTALL_SITE "${CMAKE_CURRENT_SOURCE_DIR}/../raisim/${RAISIM_OS}/lib")
 elseif(WIN32)
