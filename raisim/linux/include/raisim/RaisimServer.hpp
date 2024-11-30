@@ -215,8 +215,8 @@ class RaisimServer final {
    * @param[in] seconds the number of seconds to wait for a connection from a client
    * Accept a connection to the socket. Only one client can be connected at a time
    */
-  void acceptConnection(int seconds) {
-    if (waitForNewClients(seconds)) {
+  void acceptConnection(int microseconds) {
+    if (waitForNewClients(microseconds)) {
 #if __linux__ || __APPLE__
       client_ = accept(server_fd_, (struct sockaddr *) &address, (socklen_t *) &addrlen);
       connected_ = client_ > -1;
@@ -262,7 +262,7 @@ class RaisimServer final {
     setupSocket(port);
 
     while (!terminateRequested_) {
-      acceptConnection(2);
+      acceptConnection(100000);
 
       while (connected_) {
         connected_ = processRequests() && !terminateRequested_;
@@ -1298,11 +1298,11 @@ class RaisimServer final {
    * @param seconds how long to wait for a new client
    * @return if a new client was found or not
    */
-  inline bool waitForNewClients(int seconds) {
+  inline bool waitForNewClients(int microseconds) {
     fd_set sdset;
     struct timeval tv;
-    tv.tv_sec = seconds;
-    tv.tv_usec = 0;
+    tv.tv_sec = 0;
+    tv.tv_usec = microseconds;
     FD_ZERO(&sdset);
     FD_SET(server_fd_, &sdset);
     return select(server_fd_ + 1, &sdset, nullptr, nullptr, &tv) > 0;
