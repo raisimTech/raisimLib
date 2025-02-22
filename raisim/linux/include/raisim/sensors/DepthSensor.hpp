@@ -126,6 +126,8 @@ class DepthCamera final : public Sensor {
    * @param[in] sensorFrame If the 3D points are expressed in the sensor frame or the world frame */
   void depthToPointCloud(const std::vector<float>& depthArray, std::vector<raisim::Vec<3>>& pointCloud, bool isInSensorFrame = false) const;
 
+  [[nodiscard]] const auto& getPrecomputedRayDir() const { return precomputedRayDir_; }
+
  private:
   DepthCameraProperties prop_;
   std::vector<float> depthArray_;
