@@ -146,11 +146,11 @@ class DynamicArray{
 #endif
 
 #ifdef __linux__
-    v = static_cast<double*>(aligned_alloc(32, round_up(size * sizeof(double),32)));
+    v = static_cast<double*>(aligned_alloc(32, round_up(size * sizeof(double), 32)));
 #endif
 
 #ifdef __APPLE__
-    v = static_cast<double*>(aligned_alloc(32, round_up(size * sizeof(double))));
+    v = static_cast<double*>(aligned_alloc(32, round_up(size * sizeof(double), 32)));
 #endif
   }
 
