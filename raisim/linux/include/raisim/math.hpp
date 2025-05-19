@@ -127,6 +127,17 @@ class DynamicArray{
   }
 
  private:
+  inline std::size_t round_up(std::size_t num, std::size_t multiple) {
+      if (multiple == 0) {
+          return num; // or handle error
+      }
+      std::size_t remainder = num % multiple;
+      if (remainder == 0) {
+          return num;
+      }
+      return num + (multiple - remainder);
+  }
+
   void allocate(size_t size) {
     dealloc();
 #ifdef _WIN32
@@ -135,11 +146,11 @@ class DynamicArray{
 #endif
 
 #ifdef __linux__
-    v = static_cast<double*>(aligned_alloc(32, size * sizeof(double)));
+    v = static_cast<double*>(aligned_alloc(32, round_up(size * sizeof(double), 32)));
 #endif
 
 #ifdef __APPLE__
-    v = static_cast<double*>(aligned_alloc(32, size * sizeof(double)));
+    v = static_cast<double*>(aligned_alloc(32, round_up(size * sizeof(double), 32)));
 #endif
   }
 

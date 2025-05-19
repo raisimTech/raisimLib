@@ -266,8 +266,6 @@ class ArticulatedSystem : public Object {
   using SensorSetGroupDataType = std::vector<SensorSet*>;
 
  public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
   ArticulatedSystem() = default;
 
   ArticulatedSystem(const Child &child,
@@ -275,6 +273,12 @@ class ArticulatedSystem : public Object {
                     ArticulatedSystemOption options);
 
   explicit ArticulatedSystem(const std::string &filePathOrURDFScript,
+                             const std::string &resDir = "",
+                             const std::vector<std::string> &jointOrder = std::vector<std::string>(),
+                             ArticulatedSystemOption options = ArticulatedSystemOption());
+
+  explicit ArticulatedSystem(const std::string &filePathOrURDFScript,
+                             const std::vector<std::string> &modules,
                              const std::string &resDir = "",
                              const std::vector<std::string> &jointOrder = std::vector<std::string>(),
                              ArticulatedSystemOption options = ArticulatedSystemOption());
@@ -1563,7 +1567,9 @@ class ArticulatedSystem : public Object {
    */
   SensorSet* getSensorSet(const std::string& name) {
     auto sensorIt = std::find_if(sensorSets_.begin(), sensorSets_.end(), [&](SensorSet* a){ return a->getName() == name; });
-    RSFATAL_IF(sensorIt == sensorSets_.end(), "Cannot find \""<<name<<"\"")
+    if (sensorIt == sensorSets_.end())
+      return nullptr;
+
     return *sensorIt;
   }
 
@@ -1783,6 +1789,7 @@ class ArticulatedSystem : public Object {
   std::vector<VisObject> visColObj, visObj;
   ArticulatedSystemOption options_;
   int allowedNumberOfInternalContactsBetweenTwoBodies = 1;
+  int previousWorldIndex_;
 
  private:
   size_t nbody, dof = 0, gcDim = 0;

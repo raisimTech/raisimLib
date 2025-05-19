@@ -42,11 +42,10 @@ class SensorSet {
   template<class T>
   T* getSensor(const std::string& nameIn) {
     auto sensorIter = std::find_if(sensors.begin(), sensors.end(), [&](Sensor* a){ return a->getName() == nameIn;});
-    RSFATAL_IF(sensorIter == sensors.end(), "Cannot find \""<<nameIn<<"\"")
+    if (sensorIter == sensors.end() || (*sensorIter)->getType() != T::getType())
+      return nullptr;
+
     auto sensor = *sensorIter;
-    RSFATAL_IF(sensor->getType() != T::getType(), "Type mismatch. "
-        << nameIn << " has a type of " << toString(sensor->getType()) << " and the requested type is "
-        << toString(T::getType()))
     return reinterpret_cast<T*>(sensor);
   }
 
@@ -57,7 +56,8 @@ class SensorSet {
    */
   Sensor* getSensorRawPtr(const std::string& nameIn) {
     auto sensorIter = std::find_if(sensors.begin(), sensors.end(), [&](Sensor* a){ return a->getName() == nameIn;});
-    RSFATAL_IF(sensorIter == sensors.end(), "Cannot find \""<<nameIn<<"\"")
+    if (sensorIter == sensors.end()) return nullptr;
+
     auto sensor = *sensorIter;
     return sensor;
   }
