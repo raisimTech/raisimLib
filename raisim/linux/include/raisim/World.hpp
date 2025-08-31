@@ -85,10 +85,29 @@ class World {
     Create an empty world */
   explicit World();
 
+
+  struct ParameterContainer {
+    std::string name, param;
+  };
+
   /*!
-    Create an world as specified in the xml config file
+  Create an world as specified in the xml config file
   */
-  explicit World(const std::string &configFile, const std::unordered_map<std::string, std::string>& params={});
+  explicit World(const std::string &configFile, const std::vector<ParameterContainer>& params = {}) {
+    init();
+    Path configPath(configFile);
+    configFile_ = configPath;
+    std::ifstream t(configFile_);
+    RSFATAL_IF(!t, "Could not open the raisim configuration file: " << configFile_);
+    std::string worldDescription((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
+    if (worldDescription.find("<mujoco") != std::string::npos)
+      loadMjcf(configFile);
+    else if (worldDescription.find("<raisim") != std::string::npos) {
+      loadRaiSimConfig(configFile, params);
+    }
+
+    xmlObjectClasses.clear();
+  }
 
   /**
    * export the world to an xml config file, which can be loaded using a constructor
@@ -291,6 +310,21 @@ class World {
                                           CollisionGroup collisionGroup = 1,
                                           CollisionGroup collisionMask = CollisionGroup(-1),
                                           ArticulatedSystemOption options = ArticulatedSystemOption());
+  /**
+   * @param[in] filePathOrURDFScript Path to urdf file or a URDF string. Depending on the contents of the string, RaiSim will interpret it as an xml string or a file path.
+   * @param[in] resPath Path to the resource directory. Leave it empty ("") if it is the urdf file directory
+   * @param[in] jointOrder this can be used to redefine the joint order. A child cannot precede its parent. Leave it empty ({}) to use the joint order defined in the URDF file.
+   * @param[in] collisionGroup read "Contact and Collision/ Collision Group and Mask"
+   * @param[in] collisionMask read "Contact and Collision/ Collision Group and Mask"
+   * @param[in] options Currently only support "doNotCollideWithParent"
+   * @return pointer to the articulated system */
+  ArticulatedSystem *addArticulatedSystem(const std::string &filePathOrURDFScript,
+                                          const std::vector<std::string> &modules,
+                                          const std::string &resPath = "",
+                                          const std::vector<std::string> &jointOrder = {},
+                                          CollisionGroup collisionGroup = 1,
+                                          CollisionGroup collisionMask = CollisionGroup(-1),
+                                          ArticulatedSystemOption options = ArticulatedSystemOption());
 
   /**
    * @param[in] xmlFileTemplate xml template file.
@@ -302,7 +336,7 @@ class World {
    * @param[in] options Currently only support "doNotCollideWithParent"
    * @return pointer to the articulated system */
   ArticulatedSystem *addArticulatedSystem(const std::string &xmlFileTemplate,
-                                          const std::unordered_map<std::string, std::string>& params,
+                                          const std::vector<ParameterContainer>& params,
                                           const std::string &resPath = "",
                                           const std::vector<std::string> &jointOrder = {},
                                           CollisionGroup collisionGroup = 1,
@@ -672,7 +706,7 @@ protected:
                           const std::string &material,
                           CollisionGroup collisionGroup,
                           CollisionGroup collisionMask);
-  void loadRaiSimConfig(const std::string& configFile, const std::unordered_map<std::string, std::string>& params);
+  void loadRaiSimConfig(const std::string& configFile, const std::vector<ParameterContainer>& params);
   raisim::SingleBodyObject* addMjcfGeom(const RaiSimTinyXmlWrapper& geom,
                                         const std::unordered_map<std::string, RaiSimTinyXmlWrapper>& defaults,
                                         const std::unordered_map<std::string, std::pair<std::string, Vec<3>>>& mesh,
