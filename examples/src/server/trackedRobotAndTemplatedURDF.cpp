@@ -24,15 +24,15 @@ int main(int argc, char *argv[]) {
   box5->setPosition(raisim::Vec<3>{10,0,0.15});
 
   /// customize robot in code
-  std::unordered_map<std::string, std::string> params;
-  params["rho"] = "500";
-  params["base_length"] = "1.0";
-  params["base_width"] = "0.15";
-  params["wheel_y_offset"] = "0.14";
-  params["track_y_offset"] = "0.24";
-  params["wheel_width"] = "0.08";
-  params["wheel_radius"] = "0.17775";
-  params["flipper_radius"] = "0.16";
+  std::vector<raisim::World::ParameterContainer> params;
+  params.push_back({"rho", "500"});
+  params.push_back({"base_length", "1.0"});
+  params.push_back({"base_width", "0.15"});
+  params.push_back({"wheel_y_offset", "0.14"});
+  params.push_back({"track_y_offset", "0.24"});
+  params.push_back({"wheel_width", "0.08"});
+  params.push_back({"wheel_radius", "0.17775"});
+  params.push_back({"flipper_radius", "0.16"});
 
   auto robot =
       world.addArticulatedSystem(binaryPath.getDirectory() + "/rsc/templatedTrackedRobot/trackedTemplate.urdf", params);
