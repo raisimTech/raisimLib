@@ -9,15 +9,14 @@ int main(int argc, char* argv[]) {
   raisim::World::setActivationKey(binaryPath.getDirectory() + "/rsc/activation.raisim");
   raisim::RaiSimMsg::setFatalCallback([](){throw;});
 
-  std::unordered_map<std::string, std::string> params;
-  params["spawn_sphere"] = "true";
-  params["spawn_box"] = "false";
-  params["sphere_count"] = "30";
-  params["sphere_height_offset"] = "3";
-
-  params["laikago_start_x"] = "-2";
-  params["laikago_start_y"] = "0";
-  params["floor_height"] = "-1";
+  std::vector<raisim::World::ParameterContainer> params;
+  params.push_back({"spawn_sphere", "true"});
+  params.push_back({"spawn_box", "false"});
+  params.push_back({"sphere_count", "30"});
+  params.push_back({"sphere_height_offset", "3"});
+  params.push_back({"laikago_start_x", "-2"});
+  params.push_back({"laikago_start_y", "0"});
+  params.push_back({"floor_height", "-1"});
 
   raisim::World world(binaryPath.getDirectory() + "/rsc/xmlScripts/templatedWorld/templatedWorld.xml", params);
   raisim::RaisimServer server(&world);
