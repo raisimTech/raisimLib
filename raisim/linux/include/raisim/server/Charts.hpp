@@ -23,11 +23,13 @@ class Chart {
    * locks chart mutex. This can be used if you use raisim in a multi-threaded environment.
    */
   void lockMutex() { mutex_.lock(); }
+  void lock() { mutex_.lock(); } // this is for RAII compatibility
 
   /**
    * unlock chart mutex. This can be used if you use raisim in a multi-threaded environment.
    */
   void unlockMutex() { mutex_.unlock(); }
+  void unlock() { mutex_.unlock(); } // this is for RAII compatibility
 
  protected:
   std::string title_;

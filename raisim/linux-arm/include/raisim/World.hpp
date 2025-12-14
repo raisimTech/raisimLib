@@ -689,14 +689,16 @@ class World {
     return mat_.getMaterialPairProp(mat1, mat2); }
 
   /**
-   * locks world mutex. This can be used if you use raisim in a multi-threaded environment.
+   * locks chart mutex. This can be used if you use raisim in a multi-threaded environment.
    */
-  void lockMutex() { worldMutex_.lock(); }
+  void lockMutex() { mutex_.lock(); }
+  void lock() { mutex_.lock(); } // this is for RAII compatibility
 
   /**
-   * unlock world mutex. This can be used if you use raisim in a multi-threaded environment.
+   * unlock chart mutex. This can be used if you use raisim in a multi-threaded environment.
    */
-  void unlockMutex() { worldMutex_.unlock(); }
+  void unlockMutex() { mutex_.unlock(); }
+  void unlock() { mutex_.unlock(); } // this is for RAII compatibility
 
 protected:
   void init();
@@ -756,7 +758,7 @@ protected:
   RayCollisionList rayContact_;
 
   // mutex
-  std::mutex worldMutex_;
+  std::mutex mutex_;
 
   // the location of the license file
   RAISIM_STATIC_API static std::string activationKey_;
