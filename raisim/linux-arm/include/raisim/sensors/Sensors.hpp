@@ -167,14 +167,16 @@ class Sensor {
   [[nodiscard]] size_t getFrameId() const { return frameId_; }
 
   /**
-   * locks sensor mutex. This can be used if you use raisim in a multi-threaded environment.
+   * locks chart mutex. This can be used if you use raisim in a multi-threaded environment.
    */
   void lockMutex() { mutex_.lock(); }
+  void lock() { mutex_.lock(); } // this is for RAII compatibility
 
   /**
-   * unlock sensor mutex. This can be used if you use raisim in a multi-threaded environment.
+   * unlock chart mutex. This can be used if you use raisim in a multi-threaded environment.
    */
   void unlockMutex() { mutex_.unlock(); }
+  void unlock() { mutex_.unlock(); } // this is for RAII compatibility
 
  protected:
 

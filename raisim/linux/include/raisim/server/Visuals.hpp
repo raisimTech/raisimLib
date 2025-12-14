@@ -39,14 +39,16 @@ struct PolyLine {
   void clearPoints() { points.clear(); }
 
   /**
-   * locks polyLine mutex. This can be used if you use raisim in a multi-threaded environment.
+   * locks chart mutex. This can be used if you use raisim in a multi-threaded environment.
    */
   void lockMutex() { mutex_.lock(); }
+  void lock() { mutex_.lock(); } // this is for RAII compatibility
 
   /**
-   * unlock polyLine mutex. This can be used if you use raisim in a multi-threaded environment.
+   * unlock chart mutex. This can be used if you use raisim in a multi-threaded environment.
    */
   void unlockMutex() { mutex_.unlock(); }
+  void unlock() { mutex_.unlock(); } // this is for RAII compatibility
 
 
  protected:
@@ -81,14 +83,16 @@ struct ArticulatedSystemVisual {
   }
 
   /**
-   * locks polyline mutex. This can be used if you use raisim in a multi-threaded environment.
+   * locks chart mutex. This can be used if you use raisim in a multi-threaded environment.
    */
   void lockMutex() { mutex_.lock(); }
+  void lock() { mutex_.lock(); } // this is for RAII compatibility
 
   /**
-   * unlock polyline mutex. This can be used if you use raisim in a multi-threaded environment.
+   * unlock chart mutex. This can be used if you use raisim in a multi-threaded environment.
    */
   void unlockMutex() { mutex_.unlock(); }
+  void unlock() { mutex_.unlock(); } // this is for RAII compatibility
 
 
   raisim::Vec<4> color;
@@ -187,14 +191,16 @@ struct Visuals {
   Eigen::Vector4d getOrientation() { return quaternion.e(); }
 
   /**
-   * locks visualObject mutex. This can be used if you use raisim in a multi-threaded environment.
+   * locks chart mutex. This can be used if you use raisim in a multi-threaded environment.
    */
   void lockMutex() { mutex_.lock(); }
+  void lock() { mutex_.lock(); } // this is for RAII compatibility
 
   /**
-   * unlock visualObject mutex. This can be used if you use raisim in a multi-threaded environment.
+   * unlock chart mutex. This can be used if you use raisim in a multi-threaded environment.
    */
   void unlockMutex() { mutex_.unlock(); }
+  void unlock() { mutex_.unlock(); } // this is for RAII compatibility
 
 
  private:
@@ -280,14 +286,16 @@ struct HeightMapVisual {
   }
 
   /**
-   * locks polyline mutex. This can be used if you use raisim in a multi-threaded environment.
+   * locks chart mutex. This can be used if you use raisim in a multi-threaded environment.
    */
   void lockMutex() { mutex_.lock(); }
+  void lock() { mutex_.lock(); } // this is for RAII compatibility
 
   /**
-   * unlock polyline mutex. This can be used if you use raisim in a multi-threaded environment.
+   * unlock chart mutex. This can be used if you use raisim in a multi-threaded environment.
    */
   void unlockMutex() { mutex_.unlock(); }
+  void unlock() { mutex_.unlock(); } // this is for RAII compatibility
 
 
   raisim::Vec<4> color;
@@ -433,14 +441,16 @@ struct InstancedVisuals {
   Eigen::Vector3d getScale(size_t id) { return data[id].scale.e(); }
 
   /**
-   * locks InstancedvisualObject mutex. This can be used if you use raisim in a multi-threaded environment.
+   * locks chart mutex. This can be used if you use raisim in a multi-threaded environment.
    */
   void lockMutex() { mutex_.lock(); }
+  void lock() { mutex_.lock(); } // this is for RAII compatibility
 
   /**
-   * unlock InstancedvisualObject mutex. This can be used if you use raisim in a multi-threaded environment.
+   * unlock chart mutex. This can be used if you use raisim in a multi-threaded environment.
    */
   void unlockMutex() { mutex_.unlock(); }
+  void unlock() { mutex_.unlock(); } // this is for RAII compatibility
 
 
  protected:
@@ -479,14 +489,16 @@ struct PointCloud {
   }
   
   /**
-   * locks InstancedvisualObject mutex. This can be used if you use raisim in a multi-threaded environment.
+   * locks chart mutex. This can be used if you use raisim in a multi-threaded environment.
    */
   void lockMutex() { mutex_.lock(); }
+  void lock() { mutex_.lock(); } // this is for RAII compatibility
 
   /**
-   * unlock InstancedvisualObject mutex. This can be used if you use raisim in a multi-threaded environment.
+   * unlock chart mutex. This can be used if you use raisim in a multi-threaded environment.
    */
   void unlockMutex() { mutex_.unlock(); }
+  void unlock() { mutex_.unlock(); } // this is for RAII compatibility
 
   /**
    * resize both position and color

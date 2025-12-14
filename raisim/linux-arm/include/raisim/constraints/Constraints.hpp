@@ -18,15 +18,17 @@ class Constraints {
   [[nodiscard]] const Vec<4>& getColor() const { return color_; };
   void setColor(const Vec<4>& color) { color_ = color; };
 
-  /**
-   * locks constraint mutex. This can be used if you use raisim in a multi-threaded environment.
-   */
-  void lockMutex() { mutex_.lock(); }
+    /**
+     * locks chart mutex. This can be used if you use raisim in a multi-threaded environment.
+     */
+    void lockMutex() { mutex_.lock(); }
+    void lock() { mutex_.lock(); } // this is for RAII compatibility
 
-  /**
-   * unlock constraint mutex. This can be used if you use raisim in a multi-threaded environment.
-   */
-  void unlockMutex() { mutex_.unlock(); }
+    /**
+     * unlock chart mutex. This can be used if you use raisim in a multi-threaded environment.
+     */
+    void unlockMutex() { mutex_.unlock(); }
+    void unlock() { mutex_.unlock(); } // this is for RAII compatibility
 
  protected:
   std::string name_;
